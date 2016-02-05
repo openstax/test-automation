@@ -16,6 +16,7 @@ images_dict = {}
 
 
 def load_pdf_page(filepath, page_number):
+    global images_dict
     pdf_image_key = filepath + "[{0}]".format(page_number)
     if pdf_image_key in images_dict:
         image = images_dict[pdf_image_key]
