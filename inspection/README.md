@@ -1,3 +1,5 @@
+Return a list of related pages between two pdfs.
+
 ##### Requirements
 
 Ubuntu >= 14.10 
