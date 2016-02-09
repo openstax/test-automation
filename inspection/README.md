@@ -17,7 +17,7 @@ apt-get install libpq-dev python-dev
 
 apt-get install libopencv-dev python-opencv
 
-ln /dev/null /dev/raw1394 # disable warning message
+ln /dev/null /dev/raw1394 # disable libdc1394 error (cause by unused opencv coedec )
 ```
 
 ##### Example Usage
