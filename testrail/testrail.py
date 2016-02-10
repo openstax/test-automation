@@ -99,6 +99,7 @@ class TestRailAPI(object):
         if response.status_code == '429':
             # too many requests sent; wait required sec then resend request
             snooze = response.json()['Retry-After']
+            print('Sleeping for %s before retrying' % snooze)
             sleep(int(snooze) + 1)
             response, error = self._request_call(method, uri, data)
         result = json.loads(response.text) if response else {}
@@ -106,7 +107,7 @@ class TestRailAPI(object):
             message = '' if 'error' not in result else result['error']
             raise TestRailAPIError('Error return: %s (%s)' %
                                    (error.code, message))
-        return response
+        return result
 
     # Reference Users #
     def get_user_by_id(self, _id):
@@ -132,9 +133,9 @@ if __name__ == "__main__":
     # execute only if run as a script
     rail = TestRailAPI('https://%s.testrail.net/' %
                        os.environ['TESTRAIL_GROUP'])
-    print(rail)
+    print('TestRailAPI Object:', rail, '\n')
     user_one = rail.get_user_by_id(1)
-    print(user_one)
+    print('User One:', user_one, '\n')
     user_list = rail.get_users()
     for user in user_list:
-        print(json.dumps(user))
+        print('User:', user)
