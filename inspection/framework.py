@@ -1,6 +1,5 @@
 import unittest
 import logging
-import psycopg2
 import cv2
 import cv
 import numpy

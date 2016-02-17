@@ -1,7 +1,6 @@
 import unittest
 from cases import DefaultTest
 from importlib import import_module
-import psycopg2
 import inspect
 import numpy
 import pyPdf
