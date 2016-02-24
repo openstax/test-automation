@@ -32,6 +32,8 @@ ln /dev/null /dev/raw1394 # disable libdc1394 error (cause by unused opencv coed
 
 ``python inspection.py --cases example --include Example3 --exclude DefaultTest --check any data/test/A.pdf data/test/F.pdf``
 
+python inspection.py --cases example --include Example1 --check any  data/test/m25.pdf  data/test/m26.pdf 
+
 ##### Algorithms
 
 http://docs.scipy.org/doc/numpy-1.10.0/reference/generated/numpy.array_equiv.html#numpy.array_equiv
@@ -53,3 +55,14 @@ https://docs.python.org/2/library/unittest.html
 Use the ``output.log`` file to see STDOUT of the pdf test execution.  
 
 Warning: The python debugger will only be useful in the main function of the inspection.py file. The rest of this program is excuted as a different process, with STDOUT being written to file. Meaning there will be no way to directly interact with the debugger.  
+
+##### Starting instructions
+vagrant up
+vagrant provision
+vagrant ssh  #this will open linux terminal
+cd /vagrant/development/cnx-inspection-v2/inspections
+sudo chown -R vagrant cnx-inspection-v2/
+sudo chgrp -R vagrant cnx-inspection-v2/
+git pull
+
+then run the tests you want.
