@@ -47,8 +47,8 @@ class TestRailAPI(object):
 
     def __init__(self, url, api=None, key=None):
         """Initializer using API key/values."""
-        api_uri = 'index.php?/api/v2/'
-        self.url = '%s%s' % (url, api_uri)
+        api_uri = 'index.php?/api/v2/' if 'testrail' in url else ''
+        self.url = '%s%s%s' % (url, '/' if url[:-1] != '/' else '', api_uri)
         self.headers = {'Content-Type': 'application/json'}
         if api is None:
             print('Username not set, using environment value')

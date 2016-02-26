@@ -1,0 +1,30 @@
+"""
+TestRail Python exacution interface.
+
+Take the tests as arguments and initialize a Jenkins run.
+
+http://docs.gurock.com/
+"""
+
+import cgi
+import testrail as tr
+
+__version__ = '0.0.1'
+
+
+def execute_test(run_id, case_id, test_id):
+    """Execute test."""
+    # test
+    # code
+    status_id = None
+
+    if status_id == tr.UNTESTED:
+        return None
+    return status_id
+
+run = None
+s = ''
+args = cgi.FieldStorage()
+for arg in args:
+    s += ' %s' % arg
+print(s)
