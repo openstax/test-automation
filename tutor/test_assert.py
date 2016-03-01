@@ -23,4 +23,4 @@ def test_number():
 @slow
 def test_function():
     """Parameter False test."""
-    assert f() == 4
+    assert f() != 4
