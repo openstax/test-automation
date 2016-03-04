@@ -29,6 +29,7 @@
     "chromedriver": "2.19.0",
     "coffee-script": "1.9.3",
     "istanbul": "0.4.1",
+    "lodash": "4.5.1",
     "mocha": "2.2.5",
     "openstax-tutor": "github:openstax/tutor-js#6fefff4",
     "selenium-webdriver": "2.47.0",
