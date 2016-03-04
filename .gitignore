@@ -3,3 +3,7 @@
 webserver.py
 
 node_modules/
+
+/test-failed-*.png
+/coverage
+/coverage-selenium.json

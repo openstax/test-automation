@@ -1,0 +1,8 @@
+require 'openstax-tutor/test-integration/cc-dashboard'
+require 'openstax-tutor/test-integration/calendar'
+# require 'openstax-tutor/test-integration/student/dashboard'
+require 'openstax-tutor/test-integration/task-plan/cleanup'
+require 'openstax-tutor/test-integration/task-plan/draft'
+require 'openstax-tutor/test-integration/task-plan/publish'
+require 'openstax-tutor/test-integration/task'
+require 'openstax-tutor/test-integration/scores'
