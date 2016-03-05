@@ -7,7 +7,7 @@ RECRUITMENT_SITE = 'http://cc.openstax.org'
 
 TEST = ->
   @driver.get(RECRUITMENT_SITE)
-  @utils.wait.for(css: 'a[href*="sign-up"]')
+  @utils.wait.for(css: 'body')
 
 module.exports =
   spec: TEST
