@@ -17,4 +17,4 @@ def test_case_1():
 @pytest.mark.skipif(str(7797) not in TESTS, reason='Excluded')
 def test_case_2():
     """Parameter False test."""
-    assert 2.0 != 4.0
+    assert 2.0 == 4.0
