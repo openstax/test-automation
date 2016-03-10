@@ -1,3 +1,3 @@
-{runSuite} = require './cases'
+{runSection} = require './sections'
 
-runSuite 'CC1.01 - Recruiting Teachers', ['C7751']
+runSection 'CC1.04 - Exercise Editing and QA', 'exercise-editing-and-qa'
