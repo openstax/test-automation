@@ -1,3 +1,3 @@
-{runSection} = require './sections'
+tutorCases = require './sections'
 
-runSection 'CC1.04 - Exercise Editing and QA', 'exercise-editing-and-qa'
+tutorCases.runCases 'CC1.04 - Exercise Editing and QA', JSON.parse(process.env.STAX_ATTACK_CASES)

@@ -28,12 +28,13 @@
     "chai-as-promised": "5.1.0",
     "chromedriver": "2.19.0",
     "coffee-script": "1.9.3",
-    "dotenv-safe": "^2.2.0",
+    "dotenv": "^2.0.0",
     "istanbul": "0.4.1",
     "lodash": "4.5.1",
     "mocha": "2.2.5",
-    "openstax-tutor": "github:openstax/tutor-js#6fefff4",
+    "openstax-tutor": "github:openstax/tutor-js#938fdd6",
+    "require-directory": "^2.1.1",
     "selenium-webdriver": "2.47.0",
-    "webpack": "1.12.2"
+    "yargs": "^4.2.0"
   }
 }
