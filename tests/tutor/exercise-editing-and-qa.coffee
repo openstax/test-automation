@@ -1,5 +1,6 @@
 Helpers = require 'openstax-tutor/test-integration/helpers'
 {expect} = require 'chai'
+USERS = require './users.json'
 
 cases =
   'C7651':
@@ -14,14 +15,29 @@ cases =
     title: 'Content Analyst | Able to publish an exercise'
     spec: ->
       @user = new Helpers.User(@)
-      @user.login('openstax')
+      @user.login(USERS.teacher.tutor)
 
       @calendar = new Helpers.Calendar(@)
       @calendarPopup = new Helpers.Calendar.Popup(@)
       @reading = new Helpers.ReadingBuilder(@)
 
-      # new Helpers.CourseSelect(@).goToByType('ANY')
-      @calendar.el.unopenPlan().waitClick()
+      new Helpers.CourseSelect(@).goToByType('ANY')
+
+  'C7610':
+    title: 'Teacher| Able to switch between concurrently running courses'
+    spec: ->
+      @user = new Helpers.User(@)
+      @calendar = new Helpers.Calendar(@)
+      @courseSelect = new Helpers.CourseSelect(@)
+
+      @user.login(USERS.teacher.tutor)
+      @courseSelect.waitUntilLoaded()
+
+      @courseSelect.el.courseByAppearance().forEach (courseSelector) =>
+        courseSelector.click()
+        @calendar.waitUntilLoaded()
+        @user.el.homeLink().click()
+
 
 
 module.exports =

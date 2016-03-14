@@ -1,11 +1,17 @@
 var describe = require('openstax-tutor/test-integration/helpers').describe;
 var _ = require('lodash');
+var path = require('path');
 
 var requireDirectory = require('require-directory');
+var EXTS_TO_LOAD = ['.coffee', '.js'];
 
 // Utils
 function loadSections(project){
-  return requireDirectory(module, '../' + project);
+  return requireDirectory(module, '../' + project, {
+    include: function (pathToLoad){
+      return _.indexOf(EXTS_TO_LOAD, path.extname(pathToLoad)) > -1;
+    }
+  });
 }
 
 function getCasesBySections(sections){
