@@ -3,6 +3,8 @@ var _ = require('lodash');
 var yargs = require('yargs');
 require('dotenv').config();
 
+var ENV_PREFIX = 'STAX_ATTACK'
+
 var argumentOptions = {
   n: {
     alias: 'name',
@@ -10,10 +12,15 @@ var argumentOptions = {
     demand: true,
     type: 'string'
   },
+  t: {
+    alias: 'title',
+    describe: 'Description of the test run',
+    demand: true,
+    type: 'string'
+  },
   r: {
     alias: 'remote',
     describe: 'Which remote service to use?  Set to false to run locally.',
-    default: 'sauce',
     choices: ['sauce', 'browserstack', false]
   },
   p: {
@@ -29,7 +36,11 @@ var argumentOptions = {
   },
   b: {
     alias: 'browsers',
-    default: ['chrome:36:Windows', 'firefox:36:Windows', 'internet explorer:10:Windows 7'],
+    default: [
+      'chrome:36:Windows',
+      'firefox:36:Windows',
+      // 'internet explorer:10:Windows 7'
+    ],
     describe: 'What browsers should the tests run in?',
     type: 'array'
   },
@@ -49,7 +60,7 @@ function isSaucy(argv){
 }
 
 function isEnvOurs(envValue, envName){
-  var envPrefixes = ['STAX_ATTACK', 'SAUCE', 'BROWSERSTACK', 'SELENIUM', 'MOCHA'];
+  var envPrefixes = [ENV_PREFIX, 'SAUCE', 'BROWSERSTACK', 'SELENIUM', 'MOCHA'];
 
   return _.reduce(envPrefixes, function(result, prefix){
     return result || _.startsWith(envName, prefix);
@@ -57,10 +68,8 @@ function isEnvOurs(envValue, envName){
 }
 
 function buildTestOptions(){
-
-
   var argv = yargs.usage('Usage: $0 ')
-    .env('STAX_ATTACK')
+    .env(ENV_PREFIX)
     .config('settings')
     .options(argumentOptions)
     .example('c', '$0 -c C7651 C7674', 'Run tests for cases C7651 and C7674.')
@@ -89,20 +98,35 @@ function buildTestOptions(){
   envs.SELENIUM_CAPABILITIES = JSON.stringify(SELENIUM_CAPABILITIES);
   envs.SERVER_URL = argv.server;
 
-  if(!_.isString(envs.STAX_ATTACK_CASES)){
-    envs.STAX_ATTACK_CASES = JSON.stringify(argv.cases);
-  }
+  var envsFromArgs = buildEnvFromArgs(_.pick(argv, ['cases', 'project', 'title']));
 
+  _.defaults(envs, envsFromArgs);
   _.extend(envs, systemEnvs);
 
-  var testOptions = _.map(argv.browsers, function(browser){
-    return {
-      env: buildBrowserEnv(envs, browser),
-      file: argv.project + '/index.js'
-    };
+  var testEnvs = _.map(argv.browsers, function(browser){
+    return buildBrowserEnv(envs, browser);
   });
 
-  return testOptions;
+  return {
+    browsers: argv.browsers,
+    envs: testEnvs,
+    system: envs.SELENIUM_REMOTE_URL || 'local',
+    cases: JSON.parse(envs.STAX_ATTACK_CASES),
+    runName: argv.name
+  };
+}
+
+function buildEnvFromArgs(args){
+  var envs = {};
+  _.each(args, function(arg, argName){
+    var envArgName = _.chain(ENV_PREFIX + ' ' + argName).snakeCase().toUpper().value();
+    if(!_.isString(arg)){
+      arg = JSON.stringify(arg);
+    }
+    envs[envArgName] = arg;
+  });
+
+  return envs;
 }
 
 function buildBrowserEnv(baseEnv, browser){
@@ -110,12 +134,10 @@ function buildBrowserEnv(baseEnv, browser){
 }
 
 function buildReportInfo(testOptions){
-  var browsers = _.map(testOptions, _.property('env.SELENIUM_BROWSER')).join(', ');
-  var system = testOptions[0].env.SELENIUM_REMOTE_URL || 'local';
-  var cases = JSON.parse(testOptions[0].env.STAX_ATTACK_CASES).join(', ');
-  var runName = JSON.parse(testOptions[0].env.SELENIUM_CAPABILITIES).name;
+  var browsers = testOptions.browsers.join(', ');
+  var cases = testOptions.cases.join(', ');
 
-  return 'Running ' + runName + ' with cases ' + cases + ' on browsers ' + browsers + ' at ' + system;
+  return 'Running ' + testOptions.runName + ' with cases ' + cases + ' on browsers ' + browsers + ' at ' + testOptions.system;
 }
 
 function runTests(){
@@ -123,8 +145,8 @@ function runTests(){
 
   process.stdout.write(buildReportInfo(testOptions));
 
-  var mochas = _.map(testOptions, function(testOption){
-    return spawn('mocha', ['-R', 'spec', testOption.file], {stdio: "inherit", env: testOption.env});
+  var mochas = _.map(testOptions.envs, function(env){
+    return spawn('mocha', ['-R', 'spec', 'tests/index.js'], {stdio: "inherit", env: env});
   });
 }
 

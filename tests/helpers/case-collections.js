@@ -4,8 +4,8 @@ var _ = require('lodash');
 var requireDirectory = require('require-directory');
 
 // Utils
-function loadSections(sectionModule){
-  return requireDirectory(sectionModule);
+function loadSections(project){
+  return requireDirectory(module, '../' + project);
 }
 
 function getCasesBySections(sections){
@@ -36,14 +36,14 @@ function getCaseIdsBySectionName(sectionCases, sectionName){
 
 // CaseCollections class
 
-function CaseCollections(sectionModule){
-  this.loadSections(sectionModule);
+function CaseCollections(project){
+  this.loadSections(project);
   this.setCasesBySections();
   this.setCases();
 }
 
-CaseCollections.prototype.loadSections = function(sectionModule){
-  this.sections = loadSections(sectionModule);
+CaseCollections.prototype.loadSections = function(project){
+  this.sections = loadSections(project);
   return this;
 }
 

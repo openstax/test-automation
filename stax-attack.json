@@ -1,4 +1,5 @@
 {
   "cases": ["C7651", "C7674"],
-  "name": "Local Testing"
+  "name": "Local Testing",
+  "title": "This is testing our testing system"
 }
