@@ -1,6 +1,9 @@
-{
-  "teacher": {
-    "concept-coach": "teacher02",
-    "tutor": "teacher02"
-  }
-}
+[{
+  "username": "teacher02",
+  "password": "password",
+  "tags": ["teacher", "tutor", "coach"]
+}, {
+  "username": "content",
+  "password": "password",
+  "tags": ["content-analyst"]  
+}]

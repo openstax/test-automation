@@ -9,7 +9,7 @@ var EXTS_TO_LOAD = ['.coffee', '.js'];
 function loadSections(project){
   return requireDirectory(module, '../' + project, {
     include: function (pathToLoad){
-      return _.indexOf(EXTS_TO_LOAD, path.extname(pathToLoad)) > -1;
+      return _.includes(EXTS_TO_LOAD, path.extname(pathToLoad));
     }
   });
 }
