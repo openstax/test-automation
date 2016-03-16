@@ -32,7 +32,7 @@
     "istanbul": "0.4.1",
     "lodash": "4.5.1",
     "mocha": "2.2.5",
-    "openstax-tutor": "github:openstax/tutor-js#60bcf2e",
+    "openstax-tutor": "github:openstax/tutor-js#12fbe79",
     "require-directory": "^2.1.1",
     "selenium-webdriver": "2.47.0",
     "yargs": "^4.2.0"

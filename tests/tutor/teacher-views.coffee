@@ -80,6 +80,7 @@ cases =
       @ccPeriodEditModal.el.codeMessage().findElement().getText().then (text) ->
         console.info(text)
 
+      @ccPeriodEditModal.close()
 
 
 

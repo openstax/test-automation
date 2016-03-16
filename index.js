@@ -1,6 +1,7 @@
 var spawn = require('child_process').spawn;
 var _ = require('lodash');
 var yargs = require('yargs');
+var remotes = require('./tests/remotes');
 require('dotenv').config();
 
 var ENV_PREFIX = 'STAX_ATTACK'
@@ -20,8 +21,9 @@ var argumentOptions = {
   },
   r: {
     alias: 'remote',
-    describe: 'Which remote service to use?  Set to false to run locally.',
-    choices: ['sauce', 'browserstack', false]
+    describe: 'Which remote service to use?  Leave out to run locally.',
+    // choices are remotes as defined in ./tests/remotes.js, and can also be false for running locally.
+    choices: _.concat(_.keys(remotes), false)
   },
   p: {
     alias: 'project',
@@ -51,12 +53,8 @@ var argumentOptions = {
   }
 };
 
-function hasSauceCredentials(){
-  return _.isString(process.env.SAUCE_USERNAME) && _.isString(process.env.SAUCE_ACCESS_KEY);
-}
-
-function isSaucy(argv){
-  return argv.r === 'sauce';
+function isRemote(argv){
+  return _.isString(argv.r) && _.includes(_.keys(remotes), argv.r);
 }
 
 function isEnvOurs(envValue, envName){
@@ -67,6 +65,18 @@ function isEnvOurs(envValue, envName){
   }, false);
 }
 
+function checkForValidRemotes(currentArgv, optionsArray){
+  var remoteName = currentArgv.r;
+  if(isRemote(currentArgv)){
+    if(!remotes[remoteName].check()){
+      throw remotes[remoteName].error;
+    }
+  }
+
+  return true;
+}
+
+
 function buildTestOptions(){
   var argv = yargs.usage('Usage: $0 ')
     .env(ENV_PREFIX)
@@ -75,27 +85,24 @@ function buildTestOptions(){
     .example('c', '$0 -c C7651 C7674', 'Run tests for cases C7651 and C7674.')
     .help('h')
     .alias('h', 'help')
-    .check(function(currentArgv, optionsArray){
-      if(isSaucy(currentArgv) && !hasSauceCredentials()){
-        throw "Credentials for Saucelabs need to be defined as environment variables in .env as SAUCE_USERNAME and SAUCE_ACCESS_KEY.";
-      }
-      return true;
-    })
+    .check(checkForValidRemotes)
     .argv;
+
+  var remoteName = argv.r;
+
+  var optionsForMocha = getOptionsForMocha(argv);
 
   var envs = _.pickBy(process.env, isEnvOurs);
   var systemEnvs = _.omitBy(process.env, isEnvOurs);
+  var remoteEnvs;
 
-  var SELENIUM_CAPABILITIES = {name: argv.name};
-  if(isSaucy(argv)){
-    _.extend(SELENIUM_CAPABILITIES, {
-      username: envs.SAUCE_USERNAME,
-      accessKey: envs.SAUCE_ACCESS_KEY
-    });
-    envs.SELENIUM_REMOTE_URL = 'http://' + envs.SAUCE_USERNAME + ':' + envs.SAUCE_ACCESS_KEY + '@ondemand.saucelabs.com:80/wd/hub';
+  envs.SELENIUM_CAPABILITIES = {name: argv.name};
+  if(isRemote(argv)){
+    remoteEnvs = remotes[remoteName].buildEnvs(envs);
+    remotes[remoteName].cleanEnvs(envs);
+    _.defaultsDeep(envs, remoteEnvs);
   }
-
-  envs.SELENIUM_CAPABILITIES = JSON.stringify(SELENIUM_CAPABILITIES);
+  envs.SELENIUM_CAPABILITIES = JSON.stringify(envs.SELENIUM_CAPABILITIES);
   envs.SERVER_URL = argv.server;
 
   var envsFromArgs = buildEnvFromArgs(_.pick(argv, ['cases', 'project', 'title']));
@@ -112,8 +119,30 @@ function buildTestOptions(){
     envs: testEnvs,
     system: envs.SELENIUM_REMOTE_URL || 'local',
     cases: JSON.parse(envs.STAX_ATTACK_CASES),
-    runName: argv.name
+    runName: argv.name,
+    additionalOptions: optionsForMocha
   };
+}
+
+function getOptionsForMocha(argv, seleniumAndEnvOptions){
+  var unlistedOptions = ['_', 'h', 'help', 'settings', '$0'];
+  var seleniumAndEnvOptions = _(argumentOptions).keys().concat(_.map(argumentOptions, _.property('alias')), unlistedOptions).value();
+
+  var otherOptions = _.omit(argv, seleniumAndEnvOptions);
+  var optionsForMocha = _.flatMap(otherOptions, function(value, key){
+    var prefix = '-';
+    if(key.length > 1){
+      prefix += '-';
+    }
+    var option = [prefix + key];
+    if(_.isString(value)){
+      option.push(value);
+    }
+
+    return option;
+  });
+
+  return optionsForMocha;
 }
 
 function buildEnvFromArgs(args){
@@ -142,11 +171,12 @@ function buildReportInfo(testOptions){
 
 function runTests(){
   var testOptions = buildTestOptions();
+  var childCommand = _.concat(['-R', 'spec'], testOptions.additionalOptions, './tests/index.js');
 
   process.stdout.write(buildReportInfo(testOptions));
 
   var mochas = _.map(testOptions.envs, function(env){
-    return spawn('mocha', ['-R', 'spec', 'tests/index.js'], {stdio: "inherit", env: env});
+    return spawn('mocha', childCommand, {stdio: "inherit", env: env});
   });
 }
 
