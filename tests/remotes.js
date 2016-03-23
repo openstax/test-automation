@@ -13,7 +13,7 @@ var remotes = {
           accessKey: envs.SAUCE_KEY
         },
         SELENIUM_REMOTE_URL: 'http://' + envs.SAUCE_USERNAME + ':' + envs.SAUCE_KEY + '@ondemand.saucelabs.com:80/wd/hub'
-      }
+      };
       return remoteEnvs;
     },
     cleanEnvs: function(envs){
@@ -31,8 +31,9 @@ var remotes = {
         SELENIUM_CAPABILITIES: {
           'browserstack.user': envs.BROWSERSTACK_USERNAME,
           'browserstack.key': envs.BROWSERSTACK_KEY
-        }
-      }
+        },
+        SELENIUM_REMOTE_URL: 'http://hub.browserstack.com/wd/hub'
+      };
       return remoteEnvs;
     },
     cleanEnvs: function(envs){
