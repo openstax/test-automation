@@ -27,11 +27,11 @@ Finally, we need to install the packages for this set of code:
 npm install
 ```
 
-This will tell `npm` -- [node package manager](https://docs.npmjs.com/getting-started/what-is-npm) -- to look at our [`package.json`](../package.json) file in the project we are `cd`ed into -- `test-automation` and install the necessary packages.
+This will tell `npm` -- [node package manager](https://docs.npmjs.com/getting-started/what-is-npm) -- to look at our [`package.json`](../package.json) file in the project we are `cd`ed into -- `test-automation` -- and install the necessary packages.
 
 ## Example usage
 
-Now, we are ready to run.  To check that tests are working, try:
+Now, we are ready to run :runner:.  To check that tests are working, try:
 
 ```bash
 npm test -- --c 7612
