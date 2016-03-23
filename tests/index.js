@@ -1,5 +1,3 @@
-var fs = require('fs');
-var path = require('path');
 var spawn = require('child_process').spawn;
 
 require('dotenv').config();
@@ -8,10 +6,9 @@ var yargs = require('yargs');
 var validator = require('validator');
 
 var remotes = require('./remotes');
-var getProjectServersCollection = require('./helpers/project-servers-collection');
+var commandChecks = require('./helpers/command/check');
 
 var ENV_PREFIX = 'STAX_ATTACK';
-var VALID_PROJECTS = getValidProjects();
 
 var argumentOptions = {
   n: {
@@ -36,7 +33,7 @@ var argumentOptions = {
     alias: 'project',
     describe: 'Which project are you testing?',
     default: 'tutor',
-    choices: VALID_PROJECTS
+    choices: commandChecks.getValidProjects()
   },
   c: {
     alias: 'cases',
@@ -59,121 +56,6 @@ var argumentOptions = {
   }
 };
 
-function isRemote(argv){
-  return _.isString(argv.r) && _.includes(_.keys(remotes), argv.r);
-}
-
-function isEnvOurs(envValue, envName){
-  var envPrefixes = [ENV_PREFIX, 'SAUCE', 'BROWSERSTACK', 'SELENIUM', 'MOCHA', 'SERVER_URL'];
-
-  return _.reduce(envPrefixes, function(result, prefix){
-    return result || _.startsWith(envName, prefix);
-  }, false);
-}
-
-function setServerUrlFallback(currentArgv){
-  if (!currentArgv.server){
-    if (process.env.SERVER_URL){
-      // pulls in SERVER_URL from env if defined
-      currentArgv.server = process.env.SERVER_URL;
-    } else {
-      // as last resort, fallback to project default
-      currentArgv.server = 'default';
-    }
-
-    currentArgv.s = currentArgv.server;
-  }
-}
-
-function checkArgs(currentArgv, optionsArray){
-  var checksToRun = [checkIsProjectValid, checkForValidRemotes, checkForValidUrl];
-
-  setServerUrlFallback(currentArgv);
-
-  var isAllChecksPassing = _.reduce(checksToRun, function(previousResults, checkToRun){
-    return previousResults && checkToRun(currentArgv, optionsArray);
-  }, true);
-
-  return isAllChecksPassing;
-}
-
-function checkIsProjectValid(currentArgv){
-  var isProjectValid = _.includes(VALID_PROJECTS, currentArgv.project);
-  var error;
-
-  if(!isProjectValid){
-    error = '\n\nInvalid --project option of "' + currentArgv.project + '" given.  ';
-    error += '\nPlease give one of the following for option --project instead: \n\n';
-    error += VALID_PROJECTS.join(', ');
-    error += '\n\n';
-    throw error;
-  }
-
-  return true;
-}
-
-function checkForValidRemotes(currentArgv, optionsArray){
-  var remoteName = currentArgv.r;
-  if(isRemote(currentArgv)){
-    if(!remotes[remoteName].check()){
-      throw remotes[remoteName].error;
-    }
-  }
-
-  return true;
-}
-
-function checkForValidUrl(currentArgv, optionsArray){
-  var serverCollection = getProjectServersCollection(currentArgv.project);
-  var serverUrl = getServerUrlFromArgs(serverCollection, currentArgv);
-  var serverAliases;
-  var error;
-
-  if(!serverUrl){
-    error = '\n\nInvalid --server option of "' + currentArgv.server + '" given.  ';
-    error += '\nPlease give one of the following for option --server instead: \n\n';
-    error += 'A valid server URL with protocol (i.e. https://) \n\n'
-    error += 'or one of the server aliases for ' + currentArgv.project + ': \n\n';
-    serverAliases = serverCollection.getAllTags();
-    error += serverAliases.join(', ') + '\n\n';
-    throw error;
-  }
-
-  return true;
-}
-
-function getServerUrlFromArgs(serverCollection, currentArgv){
-  var isUrl = _.partial(validator.isURL, _, {require_protocol: true});
-
-  var isURLSet = _.isString(currentArgv.server)? isUrl(currentArgv.server) : false;
-  var serverUrl= isURLSet? currentArgv.server : getServerUrlByProject(serverCollection, currentArgv.project, currentArgv.server);
-
-  if(isUrl(serverUrl)){
-    return serverUrl;
-  }
-
-  return false;
-}
-
-function getServerUrlByProject(serverCollection, project, serverAlias){
-  var server = serverAlias? serverCollection.find(serverAlias) : false;
-  var serverUrl = '';
-
-  if(_.isObject(server)){
-    serverUrl = server.url;
-  }
-
-  return serverUrl;
-}
-
-function getValidProjects() {
-  var srcpath = __dirname;
-  return _.filter(fs.readdirSync(srcpath), function(file) {
-    // ignore helpers and only get return directories
-    return file !== 'helpers' && fs.statSync(path.join(srcpath, file)).isDirectory();
-  });
-}
-
 function buildTestOptions(){
   var argv = yargs.usage('Usage: $0 ')
     .env(ENV_PREFIX)
@@ -182,26 +64,25 @@ function buildTestOptions(){
     .example('c', '$0 -c 7651 7674', 'Run tests for cases 7651 and 7674.')
     .help('h')
     .alias('h', 'help')
-    .check(checkArgs)
+    .check(commandChecks.checkArgs)
     .argv;
 
   var remoteName = argv.r;
-
   var optionsForMocha = getOptionsForMocha(argv);
+  var isEnvOurs = _.partial(commandChecks.isEnvOurs, ENV_PREFIX);
 
   var envs = _.pickBy(process.env, isEnvOurs);
   var systemEnvs = _.omitBy(process.env, isEnvOurs);
-  var serverCollection = getProjectServersCollection(argv.project);
   var remoteEnvs;
 
   envs.SELENIUM_CAPABILITIES = {name: argv.name};
-  if(isRemote(argv)){
+  if(commandChecks.isRemote(argv)){
     remoteEnvs = remotes[remoteName].buildEnvs(envs);
     remotes[remoteName].cleanEnvs(envs);
     _.defaultsDeep(envs, remoteEnvs);
   }
   envs.SELENIUM_CAPABILITIES = JSON.stringify(envs.SELENIUM_CAPABILITIES);
-  envs.SERVER_URL = getServerUrlFromArgs(serverCollection, argv);
+  envs.SERVER_URL = commandChecks.getServerUrlFromArgs(argv);
 
   var envsFromArgs = buildEnvFromArgs(_.pick(argv, ['cases', 'project', 'title']));
 
