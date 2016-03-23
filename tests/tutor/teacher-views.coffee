@@ -11,7 +11,7 @@ coachTeacher = users.get('teacher', 'coach')
 
 cases =
 
-  'C7609':
+  '7609':
     title: 'Teacher | View the Concept Coach dashboard'
     spec: ->
       @user = new Helpers.User(@)
@@ -24,7 +24,7 @@ cases =
       @courseSelect.el.courseByAppearance(null, true).click()
       @conceptCoach.waitUntilLoaded()
 
-  'C7610':
+  '7610':
     title: 'Teacher | Able to switch between concurrently running courses'
     spec: ->
       @user = new Helpers.User(@)
@@ -39,7 +39,7 @@ cases =
         @calendar.waitUntilLoaded()
         @user.el.homeLink().click()
 
-  'C7611':
+  '7611':
     title: 'Teacher | View links on dashboard to course materials'
     spec: ->
       @user = new Helpers.User(@)
@@ -61,8 +61,8 @@ cases =
 
       # TODO check whether or not same tests need to be run for concept coach books
 
-  'C7612':
-    title: 'Teacher | Teacher | Able to copy a system-generated message with a student code, links, and other information'
+  '7612':
+    title: 'Teacher | Able to copy a system-generated message with a student code, links, and other information'
     spec: ->
       @user = new Helpers.User(@)
       @courseSelect = new Helpers.CourseSelect(@)
@@ -78,7 +78,8 @@ cases =
       @ccRoster.el.getStudentEnrollmentCodeLink().waitClick()
       @ccPeriodEditModal.waitUntilLoaded()
       @ccPeriodEditModal.el.codeMessage().findElement().getText().then (text) ->
-        console.info(text)
+        expect(text).to.include('1. Paste this link in your web browser to visit the class textbook:')
+        expect(text).to.include('two-word enrollment code')
 
       @ccPeriodEditModal.close()
 

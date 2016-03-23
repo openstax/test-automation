@@ -10,7 +10,7 @@ tutorTeacher = users.get('teacher', 'tutor')
 contentAnalyst = users.get('content-analyst')
 
 cases =
-  'C7651':
+  '7651':
     title: 'Content Analyst | Add an ecosystem comment'
     spec: ->
       @user = new Helpers.User(@)
@@ -19,7 +19,7 @@ cases =
       @user.toggleHamburgerMenu()
       @utils.wait.click(linkText: 'Content Analyst')
 
-  'C7674':
+  '7674':
     title: 'Content Analyst | Able to publish an exercise'
     spec: ->
       @user = new Helpers.User(@)

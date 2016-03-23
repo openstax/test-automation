@@ -159,7 +159,7 @@ function buildEnvFromArgs(args){
 }
 
 function buildBrowserEnv(baseEnv, browser){
-  return _.extend({}, baseEnv, {SELENIUM_BROWSER: browser});
+  return _.extend({}, baseEnv, {SELENIUM_BROWSER: browser, STAX_ATTACK_TITLE: _.capitalize(browser) + ' | ' +  baseEnv.STAX_ATTACK_TITLE});
 }
 
 function buildReportInfo(testOptions){
