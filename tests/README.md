@@ -51,10 +51,10 @@ to get information about all options for the `npm test` command.
 For example,
 
 ```bash
-npm test -- --settings stax-attack.json --r sauce
+npm test -- --settings ./tests/sample-settings.json --r sauce
 ```
 
-will run the cases set as options in [`stax-attack.json`](../stax-attack.json), and any added options from the commandline, the "sauce" remote in this case.
+will run the cases set as options in [`./tests/sample-settings.json`](./sample-settings.json), and any added options from the commandline, the "sauce" remote in this case.
 
 The credentials for the remotes can be defined as `environment` variables when you're calling the command or in a file named `.env`.  The `.env` file should follow the [`.env.example`](../.env.example) file in the root of this project.
 

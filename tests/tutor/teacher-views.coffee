@@ -2,12 +2,12 @@ Helpers = require 'openstax-tutor/test-integration/helpers'
 {expect} = require 'chai'
 USERS = require './users.json'
 
-UserCollection = require '../helpers/users'
+SimpleCollection = require '../helpers/simple-collection'
 
-users = new UserCollection(USERS)
+users = new SimpleCollection(USERS)
 
-tutorTeacher = users.get('teacher', 'tutor')
-coachTeacher = users.get('teacher', 'coach')
+tutorTeacher = users.find('teacher', 'tutor')
+coachTeacher = users.find('teacher', 'coach')
 
 cases =
 

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node index.js"
+    "test": "node ./tests/index.js"
   },
   "repository": {
     "type": "git",
@@ -35,6 +35,7 @@
     "openstax-tutor": "github:openstax/tutor-js#adfb3ce",
     "require-directory": "^2.1.1",
     "selenium-webdriver": "2.47.0",
+    "validator": "^5.1.0",
     "yargs": "^4.2.0"
   }
 }
