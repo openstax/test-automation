@@ -8,7 +8,7 @@ var yargs = require('yargs');
 var validator = require('validator');
 
 var remotes = require('./remotes');
-var SimpleCollection = require('./helpers/simple-collection');
+var getProjectServersCollection = require('./helpers/project-servers-collection');
 
 var ENV_PREFIX = 'STAX_ATTACK';
 var VALID_PROJECTS = getValidProjects();
@@ -153,11 +153,6 @@ function getServerUrlFromArgs(serverCollection, currentArgv){
   }
 
   return false;
-}
-
-function getProjectServersCollection(project){
-  var projectServers = require('./' + project + '/servers.json');
-  return new SimpleCollection(projectServers);
 }
 
 function getServerUrlByProject(serverCollection, project, serverAlias){
