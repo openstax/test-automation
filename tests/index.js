@@ -66,7 +66,7 @@ function isRemote(argv){
 }
 
 function isEnvOurs(envValue, envName){
-  var envPrefixes = [ENV_PREFIX, 'SAUCE', 'BROWSERSTACK', 'SELENIUM', 'MOCHA'];
+  var envPrefixes = [ENV_PREFIX, 'SAUCE', 'BROWSERSTACK', 'SELENIUM', 'MOCHA', 'SERVER_URL'];
 
   return _.reduce(envPrefixes, function(result, prefix){
     return result || _.startsWith(envName, prefix);
