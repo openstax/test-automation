@@ -1,12 +1,18 @@
+var fs = require('fs');
+var path = require('path');
 var spawn = require('child_process').spawn;
+
+require('dotenv').config();
 var _ = require('lodash');
 var yargs = require('yargs');
 var validator = require('validator');
+
 var remotes = require('./remotes');
 var SimpleCollection = require('./helpers/simple-collection');
-require('dotenv').config();
 
 var ENV_PREFIX = 'STAX_ATTACK'
+
+var VALID_PROJECTS = getValidProjects();
 
 var argumentOptions = {
   n: {
@@ -31,7 +37,7 @@ var argumentOptions = {
     alias: 'project',
     describe: 'Which project are you testing?',
     default: 'tutor',
-    choices: ['tutor']
+    choices: VALID_PROJECTS
   },
   c: {
     alias: 'cases',
@@ -68,13 +74,28 @@ function isEnvOurs(envValue, envName){
 }
 
 function checkArgs(currentArgv, optionsArray){
-  var checksToRun = [checkForValidRemotes, checkForValidUrl];
+  var checksToRun = [checkIsProjectValid, checkForValidRemotes, checkForValidUrl];
 
   var isAllChecksPassing = _.reduce(checksToRun, function(previousResults, checkToRun){
     return previousResults && checkToRun(currentArgv, optionsArray);
   }, true);
 
   return isAllChecksPassing;
+}
+
+function checkIsProjectValid(currentArgv){
+  var isProjectValid = _.includes(VALID_PROJECTS, currentArgv.project);
+  var error;
+
+  if(!isProjectValid){
+    error = '\n\nInvalid --project option of "' + currentArgv.project + '" given.  ';
+    error += '\nPlease give one of the following for option --project instead: \n\n';
+    error += VALID_PROJECTS.join(', ');
+    error += '\n\n';
+    throw error;
+  }
+
+  return true;
 }
 
 function checkForValidRemotes(currentArgv, optionsArray){
@@ -89,16 +110,18 @@ function checkForValidRemotes(currentArgv, optionsArray){
 }
 
 function checkForValidUrl(currentArgv, optionsArray){
-  var serverCollection = getProjectServersCollection(currentArgv.p);
+  var serverCollection = getProjectServersCollection(currentArgv.project);
   var serverUrl = getServerUrlFromArgs(serverCollection, currentArgv);
   var serverAliases;
   var error;
 
   if(!validator.isURL(serverUrl)){
-    error = 'Please enter a valid server URL for this project with option --server ';
-    error += 'or one of the server aliases for this project: ';
+    error = '\n\nInvalid --server option of "' + currentArgv.server + '" given.  ';
+    error += '\nPlease give one of the following for option --server instead: \n\n';
+    error += 'A valid server URL \n\n'
+    error += 'or one of the server aliases for ' + currentArgv.project + ': \n\n';
     serverAliases = serverCollection.getAllTags();
-    error += serverAliases.join(', ');
+    error += serverAliases.join(', ') + '\n\n';
     throw error;
   }
 
@@ -107,7 +130,7 @@ function checkForValidUrl(currentArgv, optionsArray){
 
 function getServerUrlFromArgs(serverCollection, currentArgv){
   var isURLSet = validator.isURL(currentArgv.server);
-  var serverUrl= isURLSet? currentArgv.server : getServerUrlByProject(serverCollection, currentArgv.p, currentArgv.server);
+  var serverUrl= isURLSet? currentArgv.server : getServerUrlByProject(serverCollection, currentArgv.project, currentArgv.server);
   return serverUrl;
 }
 
@@ -127,6 +150,13 @@ function getServerUrlByProject(serverCollection, project, serverAlias){
   return serverUrl;
 }
 
+function getValidProjects() {
+  var srcpath = __dirname;
+  return _.filter(fs.readdirSync(srcpath), function(file) {
+    // ignore helpers and only get return directories
+    return file !== 'helpers' && fs.statSync(path.join(srcpath, file)).isDirectory();
+  });
+}
 
 function buildTestOptions(){
   var argv = yargs.usage('Usage: $0 ')
