@@ -38,4 +38,12 @@ SimpleCollection.prototype.getDefault = function(){
   return _.first(this.data);
 }
 
+SimpleCollection.prototype.getAllTags = function(){
+  var allTags = _(this.data)
+    .map(_.property('tags'))
+    .flatten();
+
+  return allTags;
+}
+
 module.exports = SimpleCollection

@@ -71,7 +71,7 @@ function checkArgs(currentArgv, optionsArray){
   var checksToRun = [checkForValidRemotes, checkForValidUrl];
 
   var isAllChecksPassing = _.reduce(checksToRun, function(previousResults, checkToRun){
-    return previousResults && checksToRun(currentArgv, optionsArray);
+    return previousResults && checkToRun(currentArgv, optionsArray);
   }, true);
 
   return isAllChecksPassing;
@@ -89,27 +89,40 @@ function checkForValidRemotes(currentArgv, optionsArray){
 }
 
 function checkForValidUrl(currentArgv, optionsArray){
-  var serverUrl = getServerUrlFromArgs(currentArgv)
+  var serverCollection = getProjectServersCollection(currentArgv.p);
+  var serverUrl = getServerUrlFromArgs(serverCollection, currentArgv);
+  var serverAliases;
   var error;
 
   if(!validator.isURL(serverUrl)){
-    error = 'Please enter a valid server URL for this project with option --s.';
+    error = 'Please enter a valid server URL for this project with option --server ';
+    error += 'or one of the server aliases for this project: ';
+    serverAliases = serverCollection.getAllTags();
+    error += serverAliases.join(', ');
     throw error;
   }
 
   return true;
 }
 
-function getServerUrlFromArgs(currentArgv){
+function getServerUrlFromArgs(serverCollection, currentArgv){
   var isURLSet = validator.isURL(currentArgv.server);
-  var serverUrl= isURLSet? currentArgv.server : getServerByProject(currentArgv.p, currentArgv.server);
+  var serverUrl= isURLSet? currentArgv.server : getServerUrlByProject(serverCollection, currentArgv.p, currentArgv.server);
   return serverUrl;
 }
 
-function getServerByProject(project, serverAlias){
+function getProjectServersCollection(project){
   var projectServers = require('./' + project + '/servers.json');
-  var serverCollection = new SimpleCollection(projectServers);
-  var serverUrl = serverCollection.find(serverAlias).url || serverCollection.getDefault().url;
+  return new SimpleCollection(projectServers);
+}
+
+function getServerUrlByProject(serverCollection, project, serverAlias){
+  var server = serverAlias? serverCollection.find(serverAlias) : serverCollection.getDefault();
+  var serverUrl = '';
+
+  if(_.isObject(server)){
+    serverUrl = server.url;
+  }
 
   return serverUrl;
 }
@@ -123,7 +136,7 @@ function buildTestOptions(){
     .example('c', '$0 -c 7651 7674', 'Run tests for cases 7651 and 7674.')
     .help('h')
     .alias('h', 'help')
-    .check(checkForValidRemotes)
+    .check(checkArgs)
     .argv;
 
   var remoteName = argv.r;
