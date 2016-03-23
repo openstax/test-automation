@@ -28,7 +28,7 @@ cd ./tests-js
 npm install
 ```
 
-This will tell `npm` -- [node package manager](https://docs.npmjs.com/getting-started/what-is-npm) -- to look at our [`./tests-js/package.json`](./package.json) file in the project we are `cd`ed into -- `test-automation` -- and install the necessary packages.
+This will tell `npm` -- [node package manager](https://docs.npmjs.com/getting-started/what-is-npm) -- to look at our [`./tests-js/package.json`](./package.json) file in the project we are `cd`ed into -- `test-automation/tests-js` -- and install the necessary packages.
 
 ## Example usage
 
