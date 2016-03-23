@@ -175,6 +175,7 @@ function buildTestOptions(){
 
   var envs = _.pickBy(process.env, isEnvOurs);
   var systemEnvs = _.omitBy(process.env, isEnvOurs);
+  var serverCollection = getProjectServersCollection(argv.project);
   var remoteEnvs;
 
   envs.SELENIUM_CAPABILITIES = {name: argv.name};
@@ -184,7 +185,7 @@ function buildTestOptions(){
     _.defaultsDeep(envs, remoteEnvs);
   }
   envs.SELENIUM_CAPABILITIES = JSON.stringify(envs.SELENIUM_CAPABILITIES);
-  envs.SERVER_URL = getServerUrlFromArgs(argv);
+  envs.SERVER_URL = getServerUrlFromArgs(serverCollection, argv);
 
   var envsFromArgs = buildEnvFromArgs(_.pick(argv, ['cases', 'project', 'title']));
 
