@@ -10,13 +10,13 @@ var argumentOptions = {
   n: {
     alias: 'name',
     describe: 'Name of the test run',
-    demand: true,
+    default: 'Default test name',
     type: 'string'
   },
   t: {
     alias: 'title',
     describe: 'Description of the test run',
-    demand: true,
+    default: 'Default test description',
     type: 'string'
   },
   r: {
@@ -82,7 +82,7 @@ function buildTestOptions(){
     .env(ENV_PREFIX)
     .config('settings')
     .options(argumentOptions)
-    .example('c', '$0 -c C7651 C7674', 'Run tests for cases C7651 and C7674.')
+    .example('c', '$0 -c 7651 7674', 'Run tests for cases 7651 and 7674.')
     .help('h')
     .alias('h', 'help')
     .check(checkForValidRemotes)
