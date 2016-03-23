@@ -10,8 +10,7 @@ var validator = require('validator');
 var remotes = require('./remotes');
 var SimpleCollection = require('./helpers/simple-collection');
 
-var ENV_PREFIX = 'STAX_ATTACK'
-
+var ENV_PREFIX = 'STAX_ATTACK';
 var VALID_PROJECTS = getValidProjects();
 
 var argumentOptions = {
@@ -56,8 +55,7 @@ var argumentOptions = {
   },
   s: {
     alias: 'server',
-    describe: 'What server should the tests run against?',
-    default: 'default'
+    describe: 'What server should the tests run against?'
   }
 };
 
@@ -73,8 +71,24 @@ function isEnvOurs(envValue, envName){
   }, false);
 }
 
+function setServerUrlFallback(currentArgv){
+  if (!currentArgv.server){
+    if (process.env.SERVER_URL){
+      // pulls in SERVER_URL from env if defined
+      currentArgv.server = process.env.SERVER_URL;
+    } else {
+      // as last resort, fallback to project default
+      currentArgv.server = 'default';
+    }
+
+    currentArgv.s = currentArgv.server;
+  }
+}
+
 function checkArgs(currentArgv, optionsArray){
   var checksToRun = [checkIsProjectValid, checkForValidRemotes, checkForValidUrl];
+
+  setServerUrlFallback(currentArgv);
 
   var isAllChecksPassing = _.reduce(checksToRun, function(previousResults, checkToRun){
     return previousResults && checkToRun(currentArgv, optionsArray);
@@ -115,10 +129,10 @@ function checkForValidUrl(currentArgv, optionsArray){
   var serverAliases;
   var error;
 
-  if(!validator.isURL(serverUrl)){
+  if(!serverUrl){
     error = '\n\nInvalid --server option of "' + currentArgv.server + '" given.  ';
     error += '\nPlease give one of the following for option --server instead: \n\n';
-    error += 'A valid server URL \n\n'
+    error += 'A valid server URL with protocol (i.e. https://) \n\n'
     error += 'or one of the server aliases for ' + currentArgv.project + ': \n\n';
     serverAliases = serverCollection.getAllTags();
     error += serverAliases.join(', ') + '\n\n';
@@ -129,9 +143,16 @@ function checkForValidUrl(currentArgv, optionsArray){
 }
 
 function getServerUrlFromArgs(serverCollection, currentArgv){
-  var isURLSet = validator.isURL(currentArgv.server);
+  var isUrl = _.partial(validator.isURL, _, {require_protocol: true});
+
+  var isURLSet = _.isString(currentArgv.server)? isUrl(currentArgv.server) : false;
   var serverUrl= isURLSet? currentArgv.server : getServerUrlByProject(serverCollection, currentArgv.project, currentArgv.server);
-  return serverUrl;
+
+  if(isUrl(serverUrl)){
+    return serverUrl;
+  }
+
+  return false;
 }
 
 function getProjectServersCollection(project){
@@ -140,7 +161,7 @@ function getProjectServersCollection(project){
 }
 
 function getServerUrlByProject(serverCollection, project, serverAlias){
-  var server = serverAlias? serverCollection.find(serverAlias) : serverCollection.getDefault();
+  var server = serverAlias? serverCollection.find(serverAlias) : false;
   var serverUrl = '';
 
   if(_.isObject(server)){
