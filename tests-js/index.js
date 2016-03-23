@@ -151,7 +151,7 @@ function buildReportInfo(testOptions){
 
 function runTests(){
   var testOptions = buildTestOptions();
-  var childCommand = _.concat(['-R', 'spec'], testOptions.additionalOptions, './tests/pre-run.js');
+  var childCommand = _.concat(['-R', 'spec'], testOptions.additionalOptions, './pre-run.js');
 
   process.stdout.write(buildReportInfo(testOptions));
 

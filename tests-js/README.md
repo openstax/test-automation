@@ -24,10 +24,11 @@ npm install -g npm@latest
 Finally, we need to install the packages for this set of code:
 
 ```bash
+cd ./tests-js
 npm install
 ```
 
-This will tell `npm` -- [node package manager](https://docs.npmjs.com/getting-started/what-is-npm) -- to look at our [`package.json`](../package.json) file in the project we are `cd`ed into -- `test-automation` -- and install the necessary packages.
+This will tell `npm` -- [node package manager](https://docs.npmjs.com/getting-started/what-is-npm) -- to look at our [`./tests-js/package.json`](./package.json) file in the project we are `cd`ed into -- `test-automation` -- and install the necessary packages.
 
 ## Example usage
 
@@ -51,12 +52,12 @@ to get information about all options for the `npm test` command.
 For example,
 
 ```bash
-npm test -- --settings ./tests/sample-settings.json --r sauce
+npm test -- --settings sample-settings.json --r sauce
 ```
 
-will run the cases set as options in [`./tests/sample-settings.json`](./sample-settings.json), and any added options from the commandline, the "sauce" remote in this case.
+will run the cases set as options in [`./sample-settings.json`](./sample-settings.json), and any added options from the commandline, the "sauce" remote in this case.
 
-The credentials for the remotes can be defined as `environment` variables when you're calling the command or in a file named `.env`.  The `.env` file should follow the [`.env.example`](../.env.example) file in the root of this project.
+The credentials for the remotes can be defined as `environment` variables when you're calling the command or in a file named `.env`.  The `.env` file should follow the [`.env.example`](./.env.example) file in the root of this project.
 
 ## To write new cases
 
