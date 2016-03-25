@@ -1,0 +1,7 @@
+[{
+  "url": "https://tutor-qa.openstax.org",
+  "tags": ["default", "qa"]
+}, {
+  "url": "https://tutor-dev.openstax.org",
+  "tags": ["dev"]  
+}]

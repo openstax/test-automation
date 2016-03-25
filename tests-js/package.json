@@ -1,0 +1,41 @@
+{
+  "name": "test-automation",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openstax/test-automation.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/openstax/test-automation/issues"
+  },
+  "homepage": "https://github.com/openstax/test-automation#readme",
+  "dependencies": {
+    "babel-core": "6.4.0",
+    "babel-loader": "6.2.1",
+    "babel-polyfill": "6.3.14",
+    "babel-preset-es2015": "6.3.13",
+    "babel-preset-stage-3": "6.3.13",
+    "babel-register": "6.4.3",
+    "babel-runtime": "6.3.19",
+    "chai": "2.1.2",
+    "chai-as-promised": "5.1.0",
+    "chromedriver": "2.19.0",
+    "coffee-script": "1.9.3",
+    "dotenv": "^2.0.0",
+    "istanbul": "0.4.1",
+    "lodash": "4.5.1",
+    "mocha": "2.2.5",
+    "openstax-tutor": "github:openstax/tutor-js#adfb3ce",
+    "require-directory": "^2.1.1",
+    "selenium-webdriver": "2.47.0",
+    "validator": "^5.1.0",
+    "yargs": "^4.2.0"
+  }
+}
