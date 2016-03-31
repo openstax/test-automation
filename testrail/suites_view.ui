@@ -1,7 +1,7 @@
 name: Trigger tests for a suite
 description: Triggers automated tests for a test suite
 author: OpenStax QA
-version: 0.1
+version: 1.0
 includes: ^suites/view
 excludes:
 
