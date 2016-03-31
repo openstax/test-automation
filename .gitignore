@@ -4,3 +4,5 @@ webserver.py
 result*.xml
 *.cache
 .cache/*
+tmp/
+webserver*.py
