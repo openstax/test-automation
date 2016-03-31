@@ -22,15 +22,15 @@ class TestRailAPI(object):
     """TestRail API interface."""
 
     GET = 'get'
-    PUT = 'put'
+    POST = 'post'
     DELETE = 'delete'
     HEAD = 'head'
     OPTIONS = 'options'
     _actions = {
         GET: lambda url, user, key, headers:
             requests.get(url, auth=(user, key), headers=headers),
-        PUT: lambda url, user, key, headers, json:
-            requests.put(url, json=json, auth=(user, key), headers=headers),
+        POST: lambda url, user, key, headers, json:
+            requests.post(url, json=json, auth=(user, key), headers=headers),
         DELETE: lambda url, user, key, headers:
             requests.delete(url, auth=(user, key), headers=headers),
         HEAD: lambda url, user, key, headers:
@@ -83,12 +83,12 @@ class TestRailAPI(object):
         response = None
         error = None
         try:
-            if method == self.PUT:
-                response = self._actions[self.PUT](self.url + uri,
-                                                   self.user,
-                                                   self.key,
-                                                   data,
-                                                   self.headers)
+            if method == self.POST:
+                response = self._actions[self.POST](self.url + uri,
+                                                    self.user,
+                                                    self.key,
+                                                    self.headers,
+                                                    data)
             else:
                 response = self._actions[method](self.url + uri,
                                                  self.user,
@@ -109,7 +109,7 @@ class TestRailAPI(object):
             error = e
         return (response, error)
 
-    def request(self, method=GET, uri='', data=None):
+    def request(self, method=GET, uri='', data=None, _json=None):
         """Combined HTTP requester."""
         response, error = self._request_call(method, uri, data)
         if response.status_code == '429':
@@ -118,7 +118,11 @@ class TestRailAPI(object):
             print('429 received; sleeping for %s before retrying' %
                   (snooze, ))
             sleep(snooze)
-            response, error = self._request_call(method, uri, data)
+            response, error = self._request_call(
+                method,
+                uri,
+                data if data else _json
+            )
         result = json.loads(response.text) if response else {}
         if error is not None:
             message = '' if 'error' not in result else result['error']
@@ -211,7 +215,7 @@ class TestRailAPI(object):
         """
         payload = data
         payload['name'] = name
-        return self.request(self.POST, 'add_project', json=payload)
+        return self.request(self.POST, 'add_project', data=payload)
 
     def update_project(self, project_id, name, data={}):
         """Update an existing project.
@@ -237,7 +241,7 @@ class TestRailAPI(object):
         payload['name'] = name
         return self.request(self.POST,
                             'update_project/%s' % project_id,
-                            json=payload)
+                           data=payload)
 
     def delete_project(self, project_id):
         """Delete an existing project.
@@ -301,7 +305,7 @@ class TestRailAPI(object):
         payload = data
         payload['name'] = name
         return self.request(self.POST, 'add_milestone/%s' % project_id,
-                            json=payload)
+                            data=payload)
 
     def update_milestone(self, milestone_id, name, data={}):
         """Update an existing milestone.
@@ -319,7 +323,7 @@ class TestRailAPI(object):
         payload = data
         payload['name'] = name
         return self.request(self.POST, 'update_milestone/%s' % milestone_id,
-                            json=payload)
+                            data=payload)
 
     def delete_milestone(self, milestone_id):
         """Delete an existing milestone.
@@ -406,7 +410,7 @@ class TestRailAPI(object):
         payload = data
         payload['name'] = name
         return self.request(self.POST, 'add_plan/%s' % project_id,
-                            json=payload)
+                            data=payload)
 
     def add_plan_entry(self, plan_id, suite_id, data={}):
         """Add one or more new test runs to a test plan.
@@ -437,7 +441,7 @@ class TestRailAPI(object):
         payload = data
         payload['suite_id'] = suite_id
         return self.request(self.POST, 'add_plan_entry/%s' % plan_id,
-                            json=payload)
+                            data=payload)
 
     def update_plan(self, plan_id, name, data={}):
         """Update an existing test plan.
@@ -475,7 +479,7 @@ class TestRailAPI(object):
         payload = data
         payload['name'] = name
         return self.request(self.POST, 'update_plan/%s' % plan_id,
-                            json=payload)
+                            data=payload)
 
     def update_plan_entry(self, plan_id, entry_id, data={}):
         """Update one or more existing test runs in a plan.
@@ -499,7 +503,7 @@ class TestRailAPI(object):
         return self.request(
             self.POST,
             'update_plan_entry/%s/%s' % (plan_id, entry_id),
-            json=payload
+            data=payload
         )
 
     def close_plan(self, plan_id):
@@ -573,7 +577,7 @@ class TestRailAPI(object):
         return self.request(
             self.POST,
             'add_suite/%s' % project_id,
-            json=payload
+            data=payload
         )
 
     def update_suite(self, suite_id, data={}):
@@ -589,7 +593,7 @@ class TestRailAPI(object):
         return self.request(
             self.POST,
             'update_suite/%s' % suite_id,
-            json=data
+            data=data
         )
 
     def delete_suite(self, suite_id):
@@ -716,7 +720,7 @@ class TestRailAPI(object):
         return self.request(
             self.POST,
             'add_case/%s' % section_id,
-            json=payload
+            data=payload
         )
 
     def update_case(self, case_id, data={}):
@@ -757,7 +761,7 @@ class TestRailAPI(object):
         URL (string) - A string with matches the syntax of a URL
         User (int) - The ID of a user for the custom field
         """
-        return self.request(self.POST, 'update_case/%s' % case_id, json=data)
+        return self.request(self.POST, 'update_case/%s' % case_id, data=data)
 
     def delete_case(self, case_id):
         """Delete an existing test case.
@@ -888,7 +892,7 @@ class TestRailAPI(object):
         return self.request(
             self.POST,
             'add_result/%s' % test_id,
-            json=data
+            data=data
         )
 
     def add_result_for_case(self, run_id, case_id, data={}):
@@ -1004,7 +1008,7 @@ class TestRailAPI(object):
         return self.request(
             self.POST,
             'add_results/%s' % run_id,
-            json=data
+            data=data
         )
 
     def add_results_for_cases(self, run_id, data={}):
@@ -1061,7 +1065,7 @@ class TestRailAPI(object):
         return self.request(
             self.POST,
             'add_results_for_cases/%s' % run_id,
-            json=data
+            data=data
         )
 
     # Test Runs #
@@ -1136,7 +1140,7 @@ class TestRailAPI(object):
         return self.request(
             self.POST,
             'add_run/%s' % project_id,
-            json=data
+            data=data
         )
 
     def update_run(self, run_id, data={}):
@@ -1157,7 +1161,7 @@ class TestRailAPI(object):
         return self.request(
             self.POST,
             'update_run/%s' % run_id,
-            json=data
+            data=data
         )
 
     def close_run(self, run_id):
@@ -1254,7 +1258,7 @@ class TestRailAPI(object):
         return self.request(
             self.POST,
             'add_section/%s' % project_id,
-            json=data
+            data=data
         )
 
     def update_section(self, section_id, data={}):
@@ -1271,7 +1275,7 @@ class TestRailAPI(object):
         return self.request(
             self.POST,
             'update_section/%s' % section_id,
-            json=data
+            data=data
         )
 
     def delete_section(self, section_id):
