@@ -22,7 +22,7 @@ ln /dev/null /dev/raw1394 # disable libdc1394 error (cause by unused opencv coed
 apt-get install pdftk 
 ```
 
-Make sure pdf are decompressed before running script
+Make sure pdfs are decompressed before running script
 
 ```pdftk doc.pdf output doc.unc.pdf uncompress```
 
