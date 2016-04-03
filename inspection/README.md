@@ -18,7 +18,13 @@ apt-get install libpq-dev python-dev
 apt-get install libopencv-dev python-opencv
 
 ln /dev/null /dev/raw1394 # disable libdc1394 error (cause by unused opencv coedec )
+
+apt-get install pdftk 
 ```
+
+Make sure pdf are decompressed before running script
+
+```pdftk doc.pdf output doc.unc.pdf uncompress```
 
 ##### Example Usage
 
