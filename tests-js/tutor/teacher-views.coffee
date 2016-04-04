@@ -183,7 +183,7 @@ cases =
       @scores.el.displayAsNumber().click()
       @scores.waitUntilLoaded()
 
-  '7618':
+  #'7618':
      # title: "Teacher | View scores for an individual student's scores"
      # skipped this one because it is not an available feature for concept coach
 
@@ -257,6 +257,39 @@ cases =
 
       @scores.downloadExport()
       @scores.waitUntilLoaded()
+
+  #'7623':
+    # title: "Teacher | Check assessments by page module for accuracy"
+    # This feature is not available so far.
+
+  '7624':
+    title: "Teacher | Exercise IDs are shown for each assessment"
+    spec: ->
+      @user = new Helpers.User(@)
+      @courseSelect = new Helpers.CourseSelect(@)
+      @conceptCoach = new Helpers.CCDashboard(@)
+      @scores = new Helpers.Scores(@)
+      @task = new Helpers.Task(@)
+
+      @user.login(tutorTeacher.username, tutorTeacher.password)
+      @courseSelect.waitUntilLoaded()
+
+      @courseSelect.el.courseByAppearance(null, true).click()
+      @conceptCoach.waitUntilLoaded()
+
+      @conceptCoach.goToScores()
+      @scores.waitUntilLoaded()
+
+      @scores.el.scoreCell().click()
+      @scores.waitUntilLoaded()
+
+      # check if the report error link can be clicked. If so, it means that 
+      # the task id is shown right next to the link.
+      @task.el.reporterror().click()
+      @task.waitUntilLoaded()
+
+
+
 
 
 

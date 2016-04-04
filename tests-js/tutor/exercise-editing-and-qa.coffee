@@ -19,6 +19,15 @@ cases =
       @user.toggleHamburgerMenu()
       @utils.wait.click(linkText: 'Content Analyst')
 
+      @user.el.ecosystem().click()
+      @user.waitUntilLoaded()
+
+      
+
+
+  '7652':
+    title: ''
+
   '7674':
     title: 'Content Analyst | Able to publish an exercise'
     spec: ->
@@ -30,6 +39,7 @@ cases =
       @reading = new Helpers.ReadingBuilder(@)
 
       new Helpers.CourseSelect(@).goToByType('ANY')
+
 
 module.exports =
   cases: cases
