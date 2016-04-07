@@ -1,0 +1,11 @@
+apipkg==1.4
+beautifulsoup4==4.4.1
+execnet==1.4.1
+pastasauce==0.1.6
+py==1.4.31
+pytest==2.8.7
+pytest-xdist==1.14
+regex==2016.1.10
+requests==2.9.1
+selenium==2.53.1
+Staxing==0.0.5
