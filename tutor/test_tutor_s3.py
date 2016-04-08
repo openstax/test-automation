@@ -1,9 +1,20 @@
 """Jenkins-CI test file."""
 
+import json
 import os
 import pytest
 
-TESTS = os.environ['CASELIST']
+basic_test_env = json.dumps([{
+    'platform': 'OS X 10.11',
+    'browserName': 'chrome',
+    'version': '48.0',
+    'screenResolution': "1024x768",
+}])
+BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+TESTS = os.getenv(
+    'CASELIST',
+    str([7796])
+)
 
 
 # Case C7796 - S3 Case 1
