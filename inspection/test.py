@@ -5,7 +5,10 @@ from utils import load_result_log
 class Core(unittest.TestCase):
 
     def target(self, run):
-        output = subprocess.check_output(run.split())
+        try:
+            output = subprocess.check_output(run.split(),stderr=subprocess.STDOUT)
+        except Exception as e:
+            self.fail(e.output) 
         result = eval(output)
         return result
 
@@ -86,6 +89,32 @@ class Core(unittest.TestCase):
                   ]
         result = self.target(run)
         self.assertEqual(expect, result)
+
+    def test_print_diff(self):
+        run = "python inspection.py --diff data/test/A.pdf data/test/C.pdf"
+        expect = [(1, 1),
+                  (2, 2),
+                  (4, 3),
+                  (5, 4),
+                  (7, 5),
+                  (8, 6),
+                  (9, 7),
+                  ]
+        result = self.target(run)
+        self.assertEqual(expect, result)
+
+        run = "python inspection.py data/test/C.pdf data/test/A.pdf"
+        expect = [(1, 1),
+                  (2, 2),
+                  (3, 4),
+                  (4, 5),
+                  (5, 7),
+                  (6, 8),
+                  (7, 9),
+                  ]
+        result = self.target(run)
+        self.assertEqual(expect, result)
+
 
     def test_image_shift(self):
         run = "python inspection.py data/test/A.pdf data/test/D.pdf"
