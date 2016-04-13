@@ -192,7 +192,8 @@ class Core(unittest.TestCase):
 
 class Utils(unittest.TestCase):
     def test_print_diff(self):
-        import utils
+        import utils 
+        # results log is the output of python inspection.py --diff data/test/A.pdf data/test/C.pdf
         results_file_path = "data/results.log"
         utils.diff_images(results_file_path, require="ALL")
 
