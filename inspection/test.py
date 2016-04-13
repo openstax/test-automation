@@ -189,5 +189,13 @@ class Core(unittest.TestCase):
         result = self.target(run)
         self.assertEqual(expect, result)
 
+
+class Utils(unittest.TestCase):
+    def test_print_diff(self):
+        import utils
+        results_file_path = "data/results.log"
+        utils.diff_images(results_file_path, require="ALL")
+
+
 if __name__ == '__main__':
     unittest.main()

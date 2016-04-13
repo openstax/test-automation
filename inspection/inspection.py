@@ -3,7 +3,7 @@ import argparse
 import logging
 from multiprocessing import Process
 
-from utils import generate_tests, lcs_images
+from utils import generate_tests, lcs_images, diff_images
 
 load_tests = None
 
@@ -51,6 +51,10 @@ def main(argv=None):
         default='all',
         help="Require that any/all test cases pass "
              "for pages to be related (default=all).")
+    parser.add_argument(
+        '--diff',
+        action='store_true',
+        default=False,)
     parser.add_argument('pdf_a', type=str)
     parser.add_argument('pdf_b', type=str)
 
@@ -68,8 +72,11 @@ def main(argv=None):
 
     p.start()
     p.join()
-
-    print lcs_images(settings['results'], settings['check'])
+    if settings['diff']:
+        diff_images(settings['results'], settings['check'])
+    else:
+        related_page_list = lcs_images(settings['results'], settings['check'])
+        print related_page_list
 
 if __name__ == "__main__":
     main()
