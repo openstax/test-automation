@@ -1,6 +1,6 @@
 import unittest
 import subprocess
-
+from utils import load_result_log 
 
 class Core(unittest.TestCase):
 
@@ -23,6 +23,17 @@ class Core(unittest.TestCase):
                   (10, 10), ]
         result = self.target(run)
         self.assertEqual(expect, result)
+
+    def test_results(self):
+        run = "python inspection.py --cases example --exclude DefaultTest --include Example1 data/test/A.pdf data/test/A.pdf"
+        self.target(run)
+        results_list = load_result_log('results.log')
+        self.assertGreater(len(results_list),0)
+        result = results_list[0]
+        self.assertIn('measure',result.keys())
+        self.assertIsNotNone(result['measure'])
+        self.assertIn('threshold',result.keys())
+        self.assertIsNotNone(result['threshold'])
 
     def test_page_removed(self):
         run = "python inspection.py data/test/A.pdf data/test/B.pdf"
