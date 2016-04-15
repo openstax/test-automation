@@ -8,7 +8,7 @@ import exceptions
 import PythonMagick
 import contextlib
 import utils
-
+import inspect
 
 class PDFCV(unittest.TestCase):
 
@@ -34,6 +34,8 @@ class PDFCV(unittest.TestCase):
             self._settings['pdf_a'], self.page_i - 1)
         self.image_j = utils.load_pdf_page(
             self._settings['pdf_b'], self.page_j - 1)
+        self.threshold = None
+        self.measure = None
 
     def tearDown(self):
         sys_info = sys.exc_info()
@@ -53,6 +55,8 @@ class PDFCV(unittest.TestCase):
         test_info['page_j'] = self.page_j
         test_info['test'] = self.methodName
         test_info['case'] = self._casename
+        test_info['threshold'] = self.threshold
+        test_info['measure'] = self.measure
         self._logger.info(str(test_info))
 
     @classmethod
