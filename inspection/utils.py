@@ -184,4 +184,13 @@ def diff_images(results_file_path, require='ANY'):
     printDiff(length_matrix, comp_matrix, M - 1, N - 1)
 
 def printDiff(C, XY, i, j):
-    raise NotImplementedError()
+    if i > 0 and j > 0 and XY[i][j] == 1:
+        printDiff(C, XY, i-1, j-1)
+        print i
+    else:
+        if j > 0 and (i == 0 or C[i][j-1] >= C[i-1][j]):
+            printDiff(C, XY, i, j-1)
+            print "+ ",j
+        elif i > 0 and (j == 0 or C[i][j-1] < C[i-1][j]):
+            printDiff(C, XY, i-1, j)
+            print "- ",i
