@@ -68,7 +68,7 @@ class Example3(framework.PDFCV):
         measure = cv2.compareHist(hist_i, hist_j, cv.CV_COMP_BHATTACHARYYA)
         self.assertGreater(measure, threshold)
 
-class Example4(framework.PDFCV):
+class CORNER(framework.PDFCV):
 
     def Harris_Corner(self):
         self.threshold = 0.999999999999
@@ -80,6 +80,7 @@ class Example4(framework.PDFCV):
         dst_i = cv2.dilate(dst_i,None)
         # Threshold for an optimal value, it may vary depending on the image.
         temp_i[dst_i<0.01*dst_i.max()]=[0,0,0]
+        temp_i[dst_i>=0.01*dst_i.max()]=[255,255,255]
         temp1_i[dst_i>0.01*dst_i.max()]=[0,0,255]
         hist_i = cv2.calcHist([temp_i], [0], None, [256], [0, 256])
         temp_j = self.image_j.copy()
@@ -90,19 +91,23 @@ class Example4(framework.PDFCV):
         dst_j = cv2.dilate(dst_j,None)
         # Threshold for an optimal value, it may vary depending on the image.
         temp_j[dst_j<0.01*dst_j.max()]=[0,0,0]
+        temp_j[dst_j>=0.01*dst_j.max()]=[255,255,255]
         temp1_j[dst_j>0.01*dst_j.max()]=[0,0,255]
         hist_j = cv2.calcHist([temp_j], [0], None, [256], [0, 256])
 
-
         self.measure = cv2.compareHist(hist_i, hist_j, cv.CV_COMP_CORREL)
         self.assertGreater(self.measure, self.threshold)
-
         print self.measure
+        cv2.imshow('Input X',temp1_i)
+        cv2.waitKey(0)
+        cv2.imshow('Input Y',temp1_j)
+        cv2.waitKey(0) 
 
-class Example5(framework.PDFCV):
+class RGB(framework.PDFCV):
 
     def rgb_histogram(self):
         self.threshold = 0.999999999999999
+#        self.threshold = 0
         hist_i = cv2.calcHist([self.image_i], [0, 1, 2], None, [8, 8, 8], [0, 256, 0, 256, 0, 256])
         
         hist_j = cv2.calcHist([self.image_j], [0, 1, 2], None, [8, 8, 8], [0, 256, 0, 256, 0, 256])
@@ -116,7 +121,7 @@ class Example5(framework.PDFCV):
         print self.measure
 
 
-class Example6(framework.PDFCV):
+class MSE(framework.PDFCV):
 
     def mean_squares(self):
         self.threshold = 0.00000000001        
@@ -139,7 +144,7 @@ class Example6(framework.PDFCV):
         self.assertLess(self.measure, self.threshold)
         print self.measure
 
-class Example7(framework.PDFCV):
+class EDGE(framework.PDFCV):
 
     def Canny_edge(self):
         self.threshold = .999999999999999        
@@ -154,3 +159,5 @@ class Example7(framework.PDFCV):
         self.measure = cv2.compareHist(hist_i, hist_j, cv.CV_COMP_CORREL)
         self.assertGreater(self.measure, self.threshold)
         print self.measure
+#        cv2.imshow(self.image_i)
+#        cv2.imshow(self.image_j)     
