@@ -157,7 +157,7 @@ cases =
 
   '7660':
     title: '004c - Content Analyst | Unable to delete an assigned ecosystem'
-    
+
 
   '7674':
     title: 'Content Analyst | Able to publish an exercise'
@@ -169,8 +169,15 @@ cases =
       @calendarPopup = new Helpers.Calendar.Popup(@)
       @reading = new Helpers.ReadingBuilder(@)
 
-      new Helpers.CourseSelect(@).goToByType('ANY')
+      @user = new Helpers.User(@)
+      @user.login()
+      @user.el.ecosystem().click()
+      @user.waitUntilLoaded()
 
+      @utils.wait.click(linkText: 'Delete')
+      @user.waitUntilLoaded()
+
+      
 
   ''
 
