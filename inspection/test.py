@@ -5,7 +5,10 @@ from utils import load_result_log
 class Core(unittest.TestCase):
 
     def target(self, run):
-        output = subprocess.check_output(run.split())
+        try:
+            output = subprocess.check_output(run.split(),stderr=subprocess.STDOUT)
+        except Exception as e:
+            self.fail(e.output) 
         result = eval(output)
         return result
 
@@ -159,6 +162,16 @@ class Core(unittest.TestCase):
                   (10, 8), ]
         result = self.target(run)
         self.assertEqual(expect, result)
+
+
+class Utils(unittest.TestCase):
+    def test_print_diff(self):
+        import utils 
+        # results log is the output of python inspection.py --diff data/test/A.pdf data/test/C.pdf
+        results_file_path = "data/results.log"
+        expected_diff = '\n1\n2\n- 3\n4\n5\n- 6\n7\n8\n9\n- 10'
+        returned_diff = utils.diff_images(results_file_path, require="ALL")
+        self.assertEqual(expected_diff, returned_diff)
 
 if __name__ == '__main__':
     unittest.main()
