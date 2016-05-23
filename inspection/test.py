@@ -90,32 +90,6 @@ class Core(unittest.TestCase):
         result = self.target(run)
         self.assertEqual(expect, result)
 
-    def test_print_diff(self):
-        run = "python inspection.py --diff data/test/A.pdf data/test/C.pdf"
-        expect = [(1, 1),
-                  (2, 2),
-                  (4, 3),
-                  (5, 4),
-                  (7, 5),
-                  (8, 6),
-                  (9, 7),
-                  ]
-        result = self.target(run)
-        self.assertEqual(expect, result)
-
-        run = "python inspection.py data/test/C.pdf data/test/A.pdf"
-        expect = [(1, 1),
-                  (2, 2),
-                  (3, 4),
-                  (4, 5),
-                  (5, 7),
-                  (6, 8),
-                  (7, 9),
-                  ]
-        result = self.target(run)
-        self.assertEqual(expect, result)
-
-
     def test_image_shift(self):
         run = "python inspection.py data/test/A.pdf data/test/D.pdf"
         expect = [(1, 1),
@@ -195,8 +169,9 @@ class Utils(unittest.TestCase):
         import utils 
         # results log is the output of python inspection.py --diff data/test/A.pdf data/test/C.pdf
         results_file_path = "data/results.log"
-        utils.diff_images(results_file_path, require="ALL")
-
+        expected_diff = '\n1\n2\n- 3\n4\n5\n- 6\n7\n8\n9\n- 10'
+        returned_diff = utils.diff_images(results_file_path, require="ALL")
+        self.assertEqual(expected_diff, returned_diff)
 
 if __name__ == '__main__':
     unittest.main()
