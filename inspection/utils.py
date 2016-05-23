@@ -181,16 +181,27 @@ def diff_images(results_file_path, require='ANY'):
     comp_matrix = generate_comp_matrix(info_matrix, require)
     length_matrix = lcs_length(comp_matrix)
     (M, N) = length_matrix.shape
-    printDiff(length_matrix, comp_matrix, M - 1, N - 1)
+    diff = printDiff(length_matrix, comp_matrix, M - 1, N - 1)
+    return diff
 
 def printDiff(C, XY, i, j):
     if i > 0 and j > 0 and XY[i][j] == 1:
-        printDiff(C, XY, i-1, j-1)
-        print i
+        diff = printDiff(C, XY, i-1, j-1)
+        if diff is None:
+            return '\n' + str(i)
+        else:
+            return str(diff) + '\n' + str(i)
     else:
         if j > 0 and (i == 0 or C[i][j-1] >= C[i-1][j]):
-            printDiff(C, XY, i, j-1)
-            print "+ ",j
+            diff = printDiff(C, XY, i, j-1)
+            if diff is None:
+                return '\n' + str(j)
+            else:
+                return str(diff) + '\n' + "+ " + str(j)
         elif i > 0 and (j == 0 or C[i][j-1] < C[i-1][j]):
-            printDiff(C, XY, i-1, j)
-            print "- ",i
+            diff = printDiff(C, XY, i-1, j)
+            if diff is None:
+                return '\n' + str(i)
+            else: 
+                return str(diff) + '\n' + "- " + str(i)
+      

@@ -73,7 +73,8 @@ def main(argv=None):
     p.start()
     p.join()
     if settings['diff']:
-        diff_images(settings['results'], settings['check'])
+        diff = diff_images(settings['results'], settings['check'])
+        print(diff)
     else:
         related_page_list = lcs_images(settings['results'], settings['check'])
         print related_page_list
