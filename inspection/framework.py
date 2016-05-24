@@ -26,6 +26,7 @@ class PDFCV(unittest.TestCase):
     def setUpClass(cls):
         cls._casename = cls.__name__
         cls._logger = logging.getLogger(cls._casename)
+        
 
     def setUp(self):
         if self.page_i == 0 or self.page_j == 0:
