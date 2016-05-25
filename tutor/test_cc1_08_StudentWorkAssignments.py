@@ -35,7 +35,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         teacher = Teacher(username='teacher100', password='password',
-                          site='https://tutor-qa.openstax.org/')
+                          site='https://tutor-qa.openstax.org/',
+                          pasta_user=self.ps)
         teacher.login()
         courses = teacher.find_all(By.CLASS_NAME,
                                    'tutor-booksplash-course-item')

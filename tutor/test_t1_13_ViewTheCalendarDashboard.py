@@ -6,7 +6,7 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint
+from random import randint  # NOQA
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
@@ -33,7 +33,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
-        self.teacher = Teacher(use_env_vars=True)
+        self.teacher = Teacher(use_env_vars=True, pasta_user=self.ps)
 
     def tearDown(self):
         """Test destructor."""
