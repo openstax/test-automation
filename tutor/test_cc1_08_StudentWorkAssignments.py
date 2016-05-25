@@ -61,6 +61,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         finally:
             teacher.change_wait_time(wait)
         self.code = teacher.get_enrollment_code(section)
+        print('Course Phrase: ' + self.code)
         self.book_url = teacher.find(
             By.XPATH, '//a[span[text()="Online Book "]]'
         ).get_attribute('href')
@@ -114,6 +115,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
             By.XPATH,
             '//input[contains(@label,"Enter the two-word enrollment code")]'
         ).send_keys(self.code)
+        self.student.sleep(5)
         self.student.find(
             By.XPATH,
             '//div[contains(@class,"concept-coach")]' +
@@ -129,8 +131,6 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.student.sleep(3)
         self.student.driver.switch_to_window(accounts_window)
         self.student.sleep(2)
-        print(main_window, accounts_window,
-              self.student.driver.current_window_handle)
         self.student.wait.until(
             expect.visibility_of_element_located(
                 (By.LINK_TEXT, 'Sign up')
@@ -161,6 +161,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
             By.ID,
             'signup_password_confirmation'
         ).send_keys(self.last_name)
+        self.student.find(By.ID, 'create_account_submit').click()
+        self.student.page.wait_for_page_load()
         self.student.wait.until(
             expect.visibility_of_element_located(
                 (By.ID, 'i_agree')
@@ -176,6 +178,18 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.student.sleep(1)
         self.student.find(By.ID, 'agreement_submit').click()
         self.student.driver.switch_to_window(main_window)
+        try:
+            self.student.find(
+                By.XPATH,
+                '//input[contains(@label,"Enter the two-word")]'
+            ).send_keys(self.code)
+            self.student.find(
+                By.XPATH,
+                '//div[contains(@class,"concept-coach")]' +
+                '//button[contains(@class,"async-button")]'
+            ).click()
+        except:
+            pass
         self.student.find(
             By.XPATH,
             '//input[contains(@label,"Enter your school issued ID:")]'
