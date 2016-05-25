@@ -12,12 +12,12 @@ We are now in the version of `test-automation` where you can start writing tests
 
 ## Install
 
-We will need `node v0.12.10` to get running.  `nvm` will help you install `node` and have different versions of `node` available.  Follow the ["Install Script" instructions from here](https://github.com/creationix/nvm#install-script).
+We will need `node v4.4.2` to get running.  `nvm` will help you install `node` and have different versions of `node` available.  Follow the ["Install Script" instructions from here](https://github.com/creationix/nvm#install-script).
 
 Then,
 
 ```bash
-nvm install 0.12.10
+nvm install 4.4.2
 npm install -g npm@latest
 ```
 
@@ -65,3 +65,7 @@ You can follow the pattern of the current tests in the files in [`tutor`](./tuto
 
 
 Underneath, the tests are running with `mocha`, `chai`, and `selenium`.  It will help to get familiar with these dependencies as you write new test cases.
+
+# Updating
+
+The [tutor-js](https://github.com/openstax/tutor-js/) project gets updated often.  Run `npm install` often to get the latest version of testing helpers for using.
