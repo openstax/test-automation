@@ -1,4 +1,4 @@
-"""Tutor v1, Epic 08 - StudentsWorkAssignments."""
+"""Product, Epic ## - Epic Text."""
 
 import json
 import os
@@ -10,8 +10,9 @@ from pastasauce import PastaSauce, PastaDecorator
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
-# from staxing.helper import Teacher, Student
-from staxing.helper import Teacher
+
+# user types: Admin, ContentQA, Teacher, Student
+from staxing.helper import Teacher  # NOQA
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -22,39 +23,34 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7978])
+    str([list_of_cases])  # NOQA
 )
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestViewTheCalendarDashboard(unittest.TestCase):
+class TestEpicName(unittest.TestCase):
     """T1.13 - View the calendar."""
 
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
-        self.teacher = Teacher(use_env_vars=True)
 
     def tearDown(self):
         """Test destructor."""
         try:
-            self.teacher.delete()
+            pass
         except:
             pass
 
-    # Case C7978 - 001 - Teacher | View the calendar dashboard
-    @pytest.mark.skipif(str(7978) not in TESTS, reason='Excluded')
-    def test_select_an_exercise_answer(self):
-        """View the calendar dashboard.
+    # Case CaseID - Story# - UserType
+    @pytest.mark.skipif(str(CaseID) not in TESTS, reason='Excluded')  # NOQA
+    def test_story_text(self):
+        """Story Text.
 
         Steps:
-        Go to https://tutor-XXXX.openstax.org/
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
-        If the user has more than one course, click on a Tutor course name
+
 
         Expected Result:
-        The teacher is presented their calendar dashboard.
+
         """
         pass
