@@ -100,3 +100,10 @@ ENV/
 
 # Spyder project settings
 .spyderproject
+
+node_modules/
+.env
+
+/test-failed-*.png
+/coverage
+/coverage-selenium.json
