@@ -6,6 +6,10 @@ result*.xml
 .cache/*
 tmp/
 webserver*.py
+.DS_Store
+.bashrc
+.zshrc
+.bash_profile
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
