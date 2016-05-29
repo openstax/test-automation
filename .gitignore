@@ -6,3 +6,4 @@ result*.xml
 .cache/*
 tmp/
 webserver*.py
+.DS_Store
