@@ -34,40 +34,40 @@ class TestStudentsWorkAssignments(unittest.TestCase):
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
-        teacher = Teacher(username='teacher100', password='password',
-                          site='https://tutor-qa.openstax.org/',
-                          pasta_user=self.ps)
-        teacher.login()
-        courses = teacher.find_all(By.CLASS_NAME,
-                                   'tutor-booksplash-course-item')
+        self.teacher = Teacher(username='teacher100', password='password',
+                               site='https://tutor-qa.openstax.org/',
+                               pasta_user=self.ps)
+        self.teacher.login()
+        courses = self.teacher.find_all(By.CLASS_NAME,
+                                        'tutor-booksplash-course-item')
         assert(courses), 'No courses found.'
         if not isinstance(courses, list):
             courses = [courses]
         course_id = randint(0, len(courses) - 1)
         self.course = courses[course_id].get_attribute('data-title')
-        teacher.select_course(title=self.course)
-        teacher.goto_course_roster()
+        self.teacher.select_course(title=self.course)
+        self.teacher.goto_course_roster()
         section = '%s' % randint(100, 999)
         try:
-            wait = teacher.wait_time
-            teacher.change_wait_time(3)
-            teacher.find(By.CLASS_NAME, '-no-periods-text')
-            teacher.add_course_section(section)
+            wait = self.teacher.wait_time
+            self.teacher.change_wait_time(3)
+            self.teacher.find(By.CLASS_NAME, '-no-periods-text')
+            self.teacher.add_course_section(section)
         except:
-            sections = teacher.find_all(
+            sections = self.teacher.find_all(
                 By.XPATH,
                 '//span[@class="tab-item-period-name"]'
             )
             section = sections[randint(0, len(sections) - 1)].text
         finally:
-            teacher.change_wait_time(wait)
-        self.code = teacher.get_enrollment_code(section)
+            self.teacher.change_wait_time(wait)
+        self.code = self.teacher.get_enrollment_code(section)
         print('Course Phrase: ' + self.code)
-        self.book_url = teacher.find(
-            By.XPATH, '//a[span[text()="Online Book "]]'
+        self.book_url = self.teacher.find(
+            By.XPATH, '//a[span[contains(text(),"Online Book")]]'
         ).get_attribute('href')
         self.student = Student(use_env_vars=True,
-                               existing_driver=teacher.driver)
+                               existing_driver=self.teacher.driver)
         self.first_name = Assignment.rword(6)
         self.last_name = Assignment.rword(8)
         self.email = self.first_name + '.' + self.last_name + \
