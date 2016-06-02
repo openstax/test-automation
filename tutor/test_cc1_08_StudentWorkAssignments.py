@@ -66,7 +66,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.book_url = teacher.find(
             By.XPATH, '//a[span[text()="Online Book "]]'
         ).get_attribute('href')
-        self.student = Student()
+        self.student = Student(use_env_vars=True,
+                               existing_driver=teacher.driver)
         self.first_name = Assignment.rword(6)
         self.last_name = Assignment.rword(8)
         self.email = self.first_name + '.' + self.last_name + \

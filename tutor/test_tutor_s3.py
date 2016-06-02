@@ -3,7 +3,10 @@
 import os
 import pytest
 
-TESTS = os.environ['CASELIST']
+TESTS = os.getenv(
+    'CASELIST',
+    ['7796', '7797']
+)
 
 
 # Case C7796 - S3 Case 1
