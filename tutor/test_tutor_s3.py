@@ -4,6 +4,7 @@ import json
 import os
 import pytest
 
+
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
@@ -13,7 +14,7 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7796])
+    ['7796', '7797']
 )
 
 
