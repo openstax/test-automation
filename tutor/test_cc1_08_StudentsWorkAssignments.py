@@ -94,7 +94,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
 
     # Case C7691 - 002 - Student | Selects an exercise answer
     @pytest.mark.skipif(str(7691) not in TESTS, reason='Excluded')
-    def test_student_select_an_exercise_answer(self):
+    def test_student_select_an_exercise_answer_7691(self):
         """Select an exercise answer."""
         self.ps.test_updates['name'] = 'cc1.08.002' \
             + inspect.currentframe().f_code.co_name[4:]

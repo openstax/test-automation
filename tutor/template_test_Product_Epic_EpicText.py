@@ -60,7 +60,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case CaseID - Story# - UserType
     @pytest.mark.skipif(str(CaseID) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_usertype_storytext_CaseID(self):  # NOQA
         """Story Text.
 
         Steps:
