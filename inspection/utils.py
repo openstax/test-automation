@@ -104,7 +104,7 @@ def generate_info_matrix(info_list):
     return info_matrix
 
 
-def generate_comp_matrix(info_matrix, operation, skip=True):
+def generate_comp_matrix(info_matrix, operation, skip=False):
 
     (A, B, C) = info_matrix.shape
 

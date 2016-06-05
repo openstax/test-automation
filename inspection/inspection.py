@@ -4,12 +4,12 @@ import logging
 from multiprocessing import Process
 
 from utils import generate_tests, lcs_images, diff_images
-
 load_tests = None
 
 
 def run(settings):
     global load_tests
+
     load_tests = generate_tests(settings)
     with open(settings['output'], 'w+') as f:
         output = unittest.TextTestRunner(f, verbosity=3)
@@ -17,6 +17,8 @@ def run(settings):
 
 
 def main(argv=None):
+
+
     parser = argparse.ArgumentParser(
         description='Return a list of related pages between two pdfs.')
     parser.add_argument(
@@ -55,9 +57,22 @@ def main(argv=None):
         '--diff',
         action='store_true',
         default=False,)
+    parser.add_argument(
+        '--window',
+        type=int,
+        default=2,
+        help="If the absolute difference of index's of two pdf pages is"
+             "greater than the window range, then pages are not related. (default = 2)")
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        default=False,)
+
+
     parser.add_argument('pdf_a', type=str)
     parser.add_argument('pdf_b', type=str)
 
+    
     args = parser.parse_args(argv)
 
     settings = vars(args)
@@ -68,16 +83,22 @@ def main(argv=None):
         filemode='w+',
         format='')
 
-    p = Process(target=run, args=(settings,))
+   
+    if settings['debug']:
+        global load_tests
+        load_tests = generate_tests(settings)
+        unittest.main(argv=['inspection.py'],verbosity=3)
+    else:
+        p = Process(target=run, args=(settings,))
+        p.start()
+        p.join()
 
-    p.start()
-    p.join()
     if settings['diff']:
         diff = diff_images(settings['results'], settings['check'])
         print(diff)
     else:
         related_page_list = lcs_images(settings['results'], settings['check'])
-        print related_page_list
+        print(related_page_list)
 
 if __name__ == "__main__":
     main()
