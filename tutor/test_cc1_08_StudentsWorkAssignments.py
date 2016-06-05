@@ -1,5 +1,6 @@
 """Concept Coach v1, Epic 08 - Students Work Assignments."""
 
+import inspect
 import json
 import os
 import pytest
@@ -15,7 +16,7 @@ from staxing.helper import Teacher, Student
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '48.0',
+    'version': '50.0',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
@@ -34,9 +35,14 @@ class TestStudentsWorkAssignments(unittest.TestCase):
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
-        self.teacher = Teacher(username='teacher100', password='password',
-                               site='https://tutor-qa.openstax.org/',
-                               pasta_user=self.ps)
+        self.desired_capabilities['name'] = self.id()
+        self.teacher = Teacher(
+            username='teacher100',
+            password='password',
+            site='https://tutor-qa.openstax.org/',
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
         self.teacher.login()
         courses = self.teacher.find_all(By.CLASS_NAME,
                                         'tutor-booksplash-course-item')
@@ -75,6 +81,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
+        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
+                           **self.ps.test_updates)
         try:
             self.teacher.delete()
         except:
@@ -86,8 +94,13 @@ class TestStudentsWorkAssignments(unittest.TestCase):
 
     # Case C7691 - 002 - Student | Selects an exercise answer
     @pytest.mark.skipif(str(7691) not in TESTS, reason='Excluded')
-    def test_select_an_exercise_answer(self):
+    def test_student_select_an_exercise_answer(self):
         """Select an exercise answer."""
+        self.ps.test_updates['name'] = 'cc1.08.002' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.08', 'cc1.08.002', '7691']
+        self.ps.test_updates['passed'] = False
+
         self.student.get(self.book_url)
         self.student.sleep(2)
         self.student.find_all(By.XPATH, '//a[@class="nav next"]')[0].click()
@@ -214,3 +227,5 @@ class TestStudentsWorkAssignments(unittest.TestCase):
             )
         ).click()
         self.student.find(By.XPATH, '//button[span[text()="Submit"]]').click()
+
+        self.ps.test_updates['passed'] = True
