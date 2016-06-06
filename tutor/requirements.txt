@@ -8,4 +8,4 @@ pytest-xdist==1.14
 regex==2016.1.10
 requests==2.9.1
 selenium==2.53.1
-Staxing==0.0.7
+Staxing>=0.0.7
