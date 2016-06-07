@@ -4,20 +4,16 @@ import logging
 from multiprocessing import Process
 
 from utils import generate_tests, lcs_images, diff_images
-load_tests = None
+import sys
+import os 
+import ipdb # FIXME: for some reason adding this module helps solve linking errors
 
+start_dir = os.getcwd()
 
-def run(settings):
-    global load_tests
-
-    load_tests = generate_tests(settings)
-    with open(settings['output'], 'w+') as f:
-        output = unittest.TextTestRunner(f, verbosity=3)
-        unittest.main(testRunner=output, argv=['inspection.py'])
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
 def main(argv=None):
-
 
     parser = argparse.ArgumentParser(
         description='Return a list of related pages between two pdfs.')
@@ -83,15 +79,18 @@ def main(argv=None):
         filemode='w+',
         format='')
 
-   
+    if not os.path.isabs(settings['pdf_a']):
+        settings['pdf_a'] = os.path.join(start_dir,settings['pdf_a'])
+    if not os.path.isabs(settings['pdf_b']):
+        settings['pdf_b'] = os.path.join(start_dir,settings['pdf_b'])
+  
     if settings['debug']:
-        global load_tests
         load_tests = generate_tests(settings)
-        unittest.main(argv=['inspection.py'],verbosity=3)
+        unittest.TextTestRunner(verbosity=3,stream=sys.stderr).run(load_tests)
     else:
-        p = Process(target=run, args=(settings,))
-        p.start()
-        p.join()
+        load_tests = generate_tests(settings)
+        with open(settings['output'], 'w+') as f:
+            unittest.TextTestRunner(stream=f, verbosity=3).run(load_tests)
 
     if settings['diff']:
         diff = diff_images(settings['results'], settings['check'])
