@@ -1,0 +1,1783 @@
+"""Concept Coach v1, Epic 08 - Students Work Assignments."""
+
+import inspect
+import json
+import os
+import pytest
+import unittest
+
+from pastasauce import PastaSauce, PastaDecorator
+from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+from staxing.assignment import Assignment
+from staxing.helper import Teacher, Student
+
+basic_test_env = json.dumps([{
+    'platform': 'OS X 10.11',
+    'browserName': 'chrome',
+    'version': '50.0',
+    'screenResolution': "1024x768",
+}])
+BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+TESTS = os.getenv(
+    'CASELIST',
+    str([12725, 12726, 12727, 12728, 12729, 12730, 
+        12731, 12732, 12733, 12734, 12735, 12736, 
+        12737, 12738, 12739, 12740, 12741, 12742, 
+        12743, 12744, 12745, 12746, 12747, 12748, 
+        12749, 12750, 12751, 12752, 12753, 12754, 
+        12755, 12756, 12757, 12758, 12759, 12760, 
+        12761, 12762, 12763, 12764, 12765, 12766, 
+        12767, 12768, 12769, 12770, 12771, 12772, 
+        12773, 12774, 12775, 12776, 12777, 12778, 
+        12779, 12780, 12781])
+)
+
+
+@PastaDecorator.on_platforms(BROWSERS)
+class TestCreateAHomework(unittest.TestCase):
+    """T1.16 - Create A Homework."""
+
+    def setUp(self):
+        """Pretest settings."""
+        self.ps = PastaSauce()
+        self.desired_capabilities['name'] = self.id()
+        self.teacher = Teacher(
+            username='teacher01',
+            password='password',
+            site='https://tutor-qa.openstax.org/',
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
+        self.teacher.login()
+        courses = self.teacher.find_all(By.CLASS_NAME,
+                                        'tutor-booksplash-course-item')
+        assert(courses), 'No courses found.'
+        if not isinstance(courses, list):
+            courses = [courses]
+        course_id = randint(0, len(courses) - 1)
+        self.course = courses[course_id].get_attribute('data-title')
+        self.teacher.select_course(title=self.course)
+        self.teacher.goto_course_roster()
+        section = '%s' % randint(100, 999)
+        try:
+            wait = self.teacher.wait_time
+            self.teacher.change_wait_time(3)
+            self.teacher.find(By.CLASS_NAME, '-no-periods-text')
+            self.teacher.add_course_section(section)
+        except:
+            sections = self.teacher.find_all(
+                By.XPATH,
+                '//span[@class="tab-item-period-name"]'
+            )
+            section = sections[randint(0, len(sections) - 1)].text
+        finally:
+            self.teacher.change_wait_time(wait)
+        self.code = self.teacher.get_enrollment_code(section)
+        print('Course Phrase: ' + self.code)
+        self.book_url = self.teacher.find(
+            By.XPATH, '//a[span[contains(text(),"Online Book")]]'
+        ).get_attribute('href')
+        self.student = Student(use_env_vars=True,
+                               existing_driver=self.teacher.driver)
+        self.first_name = Assignment.rword(6)
+        self.last_name = Assignment.rword(8)
+        self.email = self.first_name + '.' + self.last_name + \
+            '@tutor.openstax.org'
+
+    def tearDown(self):
+        """Test destructor."""
+        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
+                           **self.ps.test_updates)
+        try:
+            self.teacher.delete()
+        except:
+            pass
+        try:
+            self.student.delete()
+        except:
+            pass
+
+    # Case T12725 - 001 - Teacher | Add a homework using the Add Assignment drop down menu
+    @pytest.mark.skipif(str(12725) not in TESTS, reason='Excluded')
+    def test_teacher_add_a_homework_using_the_add_assignment_drop_down_menu(self):
+        """Add a homework using the Add Assignment drop down menu.
+
+        Steps:
+        Click on the Add Assignment drop down menu on the user dashboard
+        Click on the 'Add Homework' button
+        
+        Expected Result:
+        The teacher is taken to the page where they create the assignment.
+        """
+        self.ps.test_updates['name'] = 't1.16.001' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.001',
+            '12725'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12726 - 002 - Teacher | Add a homework using the calendar date
+    @pytest.mark.skipif(str(12726) not in TESTS, reason='Excluded')
+    def test_teacher_add_a_homework_using_the_calendar_date(self):
+        """Add a homework using the calendar date
+
+        Steps:
+        Click on a date at least one day later than the current date on the calendar
+        From the menu that appears, click on 'Add Homework'
+
+        Expected Result:
+        The teacher is taken to a page where they create the assignment.
+        """
+        self.ps.test_updates['name'] = 't1.16.002' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.002',
+            '12726'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12727 - 003 - Teacher | Set open and due dates for all periods collectively
+    @pytest.mark.skipif(str(12727) not in TESTS, reason='Excluded')
+    def test_teacher_set_open_and_due_dates_for_periods_collectively(self):
+        """Set open and due dates for all periods collectively
+
+        Steps:
+        Click on the Add Assignment drop down menu on the user dashboard, OR click a calendar date that is at least one day later than the current date
+        Click on the 'Add Homework' button
+        Select the 'All Periods' radio button if it is not selected by default
+        Select an open date for the assignment using the calendar element
+        Select a due date for the assignment using the calendar element
+
+        Expected Result:
+        A due date is assigned for all periods collectively.
+
+        """
+        self.ps.test_updates['name'] = 't1.16.003' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.003',
+            '12727'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12728 - 004 - Teacher | Set open and due dates for periods individually
+    @pytest.mark.skipif(str(12728) not in TESTS, reason='Excluded')
+    def test_teacher_set_open_and_due_dates_for_all_periods_individually(self):
+        """Set open and due dates for all periods individually
+
+        Steps:
+        Click on the Add Assignment drop down menu on the user dashboard, OR click a calendar date that is at least one day later than the current date
+        Click on the 'Add Homework' button
+        Select the 'Individual Periods' radio button
+        Select the periods that should be required to complete the assignment
+        Select open and due dates for each section using the calendar element
+
+        Expected Result:
+        Each section that is assigned the homework has an individual opena nd due date.
+        """
+        self.ps.test_updates['name'] = 't1.16.004' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.004',
+            '12728'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12729 - 005 - Teacher | Save a draft homework
+    @pytest.mark.skipif(str(12729) not in TESTS, reason='Excluded')
+    def test_teacher_save_a_draft_homework(self):
+        """Save a draft homework
+
+        Steps:
+        Click on the 'Add Assignment' button, OR click on a calendar date at least one day later than the current date
+        From the drop down menu, click on the 'Add Homework' option
+        Enter a name in the 'Assignment name' text box
+        Choose a due date for the assignment using the calendar element
+        Click the '+ Select Problems' button
+        Select at least one chapter or section to assign problems from
+        Click the 'Show problems' button
+        Click on at least one problem to be used for My Selections
+        Click the 'Next' button
+        Click 'Save As Draft'
+
+        Expected Result:
+        The teacher is returned to the dashboard where the draft assignment is now displayed on the calendar.
+        """
+        self.ps.test_updates['name'] = 't1.16.005' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.005',
+            '12729'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True  
+
+    # Case T12730 - 006 - Teacher | Publish a new homework
+    @pytest.mark.skipif(str(12730) not in TESTS, reason='Excluded')
+    def test_teacher_publish_a_new_homework(self):
+        """Publish a new homework
+
+        Steps:
+        Click on the Add Assignment drop down menu on the user dashboard, OR click on a calendar date at least one day later than the current date
+        Click on the 'Add Homework' button
+        Give the homework a name in the 'Assignment name' text box
+        Select a due date (individually or collectively) for the assignment using the calendar element
+        Click the '+ Select Problems' button
+        Select at least one chapter or section to use for the homework
+        Click the 'Show Problems' button
+        Click at least one problem to be used for My Selections
+        Click the 'Next' button
+        Click the 'Publish' button
+
+        Expected Result:
+        The teacher is returned to the dashboard where the new assignment is displayed.
+        """
+        self.ps.test_updates['name'] = 't1.16.006' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.006',
+            '12730'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12731 - 007 - Teacher | Publish a draft homework
+    @pytest.mark.skipif(str(12731) not in TESTS, reason='Excluded')
+    def test_teacher_publish_a_draft_homework(self):
+        """Publish a draft homework
+
+        Steps:
+        From the user dashboard, click on a draft assignment
+        Click the 'Publish' button
+
+        Expected Result:
+        A draft homework is published.
+        """
+        self.ps.test_updates['name'] = 't1.16.007' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.007',
+            '12731'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12732 - 008 - Teacher | Cancel a new homework before making any changes using the Cancel button
+    @pytest.mark.skipif(str(12732) not in TESTS, reason='Excluded')
+    def test_teacher_cancel_a_new_homework_before_making_any_changes_using_the_cancel_button(self):
+        """Cancel a new homework before making any changes using the Cancel button
+
+        Steps:
+        Click on the Add Assignment drop down menu on the user dashboard, OR click on a calendar date at least one day later than the current date
+        Click on the 'Add Homework' button
+        Click on the 'Cancel' button
+
+        Expected Result:
+        The teacher is returned to the dashboard.
+        """
+        self.ps.test_updates['name'] = 't1.16.008' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.008',
+            '12732'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12733 - 009 - Teacher | Cancel a new homework after making any changes using the Cancel button
+    @pytest.mark.skipif(str(12733) not in TESTS, reason='Excluded')
+    def test_teacher_cancel_a_new_homework_after_making_any_changes_using_the_cancel_button(self):
+        """Cancel a new homework after making any changes using the Cancel button
+
+        Steps:
+        Click on the Add Assignment drop down menu on the user dashboard, OR click on a calendar date at least one day later than the current date
+        Click on the 'Add Homework' button
+        Give the homework a name in the 'Assignment name' text box
+        Select a due date (individually or collectively) for the assignment using the calendar element
+        Click the '+ Select Problems' button
+        Select at least one chapter or section to use for the homework
+        Click the 'Show Problems' button
+        Click at least one problem to be used for My Selections
+        Click the 'Next' button
+        Click the 'Cancel' button
+        Click the 'OK' button
+
+        Expected Result:
+        The tracher is returned to the dashboard.
+        """
+        self.ps.test_updates['name'] = 't1.16.009' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.009',
+            '12733'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12734 - 010 - Teacher | Cancel a new homework before making any changes using the X
+    @pytest.mark.skipif(str(12734) not in TESTS, reason='Excluded')
+    def test_teacher_cancel_a_new_homework_before_making_any_changes_using_the_X(self):
+        """Cancel a new homework before making any changes using the X
+
+        Steps:
+        Click on the Add Assignment drop down menu on the user dashboard, OR click on a calendar date at least one day later than the current date
+        Click on the 'Add Homework' button
+        Click on the X button
+
+
+        Expected Result:
+        The teacher is returned to the dashboard.
+        """
+        self.ps.test_updates['name'] = 't1.16.010' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.010',
+            '12734'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12735 - 011 - Teacher | Cancel a new homework after making any changes using the X
+    @pytest.mark.skipif(str(12735) not in TESTS, reason='Excluded')
+    def test_teacher_cancel_a_new_homework_after_making_any_changes_using_the_X(self):
+        """Cancel a new homework after making any changes using the X
+
+        Steps:
+        Click on the Add Assignment drop down menu on the user dashboard, OR click on a calendar date at least one day later than the current date
+        Click on the 'Add Homework' button
+        Give the homework a name in the 'Assignment name' text box
+        Select a due date (individually or collectively) for the assignment using the calendar element
+        Click the '+ Select Problems' button
+        Select at least one chapter or section to use for the homework
+        Click the 'Show Problems' button
+        Click at least one problem to be used for My Selections
+        Click the 'Next' button
+        Click the X button
+        Click the 'OK' button
+
+        Expected Result:
+        The teacher is returned to the dashboard.
+        """
+        self.ps.test_updates['name'] = 't1.16.011' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.011',
+            '12735'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12736 - 012 - Teacher | Cancel a draft homework before making any changes using the Cancel button
+    @pytest.mark.skipif(str(12736) not in TESTS, reason='Excluded')
+    def test_teacher_cancel_a_draft_homework_before_making_any_changes_using_the_cancel_button(self):
+        """Cancel a draft homework before making any changes using the Cancel button
+
+        Steps:
+        From the user dashboard, click on a draft assignment
+        Click on the 'Cancel' button
+        Click on the 'OK' button
+
+        Expected Result:
+        The teacher is returned to the dashboard.
+        """
+        self.ps.test_updates['name'] = 't1.16.012' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.012',
+            '12736'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12737 - 013 - Teacher | Cancel a draft homework after making changes using the Cancel button
+    @pytest.mark.skipif(str(12737) not in TESTS, reason='Excluded')
+    def test_teacher_cancel_a_draft_homework_after_making_changes_using_the_cancel_button(self):
+        """Cancel a draft homework after making changes using the Cancel button
+
+        Steps:
+        From the user dashboard, click on a draft assignment
+        Change the homework name in the 'Assignment name' text box
+        Click on the 'Cancel' button
+        Click on the 'OK' button
+
+        Expected Result:
+        The teacher is returned to the dashboard.
+        """
+        self.ps.test_updates['name'] = 't1.16.013' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.013',
+            '12737'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12738 - 014 - Teacher | Cancel a draft homework before making any changes using the X
+    @pytest.mark.skipif(str(12738) not in TESTS, reason='Excluded')
+    def test_teacher_cancel_a_draft_homework_before_making_any_changes_using_the_X(self):
+        """Cancel a draft homework before making any changes using the X
+
+        Steps:
+        From the user dashboard, click on a draft assignment
+        Click on the X button
+        Click on the 'OK' button
+
+        Expected Result:
+        The teacher is returned to the dashboard.
+        """
+        self.ps.test_updates['name'] = 't1.16.014' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.014',
+            '12738'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12739 - 015 - Teacher | Cancel a draft homework after making changes using the X
+    @pytest.mark.skipif(str(12739) not in TESTS, reason='Excluded')
+    def test_teacher_cancel_a_draft_homework_after_making_changes_using_the_X(self):
+        """Cancel a draft homework after making changes using the X
+
+        Steps:
+        From the user dashboard, click on a draft assignment
+        Change the homework name in the 'Assignment name' text box
+        Edit the homework's name in the 'Assignment name' text box
+        Click on the X button
+        Click on the 'OK' button
+
+        Expected Result:
+        The teacher is returned to the dashboard.
+        """
+        self.ps.test_updates['name'] = 't1.16.015' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.015',
+            '12739'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12740 - 016 - Teacher | Attempt to publish a homework with blank required fields
+    @pytest.mark.skipif(str(12740) not in TESTS, reason='Excluded')
+    def test_teacher_attempt_to_publish_a_homework_with_blank_required_fields(self):
+        """Attempt to publish a homework with blank required fields
+
+        Steps:
+        Click on the Add Assignment drop down menu on the user dashboard, OR click on a calendar date at least one day later than the current date
+        Click on the 'Add Homework' button
+        Click on the 'Publish' button
+
+        Expected Result:
+        Red text appears next to every blank required field.
+        """
+        self.ps.test_updates['name'] = 't1.16.016' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.016',
+            '12740'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12741 - 017 - Teacher | Attempt to save a draft homework with blank required fields
+    @pytest.mark.skipif(str(12741) not in TESTS, reason='Excluded')
+    def test_teacher_attempt_to_save_a_draft_homework_with_blank_required_fields(self):
+        """Attempt to save a draft homework with blank required fields
+
+        Steps:
+        Click on the Add Assignment drop down menu on the user dashboard, OR click on a calendar date at least one day later than the current date
+        Click on the 'Add Homework' button
+        Click on the 'Save As Draft' button
+
+        Expected Result:
+        Red text appears next to every blank required field.
+        """
+        self.ps.test_updates['name'] = 't1.16.017' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.017',
+            '12741'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12742 - 018 - Teacher | Delete an unpoened homework
+    @pytest.mark.skipif(str(12742) not in TESTS, reason='Excluded')
+    def test_teacher_delete_an_unopened_homework(self):
+        """Delete an unopened homework
+
+        Steps:
+        Click on a published assignment that has not yet been opened for students
+        Click on the 'Edit Assignment' button
+        Click on the 'Delete Assignment' button
+        Click 'OK' on the dialog box that pops up
+
+        Expected Result:
+        The teacher is returned to the dashboard and the assignment is removed from the calendar.
+        """
+        self.ps.test_updates['name'] = 't1.16.018' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.018',
+            '12742'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12743 - 019 - Teacher | Attempt to delete an open homework
+    @pytest.mark.skipif(str(12743) not in TESTS, reason='Excluded')
+    def test_teacher_attempt_to_delete_an_open_homework(self):
+        """Attempt to delete an open homework
+
+        Steps:
+        Click on an assignment on the calendar that is open for student to work on
+        Click on the 'Edit Assignment' button
+
+        Expected Result:
+        The 'Delete Assignment' button should not appear on the page.
+        """
+        self.ps.test_updates['name'] = 't1.16.019' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.019',
+            '12743'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12744 - 020 - Teacher | Delete a draft homework
+    @pytest.mark.skipif(str(12744) not in TESTS, reason='Excluded')
+    def test_teacher_delete_a_draft_homework(self):
+        """Delete a draft homework
+
+        Steps:
+        Click on a draft assignment on the calendar
+        Click on the 'Delete Assignment' button
+        Click OK on the dialog box that appears
+
+        Expected Result:
+        The teacher is returned to the dashboard and the draft assignment is removed from the calendar.
+        """
+        self.ps.test_updates['name'] = 't1.16.020' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.020',
+            '12744'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12745 - 021 - Teacher | Add a description to a homework
+    @pytest.mark.skipif(str(12745) not in TESTS, reason='Excluded')
+    def test_teacher_add_a_description_to_the_homework(self):
+        """Add a description to a homework
+
+        Steps:
+        From the dashboard, click on the 'Add assignment' drop down menu
+        Click on the 'Add Homework' button
+        Edit the text box named 'Description or special instructions'
+
+        Expected Result:
+        Text is visible in the 'Description or special instructions' text box.
+        """
+        self.ps.test_updates['name'] = 't1.16.021' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.021',
+            '12745'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12746 - 022 - Teacher | Change a description for a draft homework
+    @pytest.mark.skipif(str(12746) not in TESTS, reason='Excluded')
+    def test_teacher_change_a_description_for_a_draft_homework(self):
+        """Change a description for a draft homework
+
+        Steps:
+        From the dashboard, click on a draft assignment displayed on the calendar
+        Edit the text box labeled 'Description or special instructions'
+        Click on the 'Save As Draft' button
+
+        Expected Result:
+        The teacher is returned to the dashboard. The draft assignment's description has changed.
+        """
+        self.ps.test_updates['name'] = 't1.16.022' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.022',
+            '12746'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12747 - 023 - Teacher | Change a description for an open homework
+    @pytest.mark.skipif(str(12747) not in TESTS, reason='Excluded')
+    def test_teacher_change_a_description_for_an_open_homework(self):
+        """Change a description for an open homework
+
+        Steps:
+        From the dashboard, click on an open assignment displayed on the calendar
+        Click the 'Edit Assignment' button
+        Edit the text box labeled 'Description or special instructions'
+        Click on the 'Publish' button
+
+        Expected Result:
+        The teacher is returned to the dashboard. The open assignment's description has changed.
+        """
+        self.ps.test_updates['name'] = 't1.16.023' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.023',
+            '12747'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12748 - 024 - Teacher | Add a name to a homework
+    @pytest.mark.skipif(str(12748) not in TESTS, reason='Excluded')
+    def test_teacher_add_a_name_to_a_homework(self):
+        """Add a name to a homework
+
+        Steps:
+        From the dashboard, click on the 'Add assignment' drop down menu
+        Click on the 'Add Homework' button
+        Edit the text box named 'Assignment name'
+
+        Expected Result:
+        Text is visible in the 'Assignment name' text box.
+        """
+        self.ps.test_updates['name'] = 't1.16.024' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.024',
+            '12748'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12749 - 025 - Teacher | Change a name for a draft homework
+    @pytest.mark.skipif(str(12749) not in TESTS, reason='Excluded')
+    def test_teacher_change_a_name_for_a_draft_homework(self):
+        """Change a name for a draft homework
+
+        Steps:
+        From the dashboard, click on a draft assignment displayed on the calendar
+        Edit the text box labeled 'Assignment name'
+        Click on the 'Save As Draft' button
+
+        Expected Result:
+        The teacher is returned to the dashboard. The draft assignment's name has changed.
+        """
+        self.ps.test_updates['name'] = 't1.16.025' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.025',
+            '12749'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12750 - 026 - Teacher | Change a name for an open homework
+    @pytest.mark.skipif(str(12750) not in TESTS, reason='Excluded')
+    def test_teacher_change_a_name_for_an_open_homework(self):
+        """Change a name for an open homework
+
+        Steps:
+        From the dashboard, click on an open assignment displayed on the calendar
+        Click the 'Edit Assignment' button
+        Edit the text box labeled 'Assignment name'
+        Click on the 'Publish' button
+
+        Expected Result:
+        The name of an open homework is changed
+        """
+        self.ps.test_updates['name'] = 't1.16.026' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.026',
+            '12750'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12751 - 027 - Teacher | Select when to show feedback to a student
+    @pytest.mark.skipif(str(12751) not in TESTS, reason='Excluded')
+    def test_teacher_select_when_to_show_feedback_to_a_student(self):
+        """Select when to show feedback to a student
+
+        Steps:
+        From the dashboard, click on the 'Add assignment' drop down menu
+        Click on the 'Add Homework' button
+        Select an option on the 'Show feedback' drop down menu
+
+        Expected Result:
+        The option chosen is shown on the drop down menu.
+        """
+        self.ps.test_updates['name'] = 't1.16.027' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.027',
+            '12751'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12752 - 028 - Teacher | Change when to show feedback to a student for a draft homework
+    @pytest.mark.skipif(str(12752) not in TESTS, reason='Excluded')
+    def test_teacher_change_when_to_show_feedback_to_a_student_for_a_draft_homework(self):
+        """Change when to show feedback to a student for a draft homework
+
+        Steps:
+        From the dashboard, click on a draft assignment displayed on the calendar
+        On the drop down menu named 'Show feedback' change the selected option
+        Click on the 'Save As Draft' button
+
+        Expected Result:
+        The teacher is returned to the dashboard. The draft assignment's feedback settings have changed.
+        """
+        self.ps.test_updates['name'] = 't1.16.028' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.028',
+            '12752'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12753 - 029 - Teacher | Change when to show feedback to a student for an unopened homework
+    @pytest.mark.skipif(str(12753) not in TESTS, reason='Excluded')
+    def test_teacher_change_when_to_show_feedback_to_a_student_for_an_unopened_homework(self):
+        """Change when to show feedback to a student for an unopened homework
+
+        Steps:
+        If the user has more than one course, select a Tutor course
+        From the dashboard, click on an unopen assignment displayed on the calendar
+        Click the 'Edit Assignment' button
+        On the drop down menu named 'Show feedback' change the selected option
+        Click on the 'Publish' button
+
+        Expected Result:
+        The teacher is returned to the dashboard. The unopened assignment's show feedback settings are changed.
+        """
+        self.ps.test_updates['name'] = 't1.16.029' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.029',
+            '12753'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12754 - 030 - Teacher | Change when to show feedback to a student for an opened homework
+    @pytest.mark.skipif(str(12754) not in TESTS, reason='Excluded')
+    def test_teacher_change_when_to_show_feedback_to_a_student_for_an_opened_homework(self):
+        """Change when to show feedback to a student for an opened homework
+
+        Steps:
+        From the dashboard, click on an open assignment displayed on the calendar
+        Click the 'Edit Assignment' button
+        On the drop down menu named 'Show feedback' change the selected option
+        Click on the 'Publish' button
+
+        Expected Result:
+        The teacher is returned to the dashboard. The open assignment's show feedback setting have changed.
+        """
+        self.ps.test_updates['name'] = 't1.16.030' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.030',
+            '12754'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12755 - 031 - Teacher | Info icon shows definitions for the Add Homework Assignment status bar buttons
+    @pytest.mark.skipif(str(12755) not in TESTS, reason='Excluded')
+    def test_teacher_info_icon_shows_definitions_for_the_add_homework_assignment_status_bar_buttons(self):
+        """Info icon shows definitions for the add homework assignment status bar buttons
+
+        Steps:
+        From the dashboard, click on an (open, unopen, or draft) assignment displayed on the calendar, OR create a new assignment
+        Click on the info icon
+
+        Expected Result:
+        Definitions for the status bar buttons are displayed.
+        """
+        self.ps.test_updates['name'] = 't1.16.031' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.031',
+            '12755'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12756 - 032 - Teacher | Show available problems for a single section
+    @pytest.mark.skipif(str(12756) not in TESTS, reason='Excluded')
+    def test_teacher_show_available_problems_for_a_single_section(self):
+        """Show available problems for a single section
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the sections in one chapter that is not an introduction section
+        Click the 'Show Problems' button
+
+        Expected Result:
+        The problems for the selected section are displayed.
+        """
+        self.ps.test_updates['name'] = 't1.16.032' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.032',
+            '12756'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12757 - 033 - Teacher | Show available problems for a single chapter
+    @pytest.mark.skipif(str(12757) not in TESTS, reason='Excluded')
+    def test_teacher_show_available_problems_for_a_single_chapter(self):
+        """Show available problems for a single chapter
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Select one of the chapters
+        Click the 'Show Problems' button
+
+        Expected Result:
+        Problems for the whole chapter are displayed.
+        """
+        self.ps.test_updates['name'] = 't1.16.033' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.033',
+            '12757'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12758 - 034 - Teacher | No problems should be associated with an Introduction section
+    @pytest.mark.skipif(str(12758) not in TESTS, reason='Excluded')
+    def test_teacher_no_problems_should_be_associated_with_an_introduction_section(self):
+        """No problems should be associated with an Introduction section
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select the introduction section of the chapter
+        Click the 'Show Problems' button
+
+        Expected Result:
+        No problems are displayed. The text 'The sections you selected have no exercises. Please select more sections.'
+        """
+        self.ps.test_updates['name'] = 't1.16.034' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.034',
+            '12758'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12759 - 035 - Teacher | Change the number of Tutor-selected assessments
+    @pytest.mark.skipif(str(12759) not in TESTS, reason='Excluded')
+    def test_teacher_change_the_number_of_tutor_selected_assessments(self):
+        """Change the number of Tutor-selected assessments
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Select at least one chapter
+        Click the 'Show Problems' button
+        On the section marked 'Tutor Selections', change the number of assignments by clicking on the up or down arrow
+
+        Expected Result:
+        The number of total problems and tutor selections changes.
+        """
+        self.ps.test_updates['name'] = 't1.16.035' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.035',
+            '12759'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12760 - 036 - Teacher | Select assessments
+    @pytest.mark.skipif(str(12760) not in TESTS, reason='Excluded')
+    def test_teacher_select_assessments(self):
+        """Select assessments
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Click at least one of the displayed problems
+
+        Expected Result:
+        Number of total problems and the number of my selections increases.
+        """
+        self.ps.test_updates['name'] = 't1.16.036' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.036',
+            '12760'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12761 - 037 - Teacher | Deselect assessments
+    @pytest.mark.skipif(str(12761) not in TESTS, reason='Excluded')
+    def test_teacher_deselect_assessments(self):
+        """Deselect assessments
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Click at least one of the displayed problems
+        Click at least one of the problems that have been selected
+
+        Expected Result:
+        The number of my selections and total problems decreases.
+        """
+        self.ps.test_updates['name'] = 't1.16.037' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.037',
+            '12761'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12762 - 038 - Teacher | View assessment feedback by marking the Preview Feedback checkbox
+    @pytest.mark.skipif(str(12762) not in TESTS, reason='Excluded')
+    def test_teacher_view_assessment_feedback_by_marking_the_preview_feedback_checkbox(self):
+        """View the assessment feedback by marking the Preview Feedback checkbox
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Select the 'Preview Feedback' checkbox for at least one problem
+
+        Expected Result:
+        Explanations for each answer are displayed as well as a detailed solution.
+        """
+        self.ps.test_updates['name'] = 't1.16.038' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.038',
+            '12762'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12763 - 039 - Teacher | Assessments show their exercise ID and exercise version
+    @pytest.mark.skipif(str(12763) not in TESTS, reason='Excluded')
+    def test_teacher_assessments_show_their_exercise_id_and_exercise_version(self):
+        """Assessments show their exercise ID and exercise version
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+
+        Expected Result:
+        For every displayed problem the ID# is displayed as ID#@Version
+        """
+        self.ps.test_updates['name'] = 't1.16.039' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.039',
+            '12763'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12764 - 040 - Teacher | Report an error for an assessment
+    @pytest.mark.skipif(str(12764) not in TESTS, reason='Excluded')
+    def test_teacher_report_an_Error_for_an_assessment(self):
+        """Report an error for an assessment
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Click the 'Report an error' link on one of the questions.
+
+        Expected Result:
+        A new tab is opened to a Google form for reporting errors.
+        """
+        self.ps.test_updates['name'] = 't1.16.040' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.040',
+            '12764'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12765 - 041 - Teacher | Assessment tags are visible
+    @pytest.mark.skipif(str(12765) not in TESTS, reason='Excluded')
+    def test_teacher_assessment_tags_are_visible(self):
+        """Assessment tags are visible
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+
+        Expected Result:
+        Tags for each displayed problem exist.
+        """
+        self.ps.test_updates['name'] = 't1.16.041' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.041',
+            '12765'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12766 - 042 - Teacher | Cancel assessment selection before making any changes using the Cancel button
+    @pytest.mark.skipif(str(12766) not in TESTS, reason='Excluded')
+    def test_teacher_cancel_assessment_selection_before_making_any_changes_using_the_cancel_button(self):
+        """Cancel assessment selection before making any changes using the Cancel button
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Click the 'Cancel' button
+        Click the 'OK' button
+
+        Expected Result:
+        User is taken back to the page where assignment name, description, and open/due dates can be set.
+        """
+        self.ps.test_updates['name'] = 't1.16.042' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.042',
+            '12766'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12767 - 043 - Teacher | Cancel assessment selection after making any changes using the Cancel button
+    @pytest.mark.skipif(str(12767) not in TESTS, reason='Excluded')
+    def test_teacher_cancel_assessment_selection_after_making_any_changes_using_the_cancel_button(self):
+        """Cancel assessment selection after making any changes using the Cancel button
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Select at least one of the displayed problems
+        Click the 'Cancel' button adjacent to the 'Next' button, OR click the 'Cancel' button adjacent to the 'Show Problems' button and then hit the 'OK' button
+        Click the 'OK' button
+
+        Expected Result:
+        User is taken back to the page where the assignment name, description, and open/due dates can be set.
+        """
+        self.ps.test_updates['name'] = 't1.16.043' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.043',
+            '12767'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12768 - 044 - Teacher | Cancel assessment selection before making any changes using the X
+    @pytest.mark.skipif(str(12768) not in TESTS, reason='Excluded')
+    def test_teacher_cancel_assessment_selection_before_making_any_changes_using_the_X(self):
+        """Cancel assessment selection before making any changes using the X
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Click the X button
+        Click the 'OK' button
+
+        Expected Result:
+        The user is returned to the page where the assignment name, description, and open/due dates are set.
+        """
+        self.ps.test_updates['name'] = 't1.16.044' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.044',
+            '12768'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12769 - 045 - Teacher | Cancel assessment selection after making any changes using the X
+    @pytest.mark.skipif(str(12769) not in TESTS, reason='Excluded')
+    def test_teacher_cancel_assessment_selection_after_making_any_changes_using_the_X(self):
+        """Cancel assessment selection after making any changes using the X
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Select at least one of the displayed problems
+        Click the X button
+        Click the 'OK' button
+
+        Expected Result:
+        User is taken back to the page where the assignment name, description, and open/due dates are set.
+        """
+        self.ps.test_updates['name'] = 't1.16.045' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.045',
+            '12769'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12770 - 046 - Teacher | Cancel assessment selection using the Tutor Selection bar Cancel button
+    @pytest.mark.skipif(str(12770) not in TESTS, reason='Excluded')
+    def test_teacher_cancel_assessment_selection_using_the_tutor_selection_bar_cancel_button(self):
+        """Cancel assessment selection using the Tutor Selection bar Cancel button
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Select at least one of the displayed problems
+        Click the 'Cancel' button adjacent to the 'Next' button
+
+        Expected Result:
+        The user is taken back to the page where the assignment date, description, and open/due dates are set.
+        """
+        self.ps.test_updates['name'] = 't1.16.046' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.046',
+            '12770'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12771 - 047 - Teacher | Select assessments and view assessment ordering
+    @pytest.mark.skipif(str(12771) not in TESTS, reason='Excluded')
+    def test_teacher_select_assessments_and_view_assessment_ordering(self):
+        """Select assessments and view assessment ordering
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Select at least one of the displayed problems
+        Click the 'Next' button
+
+        Expected Result:
+        User is returned to the page where assignment name, description, and open/due dates are set. Selected problems are displayed in the order they will appear.
+        """
+        self.ps.test_updates['name'] = 't1.16.047' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.047',
+            '12771'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12772 - 048 - Teacher | Reorder selected assessments
+    @pytest.mark.skipif(str(12772) not in TESTS, reason='Excluded')
+    def test_teacher_reorder_selected_assessments(self):
+        """Reorder selected assessments
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Select at least two of the displayed problems
+        Click the 'Next' button
+        Click one of the arrows on at least one problem
+
+        Expected Result:
+        The ordering of the problems changes.
+        """
+        self.ps.test_updates['name'] = 't1.16.048' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.048',
+            '12772'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12773 - 049 - Teacher | Reordering assessments immediately changes the Problem Question list
+    @pytest.mark.skipif(str(12773) not in TESTS, reason='Excluded')
+    def test_teacher_reordering_assessments_immediately_changes_the_problem_question_list(self):
+        """Reordering assessments immediately changes the Problem Question list
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Select at least two of the displayed problems
+        Click the 'Next' button
+        Click one of the arrows on at least one problem
+
+        Expected Result:
+        The Problem Question list reflects the change the problem ordering.
+        """
+        self.ps.test_updates['name'] = 't1.16.049' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.049',
+            '12773'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12774 - 050 - Teacher | Add more assessments using the Add More... button
+    @pytest.mark.skipif(str(12774) not in TESTS, reason='Excluded')
+    def test_teacher_add_more_assessments_using_the_add_more_button(self):
+        """Add more assessments using the Add More... button
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Select at least one of the displayed problems
+        Click the 'Next' button
+        Click the 'Add More...' button
+        Click the 'Show Problems' button
+        Select at least one more problem
+        Click the 'Next' button
+
+        Expected Result:
+        User is returned to the page where the assignment name, description, and open/due dates can be set. More selected problems are displayed.
+        """
+        self.ps.test_updates['name'] = 't1.16.050' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.050',
+            '12774'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12775 - 051 - Teacher | Problem Question list is equal to the Tutor Selection bar numbers
+    @pytest.mark.skipif(str(12775) not in TESTS, reason='Excluded')
+    def test_teacher_(self):
+        """Problem Question list is equal to the Tutor Selection bar numbers
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Select at least one of the displayed problems
+        Click the 'Next' button
+
+        Expected Result:
+        The number of total problems, my selections, and tutor selections in the Tutor Selection bar matches what the Problem Question list displays.
+        """
+        self.ps.test_updates['name'] = 't1.16.051' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.051',
+            '12775'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12776 - 052 - Teacher | Remove an assessment from the order list
+    @pytest.mark.skipif(str(12776) not in TESTS, reason='Excluded')
+    def test_teacher_remove_an_assessment_from_the_order_list(self):
+        """Remove an assessment from the order list
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Select at least one of the displayed problems
+        Click the 'Next' button
+
+        Scroll down to the ordered list of assessments
+        Click the X in the upper right corner of the card
+
+        Expected Result:
+        An assessment is removed from the order list
+        """
+        self.ps.test_updates['name'] = 't1.16.052' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.052',
+            '12776'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12777 - 053 - Teacher | Remove an assessment from a homework from the Select Problems pane
+    @pytest.mark.skipif(str(12777) not in TESTS, reason='Excluded')
+    def test_teacher_remove_an_assessment_from_a_homework_from_the_select_problems_pane(self):
+        """Remove an assessment from a homework from the Select Problems pane
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Select at least two of the displayed problems
+        Click the 'Next' button
+        Click the 'Add More...' button
+        Click the 'Show Problems' button
+        Click one of the selected problems
+        Click the 'Next' button
+
+        Expected Result:
+        Fewer problems are displayed.
+        """
+        self.ps.test_updates['name'] = 't1.16.053' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.053',
+            '12777'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12778 - 054 - Teacher | Remove an assessment from a homework from the Add Homework Assignment pane
+    @pytest.mark.skipif(str(12778) not in TESTS, reason='Excluded')
+    def test_teacher_remove_an_assessment_from_a_homework_from_the_add_homework_assignment_pane(self):
+        """Remove an assessment from a homework from the Add Homework Assignment pane
+
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Select at least one of the displayed problems
+        Click the 'Next' button
+        Click the X button on at least one of the problems
+        Click 'OK' on the dialog box that appears
+
+        Expected Result:
+        Changes are reflected on the page. If all problems are deleted, the Problem Question list disappears. Otherwise, the question is removed and the Problem Question list reflects the change.
+        """
+        self.ps.test_updates['name'] = 't1.16.054' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.054',
+            '12778'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12779 - 055 - Teacher | Change all fields in an unopened, published homework
+    @pytest.mark.skipif(str(12779) not in TESTS, reason='Excluded')
+    def test_teacher_change_all_fields_in_an_unopened_published_homework(self):
+        """Change all fields in an unopened, published homework
+
+        Steps:
+        From the dashboard, click on a published, unopened homework
+        Click on the 'Edit Assignment' button
+        Edit the text in the text box named 'Assignment name'
+        Edit the text in the text box named 'Description or special instructions'
+        Edit the open and due dates for the assignment
+        Edit the 'Show feedback' drop down menu option
+        Click the 'Publish' button
+
+        Expected Result:
+        The user is returned to the dashboard. Changes to the homework are seen.
+        """
+        self.ps.test_updates['name'] = 't1.16.055' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.055',
+            '12779'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12780 - 056 - Teacher | Change all fields in a draft homework
+    @pytest.mark.skipif(str(12780) not in TESTS, reason='Excluded')
+    def test_teacher_change_all_fields_in_a_draft_homework(self):
+        """Change all fields in a draft homework
+
+        Steps:
+        From the dashboard, click on a draft homework
+        Edit the text in the text box named 'Assignment name'
+        Edit the text in the text box named 'Description or special instructions'
+        Edit the open and due dates for the assignment
+        Edit the 'Show feedback' drop down menu option
+        Click the 'Save As Draft' button
+
+        Expected Result:
+        The user is returned to the dashboard. Changes to the draft are seen.
+        """
+        self.ps.test_updates['name'] = 't1.16.056' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.056',
+            '12780'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case T12781 - 057 - Teacher | Change the name, description, due dtaes, and feedback timing in an opened homework
+    @pytest.mark.skipif(str(12781) not in TESTS, reason='Excluded')
+    def test_teacher_change_the_name_description_due_dates_and_feedback_timing_in_an_opened_homework(self):
+        """Change the name, description, due dates, and feedback timing in an opened homework
+
+        Steps:
+        From the dashboard, click on an opened homework
+        Click on the 'Edit Assignment' button
+        Edit the text in the text box named 'Assignment name'
+        Edit the text in the text box named 'Description or special instructions'
+        Edit the due date for the assignment
+        Edit the 'Show feedback' drop down menu option
+        Click the 'Publish' button
+
+        Expected Result:
+        User is returned to the dashboard. Changes to the homework are seen.
+        """
+        self.ps.test_updates['name'] = 't1.16.057' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.057',
+            '12781'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
