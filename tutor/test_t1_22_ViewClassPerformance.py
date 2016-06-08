@@ -31,8 +31,7 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([12845, 12846, 12847, 12848, 
-        12849, 12850, 12851, 12852])  # NOQA
+    str([8148, 8149, 8150, 8151, 8152, 8153, 8154, 8155])  # NOQA
 )
 
 
@@ -59,8 +58,8 @@ class TestEpicName(unittest.TestCase):
         except:
             pass
 
-    # Case T12845 - 001 - Teacher | View the period Performance Forecast
-    @pytest.mark.skipif(str(12845) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8148 - 001 - Teacher | View the period Performance Forecast
+    @pytest.mark.skipif(str(8148) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_view_the_period_performance_forecast(self):
         """View the period Performance Froecast
 
@@ -78,7 +77,7 @@ class TestEpicName(unittest.TestCase):
             't1',
             't1.22',
             't1.22.001',
-            '12845'
+            '8148'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -86,8 +85,8 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12846 - 002 - Teacher | Info icon shows an explanation of the data
-    @pytest.mark.skipif(str(12846) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8149 - 002 - Teacher | Info icon shows an explanation of the data
+    @pytest.mark.skipif(str(8149) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_info_icon_shows_an_explanation_of_the_data(self):
         """Info icon shows an explanation of the data
 
@@ -105,7 +104,7 @@ class TestEpicName(unittest.TestCase):
             't1',
             't1.22',
             't1.22.002',
-            '12846'
+            '8149'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -113,8 +112,8 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12847 - 003 - Teacher | View the performance color key
-    @pytest.mark.skipif(str(12847) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8150 - 003 - Teacher | View the performance color key
+    @pytest.mark.skipif(str(8150) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_view_the_performance_color_key(self):
         """View the performance color key
 
@@ -131,7 +130,7 @@ class TestEpicName(unittest.TestCase):
             't1',
             't1.22',
             't1.22.003',
-            '12847'
+            '8150'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -139,8 +138,8 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12848 - 004 - Teacher | Return to Dashboard button returns to the calendar
-    @pytest.mark.skipif(str(12848) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8151 - 004 - Teacher | Return to Dashboard button returns to the calendar
+    @pytest.mark.skipif(str(8151) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_return_to_dashboard_button_returns_to_the_calendar(self):
         """Return to Dashboard button returns to the calendar
 
@@ -157,7 +156,7 @@ class TestEpicName(unittest.TestCase):
             't1',
             't1.22',
             't1.22.004',
-            '12848'
+            '8151'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -165,8 +164,8 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12849 - 005 - Teacher | Periods tabs are shown
-    @pytest.mark.skipif(str(12849) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8152 - 005 - Teacher | Periods tabs are shown
+    @pytest.mark.skipif(str(8152) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_period_tabs_are_shown(self):
         """Period tabs are shown
 
@@ -183,7 +182,7 @@ class TestEpicName(unittest.TestCase):
             't1',
             't1.22',
             't1.22.005',
-            '12849'
+            '8152'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -191,8 +190,8 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12850 - 006 - Teacher | A period with zero answers does not show section breakdowns
-    @pytest.mark.skipif(str(12850) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8153 - 006 - Teacher | A period with zero answers does not show section breakdowns
+    @pytest.mark.skipif(str(8153) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_a_period_with_zero_answers_does_not_show_section_breakdowns(self):
         """A period with zero answers does not show section breakdowns
 
@@ -210,7 +209,7 @@ class TestEpicName(unittest.TestCase):
             't1',
             't1.22',
             't1.22.006',
-            '12850'
+            '8153'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -218,8 +217,8 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12851 - 007 - Teacher | Weaker areas shows up to four problematic sections
-    @pytest.mark.skipif(str(12851) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8154 - 007 - Teacher | Weaker areas shows up to four problematic sections
+    @pytest.mark.skipif(str(8154) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_weaker_areas_shows_up_to_four_problematic_sections(self):
         """Weaker areas shows up to four problematic sections
 
@@ -237,7 +236,7 @@ class TestEpicName(unittest.TestCase):
             't1',
             't1.22',
             't1.22.007',
-            '12851'
+            '8154'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -245,8 +244,8 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12852 - 008 - Teacher | Chapters are listed on the left with their sections to the right
-    @pytest.mark.skipif(str(12852) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8155 - 008 - Teacher | Chapters are listed on the left with their sections to the right
+    @pytest.mark.skipif(str(8155) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_chapters_are_listed_on_the_left_with_their_sections_to_the_right(self):
         """Chapters are listed on the left with their sections to the right
 
@@ -265,7 +264,7 @@ class TestEpicName(unittest.TestCase):
             't1',
             't1.22',
             't1.22.008',
-            '12852'
+            '8155'
         ]
         self.ps.test_updates['passed'] = False
 

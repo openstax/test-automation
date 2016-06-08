@@ -1,4 +1,4 @@
-"""Concept Coach v1, Epic 08 - Students Work Assignments."""
+"""Tutor v1, Epic 16 - Create A Homework."""
 
 import inspect
 import json
@@ -22,16 +22,18 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([12725, 12726, 12727, 12728, 12729, 12730, 
-        12731, 12732, 12733, 12734, 12735, 12736, 
-        12737, 12738, 12739, 12740, 12741, 12742, 
-        12743, 12744, 12745, 12746, 12747, 12748, 
-        12749, 12750, 12751, 12752, 12753, 12754, 
-        12755, 12756, 12757, 12758, 12759, 12760, 
-        12761, 12762, 12763, 12764, 12765, 12766, 
-        12767, 12768, 12769, 12770, 12771, 12772, 
-        12773, 12774, 12775, 12776, 12777, 12778, 
-        12779, 12780, 12781])
+    str([8028, 8029, 8030, 8031, 8032, 
+        8033, 8034, 8035, 8036, 8037, 
+        8038, 8039, 8040, 8041, 8042, 
+        8043, 8044, 8045, 8046, 8047, 
+        8048, 8049, 8050, 8051, 8052, 
+        8053, 8054, 8055, 8056, 8057, 
+        8058, 8059, 8060, 8061, 8062, 
+        8063, 8064, 8065, 8066, 8067, 
+        8068, 8069, 8070, 8071, 8072, 
+        8073, 8074, 8075, 8076, 8077, 
+        8078, 8079, 8080, 8081, 8082, 
+        8083, 8084])
 )
 
 
@@ -99,8 +101,8 @@ class TestCreateAHomework(unittest.TestCase):
         except:
             pass
 
-    # Case T12725 - 001 - Teacher | Add a homework using the Add Assignment drop down menu
-    @pytest.mark.skipif(str(12725) not in TESTS, reason='Excluded')
+    # Case C8028 - 001 - Teacher | Add a homework using the Add Assignment drop down menu
+    @pytest.mark.skipif(str(8028) not in TESTS, reason='Excluded')
     def test_teacher_add_a_homework_using_the_add_assignment_drop_down_menu(self):
         """Add a homework using the Add Assignment drop down menu.
 
@@ -117,7 +119,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.001',
-            '12725'
+            '8028'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -125,8 +127,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12726 - 002 - Teacher | Add a homework using the calendar date
-    @pytest.mark.skipif(str(12726) not in TESTS, reason='Excluded')
+    # Case C8029 - 002 - Teacher | Add a homework using the calendar date
+    @pytest.mark.skipif(str(8029) not in TESTS, reason='Excluded')
     def test_teacher_add_a_homework_using_the_calendar_date(self):
         """Add a homework using the calendar date
 
@@ -143,7 +145,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.002',
-            '12726'
+            '8028'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -151,8 +153,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12727 - 003 - Teacher | Set open and due dates for all periods collectively
-    @pytest.mark.skipif(str(12727) not in TESTS, reason='Excluded')
+    # Case C8030 - 003 - Teacher | Set open and due dates for all periods collectively
+    @pytest.mark.skipif(str(8030) not in TESTS, reason='Excluded')
     def test_teacher_set_open_and_due_dates_for_periods_collectively(self):
         """Set open and due dates for all periods collectively
 
@@ -173,7 +175,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.003',
-            '12727'
+            '8030'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -181,8 +183,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12728 - 004 - Teacher | Set open and due dates for periods individually
-    @pytest.mark.skipif(str(12728) not in TESTS, reason='Excluded')
+    # Case C8031 - 004 - Teacher | Set open and due dates for periods individually
+    @pytest.mark.skipif(str(8031) not in TESTS, reason='Excluded')
     def test_teacher_set_open_and_due_dates_for_all_periods_individually(self):
         """Set open and due dates for all periods individually
 
@@ -202,7 +204,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.004',
-            '12728'
+            '8031'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -210,8 +212,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12729 - 005 - Teacher | Save a draft homework
-    @pytest.mark.skipif(str(12729) not in TESTS, reason='Excluded')
+    # Case C8032 - 005 - Teacher | Save a draft homework
+    @pytest.mark.skipif(str(8032) not in TESTS, reason='Excluded')
     def test_teacher_save_a_draft_homework(self):
         """Save a draft homework
 
@@ -236,7 +238,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.005',
-            '12729'
+            '8032'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -244,8 +246,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True  
 
-    # Case T12730 - 006 - Teacher | Publish a new homework
-    @pytest.mark.skipif(str(12730) not in TESTS, reason='Excluded')
+    # Case C8033 - 006 - Teacher | Publish a new homework
+    @pytest.mark.skipif(str(8033) not in TESTS, reason='Excluded')
     def test_teacher_publish_a_new_homework(self):
         """Publish a new homework
 
@@ -270,7 +272,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.006',
-            '12730'
+            '8033'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -278,8 +280,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12731 - 007 - Teacher | Publish a draft homework
-    @pytest.mark.skipif(str(12731) not in TESTS, reason='Excluded')
+    # Case C8034 - 007 - Teacher | Publish a draft homework
+    @pytest.mark.skipif(str(8034) not in TESTS, reason='Excluded')
     def test_teacher_publish_a_draft_homework(self):
         """Publish a draft homework
 
@@ -296,7 +298,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.007',
-            '12731'
+            '8034'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -304,8 +306,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12732 - 008 - Teacher | Cancel a new homework before making any changes using the Cancel button
-    @pytest.mark.skipif(str(12732) not in TESTS, reason='Excluded')
+    # Case C8035 - 008 - Teacher | Cancel a new homework before making any changes using the Cancel button
+    @pytest.mark.skipif(str(8035) not in TESTS, reason='Excluded')
     def test_teacher_cancel_a_new_homework_before_making_any_changes_using_the_cancel_button(self):
         """Cancel a new homework before making any changes using the Cancel button
 
@@ -323,7 +325,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.008',
-            '12732'
+            '8035'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -331,8 +333,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12733 - 009 - Teacher | Cancel a new homework after making any changes using the Cancel button
-    @pytest.mark.skipif(str(12733) not in TESTS, reason='Excluded')
+    # Case C8036 - 009 - Teacher | Cancel a new homework after making any changes using the Cancel button
+    @pytest.mark.skipif(str(8036) not in TESTS, reason='Excluded')
     def test_teacher_cancel_a_new_homework_after_making_any_changes_using_the_cancel_button(self):
         """Cancel a new homework after making any changes using the Cancel button
 
@@ -358,7 +360,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.009',
-            '12733'
+            '8036'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -366,8 +368,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12734 - 010 - Teacher | Cancel a new homework before making any changes using the X
-    @pytest.mark.skipif(str(12734) not in TESTS, reason='Excluded')
+    # Case C8037 - 010 - Teacher | Cancel a new homework before making any changes using the X
+    @pytest.mark.skipif(str(8037) not in TESTS, reason='Excluded')
     def test_teacher_cancel_a_new_homework_before_making_any_changes_using_the_X(self):
         """Cancel a new homework before making any changes using the X
 
@@ -386,7 +388,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.010',
-            '12734'
+            '8037'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -394,8 +396,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12735 - 011 - Teacher | Cancel a new homework after making any changes using the X
-    @pytest.mark.skipif(str(12735) not in TESTS, reason='Excluded')
+    # Case C8038 - 011 - Teacher | Cancel a new homework after making any changes using the X
+    @pytest.mark.skipif(str(8038) not in TESTS, reason='Excluded')
     def test_teacher_cancel_a_new_homework_after_making_any_changes_using_the_X(self):
         """Cancel a new homework after making any changes using the X
 
@@ -421,7 +423,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.011',
-            '12735'
+            '8038'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -429,8 +431,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12736 - 012 - Teacher | Cancel a draft homework before making any changes using the Cancel button
-    @pytest.mark.skipif(str(12736) not in TESTS, reason='Excluded')
+    # Case C8039 - 012 - Teacher | Cancel a draft homework before making any changes using the Cancel button
+    @pytest.mark.skipif(str(8039) not in TESTS, reason='Excluded')
     def test_teacher_cancel_a_draft_homework_before_making_any_changes_using_the_cancel_button(self):
         """Cancel a draft homework before making any changes using the Cancel button
 
@@ -448,7 +450,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.012',
-            '12736'
+            '8039'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -456,8 +458,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12737 - 013 - Teacher | Cancel a draft homework after making changes using the Cancel button
-    @pytest.mark.skipif(str(12737) not in TESTS, reason='Excluded')
+    # Case C8040 - 013 - Teacher | Cancel a draft homework after making changes using the Cancel button
+    @pytest.mark.skipif(str(8040) not in TESTS, reason='Excluded')
     def test_teacher_cancel_a_draft_homework_after_making_changes_using_the_cancel_button(self):
         """Cancel a draft homework after making changes using the Cancel button
 
@@ -476,7 +478,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.013',
-            '12737'
+            '8040'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -484,8 +486,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12738 - 014 - Teacher | Cancel a draft homework before making any changes using the X
-    @pytest.mark.skipif(str(12738) not in TESTS, reason='Excluded')
+    # Case C8041 - 014 - Teacher | Cancel a draft homework before making any changes using the X
+    @pytest.mark.skipif(str(8041) not in TESTS, reason='Excluded')
     def test_teacher_cancel_a_draft_homework_before_making_any_changes_using_the_X(self):
         """Cancel a draft homework before making any changes using the X
 
@@ -503,7 +505,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.014',
-            '12738'
+            '8041'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -511,8 +513,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12739 - 015 - Teacher | Cancel a draft homework after making changes using the X
-    @pytest.mark.skipif(str(12739) not in TESTS, reason='Excluded')
+    # Case C8042 - 015 - Teacher | Cancel a draft homework after making changes using the X
+    @pytest.mark.skipif(str(8042) not in TESTS, reason='Excluded')
     def test_teacher_cancel_a_draft_homework_after_making_changes_using_the_X(self):
         """Cancel a draft homework after making changes using the X
 
@@ -532,7 +534,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.015',
-            '12739'
+            '8042'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -540,8 +542,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12740 - 016 - Teacher | Attempt to publish a homework with blank required fields
-    @pytest.mark.skipif(str(12740) not in TESTS, reason='Excluded')
+    # Case C8043 - 016 - Teacher | Attempt to publish a homework with blank required fields
+    @pytest.mark.skipif(str(8043) not in TESTS, reason='Excluded')
     def test_teacher_attempt_to_publish_a_homework_with_blank_required_fields(self):
         """Attempt to publish a homework with blank required fields
 
@@ -559,7 +561,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.016',
-            '12740'
+            '8043'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -567,8 +569,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12741 - 017 - Teacher | Attempt to save a draft homework with blank required fields
-    @pytest.mark.skipif(str(12741) not in TESTS, reason='Excluded')
+    # Case C8044 - 017 - Teacher | Attempt to save a draft homework with blank required fields
+    @pytest.mark.skipif(str(8044) not in TESTS, reason='Excluded')
     def test_teacher_attempt_to_save_a_draft_homework_with_blank_required_fields(self):
         """Attempt to save a draft homework with blank required fields
 
@@ -586,7 +588,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.017',
-            '12741'
+            '8044'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -594,8 +596,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12742 - 018 - Teacher | Delete an unpoened homework
-    @pytest.mark.skipif(str(12742) not in TESTS, reason='Excluded')
+    # Case C8045 - 018 - Teacher | Delete an unpoened homework
+    @pytest.mark.skipif(str(8045) not in TESTS, reason='Excluded')
     def test_teacher_delete_an_unopened_homework(self):
         """Delete an unopened homework
 
@@ -614,7 +616,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.018',
-            '12742'
+            '8045'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -622,8 +624,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12743 - 019 - Teacher | Attempt to delete an open homework
-    @pytest.mark.skipif(str(12743) not in TESTS, reason='Excluded')
+    # Case C8046 - 019 - Teacher | Attempt to delete an open homework
+    @pytest.mark.skipif(str(8046) not in TESTS, reason='Excluded')
     def test_teacher_attempt_to_delete_an_open_homework(self):
         """Attempt to delete an open homework
 
@@ -640,7 +642,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.019',
-            '12743'
+            '8046'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -648,8 +650,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12744 - 020 - Teacher | Delete a draft homework
-    @pytest.mark.skipif(str(12744) not in TESTS, reason='Excluded')
+    # Case C8047 - 020 - Teacher | Delete a draft homework
+    @pytest.mark.skipif(str(8047) not in TESTS, reason='Excluded')
     def test_teacher_delete_a_draft_homework(self):
         """Delete a draft homework
 
@@ -667,7 +669,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.020',
-            '12744'
+            '8047'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -675,8 +677,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12745 - 021 - Teacher | Add a description to a homework
-    @pytest.mark.skipif(str(12745) not in TESTS, reason='Excluded')
+    # Case C8048 - 021 - Teacher | Add a description to a homework
+    @pytest.mark.skipif(str(8048) not in TESTS, reason='Excluded')
     def test_teacher_add_a_description_to_the_homework(self):
         """Add a description to a homework
 
@@ -694,7 +696,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.021',
-            '12745'
+            '8048'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -702,8 +704,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12746 - 022 - Teacher | Change a description for a draft homework
-    @pytest.mark.skipif(str(12746) not in TESTS, reason='Excluded')
+    # Case C8049 - 022 - Teacher | Change a description for a draft homework
+    @pytest.mark.skipif(str(8049) not in TESTS, reason='Excluded')
     def test_teacher_change_a_description_for_a_draft_homework(self):
         """Change a description for a draft homework
 
@@ -721,7 +723,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.022',
-            '12746'
+            '8049'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -729,8 +731,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12747 - 023 - Teacher | Change a description for an open homework
-    @pytest.mark.skipif(str(12747) not in TESTS, reason='Excluded')
+    # Case C8050 - 023 - Teacher | Change a description for an open homework
+    @pytest.mark.skipif(str(8050) not in TESTS, reason='Excluded')
     def test_teacher_change_a_description_for_an_open_homework(self):
         """Change a description for an open homework
 
@@ -749,7 +751,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.023',
-            '12747'
+            '8050'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -757,8 +759,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12748 - 024 - Teacher | Add a name to a homework
-    @pytest.mark.skipif(str(12748) not in TESTS, reason='Excluded')
+    # Case C8051 - 024 - Teacher | Add a name to a homework
+    @pytest.mark.skipif(str(8051) not in TESTS, reason='Excluded')
     def test_teacher_add_a_name_to_a_homework(self):
         """Add a name to a homework
 
@@ -776,7 +778,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.024',
-            '12748'
+            '8051'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -784,8 +786,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12749 - 025 - Teacher | Change a name for a draft homework
-    @pytest.mark.skipif(str(12749) not in TESTS, reason='Excluded')
+    # Case C8052 - 025 - Teacher | Change a name for a draft homework
+    @pytest.mark.skipif(str(8052) not in TESTS, reason='Excluded')
     def test_teacher_change_a_name_for_a_draft_homework(self):
         """Change a name for a draft homework
 
@@ -803,7 +805,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.025',
-            '12749'
+            '8052'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -811,8 +813,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12750 - 026 - Teacher | Change a name for an open homework
-    @pytest.mark.skipif(str(12750) not in TESTS, reason='Excluded')
+    # Case C8053 - 026 - Teacher | Change a name for an open homework
+    @pytest.mark.skipif(str(8053) not in TESTS, reason='Excluded')
     def test_teacher_change_a_name_for_an_open_homework(self):
         """Change a name for an open homework
 
@@ -831,7 +833,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.026',
-            '12750'
+            '8053'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -839,8 +841,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12751 - 027 - Teacher | Select when to show feedback to a student
-    @pytest.mark.skipif(str(12751) not in TESTS, reason='Excluded')
+    # Case C8054 - 027 - Teacher | Select when to show feedback to a student
+    @pytest.mark.skipif(str(8054) not in TESTS, reason='Excluded')
     def test_teacher_select_when_to_show_feedback_to_a_student(self):
         """Select when to show feedback to a student
 
@@ -858,7 +860,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.027',
-            '12751'
+            '8054'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -866,8 +868,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12752 - 028 - Teacher | Change when to show feedback to a student for a draft homework
-    @pytest.mark.skipif(str(12752) not in TESTS, reason='Excluded')
+    # Case C8055 - 028 - Teacher | Change when to show feedback to a student for a draft homework
+    @pytest.mark.skipif(str(8055) not in TESTS, reason='Excluded')
     def test_teacher_change_when_to_show_feedback_to_a_student_for_a_draft_homework(self):
         """Change when to show feedback to a student for a draft homework
 
@@ -885,7 +887,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.028',
-            '12752'
+            '8055'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -893,8 +895,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12753 - 029 - Teacher | Change when to show feedback to a student for an unopened homework
-    @pytest.mark.skipif(str(12753) not in TESTS, reason='Excluded')
+    # Case C8056 - 029 - Teacher | Change when to show feedback to a student for an unopened homework
+    @pytest.mark.skipif(str(8056) not in TESTS, reason='Excluded')
     def test_teacher_change_when_to_show_feedback_to_a_student_for_an_unopened_homework(self):
         """Change when to show feedback to a student for an unopened homework
 
@@ -914,7 +916,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.029',
-            '12753'
+            '8056'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -922,8 +924,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12754 - 030 - Teacher | Change when to show feedback to a student for an opened homework
-    @pytest.mark.skipif(str(12754) not in TESTS, reason='Excluded')
+    # Case C8057 - 030 - Teacher | Change when to show feedback to a student for an opened homework
+    @pytest.mark.skipif(str(8057) not in TESTS, reason='Excluded')
     def test_teacher_change_when_to_show_feedback_to_a_student_for_an_opened_homework(self):
         """Change when to show feedback to a student for an opened homework
 
@@ -942,7 +944,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.030',
-            '12754'
+            '8057'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -950,8 +952,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12755 - 031 - Teacher | Info icon shows definitions for the Add Homework Assignment status bar buttons
-    @pytest.mark.skipif(str(12755) not in TESTS, reason='Excluded')
+    # Case C8058 - 031 - Teacher | Info icon shows definitions for the Add Homework Assignment status bar buttons
+    @pytest.mark.skipif(str(8058) not in TESTS, reason='Excluded')
     def test_teacher_info_icon_shows_definitions_for_the_add_homework_assignment_status_bar_buttons(self):
         """Info icon shows definitions for the add homework assignment status bar buttons
 
@@ -968,7 +970,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.031',
-            '12755'
+            '8058'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -976,8 +978,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12756 - 032 - Teacher | Show available problems for a single section
-    @pytest.mark.skipif(str(12756) not in TESTS, reason='Excluded')
+    # Case C8059 - 032 - Teacher | Show available problems for a single section
+    @pytest.mark.skipif(str(8059) not in TESTS, reason='Excluded')
     def test_teacher_show_available_problems_for_a_single_section(self):
         """Show available problems for a single section
 
@@ -997,7 +999,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.032',
-            '12756'
+            '8059'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1005,8 +1007,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12757 - 033 - Teacher | Show available problems for a single chapter
-    @pytest.mark.skipif(str(12757) not in TESTS, reason='Excluded')
+    # Case C8060 - 033 - Teacher | Show available problems for a single chapter
+    @pytest.mark.skipif(str(8060) not in TESTS, reason='Excluded')
     def test_teacher_show_available_problems_for_a_single_chapter(self):
         """Show available problems for a single chapter
 
@@ -1025,7 +1027,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.033',
-            '12757'
+            '8060'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1033,8 +1035,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12758 - 034 - Teacher | No problems should be associated with an Introduction section
-    @pytest.mark.skipif(str(12758) not in TESTS, reason='Excluded')
+    # Case C8061 - 034 - Teacher | No problems should be associated with an Introduction section
+    @pytest.mark.skipif(str(8061) not in TESTS, reason='Excluded')
     def test_teacher_no_problems_should_be_associated_with_an_introduction_section(self):
         """No problems should be associated with an Introduction section
 
@@ -1054,7 +1056,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.034',
-            '12758'
+            '8061'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1062,8 +1064,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12759 - 035 - Teacher | Change the number of Tutor-selected assessments
-    @pytest.mark.skipif(str(12759) not in TESTS, reason='Excluded')
+    # Case C8062 - 035 - Teacher | Change the number of Tutor-selected assessments
+    @pytest.mark.skipif(str(8062) not in TESTS, reason='Excluded')
     def test_teacher_change_the_number_of_tutor_selected_assessments(self):
         """Change the number of Tutor-selected assessments
 
@@ -1083,7 +1085,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.035',
-            '12759'
+            '8062'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1091,8 +1093,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12760 - 036 - Teacher | Select assessments
-    @pytest.mark.skipif(str(12760) not in TESTS, reason='Excluded')
+    # Case C8063 - 036 - Teacher | Select assessments
+    @pytest.mark.skipif(str(8063) not in TESTS, reason='Excluded')
     def test_teacher_select_assessments(self):
         """Select assessments
 
@@ -1113,7 +1115,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.036',
-            '12760'
+            '8063'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1121,8 +1123,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12761 - 037 - Teacher | Deselect assessments
-    @pytest.mark.skipif(str(12761) not in TESTS, reason='Excluded')
+    # Case C8064 - 037 - Teacher | Deselect assessments
+    @pytest.mark.skipif(str(8064) not in TESTS, reason='Excluded')
     def test_teacher_deselect_assessments(self):
         """Deselect assessments
 
@@ -1144,7 +1146,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.037',
-            '12761'
+            '8064'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1152,8 +1154,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12762 - 038 - Teacher | View assessment feedback by marking the Preview Feedback checkbox
-    @pytest.mark.skipif(str(12762) not in TESTS, reason='Excluded')
+    # Case C8065 - 038 - Teacher | View assessment feedback by marking the Preview Feedback checkbox
+    @pytest.mark.skipif(str(8065) not in TESTS, reason='Excluded')
     def test_teacher_view_assessment_feedback_by_marking_the_preview_feedback_checkbox(self):
         """View the assessment feedback by marking the Preview Feedback checkbox
 
@@ -1174,7 +1176,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.038',
-            '12762'
+            '8065'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1182,8 +1184,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12763 - 039 - Teacher | Assessments show their exercise ID and exercise version
-    @pytest.mark.skipif(str(12763) not in TESTS, reason='Excluded')
+    # Case C8066 - 039 - Teacher | Assessments show their exercise ID and exercise version
+    @pytest.mark.skipif(str(8066) not in TESTS, reason='Excluded')
     def test_teacher_assessments_show_their_exercise_id_and_exercise_version(self):
         """Assessments show their exercise ID and exercise version
 
@@ -1203,7 +1205,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.039',
-            '12763'
+            '8066'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1211,8 +1213,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12764 - 040 - Teacher | Report an error for an assessment
-    @pytest.mark.skipif(str(12764) not in TESTS, reason='Excluded')
+    # Case C8067 - 040 - Teacher | Report an error for an assessment
+    @pytest.mark.skipif(str(8067) not in TESTS, reason='Excluded')
     def test_teacher_report_an_Error_for_an_assessment(self):
         """Report an error for an assessment
 
@@ -1233,7 +1235,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.040',
-            '12764'
+            '8067'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1241,8 +1243,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12765 - 041 - Teacher | Assessment tags are visible
-    @pytest.mark.skipif(str(12765) not in TESTS, reason='Excluded')
+    # Case C8068 - 041 - Teacher | Assessment tags are visible
+    @pytest.mark.skipif(str(8068) not in TESTS, reason='Excluded')
     def test_teacher_assessment_tags_are_visible(self):
         """Assessment tags are visible
 
@@ -1262,7 +1264,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.041',
-            '12765'
+            '8068'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1270,8 +1272,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12766 - 042 - Teacher | Cancel assessment selection before making any changes using the Cancel button
-    @pytest.mark.skipif(str(12766) not in TESTS, reason='Excluded')
+    # Case C8069 - 042 - Teacher | Cancel assessment selection before making any changes using the Cancel button
+    @pytest.mark.skipif(str(8069) not in TESTS, reason='Excluded')
     def test_teacher_cancel_assessment_selection_before_making_any_changes_using_the_cancel_button(self):
         """Cancel assessment selection before making any changes using the Cancel button
 
@@ -1293,7 +1295,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.042',
-            '12766'
+            '8069'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1301,8 +1303,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12767 - 043 - Teacher | Cancel assessment selection after making any changes using the Cancel button
-    @pytest.mark.skipif(str(12767) not in TESTS, reason='Excluded')
+    # Case C8070 - 043 - Teacher | Cancel assessment selection after making any changes using the Cancel button
+    @pytest.mark.skipif(str(8070) not in TESTS, reason='Excluded')
     def test_teacher_cancel_assessment_selection_after_making_any_changes_using_the_cancel_button(self):
         """Cancel assessment selection after making any changes using the Cancel button
 
@@ -1325,7 +1327,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.043',
-            '12767'
+            '8070'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1333,8 +1335,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12768 - 044 - Teacher | Cancel assessment selection before making any changes using the X
-    @pytest.mark.skipif(str(12768) not in TESTS, reason='Excluded')
+    # Case C8071 - 044 - Teacher | Cancel assessment selection before making any changes using the X
+    @pytest.mark.skipif(str(8071) not in TESTS, reason='Excluded')
     def test_teacher_cancel_assessment_selection_before_making_any_changes_using_the_X(self):
         """Cancel assessment selection before making any changes using the X
 
@@ -1356,7 +1358,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.044',
-            '12768'
+            '8071'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1364,8 +1366,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12769 - 045 - Teacher | Cancel assessment selection after making any changes using the X
-    @pytest.mark.skipif(str(12769) not in TESTS, reason='Excluded')
+    # Case C8072 - 045 - Teacher | Cancel assessment selection after making any changes using the X
+    @pytest.mark.skipif(str(8072) not in TESTS, reason='Excluded')
     def test_teacher_cancel_assessment_selection_after_making_any_changes_using_the_X(self):
         """Cancel assessment selection after making any changes using the X
 
@@ -1388,7 +1390,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.045',
-            '12769'
+            '8072'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1396,8 +1398,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12770 - 046 - Teacher | Cancel assessment selection using the Tutor Selection bar Cancel button
-    @pytest.mark.skipif(str(12770) not in TESTS, reason='Excluded')
+    # Case C8073 - 046 - Teacher | Cancel assessment selection using the Tutor Selection bar Cancel button
+    @pytest.mark.skipif(str(8073) not in TESTS, reason='Excluded')
     def test_teacher_cancel_assessment_selection_using_the_tutor_selection_bar_cancel_button(self):
         """Cancel assessment selection using the Tutor Selection bar Cancel button
 
@@ -1419,7 +1421,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.046',
-            '12770'
+            '8073'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1427,8 +1429,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12771 - 047 - Teacher | Select assessments and view assessment ordering
-    @pytest.mark.skipif(str(12771) not in TESTS, reason='Excluded')
+    # Case C8074 - 047 - Teacher | Select assessments and view assessment ordering
+    @pytest.mark.skipif(str(8074) not in TESTS, reason='Excluded')
     def test_teacher_select_assessments_and_view_assessment_ordering(self):
         """Select assessments and view assessment ordering
 
@@ -1450,7 +1452,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.047',
-            '12771'
+            '8074'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1458,8 +1460,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12772 - 048 - Teacher | Reorder selected assessments
-    @pytest.mark.skipif(str(12772) not in TESTS, reason='Excluded')
+    # Case C8075 - 048 - Teacher | Reorder selected assessments
+    @pytest.mark.skipif(str(8075) not in TESTS, reason='Excluded')
     def test_teacher_reorder_selected_assessments(self):
         """Reorder selected assessments
 
@@ -1482,7 +1484,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.048',
-            '12772'
+            '8075'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1490,8 +1492,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12773 - 049 - Teacher | Reordering assessments immediately changes the Problem Question list
-    @pytest.mark.skipif(str(12773) not in TESTS, reason='Excluded')
+    # Case C8076 - 049 - Teacher | Reordering assessments immediately changes the Problem Question list
+    @pytest.mark.skipif(str(8076) not in TESTS, reason='Excluded')
     def test_teacher_reordering_assessments_immediately_changes_the_problem_question_list(self):
         """Reordering assessments immediately changes the Problem Question list
 
@@ -1514,7 +1516,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.049',
-            '12773'
+            '8076'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1522,8 +1524,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12774 - 050 - Teacher | Add more assessments using the Add More... button
-    @pytest.mark.skipif(str(12774) not in TESTS, reason='Excluded')
+    # Case C8077 - 050 - Teacher | Add more assessments using the Add More... button
+    @pytest.mark.skipif(str(8077) not in TESTS, reason='Excluded')
     def test_teacher_add_more_assessments_using_the_add_more_button(self):
         """Add more assessments using the Add More... button
 
@@ -1549,7 +1551,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.050',
-            '12774'
+            '8077'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1557,8 +1559,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12775 - 051 - Teacher | Problem Question list is equal to the Tutor Selection bar numbers
-    @pytest.mark.skipif(str(12775) not in TESTS, reason='Excluded')
+    # Case C8078 - 051 - Teacher | Problem Question list is equal to the Tutor Selection bar numbers
+    @pytest.mark.skipif(str(8078) not in TESTS, reason='Excluded')
     def test_teacher_(self):
         """Problem Question list is equal to the Tutor Selection bar numbers
 
@@ -1580,7 +1582,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.051',
-            '12775'
+            '8078'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1588,8 +1590,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12776 - 052 - Teacher | Remove an assessment from the order list
-    @pytest.mark.skipif(str(12776) not in TESTS, reason='Excluded')
+    # Case C8079 - 052 - Teacher | Remove an assessment from the order list
+    @pytest.mark.skipif(str(8079) not in TESTS, reason='Excluded')
     def test_teacher_remove_an_assessment_from_the_order_list(self):
         """Remove an assessment from the order list
 
@@ -1614,7 +1616,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.052',
-            '12776'
+            '8079'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1622,8 +1624,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12777 - 053 - Teacher | Remove an assessment from a homework from the Select Problems pane
-    @pytest.mark.skipif(str(12777) not in TESTS, reason='Excluded')
+    # Case C8080 - 053 - Teacher | Remove an assessment from a homework from the Select Problems pane
+    @pytest.mark.skipif(str(8080) not in TESTS, reason='Excluded')
     def test_teacher_remove_an_assessment_from_a_homework_from_the_select_problems_pane(self):
         """Remove an assessment from a homework from the Select Problems pane
 
@@ -1649,7 +1651,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.053',
-            '12777'
+            '8080'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1657,8 +1659,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12778 - 054 - Teacher | Remove an assessment from a homework from the Add Homework Assignment pane
-    @pytest.mark.skipif(str(12778) not in TESTS, reason='Excluded')
+    # Case C8081 - 054 - Teacher | Remove an assessment from a homework from the Add Homework Assignment pane
+    @pytest.mark.skipif(str(8081) not in TESTS, reason='Excluded')
     def test_teacher_remove_an_assessment_from_a_homework_from_the_add_homework_assignment_pane(self):
         """Remove an assessment from a homework from the Add Homework Assignment pane
 
@@ -1682,7 +1684,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.054',
-            '12778'
+            '8081'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1690,8 +1692,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12779 - 055 - Teacher | Change all fields in an unopened, published homework
-    @pytest.mark.skipif(str(12779) not in TESTS, reason='Excluded')
+    # Case C8082 - 055 - Teacher | Change all fields in an unopened, published homework
+    @pytest.mark.skipif(str(8082) not in TESTS, reason='Excluded')
     def test_teacher_change_all_fields_in_an_unopened_published_homework(self):
         """Change all fields in an unopened, published homework
 
@@ -1713,7 +1715,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.055',
-            '12779'
+            '8082'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1721,8 +1723,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12780 - 056 - Teacher | Change all fields in a draft homework
-    @pytest.mark.skipif(str(12780) not in TESTS, reason='Excluded')
+    # Case C8083 - 056 - Teacher | Change all fields in a draft homework
+    @pytest.mark.skipif(str(8083) not in TESTS, reason='Excluded')
     def test_teacher_change_all_fields_in_a_draft_homework(self):
         """Change all fields in a draft homework
 
@@ -1743,7 +1745,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.056',
-            '12780'
+            '8083'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1751,8 +1753,8 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case T12781 - 057 - Teacher | Change the name, description, due dtaes, and feedback timing in an opened homework
-    @pytest.mark.skipif(str(12781) not in TESTS, reason='Excluded')
+    # Case C8084 - 057 - Teacher | Change the name, description, due dtaes, and feedback timing in an opened homework
+    @pytest.mark.skipif(str(8084) not in TESTS, reason='Excluded')
     def test_teacher_change_the_name_description_due_dates_and_feedback_timing_in_an_opened_homework(self):
         """Change the name, description, due dates, and feedback timing in an opened homework
 
@@ -1774,7 +1776,7 @@ class TestCreateAHomework(unittest.TestCase):
             't1',
             't1.16',
             't1.16.057',
-            '12781'
+            '8084'
         ]
         self.ps.test_updates['passed'] = False
 

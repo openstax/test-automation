@@ -31,7 +31,7 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([12879, 12880])  # NOQA
+    str([8182, 8183])  # NOQA
 )
 
 
@@ -58,8 +58,8 @@ class TestEpicName(unittest.TestCase):
         except:
             pass
 
-    # Case T12879 - 001 - System | CNX needs to handle LaTeX in Exercises
-    @pytest.mark.skipif(str(12879) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8182 - 001 - System | CNX needs to handle LaTeX in Exercises
+    @pytest.mark.skipif(str(8182) not in TESTS, reason='Excluded')  # NOQA
     def test_system_cnx_needs_to_handle_latex_in_exercises(self):
         """CNX needs to handle LaTeX in Exercises
 
@@ -74,7 +74,7 @@ class TestEpicName(unittest.TestCase):
             't1',
             't1.27',
             't1.27.001',
-            '12879'
+            '8182'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -85,8 +85,8 @@ class TestEpicName(unittest.TestCase):
 
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
-    # Case T12880 - 002 - System | CNX pulls exercises from Tutor
-    @pytest.mark.skipif(str(12880) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8183 - 002 - System | CNX pulls exercises from Tutor
+    @pytest.mark.skipif(str(8183) not in TESTS, reason='Excluded')  # NOQA
     def test_system_cnx_pulls_exercises_from_tutor(self):
         """Story Text.
 
@@ -103,7 +103,7 @@ class TestEpicName(unittest.TestCase):
             't1',
             't1.27',
             't1.27.002',
-            '12880'
+            '8183'
         ]
         self.ps.test_updates['passed'] = False
 
