@@ -33,8 +33,8 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
-    """Product.Epic - Epic Text."""
+class TestAccountManagement(unittest.TestCase):
+    """T1.34 - Account mangement."""
 
     def setUp(self):
         """Pretest settings."""

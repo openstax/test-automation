@@ -35,8 +35,8 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
-    """Product.Epic - Epic Text."""
+class TestCreateAnExternalAssignment(unittest.TestCase):
+    """T1.18 - Epic TextCreate an external assignment."""
 
     def setUp(self):
         """Pretest settings."""
