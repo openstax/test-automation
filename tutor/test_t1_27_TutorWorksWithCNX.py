@@ -60,7 +60,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case T12879 - 001 - System | CNX needs to handle LaTeX in Exercises
     @pytest.mark.skipif(str(12879) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_system_cnx_needs_to_handle_latex_in_exercises(self):
         """CNX needs to handle LaTeX in Exercises
 
         Steps:
@@ -87,7 +87,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case T12880 - 002 - System | CNX pulls exercises from Tutor
     @pytest.mark.skipif(str(12880) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_system_cnx_pulls_exercises_from_tutor(self):
         """Story Text.
 
         Steps:
