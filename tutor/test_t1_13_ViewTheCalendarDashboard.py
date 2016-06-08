@@ -67,10 +67,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         """View the calendar dashboard.
 
         Steps:
-        Go to https://tutor-XXXX.openstax.org/
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
         If the user has more than one course, click on a Tutor course name
 
         Expected Result:
@@ -94,10 +90,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         """ View student scores using the dashboard button
 
         Steps:
-        Go to https://tutor-XXXX.openstax.org/
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
         If the user has more than one course, click on a Tutor course name
         Click on the 'Student Scores' button
 
@@ -122,10 +114,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         """ View student scores using the user menu link
 
         Steps:
-        Go to https://tutor-XXXX.openstax.org/
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
         If the user has more than one course, click on a Tutor course name
         Click on the user menu
         Click on the 'Student Scores' link
@@ -152,10 +140,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         """ View performance forecast using the dashboard button
 
         Steps:
-        Go to https://tutor-XXXX.openstax.org/
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
         If the user has more than one course, click on a Tutor course name
         Click on the 'Performace Forecast' button
 
@@ -180,10 +164,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         """ View performance forecast using the user menu link
 
         Steps:
-        Go to https://tutor-XXXX.openstax.org/
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
         If the user has more than one course, click on a Tutor course name
         Click on the user menu
         Click on the 'Performance Forecast' link
@@ -210,10 +190,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         """ View a reading assignment summary
 
         Steps:
-        Go to https://tutor-XXXX.openstax.org/
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
         If the user has more than one course, click on a Tutor course name
         Click on a reading assignment on the calendar
 
@@ -238,10 +214,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         """ View a homework assignment summary
 
         Steps:
-        Go to https://tutor-XXXX.openstax.org/
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
         If the user has more than one course, click on a Tutor course name
         Click on a homework assignment on the calendar
 
@@ -266,10 +238,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         """ View an external assignment summary
 
         Steps:
-        Go to https://tutor-XXXX.openstax.org/
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
         If the user has more than one course, click on a Tutor course name
         Click on an external assignment on the calendar
 
@@ -294,10 +262,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         """ View an event summary
 
         Steps:
-        Go to https://tutor-XXXX.openstax.org/
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
         If the user has more than one course, click on a Tutor course name
         Click on an event on the calendar
 
@@ -322,10 +286,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         """ Open the refrenece book using the dashboard button
 
         Steps:
-        Go to https://tutor-XXXX.openstax.org/
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
         If the user has more than one course, click on a Tutor course name
         Click on the 'Browse The Book'button
 
@@ -350,10 +310,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         """ Open the refrenece book using the user menu link
 
         Steps:
-        Go to https://tutor-XXXX.openstax.org/
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
         If the user has more than one course, click on a Tutor course name
         Click on the user menu
         Click on the 'Browse the Book' link
@@ -380,10 +336,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         """ Click on the course name to return to the dashboard
 
         Steps:
-        Go to https://tutor-XXXX.openstax.org/
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
         If the user has more than one course, click on a Tutor course name
         Click on the 'Performance Forecast' button
         Click on the course name in the header
@@ -406,16 +358,13 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
 
     #ASK ABOUT THIS BECAUSE THE NAME IS SO LONG
-    # Case C7990 - 013 - Teacher | For a user with multiple courses, cick on the OpenStax logo ...
+    # Case C7990 - 013 - Teacher | Cick on the OpenStax logo to return to the course picker
     @pytest.mark.skipif(str(7990) not in TESTS, reason='Excluded')
-    def test_teacher_click_on_the_course_name_to_return_to_the_dashboard(self):
+    def test_teacher_click_on_the_openstax_logo_to_return_to_the_course_picker(self):
         """ 
+        Cick on the OpenStax logo to return to the course picker
 
         Steps:
-        Go to https://tutor-XXXX.openstax.org/
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
         If the user has more than one course, click on a Tutor course name
         Click in the OpenStax logo in the header
 
@@ -435,17 +384,13 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     #ASK ABOUT THIS BECAUSE THE NAME IS SO LONG
-    # Case C7991 - 014 - Teacher | For a user with one course, CLick in the OpenStax logo ...
+    # Case C7991 - 014 - Teacher | CLick in the OpenStax logo to return to the dashboard
     @pytest.mark.skipif(str(7991) not in TESTS, reason='Excluded')
-    def test_teacher_click_on_the_course_name_to_return_to_the_dashboard(self):
+    def test_teacher_click_on_the_openstax_logo_to_return_to_the_dashboard(self):
         """ 
+        CLick in the OpenStax logo to return to the dashboard
 
         Steps:
-        Go to https://tutor-XXXX.openstax.org/
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
-        If the user has more than one course, click on a Tutor course name
         Click on the 'Performance Forecast' button
         Click on the OpenStax logo in the header
 
