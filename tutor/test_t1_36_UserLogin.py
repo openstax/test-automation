@@ -12,7 +12,7 @@ from random import randint  # NOQA
 # from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 # from staxing.helper import Teacher, Student
-from staxing.helper import Admin
+from staxing.helper import Admin, Student, Teacher, ContentQA
 
 basic_test_env = json.dumps([
     {
@@ -49,7 +49,6 @@ class TestUserLogin(unittest.TestCase):
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
-        self.teacher.login()
 
     def tearDown(self):
         """Test destructor."""
@@ -272,7 +271,7 @@ class TestUserLogin(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8246 - 009 - Student | Log into Tutor
+    # Case C8246 - 009 - Teacher | Log into Tutor
     @pytest.mark.skipif(str(8246) not in TESTS, reason='Excluded')
     def test_teacher_log_into_tutoe(self):
         """ Log into Tutor
