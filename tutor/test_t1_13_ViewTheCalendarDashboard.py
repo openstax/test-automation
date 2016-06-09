@@ -11,7 +11,6 @@ from random import randint  # NOQA
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
-# from staxing.helper import Teacher, Student
 from staxing.helper import Teacher
 
 basic_test_env = json.dumps([
@@ -46,9 +45,9 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            use_env_vars=True#,
+           # pasta_user=self.ps,
+           # capabilities=self.desired_capabilities
         )
         self.teacher.login()
 
@@ -76,8 +75,8 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.001', '7978']
         self.ps.test_updates['passed'] = False
-
-        self.teacher.select_course(appearance='physics')
+    
+        #self.teacher.select_course(appearance='physics')
         assert('calendar' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
@@ -102,13 +101,14 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
         
         self.teacher.select_course(appearance='physics')
-        #click the student scores button
+        self.teacher.driver.find_element(By.LINK_TEXT, '/courses/1/t/scores/').click()
         assert('scores' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
+            'Not viewing student scores'
         
         self.ps.test_updates['passed'] = True
 
-   # Case C7980 - 003 - Teacher | View student scores using the user menu link
+
+    # Case C7980 - 003 - Teacher | View student scores using the user menu link
     @pytest.mark.skipif(str(7980) not in TESTS, reason='Excluded')
     def test_teacher_view_student_scores_using_the_user_menu_link(self):
         """ View student scores using the user menu link
@@ -127,14 +127,14 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
         
         self.teacher.select_course(appearance='physics')
-        #click the user menu
-        #click the student scores link
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(By.CLASS_NAME, 'viewScores').click()
         assert('scores' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
+            'Not viewing the student scores'
         
         self.ps.test_updates['passed'] = True
 
- # Case C7981 - 004 - Teacher | View performace forecast using the dashboard button
+    # Case C7981 - 004 - Teacher | View performace forecast using the dashboard button
     @pytest.mark.skipif(str(7981) not in TESTS, reason='Excluded')
     def test_teacher_view_performace_forecast_using_the_dashboard_button(self):
         """ View performance forecast using the dashboard button
@@ -152,7 +152,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
         
         self.teacher.select_course(appearance='physics')
-        #click the performace forecast button
+        self.teacher.driver.find_element(By.LINK_TEXT, '/courses/1/t/guide').click()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing the performance forecast'
         
@@ -177,8 +177,8 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
         
         self.teacher.select_course(appearance='physics')
-        #click the user menu
-        #click on the performance forecast link
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(By.CLASS_NAME,'viewTeacherPerformanceForecast').click()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing the performance forecast'
         
@@ -191,7 +191,8 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         Steps:
         If the user has more than one course, click on a Tutor course name
-        Click on a reading assignment on the calendar
+        Create a reading assignment
+        Click on the reading assignment on the calendar
 
         Expected Result:
         The teacher is presented with the reading assignment summary
@@ -298,9 +299,9 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
         
         self.teacher.select_course(appearance='physics')
-        #click on browse the book
-        #assert(  , \
-        #    'Not viewing the textbook PDF'
+        self.teacher.driver.find_element(By.LINK_TEXT, '/books/1/').click()
+        assert( 'guide' in self.teacher.current_url()) , \
+            'Not viewing the textbook PDF'
         
         self.ps.test_updates['passed'] = True
 
@@ -323,10 +324,10 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
         
         self.teacher.select_course(appearance='physics')
-        #click on the user menu
-        #click on browse the book
-        #assert(  , \
-        #    'Not viewing the textbook PDF'
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(By.CLASS_NAME, 'view-reference-guide').click()
+        assert( 'guide' in self.teacher.current_url()), \
+            'Not viewing the textbook PDF'
         
         self.ps.test_updates['passed'] = True
 
@@ -357,7 +358,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
 
-    #ASK ABOUT THIS BECAUSE THE NAME IS SO LONG
     # Case C7990 - 013 - Teacher | Cick on the OpenStax logo to return to the course picker
     @pytest.mark.skipif(str(7990) not in TESTS, reason='Excluded')
     def test_teacher_click_on_the_openstax_logo_to_return_to_the_course_picker(self):
@@ -383,7 +383,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         
         self.ps.test_updates['passed'] = True
 
-    #ASK ABOUT THIS BECAUSE THE NAME IS SO LONG
     # Case C7991 - 014 - Teacher | CLick in the OpenStax logo to return to the dashboard
     @pytest.mark.skipif(str(7991) not in TESTS, reason='Excluded')
     def test_teacher_click_on_the_openstax_logo_to_return_to_the_dashboard(self):
@@ -409,3 +408,4 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         #    'Not viewing the calendar dashboard'
         
         self.ps.test_updates['passed'] = True
+
