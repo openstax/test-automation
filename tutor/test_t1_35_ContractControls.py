@@ -15,13 +15,6 @@ from staxing.assignment import Assignment  # NOQA
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Admin  # NOQA
 
-# for template command line testing only
-# - replace list_of_cases on line 31 with all test case IDs in this file
-# - replace CaseID on line 52 with the actual cass ID
-# - delete lines 17 - 22
-list_of_cases = 0
-CaseID = 0
-
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
