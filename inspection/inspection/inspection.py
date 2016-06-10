@@ -83,14 +83,18 @@ def main(argv=None):
         settings['pdf_a'] = os.path.join(start_dir,settings['pdf_a'])
     if not os.path.isabs(settings['pdf_b']):
         settings['pdf_b'] = os.path.join(start_dir,settings['pdf_b'])
-  
+ 
+ 
     if settings['debug']:
         load_tests = generate_tests(settings)
         unittest.TextTestRunner(verbosity=3,stream=sys.stderr).run(load_tests)
     else:
         load_tests = generate_tests(settings)
-        with open(settings['output'], 'w+') as f:
-            unittest.TextTestRunner(stream=f, verbosity=3).run(load_tests)
+        terminal_out = sys.stdout
+        f = open(os.devnull, 'w')
+        sys.stdout = f
+        unittest.TextTestRunner(stream=f, verbosity=3).run(load_tests)
+        sys.stdout = terminal_out 
 
     if settings['diff']:
         diff = diff_images(settings['results'], settings['check'])
