@@ -25,11 +25,6 @@ def main(argv=None):
     parser.add_argument(
         '--exclude', action='append', default=[], help="Exclude test classes.")
     parser.add_argument(
-        '--output',
-        type=str,
-        default='output.log',
-        help="Test execution output file (default=output.log).")
-    parser.add_argument(
         '--results',
         type=str,
         default='results.log',
