@@ -56,14 +56,6 @@ def generate_tests(settings):
     return test_cases
 
 
-def load_result_log(filepath):
-    results = []
-    with open(filepath, 'r') as f:
-        for line in f:
-            info = eval(line)
-            results.append(info)
-    return results
-
 def case_key_from_id(ident):
     return ident.split('(')[0]
 
