@@ -81,12 +81,12 @@ class TestEpicName(unittest.TestCase):
         Is presented with Concept Coach after creating a free account 
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.002' \
+        self.ps.test_updates['name'] = 'cc1.06.001' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.06',
-            'cc1.06.002',
+            'cc1.06.001',
             '7631'
         ]
         self.ps.test_updates['passed'] = False
