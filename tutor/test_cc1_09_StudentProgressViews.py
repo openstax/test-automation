@@ -195,19 +195,7 @@ class TestEpicName(unittest.TestCase):
         The user is presented with their current position in the assignment
 
         """
-        self.ps.test_updates['name'] = 'cc1.09.004' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.09',
-            'cc1.09.004',
-            '7736'
-        ]
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-
-        self.ps.test_updates['passed'] = True
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
 
     # Case C7737 - 005 - Student | Able to review previous modules
