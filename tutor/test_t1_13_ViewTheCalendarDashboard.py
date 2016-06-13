@@ -8,7 +8,7 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint  # NOQA
-# from selenium.webdriver.common.by import By
+from selenium.webdriver.common.by import By
 # from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 from staxing.helper import Teacher
@@ -76,7 +76,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.001', '7978']
         self.ps.test_updates['passed'] = False
     
-        #self.teacher.select_course(appearance='physics')
+        self.teacher.select_course(appearance='physics')
         assert('calendar' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
@@ -101,7 +101,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
         
         self.teacher.select_course(appearance='physics')
-        self.teacher.driver.find_element(By.LINK_TEXT, '/courses/1/t/scores/').click()
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Student Score').click()
         assert('scores' in self.teacher.current_url()), \
             'Not viewing student scores'
         
@@ -152,7 +152,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
         
         self.teacher.select_course(appearance='physics')
-        self.teacher.driver.find_element(By.LINK_TEXT, '/courses/1/t/guide').click()
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing the performance forecast'
         
@@ -254,7 +254,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         #click on a external assignment
         #assert(  , \
         #    'Not viewing external assignemnt summary'
-        
+
         self.ps.test_updates['passed'] = True
 
     # Case C7986 - 009 - Teacher | View an event summary
@@ -278,7 +278,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         #click on an event
         #assert(  , \
         #    'Not viewing event summary'
-        
+
         self.ps.test_updates['passed'] = True
 
     # Case C7987 - 010 - Teacher | Open the refrenece book using the dashboard button
@@ -299,13 +299,15 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
         
         self.teacher.select_course(appearance='physics')
-        self.teacher.driver.find_element(By.LINK_TEXT, '/books/1/').click()
-        assert( 'guide' in self.teacher.current_url()) , \
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Browse The Book').click()
+        window_with_book = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_book)
+        assert( 'book' in self.teacher.current_url()) , \
             'Not viewing the textbook PDF'
         
         self.ps.test_updates['passed'] = True
 
- # Case C7988 - 011 - Teacher | Open the refrenece book using the user menu link
+    # Case C7988 - 011 - Teacher | Open the refrenece book using the user menu link
     @pytest.mark.skipif(str(7988) not in TESTS, reason='Excluded')
     def test_teacher_open_the_reference_book_using_the_user_menu_link(self):
         """ Open the refrenece book using the user menu link
@@ -326,7 +328,9 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.teacher.select_course(appearance='physics')
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(By.CLASS_NAME, 'view-reference-guide').click()
-        assert( 'guide' in self.teacher.current_url()), \
+        window_with_book = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_book)
+        assert( 'book' in self.teacher.current_url()), \
             'Not viewing the textbook PDF'
         
         self.ps.test_updates['passed'] = True
@@ -350,10 +354,10 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
         
         self.teacher.select_course(appearance='physics')
-        #click on performance forecast
-        #click on the course name
-        #assert(  , \
-        #    'Not viewing the textbook PDF'
+        self.teacher.driver.find_element(By.CLASS_NAME,'viewTeacherPerformanceForecast').click()
+        self.teacher.driver.find_element(By.CLASS_NAME,'course-name').click()
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
         
         self.ps.test_updates['passed'] = True
 
@@ -377,9 +381,9 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
         
         self.teacher.select_course(appearance='physics')
-        #click on the openstax logo
-        #assert(  , \
-        #    'Not viewing the course picker'
+        self.teacher.driver.find_element(By.CLASS_NAME,'ui-brand-logo').click()
+        assert('dashboard' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
         
         self.ps.test_updates['passed'] = True
 
@@ -401,11 +405,10 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.014', '7991']
         self.ps.test_updates['passed'] = False
         
-        self.teacher.select_course(appearance='physics')
-        #click on performance forecast
-        #click on the OpenStax logo
-        #assert(  , \
-        #    'Not viewing the calendar dashboard'
+        self.teacher.driver.find_element(By.CLASS_NAME,'viewTeacherPerformanceForecast').click()
+        self.teacher.driver.find_element(By.CLASS_NAME,'ui-brand-logo').click()
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
         
         self.ps.test_updates['passed'] = True
 

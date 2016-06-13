@@ -42,10 +42,10 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+        self.teacher = Teacher(
+            use_env_vars=True#,
+            #pasta_user=self.ps,
+            #capabilities=self.desired_capabilities
         )
 
     def tearDown(self):
@@ -78,7 +78,58 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.001', '8085']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
+                get_attribute('class'):
+            assignment_menu.click()
+
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add External Assignment').click()
+        time.sleep(1)
+        wait = WebDriverWait(driver, Assignment.WAIT_TIME * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        if break_point == Assignment.BEFORE_TITLE:
+            return
+        driver.find_element(By.ID, 'reading-title').send_keys('external assignment title')
+        if break_point == Assignment.BEFORE_DESCRIPTION:
+            return
+        driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]//textarea' +
+            '[contains(@class,"form-control")]'). \
+            send_keys('external assignemnt description')
+        if break_point == Assignment.BEFORE_PERIOD:
+            return
+        self.assign_periods(driver, {'all':('08/01/2016','08/02/2016')})
+        # add reading sections to the assignment
+        driver.find_element(By.ID, 'reading-select').click()
+        wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"select-reading-' +
+                 'dialog")]')
+            )
+        )
+        if break_point == Assignment.BEFORE_SECTION_SELECT:
+            return
+        self.select_sections(driver, ['ch1'])
+        if break_point == Assignment.BEFORE_READING_SELECT:
+            return
+        driver.find_element(By.XPATH,
+                            '//button[text()="Add Readings"]').click()
+        wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Publish"]')
+            )
+        )
+        if break_point == Assignment.BEFORE_STATUS_SELECT:
+            return
+        self.select_status(driver, 'publish')
+        
 
         self.ps.test_updates['passed'] = True
 
@@ -86,7 +137,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8086) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_add_an_external_assignemnt_using_the_calendar_date(self):
         """Add an external assignment using the calendar_date
-
         Steps:
         Click on a calendar date
         Click on the Add External Assignemnt option
@@ -94,7 +144,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
-
         Expected Result:
         New external assignment appears on the calendar dashboard on its due date
         """
@@ -111,7 +160,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8087) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_set_open_and_due_dates_for_all_periods_collectively(self):
         """Set open and due dates for all periods collectively
-
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
@@ -120,7 +168,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
-
         Expected Result:
         New external assignment appears on the calendar dashboard on its due date
         """
@@ -137,7 +184,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8088) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_set_open_and_due_dates_for_periods_individually(self):
         """Set open and due dates for periods individually
-
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
@@ -148,7 +194,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         -Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
-
         Expected Result:
         New external assignment appears on the calendar dashboard across its due dates
         """
@@ -165,7 +210,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8089) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_save_a_draft_external_assignment(self):
         """ Save a draft external assignemnt
-
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
@@ -173,7 +217,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Save As Draft button
-
         Expected Result:
         Draft external assignment appears on the calendar dashboard on its due date
         """
@@ -190,7 +233,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8090) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_publish_a_new_external_assignment(self):
         """ Publish a new external assignemnt
-
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
@@ -198,7 +240,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
-
         Expected Result:
         New external assignment appears on the calendar dashboard on its due date
         """
@@ -215,7 +256,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8089) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_publish_a_draft_external_assignment(self):
         """ Publish a draft external assignemnt
-
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
@@ -225,7 +265,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the Save As Draft button
         Click on the draft on the calendar dashboard
         Chick on the Publish button
-
         Expected Result:
         Draft external assignment appears on the calendar dashboard on its due date
         """
@@ -242,12 +281,10 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8092 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_cancel_a_new_external_assignemnt_before_changes_using_cancel_button(self):
         """ Cancel a new external assignemnt before changes using Cancel button
-
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
         Click on the Cancel button
-
         Expected Result:
         No changes to calendar dashboard
         """
@@ -264,14 +301,12 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8093 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_cancel_a_new_external_assignemnt_after_changes_using_cancel_button(self):
         """ Cancel a new external assignemnt after changes using Cancel button
-
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
         Enter an assignemnt name into the Assignemnt Name text box
         Click on the Cancel button
         Click on the OK button
-
         Expected Result:
         No changes to calendar dashboard
         """
@@ -288,12 +323,10 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8094 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_cancel_a_new_external_assignemnt_before_changes_using_the_x(self):
         """ Cancel a new external assignemnt before changes using the X
-
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
         Click on the X
-
         Expected Result:
         No changes to calendar dashboard
         """
@@ -310,14 +343,12 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8095 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_cancel_a_new_external_assignemnt_after_changes_using_the_x(self):
         """ Cancel a new external assignemnt after changes using the X
-
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
         Enter an assignemnt name into the Assignemnt Name text box
         Click on the X
         Click on the OK button
-
         Expected Result:
         No changes to calendar dashboard
         """
@@ -334,13 +365,11 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8096 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_cancel_a_draft_external_assignemnt_before_changes_using_cancel_button(self):
         """ Cancel a draft external assignemnt before changes using Cancel button
-
         Steps:
         ####create a draft external assignemnt---helper function
         Click on the draft external assignment
         Click on the Cancel button
         Click on the OK button
-
         Expected Result:
         No changes to calendar dashboard
         """
@@ -357,14 +386,12 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8097 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_cancel_a_draft_external_assignemnt_after_changes_using_cancel_button(self):
         """ Cancel a draft external assignemnt after changes using Cancel button
-
         Steps:
         ####create a draft external assignemnt---helper function
         Click on the draft external assignment
         Enter an assignemnt name into the Assignment Name text box
         Click on the Cancel button
         Click on the OK button
-
         Expected Result:
         No changes to calendar dashboard
         """
@@ -381,13 +408,11 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8098 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_cancel_a_draft_external_assignemnt_before_changes_using_the_x(self):
         """ Cancel a draft external assignemnt before changes using the X
-
         Steps:
         ####create a draft external assignemnt---helper function
         Click on the draft external assignment
         Click on the X button
         Click on the OK button
-
         Expected Result:
         No changes to calendar dashboard
         """
@@ -404,14 +429,12 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8099 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_cancel_a_draft_external_assignemnt_after_changes_using_the_x(self):
         """ Cancel a draft external assignemnt after changes using the X
-
         Steps:
         ####create a draft external assignemnt---helper function
         Click on the draft external assignment
         Enter an assignemnt name into the Assignment Name text box
         Click on the Cancel button
         Click on the OK button
-
         Expected Result:
         No changes to calendar dashboard
         """
@@ -428,12 +451,10 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8100 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_attempt_to_publish_an_external_assignemnt_with_blank_reqired_feilds(self):
         """ Attempt to publish an external assignment with blank required feilds
-
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
         Click on the Publish button
-
         Expected Result:
         Blank required feilds are highlighted in red, assignemnt is not published
         """
@@ -450,12 +471,10 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8101 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_attempt_to_save_a_draft_external_assignemnt_with_blank_reqired_feilds(self):
         """ Attempt to save a draft external assignment with blank required feilds
-
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
         Click on the Save As Draft button
-
         Expected Result:
         Blank required feilds are highlighted in red, assignemnt is not saved
         """
@@ -472,14 +491,12 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8102 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_delete_an_unopened_external_assignment(self):
         """ Delete an unopened external assignemnt
-
         Steps:
         ####Create an unopened assignemnt -- helper function
         Click on the unopened external assignment
         Click on the Edit Assignemnt button
         Click on the Delete Assignemnt
         Click on OK on the dialouge box
-
         Expected Result:
         Assignment has been removed from the calendar view
         """
@@ -496,12 +513,10 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8103 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_attempt_to_delete_an_opened_external_assignment(self):
         """ Attempt to delete an opened external assignemnt
-
         Steps:
         ####Create an opened assignemnt -- helper function
         Click on the opened external assignment
         Click on the Edit Assignemnt button
-
         Expected Result:
         No Delete Assignment button is found
         """
@@ -518,13 +533,11 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8104 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_delete_a_draft_external_assignment(self):
         """ Delete a draft external assignemnt
-
         Steps:
         ####Create a draft assignemnt -- helper function
         Click on the draft
         Click on the Delete Assignment buttom
         Click OK in the dialouge box
-
         Expected Result:
         Draft assignment is removed from calendar dasboard
         """
@@ -541,7 +554,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8105 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_add_a_destcription_to_an_external_assignemnt(self):
         """ Add a description to an external assignemnt
-
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
@@ -550,7 +562,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter date into the Due Dte text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
-
         Expected Result:
         Assignemnt is on calendar dashboard
         """
@@ -567,13 +578,11 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8106 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_change_a_destcription_for_a_draft_external_assignemnt(self):
         """ Change a description for a draft external assignment
-
         Steps:
         #####create a draft assignemnt -- helper function
         Click on the draft assignment
         Enter a new description into the Description or special instructions text box
         Click on the Save as Draft button
-
         Expected Result:
         Assignemnt has been updated on the calendar dashboard
         """
@@ -590,14 +599,12 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8107 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_change_a_destcription_for_an_open_external_assignemnt(self):
         """ Change a description for an open external assignment
-
         Steps:
         #####create an open assignemnt -- helper function
         Click on the open assignment
         Click on the Edit Assignment button
         Enter a new description into the Description or special instructions text box
         Click on the Publish button
-
         Expected Result:
         Assignemnt has been updated on the calendar dashboard
         """
@@ -614,7 +621,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8108 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_add_a_name_to_an_external_assignemnt(self):
         """ Add a name to an external assignment
-
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
@@ -622,7 +628,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
-
         Expected Result:
         New external assignment appears on the calendar dashboard
         """
@@ -639,13 +644,11 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8109 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_change_a_name_for_a_draft_external_assignemnt(self):
         """ Change a name for a draft external assignment
-
         Steps:
         ###create a draft --helper
         Click on the draft assignment
         Enter a new assignment name into the assignment name text box
         Click on the Save As Draft button
-
         Expected Result:
         Draft external assignment appears on the calendar dashboard
         """
@@ -662,13 +665,11 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8110 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_change_a_name_for_an_open_external_assignemnt(self):
         """ Change a name for an open external assignment
-
         Steps:
         ###create an open assignment  --helper
         Click on the open assignment on the calendar
         Enter a new assignment name into the assignment name text box
         Click on the Publish button
-
         Expected Result:
         External assignment appears on the calendar dashboard
         """
@@ -685,7 +686,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8112 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_add_an_assignment_url(self):
         """ Add an assignment URL
-
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
@@ -693,7 +693,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
-
         Expected Result:
         External assignment appears on the calendar dashboard
         """
@@ -710,13 +709,11 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8112 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_change_the_assignment_url_for_a_draft_external_assignment(self):
         """ Change the assignemnt URL for a draft external assignemnt
-
         Steps:
         ##create a draft assignemnt -- helper function
         Click on the draft assignment
         Enter a new URL into the Assignemtn URL text box
         Click on the Save As Draft button
-
         Expected Result:
         Updated external assignment appears on the calendar dashboard
         """
@@ -733,12 +730,10 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8113 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_info_icon_shows_definitions_for_the_status_bar(self):
         """ Info icon shows definitions for the status bar
-
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
         Click on the info icon
-
         Expected Result:
         Definitions of the statuses are dispalayed
         """
@@ -755,7 +750,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8114 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_change_all_feilds_in_an_unopened_external_assignment(self):
         """ Change all feilds in an unopened External Assignemnt
-
         Steps:
         #####create an unopened assignement -- helper
         Click on the unopoened assignemnt on the calendar
@@ -765,7 +759,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
-
         Expected Result:
         Updated assignment is displayed on the calendar
         """
@@ -782,7 +775,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8115 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_change_all_feilds_in_a_draft_external_assignment(self):
         """ Change all feilds in a draft External Assignemnt
-
         Steps:
         #####create a draft assignement -- helper
         Click on the draft assignemnt on the calendar
@@ -792,7 +784,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Save As Draft button
-
         Expected Result:
         Updated assignment is displayed on the calendar
         """
@@ -809,7 +800,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8116 not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_change_all_possible_feilds_in_an_open_external_assignment(self):
         """ Change all possible feilds in an open External Assignemnt
-
         Steps:
         #####create an open assignement -- helper
         Click on the open assignemnt on the calendar
@@ -817,7 +807,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter a description into the Description or special instructions text box
         Enter date into the Due Date text feild as MM/DD/YYYY
         Click on the Save As Draft button
-
         Expected Result:
         Updated assignment is displayed on the calendar
         """
@@ -829,3 +818,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # Test steps and verification assertions
 
         self.ps.test_updates['passed'] = True
+
+   
+
