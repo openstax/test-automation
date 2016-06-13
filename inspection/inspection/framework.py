@@ -1,5 +1,4 @@
 import unittest
-import logging
 import cv2
 import cv
 import numpy
@@ -25,7 +24,6 @@ class PDFCV(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._casename = cls.__name__
-        cls._logger = logging.getLogger(cls._casename)
         
 
     def setUp(self):
@@ -60,7 +58,6 @@ class PDFCV(unittest.TestCase):
         test_info['case'] = self._casename
         test_info['threshold'] = self.threshold
         test_info['measure'] = self.measure
-        self._logger.info(str(test_info))
 
     @classmethod
     def tearDownClass(self):

@@ -1,6 +1,5 @@
 import unittest
 import argparse
-import logging
 from multiprocessing import Process
 
 from utils import generate_tests, lcs_images, diff_images
@@ -68,11 +67,7 @@ def main(argv=None):
 
     settings = vars(args)
 
-    logging.basicConfig(
-        filename=settings['results'],
-        level=logging.INFO,
-        filemode='w+',
-        format='')
+
 
     if not os.path.isabs(settings['pdf_a']):
         settings['pdf_a'] = os.path.join(start_dir,settings['pdf_a'])
@@ -82,20 +77,21 @@ def main(argv=None):
  
     if settings['debug']:
         load_tests = generate_tests(settings)
-        unittest.TextTestRunner(verbosity=3,stream=sys.stderr).run(load_tests)
+        results = unittest.TextTestRunner(verbosity=3,stream=sys.stderr).run(load_tests)
     else:
         load_tests = generate_tests(settings)
         terminal_out = sys.stdout
         f = open(os.devnull, 'w')
         sys.stdout = f
-        unittest.TextTestRunner(stream=f, verbosity=3).run(load_tests)
+        results = unittest.TextTestRunner(stream=f, verbosity=3).run(load_tests)
         sys.stdout = terminal_out 
 
+
     if settings['diff']:
-        diff = diff_images(settings['results'], settings['check'])
+        diff = diff_images(load_tests._tests, results, settings['check'])
         print(diff)
     else:
-        related_page_list = lcs_images(settings['results'], settings['check'])
+        related_page_list = lcs_images(load_tests._tests, results, settings['check'])
         print(related_page_list)
 
 if __name__ == "__main__":
