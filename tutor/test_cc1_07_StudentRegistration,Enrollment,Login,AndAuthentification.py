@@ -81,12 +81,12 @@ class TestEpicName(unittest.TestCase):
         Is presented with Concept Coach after creating a free account 
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.001' \
+        self.ps.test_updates['name'] = 'cc1.07.001' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
-            'cc1.06',
-            'cc1.06.001',
+            'cc1.07',
+            'cc1.07.001',
             '7631'
         ]
         self.ps.test_updates['passed'] = False
@@ -124,12 +124,12 @@ class TestEpicName(unittest.TestCase):
         Is presented with Concept Coach 
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.002' \
+        self.ps.test_updates['name'] = 'cc1.07.002' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
-            'cc1.06',
-            'cc1.06.002',
+            'cc1.07',
+            'cc1.07.002',
             '7632'
         ]
         self.ps.test_updates['passed'] = False
@@ -166,12 +166,12 @@ class TestEpicName(unittest.TestCase):
         Is presented with Concept Coach
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.003' \
+        self.ps.test_updates['name'] = 'cc1.07.003' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
-            'cc1.06',
-            'cc1.06.003',
+            'cc1.07',
+            'cc1.07.003',
             '7633'
         ]
         self.ps.test_updates['passed'] = False
@@ -209,12 +209,12 @@ class TestEpicName(unittest.TestCase):
         Is presented with Concept Coach after creating a free account 
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.004' \
+        self.ps.test_updates['name'] = 'cc1.07.004' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
-            'cc1.06',
-            'cc1.06.004',
+            'cc1.07',
+            'cc1.07.004',
             '7634'
         ]
         self.ps.test_updates['passed'] = False
@@ -248,12 +248,12 @@ class TestEpicName(unittest.TestCase):
         The user is presented with a confirmation message
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.005' \
+        self.ps.test_updates['name'] = 'cc1.07.005' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
-            'cc1.06',
-            'cc1.06.005',
+            'cc1.07',
+            'cc1.07.005',
             '7635'
         ]
         self.ps.test_updates['passed'] = False
@@ -288,12 +288,12 @@ class TestEpicName(unittest.TestCase):
         A failed registration results in an error message.
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.006' \
+        self.ps.test_updates['name'] = 'cc1.07.006' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
-            'cc1.06',
-            'cc1.06.006',
+            'cc1.07',
+            'cc1.07.006',
             '7636'
         ]
         self.ps.test_updates['passed'] = False
@@ -331,12 +331,12 @@ class TestEpicName(unittest.TestCase):
         The student is in a new course.
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.007' \
+        self.ps.test_updates['name'] = 'cc1.07.007' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
-            'cc1.06',
-            'cc1.06.007',
+            'cc1.07',
+            'cc1.07.007',
             '7637'
         ]
         self.ps.test_updates['passed'] = False
@@ -368,12 +368,12 @@ class TestEpicName(unittest.TestCase):
         The student is in a new period.
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.008' \
+        self.ps.test_updates['name'] = 'cc1.07.008' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
-            'cc1.06',
-            'cc1.06.008',
+            'cc1.07',
+            'cc1.07.008',
             '7638'
         ]
         self.ps.test_updates['passed'] = False
@@ -403,12 +403,12 @@ class TestEpicName(unittest.TestCase):
         The student joins a new course.
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.009' \
+        self.ps.test_updates['name'] = 'cc1.07.009' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
-            'cc1.06',
-            'cc1.06.009',
+            'cc1.07',
+            'cc1.07.009',
             '7639'
         ]
         self.ps.test_updates['passed'] = False
@@ -436,12 +436,12 @@ class TestEpicName(unittest.TestCase):
         The sign up and sign in widgets appear.
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.010' \
+        self.ps.test_updates['name'] = 'cc1.07.010' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
-            'cc1.06',
-            'cc1.06.010',
+            'cc1.07',
+            'cc1.07.010',
             '7640'
         ]
         self.ps.test_updates['passed'] = False
@@ -469,12 +469,12 @@ class TestEpicName(unittest.TestCase):
         The student's name is visible in the header.
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.011' \
+        self.ps.test_updates['name'] = 'cc1.07.011' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
-            'cc1.06',
-            'cc1.06.011',
+            'cc1.07',
+            'cc1.07.011',
             '7641'
         ]
         self.ps.test_updates['passed'] = False
@@ -503,12 +503,12 @@ class TestEpicName(unittest.TestCase):
         Current privacy policy is displayed
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.012' \
+        self.ps.test_updates['name'] = 'cc1.07.012' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
-            'cc1.06',
-            'cc1.06.012',
+            'cc1.07',
+            'cc1.07.012',
             '7642'
         ]
         self.ps.test_updates['passed'] = False
@@ -537,12 +537,12 @@ class TestEpicName(unittest.TestCase):
         Current terms of service are displayed.
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.013' \
+        self.ps.test_updates['name'] = 'cc1.07.013' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
-            'cc1.06',
-            'cc1.06.013',
+            'cc1.07',
+            'cc1.07.013',
             '7643'
         ]
         self.ps.test_updates['passed'] = False
@@ -612,12 +612,12 @@ class TestEpicName(unittest.TestCase):
         The user is re-presented with the current privacy policy
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.016' \
+        self.ps.test_updates['name'] = 'cc1.07.016' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
-            'cc1.06',
-            'cc1.06.016',
+            'cc1.07',
+            'cc1.07.016',
             '7646'
         ]
         self.ps.test_updates['passed'] = False
@@ -644,12 +644,12 @@ class TestEpicName(unittest.TestCase):
         The user is re-presented with the current terms of service
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.017' \
+        self.ps.test_updates['name'] = 'cc1.07.017' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
-            'cc1.06',
-            'cc1.06.017',
+            'cc1.07',
+            'cc1.07.017',
             '7647'
         ]
         self.ps.test_updates['passed'] = False
@@ -675,12 +675,12 @@ class TestEpicName(unittest.TestCase):
         The user is presented with "Your Account" page that allows them to edit their OpenStax Accounts profile
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.018' \
+        self.ps.test_updates['name'] = 'cc1.07.018' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
-            'cc1.06',
-            'cc1.06.018',
+            'cc1.07',
+            'cc1.07.018',
             '7648'
         ]
         self.ps.test_updates['passed'] = False
@@ -735,12 +735,12 @@ class TestEpicName(unittest.TestCase):
         The user is successfully logged in or registered.
 
         """
-        self.ps.test_updates['name'] = 'cc1.06.019' \
+        self.ps.test_updates['name'] = 'cc1.07.019' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
-            'cc1.06',
-            'cc1.06.019',
+            'cc1.07',
+            'cc1.07.019',
             '7650'
         ]
         self.ps.test_updates['passed'] = False
