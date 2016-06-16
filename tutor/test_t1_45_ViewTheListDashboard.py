@@ -11,6 +11,7 @@ from random import randint  # NOQA
 from selenium.webdriver.common.by import By  # NOQA
 from selenium.webdriver.support import expected_conditions as expect  # NOQA
 from staxing.assignment import Assignment  # NOQA
+from selenium.webdriver.support.ui import WebDriverWait
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Student  # NOQA
@@ -26,7 +27,7 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([8268, 8269, 8270, 8271, 8272,
-         8273, 8374, 8275, 8276, 8277,
+         8273, 8274, 8275, 8276, 8277,
          8278, 8279, 8280])  # NOQA
 )
 
@@ -39,18 +40,19 @@ class TestViewTheListDashboard(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+        self.student = Student(
+            use_env_vars=True#,
+            #pasta_user=self.ps,
+            #capabilities=self.desired_capabilities
         )
+        self.student.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
+        self.ps.update_job(job_id=str(self.student.driver.session_id),
                            **self.ps.test_updates)
         try:
-            self.teacher.delete()
+            self.student.delete()
         except:
             pass
 
@@ -70,11 +72,13 @@ class TestViewTheListDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.45', 't1.45.001', '8268']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the list dashboard'
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8269 - 002 - Student| View the performance forecast using the dashboard button
+     Case C8269 - 002 - Student| View the performance forecast using the dashboard button
     @pytest.mark.skipif(str(8269) not in TESTS, reason='Excluded')  # NOQA
     def test_student_view_the_performance_forecast_using_the_dashboard_button(self):
         """View the performance forecast using the dashboard button
@@ -91,8 +95,15 @@ class TestViewTheListDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.45', 't1.45.002', '8269']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
-
+        self.student.select_course(appearance='physics')
+        wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
+        wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class,"view-performance-forecast")]')
+            )
+        ).click()            
+        assert('guide' in self.student.current_url()), \
+            'Not viewing the performance forecast'
         self.ps.test_updates['passed'] = True
 
     # Case C8270 - 003 - Student| View the performance forecast using the menu link
@@ -114,7 +125,16 @@ class TestViewTheListDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.student.select_course(appearance='physics')
+        self.student.open_user_menu()
+        wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
+        wait.until(
+            expect.visibility_of_element_located(
+                (By.CLASS_NAME, 'viewPerformanceForecast')
+            )
+        ).click()
+        assert('guide' in self.student.current_url()), \
+            'Not viewing the performance forecast'
         self.ps.test_updates['passed'] = True
 
     # Case C8271 - 004 - Student| View the assignments for the current week
@@ -134,7 +154,13 @@ class TestViewTheListDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.student.select_course(appearance='physics')
+        wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
+        wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'This Week')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C8272 - 005 - Student| View the upcoming assignments
@@ -154,9 +180,16 @@ class TestViewTheListDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.student.select_course(appearance='physics')
+        wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
+        wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"-upcoming")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
+    # almost done. gets to the correct place. don't know what to assert
     # Case C8273 - 006 - Student| View past work
     @pytest.mark.skipif(str(8273) not in TESTS, reason='Excluded')  # NOQA
     def test_student_view_past_work(self):
@@ -175,7 +208,14 @@ class TestViewTheListDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.student.select_course(appearance='physics')
+        wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
+        wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'All Past Work')
+            )
+        ).click()
+        ####some sort of assertion that student is actually looking at past work
         self.ps.test_updates['passed'] = True
 
     # Case C8274 - 007 - Student| Check which assignments were late
@@ -196,7 +236,18 @@ class TestViewTheListDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.student.select_course(appearance='physics')
+        wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
+        wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'All Past Work')
+            )
+        ).click()
+        wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//i[contains(@class,"info late")]')
+            )
+        ).click()
         self.ps.test_updates['passed'] = True
 
     # Case C8275 - 008 - Student| View recent performance forecast topics
@@ -216,9 +267,21 @@ class TestViewTheListDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.student.select_course(appearance='physics')
+        wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
+        wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//h2[contains(@class, "recent")]')
+            )
+        )
+        wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class, "guide-group")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
+    ###works but messy. need better way to find element
     # Case C8276 - 009 - Student| Open the refrence book using the dashboard button
     @pytest.mark.skipif(str(8276) not in TESTS, reason='Excluded')  # NOQA
     def test_student_open_the_refrence_book_using_the_dashboard_button(self):
@@ -237,6 +300,18 @@ class TestViewTheListDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
+        wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//*[@id="react-root-container"]/div/div/div/div/div/div/div[2]/div[2]/a')
+            )
+        ).click()
+        
+        window_with_book = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_book)
+        assert( 'book' in self.student.current_url()) , \
+            'Not viewing the textbook PDF'
 
         self.ps.test_updates['passed'] = True
 
@@ -259,6 +334,18 @@ class TestViewTheListDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        self.student.open_user_menu()
+        wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
+        wait.until(
+            expect.visibility_of_element_located(
+                (By.CLASS_NAME, 'view-reference-guide')
+            )
+        ).click()
+        window_with_book = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_book)
+        assert( 'book' in self.student.current_url()) , \
+            'Not viewing the textbook PDF'
 
         self.ps.test_updates['passed'] = True
 
@@ -281,6 +368,17 @@ class TestViewTheListDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
+        wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class,"view-performance-forecast")]')
+            )
+        ).click()
+        self.student.driver.find_element(
+            By.XPATH,'//a[contains(@aria-describedby,"course-name-tooltip")]').click()
+        assert( 'list' in self.student.current_url()) , \
+            'Not viewing the list dashboard 011'
 
         self.ps.test_updates['passed'] = True
 
@@ -302,28 +400,43 @@ class TestViewTheListDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        self.student.driver.find_element(
+            By.XPATH,'//i[contains(@class,"ui-brand-logo")]').click()
+        assert( 'dashboard' in self.student.current_url()) , \
+            'Not viewing the course picker 012'
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8280 - 013 - Student| Click on the course OpenStax logo to return to the dasboard
-    @pytest.mark.skipif(str(8280) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_click_on_the_OpenStax_logo_to_return_to_the_dashboard(self):
-        """Click on the OpenStax logo to return to the dashboard
+    ####this should work but needs a sutdent with one course to test on
+    # # Case C8280 - 013 - Student| Click on the course OpenStax logo to return to the dasboard
+    # @pytest.mark.skipif(str(8280) not in TESTS, reason='Excluded')  # NOQA
+    # def test_student_click_on_the_OpenStax_logo_to_return_to_the_dashboard(self):
+    #     """Click on the OpenStax logo to return to the dashboard
 
-        Steps:
-        If the user has more than one course, select a Tutor course
-        Click on the View All Topics button
-        Click on the OpenStax logo
+    #     Steps:
+    #     If the user has more than one course, select a Tutor course
+    #     Click on the View All Topics button
+    #     Click on the OpenStax logo
 
-        Expected Result:
-        The user is returned to their dashboard
-        """
-        self.ps.test_updates['name'] = 't1.45.013' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.45', 't1.45.013', '8280']
-        self.ps.test_updates['passed'] = False
+    #     Expected Result:
+    #     The user is returned to their dashboard
+    #     """
+    #     self.ps.test_updates['name'] = 't1.45.013' \
+    #         + inspect.currentframe().f_code.co_name[4:]
+    #     self.ps.test_updates['tags'] = ['t1', 't1.45', 't1.45.013', '8280']
+    #     self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
-
-        self.ps.test_updates['passed'] = True
+    #     # Test steps and verification assertions
+    #     wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
+    #     wait.until(
+    #         expect.visibility_of_element_located(
+    #             (By.XPATH, '//button[contains(@class,"view-performance-forecast")]')
+    #         )
+    #     ).click()
+    #     self.student.driver.find_element(
+    #         By.XPATH,'//i[contains(@class,"ui-brand-logo")]').click()
+    #     assert( 'list' in self.student.current_url()) , \
+    #         'Not viewing the list dashboard 011'
+    #     self.ps.test_updates['passed'] = True
 

@@ -61,67 +61,59 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         except:
             pass
 
-    # # Case C8085 - 001 - Teacher | Add an external assignment using the Add Assignment menu
-    # @pytest.mark.skipif(str(8085) not in TESTS, reason='Excluded')  # NOQA
-    # def test_teacher_add_an_external_assignemnt_using_the_add_assignment_menu(self):
-    #     """Add an external assignment using the Add Assignment menu
+    # Case C8085 - 001 - Teacher | Add an external assignment using the Add Assignment menu
+    @pytest.mark.skipif(str(8085) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_add_an_external_assignemnt_using_the_add_assignment_menu(self):
+        """Add an external assignment using the Add Assignment menu
 
-    #     Steps:
-    #     Click on the Add Assignment drop down menu
-    #     Click on the Add External Assignemnt option
-    #     Enter an assignemnt name into the Assignemnt Name text box
-    #     Enter date into the Due Date text feild as MM/DD/YYYY
-    #     Enter a URL into the Assignment URL text box
-    #     Click on the Publish button
+        Steps:
+        Click on the Add Assignment drop down menu
+        Click on the Add External Assignemnt option
+        Enter an assignemnt name into the Assignemnt Name text box
+        Enter date into the Due Date text feild as MM/DD/YYYY
+        Enter a URL into the Assignment URL text box
+        Click on the Publish button
 
-    #     Expected Result:
-    #     New external assignment appears on the calendar dashboard on its due date
-    #     """
-    #     self.ps.test_updates['name'] = 't1.18.001' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.001', '8085']
-    #     self.ps.test_updates['passed'] = False
+        Expected Result:
+        New external assignment appears on the calendar dashboard on its due date
+        """
+        self.ps.test_updates['name'] = 't1.18.001' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.001', '8085']
+        self.ps.test_updates['passed'] = False
 
-    #     break_point = None
-    #     assignment = Assignment()
-    #     assignment_menu = self.teacher.driver.find_element(
-    #         By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
-    #     # if the Add Assignment menu is not open
-    #     if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-    #             get_attribute('class'):
-    #         assignment_menu.click()
+        assignment = Assignment()
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
+                get_attribute('class'):
+            assignment_menu.click()
 
-    #     self.teacher.driver.find_element(By.LINK_TEXT, 'Add External Assignment').click()
-    #     time.sleep(1)
-    #     wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-    #     wait.until(
-    #         expect.element_to_be_clickable(
-    #             (By.ID, 'reading-title')
-    #         )
-    #     )
-    #     if break_point == Assignment.BEFORE_TITLE:
-    #         return
-    #     self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment title')
-    #     if break_point == Assignment.BEFORE_DESCRIPTION:
-    #         return
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,
-    #         '//div[contains(@class,"assignment-description")]//textarea' +
-    #         '[contains(@class,"form-control")]'). \
-    #         send_keys('external assignemnt description')
-    #     if break_point == Assignment.BEFORE_PERIOD:
-    #         return
-    #     assignment.assign_periods(self.teacher.driver, {'all':('06/20/2016','06/21/2016')})
-    #     if break_point == Assignment.BEFORE_SECTION_SELECT:
-    #         return
-    #     self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
-    #     self.teacher.driver.find_element(
-    #             By.XPATH, '//button[contains(@class,"-publish")]').click()
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add External Assignment').click()
+        time.sleep(1)
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-001')
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]//textarea' +
+            '[contains(@class,"form-control")]'). \
+            send_keys('external assignemnt description')
+        assignment.assign_periods(self.teacher.driver, {'all':('06/20/2016','06/21/2016')})
+        self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
+        self.teacher.driver.find_element(
+                By.XPATH, '//button[contains(@class,"-publish")]').click()
 
-    #     self.teacher.driver.find_elements_by_xpath("//*[contains(text(), 'external assignemnt name')]")
+        self.teacher.driver.find_elements_by_xpath("//*[contains(text(), 'external assignemnt-001')]")
 
-    #     self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True
 
+    ####NOT DONE
     # # Case C8086 - 002 - Teacher | Add an external assignment using the calendar_date
     # @pytest.mark.skipif(str(8086) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_add_an_external_assignemnt_using_the_calendar_date(self):
@@ -151,21 +143,13 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #             (By.ID, 'reading-title')
     #         )
     #     )
-    #     if break_point == Assignment.BEFORE_TITLE:
-    #         return
     #     self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment title')
-    #     if break_point == Assignment.BEFORE_DESCRIPTION:
-    #         return
     #     self.teacher.driver.find_element(
     #         By.XPATH,
     #         '//div[contains(@class,"assignment-description")]//textarea' +
     #         '[contains(@class,"form-control")]'). \
     #         send_keys('external assignemnt description')
-    #     if break_point == Assignment.BEFORE_PERIOD:
-    #         return
     #     assignment.assign_periods(self.teacher.driver, {'all':('06/20/2016','06/21/2016')})
-    #     if break_point == Assignment.BEFORE_SECTION_SELECT:
-    #         return
     #     self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
     #     self.teacher.driver.find_element(
     #             By.XPATH, '//button[contains(@class,"-publish")]').click()
@@ -174,93 +158,26 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     #     self.ps.test_updates['passed'] = True
 
-    # # Case C8087 - 003 - Teacher | Set open and due dates for all periods collectively
-    # @pytest.mark.skipif(str(8087) not in TESTS, reason='Excluded')  # NOQA
-    # def test_teacher_set_open_and_due_dates_for_all_periods_collectively(self):
-    #     """Set open and due dates for all periods collectively
-    #     Steps:
-    #     Click on the Add Assignment drop down menu
-    #     Click on the Add External Assignemnt option
-    #     Enter an assignemnt name into the Assignemnt Name text box
-    #     Enter date into the Open Date text feild as MM/DD/YYYY
-    #     Enter date into the Due Date text feild as MM/DD/YYYY
-    #     Enter a URL into the Assignment URL text box
-    #     Click on the Publish button
-    #     Expected Result:
-    #     New external assignment appears on the calendar dashboard on its due date
-    #     """
-    #     self.ps.test_updates['name'] = 't1.18.003' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.003', '8087']
-    #     self.ps.test_updates['passed'] = False
-
-    #     # Test steps and verification assertions
-    #     break_point = None
-    #     assignment = Assignment()
-    #     assignment_menu = self.teacher.driver.find_element(
-    #         By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
-    #     # if the Add Assignment menu is not open
-    #     if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-    #             get_attribute('class'):
-    #         assignment_menu.click()
-
-    #     self.teacher.driver.find_element(By.LINK_TEXT, 'Add External Assignment').click()
-    #     time.sleep(1)
-    #     wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-    #     wait.until(
-    #         expect.element_to_be_clickable(
-    #             (By.ID, 'reading-title')
-    #         )
-    #     )
-    #     if break_point == Assignment.BEFORE_TITLE:
-    #         return
-    #     self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-003')
-    #     if break_point == Assignment.BEFORE_DESCRIPTION:
-    #         return
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,
-    #         '//div[contains(@class,"assignment-description")]//textarea' +
-    #         '[contains(@class,"form-control")]'). \
-    #         send_keys('external assignemnt description')
-    #     if break_point == Assignment.BEFORE_PERIOD:
-    #         return
-    #     assignment.assign_periods(self.teacher.driver, {'all':('06/20/2016','06/21/2016')})
-    #     if break_point == Assignment.BEFORE_SECTION_SELECT:
-    #         return
-    #     self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
-    #     self.teacher.driver.find_element(
-    #             By.XPATH, '//button[contains(@class,"-publish")]').click()
-
-    #     self.teacher.driver.find_elements_by_xpath("//*[contains(text(), 'external assignemnt-003')]")
-
-    #     self.ps.test_updates['passed'] = True
-    #     self.ps.test_updates['passed'] = True
-
-    # Case C8088 - 004 - Teacher | Set open and due dates for  periods individually
-    @pytest.mark.skipif(str(8088) not in TESTS, reason='Excluded')  # NOQA
-    def test_teacher_set_open_and_due_dates_for_periods_individually(self):
-        """Set open and due dates for periods individually
+    # Case C8087 - 003 - Teacher | Set open and due dates for all periods collectively
+    @pytest.mark.skipif(str(8087) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_set_open_and_due_dates_for_all_periods_collectively(self):
+        """Set open and due dates for all periods collectively
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
         Enter an assignemnt name into the Assignemnt Name text box
-        Click on the Individual periods radio button
-        For each period:
-        -Enter date into the Open Date text feild as MM/DD/YYYY
-        -Enter date into the Due Date text feild as MM/DD/YYYY
+        Enter date into the Open Date text feild as MM/DD/YYYY
+        Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
         Expected Result:
-        New external assignment appears on the calendar dashboard across its due dates
+        New external assignment appears on the calendar dashboard on its due date
         """
-        self.ps.test_updates['name'] = 't1.18.004' \
+        self.ps.test_updates['name'] = 't1.18.003' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.004', '8088']
+        self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.003', '8087']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
-
-        break_point = None
         assignment = Assignment()
         assignment_menu = self.teacher.driver.find_element(
             By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
@@ -277,54 +194,129 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 (By.ID, 'reading-title')
             )
         )
-        if break_point == Assignment.BEFORE_TITLE:
-            return
-        self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-004')
-        if break_point == Assignment.BEFORE_DESCRIPTION:
-            return
+        self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-003')
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
             send_keys('external assignemnt description')
-        if break_point == Assignment.BEFORE_PERIOD:
-            return
-        ###does this need to be written in the case, not using the helper from Assignments
-        self.teacher.driver.find_element(By.ID, 'show-periods-radio').click()
-
-        if break_point == Assignment.BEFORE_SECTION_SELECT:
-            return
+        assignment.assign_periods(self.teacher.driver, {'all':('06/20/2016','06/21/2016')})
         self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
         self.teacher.driver.find_element(
                 By.XPATH, '//button[contains(@class,"-publish")]').click()
 
-        self.teacher.driver.find_elements_by_xpath("//*[contains(text(), 'external assignemnt-004')]")
+        self.teacher.driver.find_elements_by_xpath("//*[contains(text(), 'external assignemnt-003')]")
 
         self.ps.test_updates['passed'] = True
 
-    # # Case C8089 - 005 - Teacher | Save a draft external assignemnt
-    # @pytest.mark.skipif(str(8089) not in TESTS, reason='Excluded')  # NOQA
-    # def test_teacher_save_a_draft_external_assignment(self):
-    #     """ Save a draft external assignemnt
+    ####NOT DONE
+    # # Case C8088 - 004 - Teacher | Set open and due dates for  periods individually
+    # @pytest.mark.skipif(str(8088) not in TESTS, reason='Excluded')  # NOQA
+    # def test_teacher_set_open_and_due_dates_for_periods_individually(self):
+    #     """Set open and due dates for periods individually
     #     Steps:
     #     Click on the Add Assignment drop down menu
     #     Click on the Add External Assignemnt option
     #     Enter an assignemnt name into the Assignemnt Name text box
-    #     Enter date into the Due Date text feild as MM/DD/YYYY
+    #     Click on the Individual periods radio button
+    #     For each period:
+    #     -Enter date into the Open Date text feild as MM/DD/YYYY
+    #     -Enter date into the Due Date text feild as MM/DD/YYYY
     #     Enter a URL into the Assignment URL text box
-    #     Click on the Save As Draft button
+    #     Click on the Publish button
     #     Expected Result:
-    #     Draft external assignment appears on the calendar dashboard on its due date
+    #     New external assignment appears on the calendar dashboard across its due dates
     #     """
-    #     self.ps.test_updates['name'] = 't1.18.005' \
+    #     self.ps.test_updates['name'] = 't1.18.004' \
     #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.005', '8089']
+    #     self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.004', '8088']
     #     self.ps.test_updates['passed'] = False
 
-    #     # Test steps and verification assertions
+    #     assignment = Assignment()
+    #     assignment_menu = self.teacher.driver.find_element(
+    #         By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+    #     # if the Add Assignment menu is not open
+    #     if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
+    #             get_attribute('class'):
+    #         assignment_menu.click()
+
+    #     self.teacher.driver.find_element(By.LINK_TEXT, 'Add External Assignment').click()
+    #     time.sleep(1)
+    #     wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+    #     wait.until(
+    #         expect.element_to_be_clickable(
+    #             (By.ID, 'reading-title')
+    #         )
+    #     )
+    #     self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-004')
+    #     self.teacher.driver.find_element(
+    #         By.XPATH,
+    #         '//div[contains(@class,"assignment-description")]//textarea' +
+    #         '[contains(@class,"form-control")]'). \
+    #         send_keys('external assignemnt description')
+    #     ###does this need to be written in the case, not using the helper from Assignments
+    #     self.teacher.driver.find_element(By.ID, 'show-periods-radio').click()
+
+    #     self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
+    #     self.teacher.driver.find_element(
+    #             By.XPATH, '//button[contains(@class,"-publish")]').click()
+
+    #     self.teacher.driver.find_elements_by_xpath("//*[contains(text(), 'external assignemnt-004')]")
 
     #     self.ps.test_updates['passed'] = True
 
+    # Case C8089 - 005 - Teacher | Save a draft external assignemnt
+    @pytest.mark.skipif(str(8089) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_save_a_draft_external_assignment(self):
+        """ Save a draft external assignemnt
+        Steps:
+        Click on the Add Assignment drop down menu
+        Click on the Add External Assignemnt option
+        Enter an assignemnt name into the Assignemnt Name text box
+        Enter date into the Due Date text feild as MM/DD/YYYY
+        Enter a URL into the Assignment URL text box
+        Click on the Save As Draft button
+        Expected Result:
+        Draft external assignment appears on the calendar dashboard on its due date
+        """
+        self.ps.test_updates['name'] = 't1.18.005' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.005', '8089']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        assignment = Assignment()
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
+                get_attribute('class'):
+            assignment_menu.click()
+
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add External Assignment').click()
+        time.sleep(1)
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-005')
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]//textarea' +
+            '[contains(@class,"form-control")]'). \
+            send_keys('external assignemnt description')
+        assignment.assign_periods(self.teacher.driver, {'all':('06/20/2016','06/21/2016')})
+        self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
+        self.teacher.driver.find_element(
+                By.XPATH, '//button[contains(@class,"-save")]').click()
+
+        self.teacher.driver.find_elements_by_xpath("//*[contains(text(), 'draft external assignemnt-005')]")
+
+    #     self.ps.test_updates['passed'] = True
+
+    ####Covered bu 001 and 002, would be exactly the same code, test case not needed?
     # # Case C8090 - 006 - Teacher | Publish a new external assignemnt
     # @pytest.mark.skipif(str(8090) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_publish_a_new_external_assignment(self):
@@ -348,6 +340,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     #     self.ps.test_updates['passed'] = True
 
+    #NOT DONE
     # # Case C8091 - 007 - Teacher | Publish a draft external assignemnt
     # @pytest.mark.skipif(str(8089) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_publish_a_draft_external_assignment(self):
@@ -370,95 +363,201 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.ps.test_updates['passed'] = False
 
     #     # Test steps and verification assertions
+    #     add_new_external(self.teacher.driver, 'external-007', 'description',
+    #                      periods, 'website.com', 'draft')
+       
 
     #     self.ps.test_updates['passed'] = True
 
-    # # Case C8092 - 008 - Teacher | Cancel a new external assignemnt before changes using Cancel button
-    # @pytest.mark.skipif(str(8092 not in TESTS, reason='Excluded')  # NOQA
-    # def test_teacher_cancel_a_new_external_assignemnt_before_changes_using_cancel_button(self):
-    #     """ Cancel a new external assignemnt before changes using Cancel button
-    #     Steps:
-    #     Click on the Add Assignment drop down menu
-    #     Click on the Add External Assignemnt option
-    #     Click on the Cancel button
-    #     Expected Result:
-    #     No changes to calendar dashboard
-    #     """
-    #     self.ps.test_updates['name'] = 't1.18.008' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.008', '8092']
-    #     self.ps.test_updates['passed'] = False
+    ###fails because now it needs the ok after without changes bug
+    # Case C8092 - 008 - Teacher | Cancel a new external assignemnt before changes using Cancel button
+    @pytest.mark.skipif(str(8092) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_cancel_a_new_external_assignemnt_before_changes_using_cancel_button(self):
+        """ Cancel a new external assignemnt before changes using Cancel button
+        Steps:
+        Click on the Add Assignment drop down menu
+        Click on the Add External Assignemnt option
+        Click on the Cancel button
+        Expected Result:
+        No changes to calendar dashboard
+        """
+        self.ps.test_updates['name'] = 't1.18.008' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.008', '8092']
+        self.ps.test_updates['passed'] = False
 
-    #     # Test steps and verification assertions
+        # Test steps and verification assertions
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
+                get_attribute('class'):
+            assignment_menu.click()
 
-    #     self.ps.test_updates['passed'] = True
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add External Assignment').click()
+        time.sleep(1)
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//button[contains(@aria-role,"close") and @type="button"]'
+        ).click()
+        
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard, after caneling assignment 008'
 
-    # # Case C8093 - 009 - Teacher | Cancel a new external assignemnt after changes using Cancel button
-    # @pytest.mark.skipif(str(8093 not in TESTS, reason='Excluded')  # NOQA
-    # def test_teacher_cancel_a_new_external_assignemnt_after_changes_using_cancel_button(self):
-    #     """ Cancel a new external assignemnt after changes using Cancel button
-    #     Steps:
-    #     Click on the Add Assignment drop down menu
-    #     Click on the Add External Assignemnt option
-    #     Enter an assignemnt name into the Assignemnt Name text box
-    #     Click on the Cancel button
-    #     Click on the OK button
-    #     Expected Result:
-    #     No changes to calendar dashboard
-    #     """
-    #     self.ps.test_updates['name'] = 't1.18.009' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.009', '8093']
-    #     self.ps.test_updates['passed'] = False
+        self.ps.test_updates['passed'] = True
 
-    #     # Test steps and verification assertions
+    # Case C8093 - 009 - Teacher | Cancel a new external assignemnt after changes using Cancel button
+    @pytest.mark.skipif(str(8093) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_cancel_a_new_external_assignemnt_after_changes_using_cancel_button(self):
+        """ Cancel a new external assignemnt after changes using Cancel button
+        Steps:
+        Click on the Add Assignment drop down menu
+        Click on the Add External Assignemnt option
+        Enter an assignemnt name into the Assignemnt Name text box
+        Click on the Cancel button
+        Click on the OK button
+        Expected Result:
+        No changes to calendar dashboard
+        """
+        self.ps.test_updates['name'] = 't1.18.009' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.009', '8093']
+        self.ps.test_updates['passed'] = False
 
-    #     self.ps.test_updates['passed'] = True
+        # Test steps and verification assertions
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
+                get_attribute('class'):
+            assignment_menu.click()
 
-    # # Case C8094 - 010 - Teacher | Cancel a new external assignemnt before changes using the X
-    # @pytest.mark.skipif(str(8094 not in TESTS, reason='Excluded')  # NOQA
-    # def test_teacher_cancel_a_new_external_assignemnt_before_changes_using_the_x(self):
-    #     """ Cancel a new external assignemnt before changes using the X
-    #     Steps:
-    #     Click on the Add Assignment drop down menu
-    #     Click on the Add External Assignemnt option
-    #     Click on the X
-    #     Expected Result:
-    #     No changes to calendar dashboard
-    #     """
-    #     self.ps.test_updates['name'] = 't1.18.010' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.010', '8094']
-    #     self.ps.test_updates['passed'] = False
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add External Assignment').click()
+        time.sleep(1)
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-003')
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//button[contains(@aria-role,"close") and @type="button"]'
+        ).click()
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
+        wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class,"ok")]')
+            )
+        ).click()
+        
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard, after caneling assignment 009'
 
-    #     # Test steps and verification assertions
+        self.ps.test_updates['passed'] = True
+    
+    # ###fails because now it needs the ok after without changes bug
+    # Case C8094 - 010 - Teacher | Cancel a new external assignemnt before changes using the X
+    @pytest.mark.skipif(str(8094) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_cancel_a_new_external_assignemnt_before_changes_using_the_x(self):
+        """ Cancel a new external assignemnt before changes using the X
+        Steps:
+        Click on the Add Assignment drop down menu
+        Click on the Add External Assignemnt option
+        Click on the X
+        Expected Result:
+        No changes to calendar dashboard
+        """
+        self.ps.test_updates['name'] = 't1.18.010' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.010', '8094']
+        self.ps.test_updates['passed'] = False
 
-    #     self.ps.test_updates['passed'] = True
+        # Test steps and verification assertions
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
+                get_attribute('class'):
+            assignment_menu.click()
 
-    # # Case C8095 - 011 - Teacher | Cancel a new external assignemnt after changes using the X
-    # @pytest.mark.skipif(str(8095 not in TESTS, reason='Excluded')  # NOQA
-    # def test_teacher_cancel_a_new_external_assignemnt_after_changes_using_the_x(self):
-    #     """ Cancel a new external assignemnt after changes using the X
-    #     Steps:
-    #     Click on the Add Assignment drop down menu
-    #     Click on the Add External Assignemnt option
-    #     Enter an assignemnt name into the Assignemnt Name text box
-    #     Click on the X
-    #     Click on the OK button
-    #     Expected Result:
-    #     No changes to calendar dashboard
-    #     """
-    #     self.ps.test_updates['name'] = 't1.18.011' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.011', '8095']
-    #     self.ps.test_updates['passed'] = False
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add External Assignment').click()
+        time.sleep(1)
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-003')
+        self.teacher.driver.find_element(
+            By.CLASS_NAME, 'openstax-close-x').click()
+        
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard, after caneling assignment 010'
 
-    #     # Test steps and verification assertions
 
-    #     self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True
 
+    # Case C8095 - 011 - Teacher | Cancel a new external assignemnt after changes using the X
+    @pytest.mark.skipif(str(8095) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_cancel_a_new_external_assignemnt_after_changes_using_the_x(self):
+        """ Cancel a new external assignemnt after changes using the X
+        Steps:
+        Click on the Add Assignment drop down menu
+        Click on the Add External Assignemnt option
+        Enter an assignemnt name into the Assignemnt Name text box
+        Click on the X
+        Click on the OK button
+        Expected Result:
+        No changes to calendar dashboard
+        """
+        self.ps.test_updates['name'] = 't1.18.011' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.011', '8095']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
+                get_attribute('class'):
+            assignment_menu.click()
+
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add External Assignment').click()
+        time.sleep(1)
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-003')
+        self.teacher.driver.find_element(
+            By.CLASS_NAME, 'openstax-close-x').click()
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
+        wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class,"ok")]')
+            )
+        ).click()
+        
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard, after caneling assignment 011'
+
+        self.ps.test_updates['passed'] = True
+
+    ###NOT DONE
     # # Case C8096 - 012 - Teacher | Cancel a draft external assignemnt before changes using Cancel button
-    # @pytest.mark.skipif(str(8096 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8096) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_cancel_a_draft_external_assignemnt_before_changes_using_cancel_button(self):
     #     """ Cancel a draft external assignemnt before changes using Cancel button
     #     Steps:
@@ -475,11 +574,26 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.ps.test_updates['passed'] = False
 
     #     # Test steps and verification assertions
+    #     #click on a draft assignemnt
+    #     wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+    #     wait.until(
+    #         expect.element_to_be_clickable(
+    #             (By.ID, 'reading-title')
+    #         )
+    #     )
+    #     self.teacher.driver.find_element(
+    #         By.XPATH,
+    #         '//button[contains(@aria-role,"close") and @type="button"]'
+    #     ).click()
+        
+    #     assert('calendar' in self.teacher.current_url()), \
+    #         'Not viewing the calendar dashboard, after caneling assignment 008'
 
     #     self.ps.test_updates['passed'] = True
 
+    ###NOT DONE
     # # Case C8097 - 013 - Teacher | Cancel a draft external assignemnt after changes using Cancel button
-    # @pytest.mark.skipif(str(8097 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8097) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_cancel_a_draft_external_assignemnt_after_changes_using_cancel_button(self):
     #     """ Cancel a draft external assignemnt after changes using Cancel button
     #     Steps:
@@ -497,11 +611,33 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.ps.test_updates['passed'] = False
 
     #     # Test steps and verification assertions
+    #     ###click on a draft assignemnt
+    #     wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+    #     wait.until(
+    #         expect.element_to_be_clickable(
+    #             (By.ID, 'reading-title')
+    #         )
+    #     )
+    #     self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-003')
+    #     self.teacher.driver.find_element(
+    #         By.XPATH,
+    #         '//button[contains(@aria-role,"close") and @type="button"]'
+    #     ).click()
+    #     wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
+    #     wait.until(
+    #         expect.visibility_of_element_located(
+    #             (By.XPATH, '//button[contains(@class,"ok")]')
+    #         )
+    #     ).click()
+        
+    #     assert('calendar' in self.teacher.current_url()), \
+    #         'Not viewing the calendar dashboard, after canceling assignment 013'
 
     #     self.ps.test_updates['passed'] = True
 
+    ###NOT DONE
     # # Case C8098 - 014 - Teacher | Cancel a draft external assignemnt before changes using the X
-    # @pytest.mark.skipif(str(8098 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8098) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_cancel_a_draft_external_assignemnt_before_changes_using_the_x(self):
     #     """ Cancel a draft external assignemnt before changes using the X
     #     Steps:
@@ -518,11 +654,24 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.ps.test_updates['passed'] = False
 
     #     # Test steps and verification assertions
+    #     ###click on a draft on the calendar
+    #     wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+    #     wait.until(
+    #         expect.element_to_be_clickable(
+    #             (By.ID, 'reading-title')
+    #         )
+    #     )
+    #     self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-003')
+    #     self.teacher.driver.find_element(
+    #         By.CLASS_NAME, 'openstax-close-x').click()
+    #     assert('calendar' in self.teacher.current_url()), \
+    #         'Not viewing the calendar dashboard, after canceling assignment 014'
 
     #     self.ps.test_updates['passed'] = True
 
+    ###NOT DONE
     # # Case C8099 - 015 - Teacher | Cancel a draft external assignemnt after changes using the X
-    # @pytest.mark.skipif(str(8099 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8099) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_cancel_a_draft_external_assignemnt_after_changes_using_the_x(self):
     #     """ Cancel a draft external assignemnt after changes using the X
     #     Steps:
@@ -540,51 +689,107 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.ps.test_updates['passed'] = False
 
     #     # Test steps and verification assertions
+    #     #### click on a draft on the calendar
+    #     wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+    #     wait.until(
+    #         expect.element_to_be_clickable(
+    #             (By.ID, 'reading-title')
+    #         )
+    #     )
+    #     self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-015')
+    #     self.teacher.driver.find_element(
+    #         By.CLASS_NAME, 'openstax-close-x').click()
+    #     wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
+    #     wait.until(
+    #         expect.visibility_of_element_located(
+    #             (By.XPATH, '//button[contains(@class,"ok")]')
+    #         )
+    #     ).click()
+        
+    #     assert('calendar' in self.teacher.current_url()), \
+    #         'Not viewing the calendar dashboard, after canceling assignment 015'
 
     #     self.ps.test_updates['passed'] = True
 
-    # # Case C8100 - 016 - Teacher | Attempt to publish an external assignment with blank required feilds
-    # @pytest.mark.skipif(str(8100 not in TESTS, reason='Excluded')  # NOQA
-    # def test_teacher_attempt_to_publish_an_external_assignemnt_with_blank_reqired_feilds(self):
-    #     """ Attempt to publish an external assignment with blank required feilds
-    #     Steps:
-    #     Click on the Add Assignment drop down menu
-    #     Click on the Add External Assignemnt option
-    #     Click on the Publish button
-    #     Expected Result:
-    #     Blank required feilds are highlighted in red, assignemnt is not published
-    #     """
-    #     self.ps.test_updates['name'] = 't1.18.016' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.016', '8100']
-    #     self.ps.test_updates['passed'] = False
+    # Case C8100 - 016 - Teacher | Attempt to publish an external assignment with blank required feilds
+    @pytest.mark.skipif(str(8100) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_attempt_to_publish_an_external_assignemnt_with_blank_reqired_feilds(self):
+        """ Attempt to publish an external assignment with blank required feilds
+        Steps:
+        Click on the Add Assignment drop down menu
+        Click on the Add External Assignemnt option
+        Click on the Publish button
+        Expected Result:
+        Blank required feilds are highlighted in red, assignemnt is not published
+        """
+        self.ps.test_updates['name'] = 't1.18.016' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.016', '8100']
+        self.ps.test_updates['passed'] = False
 
-    #     # Test steps and verification assertions
+        # Test steps and verification assertions
+        assignment = Assignment()
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
+                get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add External Assignment').click()
+        time.sleep(1)
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        self.teacher.driver.find_element(
+                By.XPATH, '//button[contains(@class,"-publish")]').click()
+        assert('externals/new' in self.teacher.current_url()), \
+            'Not stopped from publishing an external assignemnt with empty reqired feilds'
+        self.ps.test_updates['passed'] = True
 
-    #     self.ps.test_updates['passed'] = True
+    # Case C8101 - 017 - Teacher | Attempt to save a draft external assignment with blank required feilds
+    @pytest.mark.skipif(str(8101) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_attempt_to_save_a_draft_external_assignemnt_with_blank_reqired_feilds(self):
+        """ Attempt to save a draft external assignment with blank required feilds
+        Steps:
+        Click on the Add Assignment drop down menu
+        Click on the Add External Assignemnt option
+        Click on the Save As Draft button
+        Expected Result:
+        Blank required feilds are highlighted in red, assignemnt is not saved
+        """
+        self.ps.test_updates['name'] = 't1.18.017' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.017', '8101']
+        self.ps.test_updates['passed'] = False
 
-    # # Case C8101 - 017 - Teacher | Attempt to save a draft external assignment with blank required feilds
-    # @pytest.mark.skipif(str(8101 not in TESTS, reason='Excluded')  # NOQA
-    # def test_teacher_attempt_to_save_a_draft_external_assignemnt_with_blank_reqired_feilds(self):
-    #     """ Attempt to save a draft external assignment with blank required feilds
-    #     Steps:
-    #     Click on the Add Assignment drop down menu
-    #     Click on the Add External Assignemnt option
-    #     Click on the Save As Draft button
-    #     Expected Result:
-    #     Blank required feilds are highlighted in red, assignemnt is not saved
-    #     """
-    #     self.ps.test_updates['name'] = 't1.18.017' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.017', '8101']
-    #     self.ps.test_updates['passed'] = False
+        # Test steps and verification assertions
+        assignment = Assignment()
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
+                get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add External Assignment').click()
+        time.sleep(1)
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        self.teacher.driver.find_element(
+                By.XPATH, '//button[contains(@class,"-save")]').click()
+        assert('externals/new' in self.teacher.current_url()), \
+            'Not stopped from saving as draft  an external assignemnt with empty reqired feilds'
+        self.ps.test_updates['passed'] = True
 
-    #     # Test steps and verification assertions
-
-    #     self.ps.test_updates['passed'] = True
-
+    # ###NOT DONE
     # # Case C8102 - 018 - Teacher | Delete an unopened external assignment
-    # @pytest.mark.skipif(str(8102 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8102) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_delete_an_unopened_external_assignment(self):
     #     """ Delete an unopened external assignemnt
     #     Steps:
@@ -605,8 +810,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     #     self.ps.test_updates['passed'] = True
 
+    # ###NOT DONE
     # # Case C8103 - 019 - Teacher | Attempt to delete an opened external assignment
-    # @pytest.mark.skipif(str(8103 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8103) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_attempt_to_delete_an_opened_external_assignment(self):
     #     """ Attempt to delete an opened external assignemnt
     #     Steps:
@@ -625,8 +831,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     #     self.ps.test_updates['passed'] = True
 
+    # ###NOT DONE
     # # Case C8104 - 020 - Teacher | Delete a draft external assignment
-    # @pytest.mark.skipif(str(8104 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8104) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_delete_a_draft_external_assignment(self):
     #     """ Delete a draft external assignemnt
     #     Steps:
@@ -647,7 +854,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.ps.test_updates['passed'] = True
 
     # # Case C8105 - 021 - Teacher | Add a description to an external assignment
-    # @pytest.mark.skipif(str(8105 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8105) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_add_a_destcription_to_an_external_assignemnt(self):
     #     """ Add a description to an external assignemnt
     #     Steps:
@@ -670,8 +877,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     #     self.ps.test_updates['passed'] = True
 
+    #DELETE CASE? exact same as other cases
     # # Case C8106 - 022 - Teacher | Change a description for a draft external assignment
-    # @pytest.mark.skipif(str(8106 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8106) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_change_a_destcription_for_a_draft_external_assignemnt(self):
     #     """ Change a description for a draft external assignment
     #     Steps:
@@ -692,7 +900,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.ps.test_updates['passed'] = True
 
     # # Case C8107 - 023 - Teacher | Change a description for an open external assignment
-    # @pytest.mark.skipif(str(8107 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8107) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_change_a_destcription_for_an_open_external_assignemnt(self):
     #     """ Change a description for an open external assignment
     #     Steps:
@@ -713,8 +921,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     #     self.ps.test_updates['passed'] = True
 
+    ####not needed case? these exact steps occur in other test cases because name is needed to publish
     # # Case C8108 - 024 - Teacher | Add a name to an external assignment
-    # @pytest.mark.skipif(str(8108 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8108) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_add_a_name_to_an_external_assignemnt(self):
     #     """ Add a name to an external assignment
     #     Steps:
@@ -737,7 +946,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.ps.test_updates['passed'] = True
 
     # # Case C8109 - 025 - Teacher | Change a name for a draft external assignment
-    # @pytest.mark.skipif(str(8109 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8109) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_change_a_name_for_a_draft_external_assignemnt(self):
     #     """ Change a name for a draft external assignment
     #     Steps:
@@ -758,7 +967,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.ps.test_updates['passed'] = True
 
     # # Case C8110 - 026 - Teacher | Change a name for an open external assignment
-    # @pytest.mark.skipif(str(8110 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8110) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_change_a_name_for_an_open_external_assignemnt(self):
     #     """ Change a name for an open external assignment
     #     Steps:
@@ -778,8 +987,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     #     self.ps.test_updates['passed'] = True
 
+    ### not needed? these exact steps are done in other cases
     # # Case C8111 - 027 - Teacher | Add an assignemnt URL
-    # @pytest.mark.skipif(str(8112 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8112) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_add_an_assignment_url(self):
     #     """ Add an assignment URL
     #     Steps:
@@ -802,7 +1012,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.ps.test_updates['passed'] = True
 
     # # Case C8112 - 028 - Teacher | Change the assignemnt URL for a draft external assignemnt
-    # @pytest.mark.skipif(str(8112 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8112) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_change_the_assignment_url_for_a_draft_external_assignment(self):
     #     """ Change the assignemnt URL for a draft external assignemnt
     #     Steps:
@@ -822,28 +1032,46 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     #     self.ps.test_updates['passed'] = True
 
-    # # Case C8113 - 029 - Teacher | Info icon shows definitions for the status bar
-    # @pytest.mark.skipif(str(8113 not in TESTS, reason='Excluded')  # NOQA
-    # def test_teacher_info_icon_shows_definitions_for_the_status_bar(self):
-    #     """ Info icon shows definitions for the status bar
-    #     Steps:
-    #     Click on the Add Assignment drop down menu
-    #     Click on the Add External Assignemnt option
-    #     Click on the info icon
-    #     Expected Result:
-    #     Definitions of the statuses are dispalayed
-    #     """
-    #     self.ps.test_updates['name'] = 't1.18.029' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.029', '8113']
-    #     self.ps.test_updates['passed'] = False
+    # Case C8113 - 029 - Teacher | Info icon shows definitions for the status bar
+    @pytest.mark.skipif(str(8113) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_info_icon_shows_definitions_for_the_status_bar(self):
+        """ Info icon shows definitions for the status bar
+        Steps:
+        Click on the Add Assignment drop down menu
+        Click on the Add External Assignemnt option
+        Click on the info icon
+        Expected Result:
+        Definitions of the statuses are dispalayed
+        """
+        self.ps.test_updates['name'] = 't1.18.029' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.029', '8113']
+        self.ps.test_updates['passed'] = False
 
-    #     # Test steps and verification assertions
+        # Test steps and verification assertions
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
+                get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add External Assignment').click()
+        time.sleep(1)
+        wait = WebDriverWait(self.teacher.driver, 10 * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"-instructions")]').click()
+        self.teacher.driver.find_element(
+            By.CLASS_NAME, 'popover-content')
 
-    #     self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True
 
     # # Case C8114 - 030 - Teacher | Change all feilds in an unopened External Assignemnt
-    # @pytest.mark.skipif(str(8114 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8114) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_change_all_feilds_in_an_unopened_external_assignment(self):
     #     """ Change all feilds in an unopened External Assignemnt
     #     Steps:
@@ -868,7 +1096,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.ps.test_updates['passed'] = True
 
     # # Case C8115 - 031 - Teacher | Change all feilds in a draft External Assignemnt
-    # @pytest.mark.skipif(str(8115 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8115) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_change_all_feilds_in_a_draft_external_assignment(self):
     #     """ Change all feilds in a draft External Assignemnt
     #     Steps:
@@ -893,7 +1121,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.ps.test_updates['passed'] = True
 
     # # Case C8116 - 032 - Teacher | Change all possible feilds in an open External Assignemnt
-    # @pytest.mark.skipif(str(8116 not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8116) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_change_all_possible_feilds_in_an_open_external_assignment(self):
     #     """ Change all possible feilds in an open External Assignemnt
     #     Steps:
