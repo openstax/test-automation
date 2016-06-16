@@ -113,9 +113,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    ####NOT DONE
+    # # NOT DONE
     # # Case C8086 - 002 - Teacher | Add an external assignment using the calendar_date
-    # @pytest.mark.skipif(str(8086) not in TESTS, reason='Excluded')  # NOQA
+    # @pytest.mark.skipif(str(8086) not in TESTS, reason='Excluded')  NOQA
     # def test_teacher_add_an_external_assignemnt_using_the_calendar_date(self):
     #     """Add an external assignment using the calendar_date
     #     Steps:
@@ -133,9 +133,10 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.002', '8086']
     #     self.ps.test_updates['passed'] = False
 
-    #     ##click on calendar date
-    #     ##click on add external assignemnt
-
+    #     click on calendar date
+    #     click on add external assignemnt
+    #     self.teacher.driver.find_element(
+    #         By.XPATH,'//div[contains(@class,"Day--upcoming")]').click()
     #     time.sleep(1)
     #     wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
     #     wait.until(
@@ -143,18 +144,22 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #             (By.ID, 'reading-title')
     #         )
     #     )
-    #     self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment title')
+    #     self.teacher.driver.find_element(
+    #         By.ID, 'reading-title').send_keys('external assignment title')
     #     self.teacher.driver.find_element(
     #         By.XPATH,
     #         '//div[contains(@class,"assignment-description")]//textarea' +
     #         '[contains(@class,"form-control")]'). \
     #         send_keys('external assignemnt description')
-    #     assignment.assign_periods(self.teacher.driver, {'all':('06/20/2016','06/21/2016')})
-    #     self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
+    #     assignment.assign_periods(
+    #         self.teacher.driver, {'all':('06/20/2016','06/21/2016')})
+    #     self.teacher.driver.find_element(
+    #         By.ID, 'external-url').send_keys('website.com')
     #     self.teacher.driver.find_element(
     #             By.XPATH, '//button[contains(@class,"-publish")]').click()
 
-    #     self.teacher.driver.find_elements_by_xpath("//*[contains(text(), 'external assignemnt name')]")
+    #     self.teacher.driver.find_elements_by_xpath(
+    #         "//*[contains(text(), 'external assignemnt name')]")
 
     #     self.ps.test_updates['passed'] = True
 

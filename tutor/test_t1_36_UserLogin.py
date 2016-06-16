@@ -8,10 +8,9 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint  # NOQA
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
-# from staxing.helper import Teacher, Student
 from staxing.helper import Admin, Student, Teacher, ContentQA
 
 basic_test_env = json.dumps([
