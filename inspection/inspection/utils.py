@@ -1,5 +1,4 @@
 import unittest
-from cases import DefaultTest
 from importlib import import_module
 import inspect
 import numpy
@@ -27,18 +26,6 @@ def load_pdf_page(filepath, page_number):
     images_dict[pdf_image_key] = image
     return image
 
-
-def custom_protocal(function):
-    """Overwrite the unittest library's default protocal for creating tests"""
-    @functools.wraps(function)
-    def wrapper(*args, **kwargs):
-        def load_tests(loader, tests, pattern):
-            return function(*args, **kwargs)
-        return load_tests
-    return wrapper
-
-
-@custom_protocal
 def generate_tests(settings):
     """create parameterized tests"""
     test_cases = unittest.TestSuite()
