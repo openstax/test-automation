@@ -89,7 +89,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
             assignment_menu.click()
-
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add External Assignment').click()
         time.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)

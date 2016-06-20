@@ -78,7 +78,7 @@ class TestViewTheListDashboard(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-     Case C8269 - 002 - Student| View the performance forecast using the dashboard button
+    # Case C8269 - 002 - Student| View the performance forecast using the dashboard button
     @pytest.mark.skipif(str(8269) not in TESTS, reason='Excluded')  # NOQA
     def test_student_view_the_performance_forecast_using_the_dashboard_button(self):
         """View the performance forecast using the dashboard button
@@ -97,11 +97,14 @@ class TestViewTheListDashboard(unittest.TestCase):
 
         self.student.select_course(appearance='physics')
         wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
-        wait.until(
+        performance = wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"view-performance-forecast")]')
             )
-        ).click()            
+        )         
+        self.student.driver.execute_script('return arguments[0].scrollIntoView();', performance)
+        self.student.driver.execute_script('window.scrollBy(0, -80);')
+        performance.click()
         assert('guide' in self.student.current_url()), \
             'Not viewing the performance forecast'
         self.ps.test_updates['passed'] = True
@@ -189,7 +192,6 @@ class TestViewTheListDashboard(unittest.TestCase):
         )
         self.ps.test_updates['passed'] = True
 
-    # almost done. gets to the correct place. don't know what to assert
     # Case C8273 - 006 - Student| View past work
     @pytest.mark.skipif(str(8273) not in TESTS, reason='Excluded')  # NOQA
     def test_student_view_past_work(self):
@@ -243,11 +245,15 @@ class TestViewTheListDashboard(unittest.TestCase):
                 (By.LINK_TEXT, 'All Past Work')
             )
         ).click()
-        wait.until(
+        late = wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//i[contains(@class,"info late")]')
             )
-        ).click()
+        )
+        self.student.driver.execute_script('return arguments[0].scrollIntoView();', late)
+        self.student.driver.execute_script('window.scrollBy(0, -80);')
+        late.click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8275 - 008 - Student| View recent performance forecast topics
@@ -281,7 +287,6 @@ class TestViewTheListDashboard(unittest.TestCase):
         )
         self.ps.test_updates['passed'] = True
 
-    ###works but messy. need better way to find element
     # Case C8276 - 009 - Student| Open the refrence book using the dashboard button
     @pytest.mark.skipif(str(8276) not in TESTS, reason='Excluded')  # NOQA
     def test_student_open_the_refrence_book_using_the_dashboard_button(self):
@@ -302,12 +307,15 @@ class TestViewTheListDashboard(unittest.TestCase):
         # Test steps and verification assertions
         self.student.select_course(appearance='physics')
         wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
-        wait.until(
+        book = wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '//*[@id="react-root-container"]/div/div/div/div/div/div/div[2]/div[2]/a')
+                (By.XPATH, '//a[contains(@class,"view-reference-guide")]'\
+                 '//div[contains(text(),"Browse the Book")]')
             )
-        ).click()
-        
+        )
+        self.student.driver.execute_script('return arguments[0].scrollIntoView();', book)
+        self.student.driver.execute_script('window.scrollBy(0, -80);')
+        book.click()
         window_with_book = self.student.driver.window_handles[1]
         self.student.driver.switch_to_window(window_with_book)
         assert( 'book' in self.student.current_url()) , \

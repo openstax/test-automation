@@ -62,42 +62,42 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
             pass
         
     # Case C7978 - 001 - Teacher | View the calendar dashboard
-     @pytest.mark.skipif(str(7978) not in TESTS, reason='Excluded')
-     def test_teacher_view_the_calendar_dashboard(self):
-         """View the calendar dashboard.
+    @pytest.mark.skipif(str(7978) not in TESTS, reason='Excluded')
+    def test_teacher_view_the_calendar_dashboard(self):
+        """View the calendar dashboard.
+        
+        Steps:
+        If the user has more than one course, click on a Tutor course name
+        
+        Expected Result:
+        The teacher is presented their calendar dashboard.
+        """
+        self.ps.test_updates['name'] = 't1.13.001' \
+                                    + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.001', '7978']
+        self.ps.test_updates['passed'] = False
+        
+        self.teacher.select_course(appearance='physics')
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
 
-         Steps:
-         If the user has more than one course, click on a Tutor course name
-
-         Expected Result:
-         The teacher is presented their calendar dashboard.
-         """
-         self.ps.test_updates['name'] = 't1.13.001' \
-             + inspect.currentframe().f_code.co_name[4:]
-         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.001', '7978']
-         self.ps.test_updates['passed'] = False
-    
-         self.teacher.select_course(appearance='physics')
-         assert('calendar' in self.teacher.current_url()), \
-             'Not viewing the calendar dashboard'
-
-         self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True
 
 
-     # Case C7979 - 002 - Teacher | View student scores using the dashboard button
-     @pytest.mark.skipif(str(7979) not in TESTS, reason='Excluded')
-     def test_teacher_view_student_scores_using_the_dashboard_button(self):
-         """ View student scores using the dashboard button
+    # Case C7979 - 002 - Teacher | View student scores using the dashboard button
+    @pytest.mark.skipif(str(7979) not in TESTS, reason='Excluded')
+    def test_teacher_view_student_scores_using_the_dashboard_button(self):
+        """ View student scores using the dashboard button
 
-         Steps:
-         If the user has more than one course, click on a Tutor course name
-         Click on the 'Student Scores' button
+        Steps:
+        If the user has more than one course, click on a Tutor course name
+        Click on the 'Student Scores' button
 
         Expected Result:
         The teacher is presented with the student scores
         """
         self.ps.test_updates['name'] = 't1.13.002' \
-            + inspect.currentframe().f_code.co_name[4:]
+                                       + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.002', '7979']
         self.ps.test_updates['passed'] = False
         
