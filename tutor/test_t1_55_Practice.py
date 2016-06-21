@@ -87,7 +87,6 @@ class TestPractice(unittest.TestCase):
     #     self.ps.test_updates['passed'] = True
 
     
-    # # Not sure if this is working, there is a bug on tutor now, will go back
     # # Case C8298 - 002 - Student | Navigate between questions using the breadcrumbs
     # @pytest.mark.skipif(str(8298) not in TESTS, reason='Excluded')  # NOQA
     # def test_student_navigate_between_questions_using_the_breadcrumbs(self):
@@ -106,11 +105,11 @@ class TestPractice(unittest.TestCase):
 
     #     # Test steps and verification assertions
     #     sections = self.student.driver.find_elements(By.XPATH,'//span[contains(@class,"breadcrumbs")]')
-    #     section = sections[-1]
+    #     section = sections[-2]
     #     chapter = section.get_attribute("data-reactid")
     #     section.click()
     #     self.student.driver.find_element(
-    #         By.XPATH,'//div[@data-question-number="'+chapter[-1]+'")]')
+    #         By.XPATH,'//div[contains(@data-question-number,"'+str(int(chapter[-1])+1)+'")]')
         
     #     self.ps.test_updates['passed'] = True
 
@@ -133,7 +132,18 @@ class TestPractice(unittest.TestCase):
     #     self.ps.test_updates['passed'] = False
 
     #     # Test steps and verification assertions
-    #     # should this case have something about a question long enought to actually scroll
+    #     # answer free response so that when mc questions appear there is enough text to scroll
+    #     self.wait.until(
+    #         expect.visibility_of_element_located(
+    #             ( By.TAG_NAME,'textarea')
+    #         )
+    #     ).send_keys("hello")
+    #     self.wait.until(
+    #         expect.visibility_of_element_located(
+    #             ( By.XPATH,'//button/span[contains(text(),"Answer")]')
+    #         )
+    #     ).click()
+    #     # scroll page
     #     self.student.driver.execute_script("window.scrollTo(0, 100);")
     #     self.student.driver.execute_script("window.scrollTo(0, 0);")
     #     self.student.driver.find_element(By.CLASS_NAME,'ui-brand-logo') #is visible?
@@ -141,108 +151,120 @@ class TestPractice(unittest.TestCase):
     #     self.ps.test_updates['passed'] = True
 
 
-    # Case C8300 - 004 - Student | Inputting a free response activates the Answer button
-    @pytest.mark.skipif(str(8300) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_inputting_a_free_response_activates_the_answer_button(self):
-        """Inputting a free response into activates the Answer button.
-
-        Steps:
-        If there is a text box: input text
-        otherwise click on the next breadcrumb until a textbox is available
-
-        Expected Result:
-        The "Answer" button is click-able.
-        """
-        self.ps.test_updates['name'] = 't1.55.004' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1','t1.55','t1.55.004','8300']
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-        self.wait.until(
-            expect.visibility_of_element_located(
-                ( By.TAG_NAME,'textarea')
-            )
-        ).send_keys("hello")
-        self.wait.until(
-            expect.element_to_be_clickable(
-                ( By.XPATH,'//button/span[contains(text(),"Answer")]')
-            )
-        )
-        self.ps.test_updates['passed'] = True
-
-
-    # Case C8301 - 005 - Student | Answer a free reponse question
-    @pytest.mark.skipif(str(8301) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_answer_a_free_response_question(self):
-        """Answer a free reponse question.
-
-        Steps:
-        If there is a text box, input text
-        Click the "Answer" button 
-
-        Expected Result:
-        The text box disappears and the multiple choice answer appear.
-        """
-        self.ps.test_updates['name'] = 't1.55.005' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1','t1.55','t1.55.005','8301']
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-        self.wait.until(
-            expect.visibility_of_element_located(
-                ( By.TAG_NAME,'textarea')
-            )
-        ).send_keys("hello")
-        self.wait.until(
-            expect.visibility_of_element_located(
-                ( By.XPATH,'//button/span[contains(text(),"Answer")]')
-            )
-        ).click()
-        ###find multiple choice answers
-        ###find text of initial free response answer on page
-        self.ps.test_updates['passed'] = True
-
-
-    # # Case C8302 - 006 - Student | Selecting a multiple choice answer activates the Submit button
-    # @pytest.mark.skipif(str(8302) not in TESTS, reason='Excluded')  # NOQA
-    # def test_usertype_story_text(self):
-    #     """Selecting a multiple choice answer activates the Submit button.
+    # #need case for it no free resposen choose a differnet breadcrumb
+    # # Case C8300 - 004 - Student | Inputting a free response activates the Answer button
+    # @pytest.mark.skipif(str(8300) not in TESTS, reason='Excluded')  # NOQA
+    # def test_student_inputting_a_free_response_activates_the_answer_button(self):
+    #     """Inputting a free response into activates the Answer button.
 
     #     Steps:
-
-    #     Click one of the section performance bars from the dashboard
-        
-    #     OR
-        
-    #     Click on the user menu 
-    #     Click "Performance Forecast"
-    #     Click one of the section performance bars 
-
-    #     If there is a text box, input text
-    #     Click the "Answer" button
-    #     Select a multiple choice answer 
-
+    #     If there is a text box: input text
+    #     otherwise click on the next breadcrumb until a textbox is available
 
     #     Expected Result:
-
-    #     The "Submit" button can now be clicked
-
+    #     The "Answer" button is click-able.
     #     """
-    #     self.ps.test_updates['name'] = 't1.55.006' \
+    #     self.ps.test_updates['name'] = 't1.55.004' \
     #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = [
-    #         't1',
-    #         't1.55',
-    #         't1.55.006',
-    #         '8302'
-    #     ]
+    #     self.ps.test_updates['tags'] = ['t1','t1.55','t1.55.004','8300']
     #     self.ps.test_updates['passed'] = False
 
     #     # Test steps and verification assertions
-
+    #     self.wait.until(
+    #         expect.visibility_of_element_located(
+    #             ( By.TAG_NAME,'textarea')
+    #         )
+    #     ).send_keys("hello")
+    #     self.wait.until(
+    #         expect.element_to_be_clickable(
+    #             ( By.XPATH,'//button/span[contains(text(),"Answer")]')
+    #         )
+    #     )
     #     self.ps.test_updates['passed'] = True
+
+
+    # # #need case for it no free resposen choose a differnet breadcrumb
+    # # Case C8301 - 005 - Student | Answer a free reponse question
+    # @pytest.mark.skipif(str(8301) not in TESTS, reason='Excluded')  # NOQA
+    # def test_student_answer_a_free_response_question(self):
+    #     """Answer a free reponse question.
+
+    #     Steps:
+    #     If there is a text box, input text
+    #     Click the "Answer" button 
+
+    #     Expected Result:
+    #     The text box disappears and the multiple choice answer appear.
+    #     """
+    #     self.ps.test_updates['name'] = 't1.55.005' \
+    #         + inspect.currentframe().f_code.co_name[4:]
+    #     self.ps.test_updates['tags'] = ['t1','t1.55','t1.55.005','8301']
+    #     self.ps.test_updates['passed'] = False
+
+    #     # Test steps and verification assertions
+    #     self.wait.until(
+    #         expect.visibility_of_element_located(
+    #             ( By.TAG_NAME,'textarea')
+    #         )
+    #     ).send_keys("hello")
+    #     self.wait.until(
+    #         expect.visibility_of_element_located(
+    #             ( By.XPATH,'//button/span[contains(text(),"Answer")]')
+    #         )
+    #     ).click()
+    #     self.student.driver.find_element(
+    #         By.XPATH,'//div[@class="free-response" contains(text(),"hello")]')
+    #     self.student.driver.find_element(
+    #         By.XPATH,'div//[@class="answer-letter"]')
+    #     self.ps.test_updates['passed'] = True
+
+
+    # Case C8302 - 006 - Student | Selecting a multiple choice answer activates the Submit button
+    @pytest.mark.skipif(str(8302) not in TESTS, reason='Excluded')  # NOQA
+    def test_usertype_story_text(self):
+        """Selecting a multiple choice answer activates the Submit button.
+
+        Steps:
+        If there is a text box, input text
+        Click the "Answer" button
+        Select a multiple choice answer 
+
+        Expected Result:
+        The "Submit" button can now be clicked
+        """
+        self.ps.test_updates['name'] = 't1.55.006' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1','t1.55','t1.55.006','8302']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        try:
+            #if the question is two part must answer free response to get to mc
+            self.wait.until(
+                expect.visibility_of_element_located(
+                    ( By.TAG_NAME,'textarea')
+                )
+            ).send_keys("hello")
+            self.wait.until(
+                expect.visibility_of_element_located(
+                    ( By.XPATH,'//button/span[contains(text(),"Answer")]')
+                )
+            ).click()
+        except:
+            pass
+        self.wait.until(
+            expect.visibility_of_element_located(
+                (By.CLASS_NAME,'div//[@class="question-stem"]')
+            )
+        ).click()
+        self.student.driver.find_element(
+            By.XPATH,'input//[@class="answer-input-box"]').click()
+        self.wait.until(
+            expect.element_to_be_clickable(
+                ( By.XPATH,'//button/span[contains(text(),"Submit")]')
+            )
+        )
+        self.ps.test_updates['passed'] = True
 
 
     # # Case C8303 - 007 - Student | Submit the assessment

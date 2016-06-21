@@ -184,48 +184,47 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         
         self.ps.test_updates['passed'] = True
 
-    # #NOT DONE
-    # # Case C7983 - 006 - Teacher | View a reading assignment summary
-    # @pytest.mark.skipif(str(7983) not in TESTS, reason='Excluded')
-    # def test_teacher_view_a_reading_assignment_summary(self):
-    #     """ View a reading assignment summary
+    # # code in staxing not up to date for assignment creation
+    # Case C7983 - 006 - Teacher | View a reading assignment summary
+    @pytest.mark.skipif(str(7983) not in TESTS, reason='Excluded')
+    def test_teacher_view_a_reading_assignment_summary(self):
+        """ View a reading assignment summary
 
-    #     Steps:
-    #     If the user has more than one course, click on a Tutor course name
-    #     Create a reading assignment
-    #     Click on the reading assignment on the calendar
+        Steps:
+        If the user has more than one course, click on a Tutor course name
+        Create a reading assignment
+        Click on the reading assignment on the calendar
 
-    #     Expected Result:
-    #     The teacher is presented with the reading assignment summary
-    #     """
-    #     self.ps.test_updates['name'] = 't1.13.006' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.006', '7983']
-    #     self.ps.test_updates['passed'] = False
+        Expected Result:
+        The teacher is presented with the reading assignment summary
+        """
+        self.ps.test_updates['name'] = 't1.13.006' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.006', '7983']
+        self.ps.test_updates['passed'] = False
         
-    #     self.teacher.select_course(appearance='physics')
-    #     #create an assignemnt
-    #     assignment_name = 'reading-006'
-    #     today = datetime.date.today()
-    #     begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-    #     end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
-    #     ###I think there may be an issue in Assignemnts in select_sections, code may need an update?
-    #     self.teacher.add_assignment( assignment='reading',
-    #                                  args={
-    #                                      'title' : assignment_name,
-    #                                      'description' : 'description',
-    #                                      'periods' : {'all': (begin, end)},
-    #                                      'reading_list' : ['ch1'],
-    #                                      'status' : 'publish'
-    #                                  })
-    #     #click on assignemnt
-    #     self.teacher.driver.find_element(
-    #         By.XPATH, '//div[contains(text(), "{!s}")]'.format(assignemnt_name)).click()
-    #     #check that it opened
-    #     self.teacher.driver.find_element(
-    #         By.XPATH, '//h2[contains(text(), "{!s}")]'.format(assignemnt_name))
+        self.teacher.select_course(appearance='physics')
+        #create an assignemnt
+        assignment_name = 'reading-006'
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment( assignment='reading',
+                                     args={
+                                         'title' : assignment_name,
+                                         'description' : 'description',
+                                         'periods' : {'all': (begin, end)},
+                                         'reading_list' : ['ch1'],
+                                         'status' : 'publish'
+                                     })
+        #click on assignemnt
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(text(), "'+assignment_name+'")]').click()
+        #check that it opened
+        self.teacher.driver.find_element(
+            By.XPATH, '//h2[contains(text(), "'+assignment_name+'")]')
 
-    #     self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True
 
     # #NOT DONE
     # # Case C7984 - 007 - Teacher | View a homework assignment summary
@@ -246,9 +245,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
     #     self.ps.test_updates['passed'] = False
         
     #     self.teacher.select_course(appearance='physics')
-    #     #click on a homework assignment
-    #     #assert(  , \
-    #     #    'Not viewing homework assignemnt summary'
         
     #     self.ps.test_updates['passed'] = True
 
@@ -286,10 +282,10 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
     #                                  })
     #     #click on assignemnt
     #     self.teacher.driver.find_element(
-    #         By.XPATH, '//div[contains(text(), "{!s}")]'.format(assignemnt_name)).click()
+    #         By.XPATH, '//div[contains(text(), "'+assignemnt_name+'")]').click()
     #     #check that it opened
     #     self.teacher.driver.find_element(
-    #         By.XPATH, '//h2[contains(text(), "{!s}")]'.format(assignemnt_name))
+    #         By.XPATH, '//h2[contains(text(), "'+assignemnt_name+'")]')
 
     #     self.ps.test_updates['passed'] = True
 

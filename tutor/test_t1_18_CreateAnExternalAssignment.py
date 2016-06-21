@@ -6,6 +6,7 @@ import os
 import pytest
 import unittest
 import time
+import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint  # NOQA
@@ -97,18 +98,22 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 (By.ID, 'reading-title')
             )
         )
-        self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-001')
+        self.teacher.driver.find_element(
+            By.ID, 'reading-title').send_keys('external assignment-001')
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
             send_keys('external assignemnt description')
-        assignment.assign_periods(self.teacher.driver, {'all':('06/20/2016','06/21/2016')})
+        today = datetime.date.today()
+        opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        assignment.assign_periods(self.teacher.driver, {'all':(opens_on,closes_on)})
         self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
         self.teacher.driver.find_element(
                 By.XPATH, '//button[contains(@class,"-publish")]').click()
-
-        self.teacher.driver.find_elements_by_xpath("//*[contains(text(), 'external assignemnt-001')]")
+        self.teacher.driver.find_elements_by_xpath(
+            "//*[contains(text(), 'external assignemnt-001')]")
 
         self.ps.test_updates['passed'] = True
 
@@ -189,6 +194,104 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
             assignment_menu.click()
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add External Assignment').click()
+        time.sleep(1)
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('003')
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]//textarea' +
+            '[contains(@class,"form-control")]'). \
+            send_keys('external assignemnt description')
+        #set date
+        today = datetime.date.today()
+        opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(@class,"-due-date")]'\
+            '//div[contains(@class,"datepicker__input")]').click()
+        # get calendar to correct month
+        month = today.month
+        year = today.year
+        while (month != int(closes_on[:2]) or year != int(closes_on[6:])):
+            self.teacher.driver.find_element(
+                By.XPATH, '//a[contains(@class,"navigation--next")]').click()
+            if month != 12:
+                month += 1
+            else:
+                month = 1
+                year += 1
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(@class,"datepicker__day")'\
+            'and contains(text(),"'+ (closes_on[3:5]) +'")]').click()
+        time.sleep(0.5)
+        self.teacher.driver.find_element(By.CLASS_NAME, 'assign-to-label').click()
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(@class,"-open-date")]'\
+            '//div[contains(@class,"datepicker__input")]').click()
+        # get calendar to correct month
+        month = today.month
+        year = today.year
+        while (month != int(opens_on[:2]) or year != int(opens_on[6:])):
+            self.teacher.driver.find_element(
+                By.XPATH, '//a[contains(@class,"navigation--next")]').click()
+            if month != 12:
+                month += 1
+            else:
+                month = 1
+                year += 1
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(@class,"datepicker__day")'\
+            'and contains(text(),"'+ (opens_on[3:5]) +'")]').click()
+        time.sleep(0.5)
+        self.teacher.driver.find_element(By.CLASS_NAME, 'assign-to-label').click()
+
+        self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
+        self.teacher.driver.find_element(
+                By.XPATH, '//button[contains(@class,"-publish")]').click()
+        ##won't work if it goes over to next month
+        wait.until(
+             expect.visibility_of_element_located(
+                (By.XPATH, "//label[contains(text(), '003')]")
+            )
+        )
+        self.ps.test_updates['passed'] = True
+
+    ####NOT DONE
+    # Case C8088 - 004 - Teacher | Set open and due dates for  periods individually
+    @pytest.mark.skipif(str(8088) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_set_open_and_due_dates_for_periods_individually(self):
+        """Set open and due dates for periods individually
+        Steps:
+        Click on the Add Assignment drop down menu
+        Click on the Add External Assignemnt option
+        Enter an assignemnt name into the Assignemnt Name text box
+        Click on the Individual periods radio button
+        For each period:
+        -Enter date into the Open Date text feild as MM/DD/YYYY
+        -Enter date into the Due Date text feild as MM/DD/YYYY
+        Enter a URL into the Assignment URL text box
+        Click on the Publish button
+        Expected Result:
+        New external assignment appears on the calendar dashboard across its due dates
+        """
+        self.ps.test_updates['name'] = 't1.18.004' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.004', '8088']
+        self.ps.test_updates['passed'] = False
+
+        assignment = Assignment()
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
+                get_attribute('class'):
+            assignment_menu.click()
 
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add External Assignment').click()
         time.sleep(1)
@@ -198,76 +301,73 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 (By.ID, 'reading-title')
             )
         )
-        self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-003')
+        self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-004')
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
             send_keys('external assignemnt description')
-        assignment.assign_periods(self.teacher.driver, {'all':('06/20/2016','06/21/2016')})
+        #assign to periods individually
+        self.teacher.driver.find_element(By.ID, 'show-periods-radio').click()
+        periods = self.teacher.driver.find_elements(
+            By.XPATH,'//div[contains(@class,"tasking-plan")]')
+        today = datetime.date.today()
+        for x in range(len(periods)):
+            opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+            closes_on = (today + datetime.timedelta(days=(2))).strftime('%m/%d/%Y')
+            element = self.teacher.driver.find_element(
+                By.XPATH, '//div[contains(@class,"tasking-plan") and contains(@data-reactid,":'+str(x+1)+'")]'\
+                '//div[contains(@class,"-due-date")]'\
+                '//div[contains(@class,"datepicker__input")]')
+            self.teacher.driver.execute_script('window.scrollBy(0,'+ str(element.size['height']+50)+');')
+            time.sleep(0.5)
+            element.click()
+            # get calendar to correct month
+            month = today.month
+            year = today.year
+            while (month != int(closes_on[:2]) or year != int(closes_on[6:])):
+                self.teacher.driver.find_element(
+                    By.XPATH, '//a[contains(@class,"navigation--next")]').click()
+                if month != 12:
+                    month += 1
+                else:
+                    month = 1
+                    year += 1
+            self.teacher.driver.find_element(
+                By.XPATH, '//div[contains(@class,"datepicker__day")'\
+                'and contains(text(),"'+ (closes_on[3:5]) +'")]').click()
+            time.sleep(0.5)
+            #self.teacher.driver.find_element(By.CLASS_NAME, 'assign-to-label').click()
+            self.teacher.driver.find_element(
+                By.XPATH, '//div[contains(@class,"tasking-plan") and contains(@data-reactid,":'+str(x+1)+'")]'\
+                '//div[contains(@class,"-open-date")]'\
+                '//div[contains(@class,"datepicker__input")]').click()
+            # get calendar to correct month
+            month = today.month
+            year = today.year
+            while (month != int(opens_on[:2]) or year != int(opens_on[6:])):
+                self.teacher.driver.find_element(
+                    By.XPATH, '//a[contains(@class,"navigation--next")]').click()
+                if month != 12:
+                    month += 1
+                else:
+                    month = 1
+                    year += 1
+            self.teacher.driver.find_element(
+                By.XPATH, '//div[contains(@class,"datepicker__day")'\
+                'and contains(text(),"'+ (opens_on[3:5]) +'")]').click()
+            time.sleep(0.5)
+            #self.teacher.driver.find_element(By.CLASS_NAME, 'assign-to-label').click()
         self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
         self.teacher.driver.find_element(
-                By.XPATH, '//button[contains(@class,"-publish")]').click()
-
-        self.teacher.driver.find_elements_by_xpath("//*[contains(text(), 'external assignemnt-003')]")
-
+            By.XPATH, '//button[contains(@class,"-publish")]').click()
+        ##won't work if it goes over to next month
+        wait.until(
+             expect.visibility_of_element_located(
+                (By.XPATH, "//label[contains(text(), '004')]")
+            )
+        )
         self.ps.test_updates['passed'] = True
-
-    ####NOT DONE
-    # # Case C8088 - 004 - Teacher | Set open and due dates for  periods individually
-    # @pytest.mark.skipif(str(8088) not in TESTS, reason='Excluded')  # NOQA
-    # def test_teacher_set_open_and_due_dates_for_periods_individually(self):
-    #     """Set open and due dates for periods individually
-    #     Steps:
-    #     Click on the Add Assignment drop down menu
-    #     Click on the Add External Assignemnt option
-    #     Enter an assignemnt name into the Assignemnt Name text box
-    #     Click on the Individual periods radio button
-    #     For each period:
-    #     -Enter date into the Open Date text feild as MM/DD/YYYY
-    #     -Enter date into the Due Date text feild as MM/DD/YYYY
-    #     Enter a URL into the Assignment URL text box
-    #     Click on the Publish button
-    #     Expected Result:
-    #     New external assignment appears on the calendar dashboard across its due dates
-    #     """
-    #     self.ps.test_updates['name'] = 't1.18.004' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.004', '8088']
-    #     self.ps.test_updates['passed'] = False
-
-    #     assignment = Assignment()
-    #     assignment_menu = self.teacher.driver.find_element(
-    #         By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
-    #     # if the Add Assignment menu is not open
-    #     if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-    #             get_attribute('class'):
-    #         assignment_menu.click()
-
-    #     self.teacher.driver.find_element(By.LINK_TEXT, 'Add External Assignment').click()
-    #     time.sleep(1)
-    #     wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-    #     wait.until(
-    #         expect.element_to_be_clickable(
-    #             (By.ID, 'reading-title')
-    #         )
-    #     )
-    #     self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-004')
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,
-    #         '//div[contains(@class,"assignment-description")]//textarea' +
-    #         '[contains(@class,"form-control")]'). \
-    #         send_keys('external assignemnt description')
-    #     ###does this need to be written in the case, not using the helper from Assignments
-    #     self.teacher.driver.find_element(By.ID, 'show-periods-radio').click()
-
-    #     self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
-    #     self.teacher.driver.find_element(
-    #             By.XPATH, '//button[contains(@class,"-publish")]').click()
-
-    #     self.teacher.driver.find_elements_by_xpath("//*[contains(text(), 'external assignemnt-004')]")
-
-    #     self.ps.test_updates['passed'] = True
 
     # Case C8089 - 005 - Teacher | Save a draft external assignemnt
     @pytest.mark.skipif(str(8089) not in TESTS, reason='Excluded')  # NOQA
@@ -318,7 +418,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.teacher.driver.find_elements_by_xpath("//*[contains(text(), 'draft external assignemnt-005')]")
 
-    #     self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True
 
     ####Covered bu 001 and 002, would be exactly the same code, test case not needed?
     # # Case C8090 - 006 - Teacher | Publish a new external assignemnt
