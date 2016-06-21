@@ -10,6 +10,9 @@ except ImportError:
     from testrail import TestRailAPI
 
 
+NEW_LINE = ''.join([chr(10), chr(13)])
+
+
 def prod(vals):
     """Non operator multiplier."""
     return reduce(operator.mul, vals, 1)
@@ -71,7 +74,21 @@ for child in root:
     sub = list(child.iter())
     if len(sub) >= 2:
         child.attrib['status'] = sub[1].tag
-        child.attrib['message'] = sub[1].attrib['message']
+        message = sub[1].attrib['message']
+        parts = message.split(
+            '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ' +
+            '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _'
+        )
+        for i, x in enumerate(parts):
+            print(NEW_LINE + '====================' + NEW_LINE, i, NEW_LINE, x,
+                  NEW_LINE + '====================' + NEW_LINE)
+        reorder = 'Break Point:' + NEW_LINE + parts[0]
+        if len(parts) > 1:
+            final = str(parts[len(parts) - 1])
+            reorder = reorder + NEW_LINE + 'Reason:' + NEW_LINE + \
+                final[:-operator.floordiv(len(final), 4)] + NEW_LINE
+        child.attrib['message'] = reorder
+        print(reorder)
         child.attrib['text'] = sub[1].text
     else:
         child.attrib['status'] = 'passed'
@@ -84,14 +101,12 @@ for child in root:
         results.append({
             'test_id': child.attrib['test'],
             'status_id': get_status(child.attrib['status']),
-            'comment': '{0}{1}'.format(
-                child.attrib['message'],
-                child.attrib['text']
-            ),
+            'comment': child.attrib['message'],
             'version': '',
             'elapsed': get_time_string(child.attrib['time']),
             'defects': '',
             'assignedto_id': '',
         })
-print(chr(10), 'Results:', chr(10), results, chr(10))
-package = tr.add_results(run_id=int(run), data={'results': results})
+print('Run:', int(run))
+print('Results:', NEW_LINE, results)
+# package = tr.add_results(run_id=int(run), data={'results': results})
