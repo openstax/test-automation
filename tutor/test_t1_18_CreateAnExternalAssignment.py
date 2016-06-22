@@ -27,13 +27,15 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8085, 8086, 8087, 8088, 8089,
-         8090, 8091, 8092, 8093, 8094,
-         8095, 8096, 8097, 8098, 8099,
-         8100, 8101, 8102, 8103, 8104,
-         8105, 8106, 8107, 8108, 8109,
-         8110, 8111, 8112, 8113, 8114,
-         8115, 8116])
+    # str([8085, 8086, 8087, 8088, 8089,
+    #      8090, 8091, 8092, 8093, 8094,
+    #      8095, 8096, 8097, 8098, 8099,
+    #      8100, 8101, 8102, 8103, 8104,
+    #      8105, 8106, 8107, 8108, 8109,
+    #      8110, 8111, 8112, 8113, 8114,
+    #      8115, 8116])
+    str([8089])
+
 )
 
 
@@ -99,7 +101,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
         )
         self.teacher.driver.find_element(
-            By.ID, 'reading-title').send_keys('external assignment-001')
+            By.ID, 'reading-title').send_keys('ext001')
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
@@ -113,7 +115,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.driver.find_element(
                 By.XPATH, '//button[contains(@class,"-publish")]').click()
         self.teacher.driver.find_elements_by_xpath(
-            "//*[contains(text(), 'external assignemnt-001')]")
+            "//*[contains(text(), 'ext001')]")
 
         self.ps.test_updates['passed'] = True
 
@@ -149,7 +151,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #         )
     #     )
     #     self.teacher.driver.find_element(
-    #         By.ID, 'reading-title').send_keys('external assignment title')
+    #         By.ID, 'reading-title').send_keys('ext002')
     #     self.teacher.driver.find_element(
     #         By.XPATH,
     #         '//div[contains(@class,"assignment-description")]//textarea' +
@@ -163,7 +165,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #             By.XPATH, '//button[contains(@class,"-publish")]').click()
 
     #     self.teacher.driver.find_elements_by_xpath(
-    #         "//*[contains(text(), 'external assignemnt name')]")
+    #         "//label[contains(text(), 'ext002')]")
 
     #     self.ps.test_updates['passed'] = True
 
@@ -202,7 +204,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 (By.ID, 'reading-title')
             )
         )
-        self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('003')
+        self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('ext003')
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
@@ -257,7 +259,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         ##won't work if it goes over to next month
         wait.until(
              expect.visibility_of_element_located(
-                (By.XPATH, "//label[contains(text(), '003')]")
+                (By.XPATH, "//label[contains(text(), 'ext003')]")
             )
         )
         self.ps.test_updates['passed'] = True
@@ -301,7 +303,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 (By.ID, 'reading-title')
             )
         )
-        self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-004')
+        self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('ext004')
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
@@ -316,10 +318,12 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
             closes_on = (today + datetime.timedelta(days=(2))).strftime('%m/%d/%Y')
             element = self.teacher.driver.find_element(
-                By.XPATH, '//div[contains(@class,"tasking-plan") and contains(@data-reactid,":'+str(x+1)+'")]'\
+                By.XPATH, '//div[contains(@class,"tasking-plan")'\
+                'and contains(@data-reactid,":'+str(x+1)+'")]'\
                 '//div[contains(@class,"-due-date")]'\
                 '//div[contains(@class,"datepicker__input")]')
-            self.teacher.driver.execute_script('window.scrollBy(0,'+ str(element.size['height']+50)+');')
+            self.teacher.driver.execute_script(
+                'window.scrollBy(0,'+str(element.size['height']+50)+');')
             time.sleep(0.5)
             element.click()
             # get calendar to correct month
@@ -339,7 +343,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             time.sleep(0.5)
             #self.teacher.driver.find_element(By.CLASS_NAME, 'assign-to-label').click()
             self.teacher.driver.find_element(
-                By.XPATH, '//div[contains(@class,"tasking-plan") and contains(@data-reactid,":'+str(x+1)+'")]'\
+                By.XPATH, '//div[contains(@class,"tasking-plan") and'\
+                ' contains(@data-reactid,":'+str(x+1)+'")]'\
                 '//div[contains(@class,"-open-date")]'\
                 '//div[contains(@class,"datepicker__input")]').click()
             # get calendar to correct month
@@ -364,7 +369,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         ##won't work if it goes over to next month
         wait.until(
              expect.visibility_of_element_located(
-                (By.XPATH, "//label[contains(text(), '004')]")
+                (By.XPATH, "//label[contains(text(), 'ext004')]")
             )
         )
         self.ps.test_updates['passed'] = True
@@ -405,7 +410,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 (By.ID, 'reading-title')
             )
         )
-        self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('external assignment-005')
+        self.teacher.driver.find_element(By.ID, 'reading-title').send_keys('ext005')
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
@@ -416,7 +421,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.driver.find_element(
                 By.XPATH, '//button[contains(@class,"-save")]').click()
 
-        self.teacher.driver.find_elements_by_xpath("//*[contains(text(), 'draft external assignemnt-005')]")
+        self.teacher.driver.find_elements_by_xpath(
+            "//label[contains(text(), 'ext005')]")
 
         self.ps.test_updates['passed'] = True
 
@@ -444,34 +450,47 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     #     self.ps.test_updates['passed'] = True
 
-    #NOT DONE
-    # # Case C8091 - 007 - Teacher | Publish a draft external assignemnt
-    # @pytest.mark.skipif(str(8089) not in TESTS, reason='Excluded')  # NOQA
-    # def test_teacher_publish_a_draft_external_assignment(self):
-    #     """ Publish a draft external assignemnt
-    #     Steps:
-    #     Click on the Add Assignment drop down menu
-    #     Click on the Add External Assignemnt option
-    #     Enter an assignemnt name into the Assignemnt Name text box
-    #     Enter date into the Due Date text feild as MM/DD/YYYY
-    #     Enter a URL into the Assignment URL text box
-    #     Click on the Save As Draft button
-    #     Click on the draft on the calendar dashboard
-    #     Chick on the Publish button
-    #     Expected Result:
-    #     Draft external assignment appears on the calendar dashboard on its due date
-    #     """
-    #     self.ps.test_updates['name'] = 't1.18.007' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.007', '8091']
-    #     self.ps.test_updates['passed'] = False
+    # NOT DONE
+    # Case C8091 - 007 - Teacher | Publish a draft external assignemnt
+    @pytest.mark.skipif(str(8089) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_publish_a_draft_external_assignment(self):
+        """ Publish a draft external assignemnt
+        Steps:
+        Click on the Add Assignment drop down menu
+        Click on the Add External Assignemnt option
+        Enter an assignemnt name into the Assignemnt Name text box
+        Enter date into the Due Date text feild as MM/DD/YYYY
+        Enter a URL into the Assignment URL text box
+        Click on the Save As Draft button
+        Click on the draft on the calendar dashboard
+        Chick on the Publish button
+        Expected Result:
+        Draft external assignment appears on the calendar dashboard on its due date
+        """
+        self.ps.test_updates['name'] = 't1.18.007' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.007', '8091']
+        self.ps.test_updates['passed'] = False
 
-    #     # Test steps and verification assertions
-    #     add_new_external(self.teacher.driver, 'external-007', 'description',
-    #                      periods, 'website.com', 'draft')
+        # Test steps and verification assertions
+        assignemnt_name = "ext007"
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment( assignment='external',
+                                     args={
+                                         'title' : assignment_name,
+                                         'description' : 'description',
+                                         'periods' : {'all': (begin, end)},
+                                         'reading_list' : ['ch1'],
+                                         'status' : 'publish'
+                                     })
+        self.teacher.driver.find_element(
+            By.XPATH,'//a[contains(@href,"external")]'\
+            '//label[contains(@data-title,"'+assignment_name+'")]').click
        
 
-    #     self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True
 
     ###fails because now it needs the ok after without changes bug
     # Case C8092 - 008 - Teacher | Cancel a new external assignemnt before changes using Cancel button
