@@ -31,7 +31,7 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8182, 8183])  # NOQA
+    str([8182, 8183])  # NOQA 
 )
 
 
