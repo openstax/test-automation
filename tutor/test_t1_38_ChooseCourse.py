@@ -14,6 +14,8 @@ from staxing.assignment import Assignment  # NOQA
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher  # NOQA
+from staxing.helper import Student  # NOQA
+from staxing.helper import User  # NOQA
 
 # for template command line testing only
 # - replace list_of_cases on line 31 with all test case IDs in this file
@@ -34,7 +36,6 @@ TESTS = os.getenv(
     str([8254, 8255, 8256, 8257])  # NOQA
 )
 
-
 @PastaDecorator.on_platforms(BROWSERS)
 class TestEpicName(unittest.TestCase):
     """T1.38 - Choose Course."""
@@ -43,20 +44,26 @@ class TestEpicName(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        # self.Teacher = Teacher(
+        #    use_env_vars=True,
+        #    pasta_user=self.ps,
+        #    capabilities=self.desired_capabilities
+        # )
+        #= Teacher(use_env_vars=True)
+        #self.user.login()
+        #self.student = Student(use_env_vars=True)
+        #self.student.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
+        self.ps.update_job(job_id=str(self.user.driver.session_id),
                            **self.ps.test_updates)
+        
         try:
-            self.teacher.delete()
+            self.user.delete()
         except:
             pass
+        
 
     # Case C8254 - 001 - Student | Select a course
     @pytest.mark.skipif(str(8254) not in TESTS, reason='Excluded')  # NOQA
@@ -80,8 +87,18 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.user = User(username='student01', password='password',
+                            site='https://tutor-qa.openstax.org/')
+        self.user.login()
+        self.user.find(By.PARTIAL_LINK_TEXT, 'AP Physics').click()
+        
+        assert('courses/1/list/' in self.user.current_url()), \
+            'Not in a course'
+
+        self.user.sleep(5)
 
         self.ps.test_updates['passed'] = True
+        #student.delete()
 
     # Case C8255 - 002 - Student | Bypass the course picker
     @pytest.mark.skipif(str(8255) not in TESTS, reason='Excluded')  # NOQA
@@ -97,6 +114,7 @@ class TestEpicName(unittest.TestCase):
         Expected Result:
         The user bypasses the course picker and is presented with the dashboard (because qas_01 is only enrolled in one course)
         """
+
         self.ps.test_updates['name'] = 't1.38.002' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -109,7 +127,17 @@ class TestEpicName(unittest.TestCase):
 
         # Test steps and verification assertions
 
+        self.user = User(username='qas_04', password='password',
+                            site='https://tutor-qa.openstax.org/')
+        self.user.login()
+        assert('courses/75/list/' in self.user.current_url()), \
+            'Not in a course'
+
+        self.user.sleep(5)
         self.ps.test_updates['passed'] = True
+        
+
+        
 
     # Case C8256 - 003 - Teacher | Select a course
     @pytest.mark.skipif(str(8256) not in TESTS, reason='Excluded')  # NOQA
@@ -133,8 +161,16 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.user = User(username='teacher01', password='password',
+                            site='https://tutor-qa.openstax.org/')
+        self.user.login()
+        self.user.find(By.PARTIAL_LINK_TEXT, 'AP Physics').click()
+        assert('calendar' in self.user.current_url()), \
+            'Not in a course'
+        self.user.sleep(5)
 
         self.ps.test_updates['passed'] = True
+        #teacher.delete()
 
     # Case C8257 - 004 - Teacher | Bypass the course picker
     @pytest.mark.skipif(str(8257) not in TESTS, reason='Excluded')  # NOQA
@@ -161,5 +197,13 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.user = User(username='qateacher', password='password',
+                            site='https://tutor-qa.openstax.org/')
+        self.user.login()
+        assert('calendar' in self.user.current_url()), \
+            'Not in a course'
+
+        self.user.sleep(5)
 
         self.ps.test_updates['passed'] = True
+        #teacher1.delete()
