@@ -14,6 +14,7 @@ from staxing.assignment import Assignment  # NOQA
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher  # NOQA
+from staxing.helper import Student
 
 # for template command line testing only
 # - replace list_of_cases on line 31 with all test case IDs in this file
@@ -31,12 +32,14 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8184, 8185, 8186, 8187, 8188, 8189, 
+    str([8184])  # NOQA
+)
+'''
+8184, 8185, 8186, 8187, 8188, 8189, 
         8190, 8191, 8192, 8193, 8194, 8195, 
         8196, 8197, 8198, 8199, 8200, 8201, 
-        8202, 8203, 8204, 8205, 8206])  # NOQA
-)
-
+        8202, 8203, 8204, 8205, 8206
+'''
 
 @PastaDecorator.on_platforms(BROWSERS)
 class TestEpicName(unittest.TestCase):
@@ -46,18 +49,20 @@ class TestEpicName(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        # self.Student = Student(
+        #    use_env_vars=True,
+        #    pasta_user=self.ps,
+        #    capabilities=self.desired_capabilities
+        # )
+        self.student = Student(use_env_vars=True)
+        self.student.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
+        self.ps.update_job(job_id=str(self.student.driver.session_id),
                            **self.ps.test_updates)
         try:
-            self.teacher.delete()
+            self.student.delete()
         except:
             pass
 
@@ -83,6 +88,16 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.CLASS_NAME, 'task row reading workable')
+            )
+        ).click()
+        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
