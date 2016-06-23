@@ -14,6 +14,7 @@ from staxing.assignment import Assignment  # NOQA
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher  # NOQA
+from staxing.helper import Student  # NOQA
 
 # for template command line testing only
 # - replace list_of_cases on line 31 with all test case IDs in this file
@@ -35,7 +36,6 @@ TESTS = os.getenv(
         8292, 8293, 8294, 8295, 8296])  # NOQA
 )
 
-
 @PastaDecorator.on_platforms(BROWSERS)
 class TestEpicName(unittest.TestCase):
     """T1.50 - View Student Performance."""
@@ -44,18 +44,20 @@ class TestEpicName(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        # self.student= Student(
+        #    use_env_vars=True,
+        #    pasta_user=self.ps,
+        #    capabilities=self.desired_capabilities
+        # )
+        self.student = Student(use_env_vars=True)
+        self.student.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
+        self.ps.update_job(job_id=str(self.student.driver.session_id),
                            **self.ps.test_updates)
         try:
-            self.teacher.delete()
+            self.student.delete()
         except:
             pass
 
@@ -82,6 +84,14 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('courses/1/list/' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.student.open_user_menu()
+        self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.student.current_url()), \
+            'Not viewing performance forecast'
 
         self.ps.test_updates['passed'] = True
 
@@ -109,6 +119,21 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('courses/1/list/' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.student.open_user_menu()
+        self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.student.current_url()), \
+            'Not viewing performance forecast'
+
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.CLASS_NAME, 'info-link')
+            )
+        ).click()
+        self.student.sleep(10)
 
         self.ps.test_updates['passed'] = True
 
@@ -135,6 +160,21 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('courses/1/list/' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.student.open_user_menu()
+        self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.student.current_url()), \
+            'Not viewing performance forecast'
+
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.CLASS_NAME, 'guide-key')
+            )
+        )
+        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -162,6 +202,26 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('courses/1/list/' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.student.open_user_menu()
+        self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.student.current_url()), \
+            'Not viewing performance forecast'
+        self.student.sleep(10)
+        self.student.open_user_menu()
+        self.student.wait.until(
+            expect.presence_of_element_located(
+                (By.LINK_TEXT, 'Dashboard')
+            )
+        ).click()
+
+
+        assert('list' in self.student.current_url()), \
+            'Not viewing the dashboard'
+        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -193,6 +253,16 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.logout()
+        self.student.driver.get("https://tutor-qa.openstax.org/")
+        self.student.login(username="qas_01", password="password", url="https://tutor-qa.openstax.org/")
+        self.student.driver.get("https://tutor-qa.openstax.org/courses/75/list/")
+        self.student.open_user_menu()
+        self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.student.current_url()), \
+            'Not viewing performance forecast'
+        self.student.find(By.CLASS_NAME, "no-data-message")
+        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -219,6 +289,17 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.driver.get("https://tutor-qa.openstax.org/courses/2/list/")
+        assert('courses/2/list/' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.student.open_user_menu()
+        self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.student.current_url()), \
+            'Not viewing performance forecast'
+
+        self.student.find(By.XPATH, "/html/body/div[@id='react-root-container']/div[@class='tutor-app openstax-wrapper']/div[@class='openstax-debug-content']/div[@class='performance-forecast student panel panel-default']/div[@class='panel-body']/div[@class='guide-container']/div[@class='guide-group']/div[@class='chapter-panel weaker']/div[@class='sections']/div[@class='section'][4]/button[@class='btn-block btn btn-default']")
+        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -246,6 +327,22 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('courses/1/list/' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.student.open_user_menu()
+        self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.student.current_url()), \
+            'Not viewing performance forecast'
+
+        self.student.page.wait_for_page_load()
+
+        panels = self.student.driver.find_elements_by_class_name('chapter-panel')
+        for panel in panels:
+            panel.find_elements_by_class_name('chapter')
+            panel.find_elements_by_class_name('sections')
+        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -272,9 +369,26 @@ class TestEpicName(unittest.TestCase):
             '8294'
         ]
         self.ps.test_updates['passed'] = False
-
+        # btn-block btn btn-default
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('courses/1/list/' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
 
+        self.student.open_user_menu()
+        self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.student.current_url()), \
+            'Not viewing performance forecast'
+
+        self.student.page.wait_for_page_load()
+        #self.student.find(By.CLASS_NAME, 'btn-block btn btn-default').click()
+        
+        self.student.wait.until(
+            expect.presence_of_element_located((
+                By.XPATH, "/html/body/div[@id='react-root-container']/div[@class='tutor-app openstax-wrapper']/div[@class='openstax-debug-content']/div[@class='performance-forecast student panel panel-default']/div[@class='panel-body']/div[@class='guide-container']/div[@class='guide-group']/div[@class='chapter-panel'][1]/div[@class='chapter']/button[@class='btn-block btn btn-default']"))).click()
+
+
+        self.student.sleep(10)
         self.ps.test_updates['passed'] = True
 
     # Case C8295 - 009 - Student | Clicking on a section bar brings up to five practice assessments for that section
@@ -303,6 +417,19 @@ class TestEpicName(unittest.TestCase):
 
         # Test steps and verification assertions
 
+        self.student.driver.get("https://tutor-qa.openstax.org/courses/2/list/")
+        assert('courses/2/list/' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.student.open_user_menu()
+        self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.student.current_url()), \
+            'Not viewing performance forecast'
+        self.student.find(By.XPATH, "/html/body/div[@id='react-root-container']/div[@class='tutor-app openstax-wrapper']/div[@class='openstax-debug-content']/div[@class='performance-forecast student panel panel-default']/div[@class='panel-body']/div[@class='guide-container']/div[@class='guide-group']/div[@class='chapter-panel'][1]/div[@class='sections']/div[@class='section'][2]/button[@class='btn-block btn btn-default']").click()
+        assert('practice' in self.student.current_url()), \
+            'Not presented with practice problems'
+        self.student.sleep(5)
+        
         self.ps.test_updates['passed'] = True
 
     # Case C8296 - 010 - Student | Bars without enough data show Practice More To Get Forecast instead of a color bar
@@ -329,5 +456,16 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('courses/1/list/' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.student.open_user_menu()
+        self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.student.current_url()), \
+            'Not viewing performance forecast'
+
+        self.student.find(By.CLASS_NAME, 'no-data')
+        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
