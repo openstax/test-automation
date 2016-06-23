@@ -43,11 +43,13 @@ class TestEpicName(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        # self.Teacher = Teacher(
+        #    use_env_vars=True,
+        #    pasta_user=self.ps,
+        #    capabilities=self.desired_capabilities
+        # )
+        self.teacher = Teacher(use_env_vars=True)
+        self.teacher.login()
 
     def tearDown(self):
         """Test destructor."""
@@ -82,8 +84,20 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.select_course(appearance='physics')
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.teacher.current_url()), \
+            'Not viewing performance forecast'
+
+        self.teacher.page.wait_for_page_load()
+        self.teacher.sleep(10)
+
 
         self.ps.test_updates['passed'] = True
+
 
     # Case C8149 - 002 - Teacher | Info icon shows an explanation of the data
     @pytest.mark.skipif(str(8149) not in TESTS, reason='Excluded')  # NOQA
@@ -109,7 +123,20 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.select_course(appearance='physics')
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
 
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.teacher.current_url()), \
+            'Not viewing performance forecast'
+
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.CLASS_NAME, 'info-link')
+            )
+        ).click()
+        self.teacher.sleep(10)
         self.ps.test_updates['passed'] = True
 
     # Case C8150 - 003 - Teacher | View the performance color key
@@ -135,6 +162,19 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.select_course(appearance='physics')
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.teacher.current_url()), \
+            'Not viewing performance forecast'
+
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.CLASS_NAME, 'guide-key')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -161,6 +201,23 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.select_course(appearance='physics')
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.teacher.current_url()), \
+            'Not viewing performance forecast'
+
+        self.teacher.open_user_menu()
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.LINK_TEXT, 'Dashboard')
+            )
+        ).click()
+
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
 
         self.ps.test_updates['passed'] = True
 
@@ -185,8 +242,24 @@ class TestEpicName(unittest.TestCase):
             '8152'
         ]
         self.ps.test_updates['passed'] = False
-
+        
         # Test steps and verification assertions
+        self.teacher.select_course(appearance='physics')
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.teacher.current_url()), \
+            'Not viewing performance forecast'
+
+        '''
+        self.teacher.wait.until(
+            expect.visibility_of_element_located((
+                By.CLASS_NAME, 'collapse in')))
+        '''
+
+        self.teacher.find(By.CLASS_NAME, 'active')
+        self.teacher.sleep(10)
 
         self.ps.test_updates['passed'] = True
 
@@ -214,6 +287,23 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.driver.get("https://tutor-qa.openstax.org/courses/2/t/calendar/")
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.teacher.current_url()), \
+            'Not viewing performance forecast'
+
+        self.teacher.wait.until(
+            expect.visibility_of_element_located((
+                By.LINK_TEXT, '8th'))).click()
+
+        self.teacher.wait.until(
+            expect.visibility_of_element_located((
+                By.CLASS_NAME, 'no-data-message')))
+
+        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -241,6 +331,40 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.driver.get("https://tutor-qa.openstax.org/courses/2/t/calendar/")
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.teacher.current_url()), \
+            'Not viewing performance forecast'
+
+        self.teacher.driver.get("https://tutor-qa.openstax.org/courses/1/t/guide")
+        self.teacher.page.wait_for_page_load()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located((
+                By.LINK_TEXT, '1st'))).click()
+
+        self.teacher.find(By.CLASS_NAME, 'lacking-data')
+
+        self.teacher.sleep(5)
+
+        self.teacher.driver.get("https://tutor-qa.openstax.org/courses/2/t/guide")
+        self.teacher.page.wait_for_page_load()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located((
+                By.LINK_TEXT, '2nd'))).click()
+
+        self.teacher.find(By.XPATH, "/html/body/div[@id='react-root-container']/div[@class='tutor-app openstax-wrapper']/div[@class='openstax-debug-content']/div[@class='performance-forecast teacher panel panel-default']/div[@class='panel-body']/div[@class='guide-container']/div[@class='guide-group']/div[@class='chapter-panel weaker']/div[@class='sections']/div[@class='section'][2]")
+        
+        self.teacher.sleep(5)
+
+        self.teacher.wait.until(
+            expect.visibility_of_element_located((
+                By.LINK_TEXT, '4th'))).click()
+
+        self.teacher.find(By.XPATH, "/html/body/div[@id='react-root-container']/div[@class='tutor-app openstax-wrapper']/div[@class='openstax-debug-content']/div[@class='performance-forecast teacher panel panel-default']/div[@class='panel-body']/div[@class='guide-container']/div[@class='guide-group']/div[@class='chapter-panel weaker']/div[@class='sections']/div[@class='section'][3]")
+        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -269,5 +393,21 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.select_course(appearance='physics')
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        assert('guide' in self.teacher.current_url()), \
+            'Not viewing performance forecast'
+
+        self.teacher.page.wait_for_page_load()
+
+        panels = self.teacher.driver.find_elements_by_class_name('chapter-panel')
+        for panel in panels:
+            panel.find_elements_by_class_name('chapter')
+            panel.find_elements_by_class_name('sections')
+        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
+
