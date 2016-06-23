@@ -22,7 +22,11 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8028, 8029, 8030, 8031, 8032, 
+    str([8035])
+)
+# 8029, 8030-8034, 
+'''
+8028, 8029, 8030, 8031, 8032, 
         8033, 8034, 8035, 8036, 8037, 
         8038, 8039, 8040, 8041, 8042, 
         8043, 8044, 8045, 8046, 8047, 
@@ -33,14 +37,15 @@ TESTS = os.getenv(
         8068, 8069, 8070, 8071, 8072, 
         8073, 8074, 8075, 8076, 8077, 
         8078, 8079, 8080, 8081, 8082, 
-        8083, 8084])
-)
+        8083, 8084
+'''
 
 
 @PastaDecorator.on_platforms(BROWSERS)
 class TestCreateAHomework(unittest.TestCase):
     """T1.16 - Create A Homework."""
 
+    '''
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
@@ -100,6 +105,28 @@ class TestCreateAHomework(unittest.TestCase):
             self.student.delete()
         except:
             pass
+    '''
+
+    def setUp(self):
+        """Pretest settings."""
+        self.ps = PastaSauce()
+        self.desired_capabilities['name'] = self.id()
+        # self.teacher = Teacher(
+        #    use_env_vars=True,
+        #    pasta_user=self.ps,
+        #    capabilities=self.desired_capabilities
+        # )
+        self.teacher = Teacher(use_env_vars=True)
+        self.teacher.login()
+
+    def tearDown(self):
+        """Test destructor."""
+        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
+                           **self.ps.test_updates)
+        try:
+            self.teacher.delete()
+        except:
+            pass
 
     # Case C8028 - 001 - Teacher | Add a homework using the Add Assignment drop down menu
     @pytest.mark.skipif(str(8028) not in TESTS, reason='Excluded')
@@ -124,6 +151,19 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.select_course(appearance='physics')
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'add-assignment')
+            )
+        ).click()
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        assert('homeworks/new' in self.teacher.current_url()), \
+            'Not on the add a homework page'
+
+        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -150,6 +190,20 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.select_course(appearance='physics')
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.teacher.page.wait_for_page_load()
+
+        self.teacher.find(By.XPATH, "/html/body/div[@id='react-root-container']/div[@class='tutor-app openstax-wrapper']/div[@class='openstax-debug-content']/div[@class='tutor-booksplash-background']/div[@class='list-courses panel panel-primary']/div[@class='panel-body']/div[@class='calendar-container container-fluid']/div[@class='calendar-body row']/div[@class='col-xs-12']/div[@class='rc-Month']/div[@class='rc-Week'][5]/div[@class='rc-Week-days']/div[@class='rc-Day rc-Day--upcoming'][2]")
+        
+        assert('passed' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        #self.teacher.find(By.CLASS_NAME, 'rc-Day rc-Day--upcoming').click()
+        
+        #self.teacher.find(By.LINK_TEXT, 'Add Homework').click()
 
         self.ps.test_updates['passed'] = True
 
@@ -180,6 +234,23 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.select_course(appearance='physics')
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'add-assignment')
+            )
+        ).click()
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        assert('homeworks/new' in self.teacher.current_url()), \
+            'Not on the add a homework page'
+
+        self.teacher.driver.find_elements_by_class_name('datepicker__input-container')[1].click()
+        self.teacher.sleep(5)
+        self.teacher.driver.find_elements_by_class_name('datepicker__day')[0].click()
+        self.teacher.sleep(5)
+        #self.teacher.implicitly_wait(10)
 
         self.ps.test_updates['passed'] = True
 
@@ -330,6 +401,25 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.select_course(appearance='physics')
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'add-assignment')
+            )
+        ).click()
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        assert('homeworks/new' in self.teacher.current_url()), \
+            'Not on the add a homework page'
+
+        self.teacher.find(By.XPATH, "/html/body/div[@id='react-root-container']/div[@class='tutor-app openstax-wrapper']/div[@class='openstax-debug-content']/div[@class='homework-plan task-plan']/div[@class='edit-homework dialog panel panel-default']/div[@class='panel-footer']/div[@class='footer-buttons']/button[@class='btn btn-default']").click()
+        self.teacher.find(By.XPATH, "/html/body[@class='modal-open']/div[6]/div/div[@class='tutor-dialog fade in modal']/div[@class='modal-dialog']/div[@class='modal-content']/div[@class='modal-footer']/button[@class='cancel btn btn-default']").click()
+        self.teacher.sleep(5)
+
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
 
         self.ps.test_updates['passed'] = True
 
@@ -1783,3 +1873,4 @@ class TestCreateAHomework(unittest.TestCase):
         # Test steps and verification assertions
 
         self.ps.test_updates['passed'] = True
+
