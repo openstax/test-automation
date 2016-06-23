@@ -8,12 +8,14 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint  # NOQA
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By  # NOQA
 from selenium.webdriver.support import expected_conditions as expect  # NOQA
 from staxing.assignment import Assignment  # NOQA
+from selenium.webdriver.common.keys import Keys #NOQA
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher  # NOQA
+from staxing.helper import Admin  # NOQA
 
 # for template command line testing only
 # - replace list_of_cases on line 31 with all test case IDs in this file
@@ -38,6 +40,7 @@ TESTS = os.getenv(
         8336, 8337, 8338, 8339, 8340])  # NOQA
 )
 
+# 8332, 8333, deletes time out
 
 @PastaDecorator.on_platforms(BROWSERS)
 class TestEpicName(unittest.TestCase):
@@ -47,18 +50,21 @@ class TestEpicName(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        #self.Teacher = Teacher(
+        #    use_env_vars=True,
+        #    pasta_user=self.ps,
+        #    capabilities=self.desired_capabilities
+        # )
+
+        self.admin = Admin(use_env_vars=True)
+        self.admin.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
+        self.ps.update_job(job_id=str(self.admin.driver.session_id),
                            **self.ps.test_updates)
         try:
-            self.teacher.delete()
+            self.admin.delete()
         except:
             pass
 
@@ -99,6 +105,45 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Course Organization')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Catalog Offerings')
+            )
+        ).click()
+
+        assert('catalog_offerings' in self.admin.current_url()), \
+            'Not in catalog offerings'
+
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Add offering')
+            )
+        ).click()
+
+        assert('catalog_offerings/new' in self.admin.current_url()), \
+            'Not in catalog offerings'
+
+        self.admin.find(By.NAME, 'offering[salesforce_book_name]').send_keys('TestAutomation')
+        self.admin.find(By.NAME, 'offering[appearance_code]').send_keys('TestAutomation')
+        self.admin.find(By.NAME, 'offering[description]').send_keys('TestAutomation')
+        self.admin.find(By.NAME, 'offering[content_ecosystem_id]').send_keys('Sociology 2e (02040312-72c8-441e-a685-20e9333f3e1d)')
+        self.admin.find(By.ID, 'offering_is_tutor').click()
+        self.admin.find(By.ID, 'offering_is_concept_coach').click()
+        self.admin.find(By.NAME, 'offering[pdf_url]').send_keys('TestAutomation.com')
+        self.admin.find(By.NAME, 'offering[webview_url]').send_keys('TestAutomation.com')
+        self.admin.find(By.NAME, 'offering[default_course_name]').send_keys('TestAutomation')
+        self.admin.find(By.NAME, 'commit').click()
+
+        assert('catalog_offerings' in self.admin.current_url()), \
+            'Not in catalog offerings'
+
+        self.admin.sleep(10)
 
         self.ps.test_updates['passed'] = True
 
@@ -131,6 +176,36 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        change = '%s' % randint(100, 999)
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Course Organization')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Catalog Offerings')
+            )
+        ).click()
+
+        assert('catalog_offerings' in self.admin.current_url()), \
+            'Not in catalog offerings'
+
+        self.admin.find(By.PARTIAL_LINK_TEXT, 'Edit').click()
+
+        assert('catalog_offerings/21/edit#offering_21' in self.admin.current_url()), \
+            'Not editing the Automation course'
+
+        self.admin.find(By.NAME, 'offering[salesforce_book_name]').clear()
+        self.admin.find(By.NAME, 'offering[salesforce_book_name]').send_keys('Automation' + change)
+        self.admin.find(By.NAME, 'offering[appearance_code]').clear()
+        self.admin.find(By.NAME, 'offering[appearance_code]').send_keys('Automation' + change)
+        self.admin.find(By.NAME, 'offering[description]').clear()
+        self.admin.find(By.NAME, 'offering[description]').send_keys('Automation' + change)
+        self.admin.find(By.NAME, 'commit').click()
+
+        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -163,6 +238,48 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        change = '%s' % randint(100, 999)
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Course Organization')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Catalog Offerings')
+            )
+        ).click()
+
+        assert('catalog_offerings' in self.admin.current_url()), \
+            'Not in catalog offerings'
+
+        self.admin.find(By.PARTIAL_LINK_TEXT, 'Edit').click()
+
+        assert('catalog_offerings/21/edit#offering_21' in self.admin.current_url()), \
+            'Not editing the Automation course'
+
+        dropdown = self.admin.find(By.NAME, 'offering[content_ecosystem_id]')
+        ecos = dropdown.find_elements_by_tag_name('option')
+        for option in ecos:
+            if option.text == '':
+                option.click() # select() in earlier versions of webdriver
+                ecos.remove(option)
+                break
+        
+        
+        num = randint(0, len(ecos)-1)
+        ecos[num].click()
+
+        self.admin.find(By.NAME, 'commit').click()
+
+        self.admin.sleep(5)
+
+        assert('edit' not in self.admin.current_url()), \
+            'Editing a course'
+
+        assert('catalog_offerings' in self.admin.current_url()), \
+            'Not in catalog offerings'
 
         self.ps.test_updates['passed'] = True
 
@@ -195,6 +312,32 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        change = '%s' % randint(100, 999)
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Course Organization')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Catalog Offerings')
+            )
+        ).click()
+
+        assert('catalog_offerings' in self.admin.current_url()), \
+            'Not in catalog offerings'
+
+        self.admin.find(By.PARTIAL_LINK_TEXT, 'Edit').click()
+
+        assert('catalog_offerings/21/edit#offering_21' in self.admin.current_url()), \
+            'Not editing the Automation course'
+
+        self.admin.find(By.ID, 'offering_is_tutor').click()
+        self.admin.find(By.ID, 'offering_is_concept_coach').click()
+        self.admin.find(By.NAME, 'commit').click()
+
+        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -228,6 +371,34 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        change = '%s' % randint(100, 999)
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Course Organization')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Catalog Offerings')
+            )
+        ).click()
+
+        assert('catalog_offerings' in self.admin.current_url()), \
+            'Not in catalog offerings'
+
+        self.admin.find(By.PARTIAL_LINK_TEXT, 'Edit').click()
+
+        assert('catalog_offerings/21/edit#offering_21' in self.admin.current_url()), \
+            'Not editing the Automation course'
+
+        self.admin.find(By.NAME, 'offering[pdf_url]').clear()
+        self.admin.find(By.NAME, 'offering[pdf_url]').send_keys('Automation' + change +'.com')
+        self.admin.find(By.NAME, 'offering[webview_url]').clear()
+        self.admin.find(By.NAME, 'offering[webview_url]').send_keys('Automation' + change +'.com')
+        self.admin.find(By.NAME, 'commit').click()
+
+        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -260,6 +431,32 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        change = '%s' % randint(100, 999)
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Course Organization')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Catalog Offerings')
+            )
+        ).click()
+
+        assert('catalog_offerings' in self.admin.current_url()), \
+            'Not in catalog offerings'
+
+        self.admin.find(By.PARTIAL_LINK_TEXT, 'Edit').click()
+
+        assert('catalog_offerings/21/edit#offering_21' in self.admin.current_url()), \
+            'Not editing the Automation course'
+
+        self.admin.find(By.NAME, 'offering[default_course_name]').clear()
+        self.admin.find(By.NAME, 'offering[default_course_name]').send_keys('Automation' + change)
+        self.admin.find(By.NAME, 'commit').click()
+
+        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -293,6 +490,37 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Content')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+
+        assert('ecosystems' in self.admin.current_url()), \
+            'Not in ecosystems'
+
+        self.admin.find(By.LINK_TEXT, 'Import a new Ecosystem').click()
+
+        assert('new' in self.admin.current_url()), \
+            'Not creating new ecosystem'
+
+        self.admin.find(By.ID, 'ecosystem_manifest').send_keys('/Users/openstaxii/downloads/Biology_For_AP_Courses_d52e93f4-8653-4273-86da-3850001c0786_3.14_-_2015-09-29_13_37_55_UTC.yml')
+        self.admin.find(By.ID, 'ecosystem_comments').send_keys('Automated test upload')
+        self.admin.find(By.NAME, 'commit').click()
+
+        self.admin.sleep(10)
+
+        assert('new' not in self.admin.current_url()), \
+            'On creating new ecosystem page'
+
+        assert('ecosystems' in self.admin.current_url()), \
+            'Not in ecosystems'
 
         self.ps.test_updates['passed'] = True
 
@@ -325,6 +553,51 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"-hamburger-menu")]/',
+                     'a[@type="button"]')
+                )
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Customer Analyst')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//h1[text()="Content Analyst Console"]')
+            )
+        )
+        
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+
+        assert('content_analyst/ecosystems' in self.admin.current_url()), \
+            'Not in ecosystems'
+
+        self.admin.find(By.LINK_TEXT, 'Import a new Ecosystem').click()
+
+        assert('new' in self.admin.current_url()), \
+            'Not creating new ecosystem'
+
+        self.admin.find(By.ID, 'ecosystem_manifest').send_keys('/Users/openstaxii/downloads/Biology_For_AP_Courses_d52e93f4-8653-4273-86da-3850001c0786_3.14_-_2015-09-29_13_37_55_UTC.yml')
+        self.admin.find(By.ID, 'ecosystem_comments').send_keys('Automated test upload')
+        self.admin.find(By.NAME, 'commit').click()
+
+        self.admin.sleep(10)
+
+        assert('new' not in self.admin.current_url()), \
+            'On creating new ecosystem page'
+
+        assert('ecosystems' in self.admin.current_url()), \
+            'Not in ecosystems'
 
         self.ps.test_updates['passed'] = True
 
@@ -356,6 +629,25 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        change = '%s' % randint(100, 999)
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Content')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+
+        assert('ecosystems' in self.admin.current_url()), \
+            'Not in ecosystems'
+
+        self.admin.find(By.NAME, 'ecosystem[comments]').send_keys('|auto test')
+        self.admin.find(By.NAME, 'commit').click()
+        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -386,6 +678,38 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"-hamburger-menu")]/',
+                     'a[@type="button"]')
+                )
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Customer Analyst')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//h1[text()="Content Analyst Console"]')
+            )
+        )
+        
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+
+        assert('content_analyst/ecosystems' in self.admin.current_url()), \
+            'Not in ecosystems'
+
+        self.admin.find(By.NAME, 'ecosystem[comments]').send_keys('|auto test')
+        self.admin.find(By.NAME, 'commit').click()
+        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -416,6 +740,28 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Content')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+
+        assert('ecosystems' in self.admin.current_url()), \
+            'Not in ecosystems'
+
+        #self.admin.find(By.LINK_TEXT, 'Archive').click()
+        link = self.admin.find(By.LINK_TEXT, 'Archive')
+        self.admin.driver.get(link.get_attribute('href'))
+
+        self.admin.sleep(5)
+        assert('/contents/' in self.admin.current_url()), \
+            'Not in archive'
 
         self.ps.test_updates['passed'] = True
 
@@ -445,6 +791,50 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"-hamburger-menu")]/',
+                     'a[@type="button"]')
+                )
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Customer Analyst')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//h1[text()="Content Analyst Console"]')
+            )
+        )
+        
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+
+        assert('ecosystems' in self.admin.current_url()), \
+            'Not in ecosystems'
+
+        #self.admin.find(By.LINK_TEXT, 'Archive').click()
+        link = self.admin.find(By.LINK_TEXT, 'Archive')
+        self.admin.driver.get(link.get_attribute('href'))
+
+        self.admin.sleep(5)
+        assert('/contents/' in self.admin.current_url()), \
+            'Not in archive'
+
+        
+        self.admin.sleep(10)
+
+        '''
+        Opens the archive in a new tab, window is focused on new tab,
+        but selenium thinks that its still in the original tab
+        '''
 
         self.ps.test_updates['passed'] = True
 
@@ -475,6 +865,25 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Content')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+
+        assert('ecosystems' in self.admin.current_url()), \
+            'Not in ecosystems'
+
+        self.admin.find(By.LINK_TEXT, 'Show UUID').click()
+
+        self.admin.find(By.CLASS_NAME, 'popover-content')
+        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -504,6 +913,39 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"-hamburger-menu")]/',
+                     'a[@type="button"]')
+                )
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Customer Analyst')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//h1[text()="Content Analyst Console"]')
+            )
+        )
+        
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+
+        assert('content_analyst/ecosystems' in self.admin.current_url()), \
+            'Not in ecosystems'
+
+        self.admin.find(By.LINK_TEXT, 'Show UUID').click()
+
+        self.admin.find(By.CLASS_NAME, 'popover-content')
+        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -534,6 +976,27 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Content')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+
+        assert('ecosystems' in self.admin.current_url()), \
+            'Not in ecosystems'
+
+        self.admin.find(By.LINK_TEXT, 'Download Manifest').click()
+        self.admin.sleep(5)
+        pf = os.path.isfile(os.path.expanduser("~/Downloads/College_Physics_031da8d3-b525-429c-80cf-6c8ed997733a.yml"))
+        
+        assert(pf is True), \
+            "Can't find downloaded manifest"
 
         self.ps.test_updates['passed'] = True
 
@@ -563,6 +1026,41 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"-hamburger-menu")]/',
+                     'a[@type="button"]')
+                )
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Customer Analyst')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//h1[text()="Content Analyst Console"]')
+            )
+        )
+        
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+
+        assert('content_analyst/ecosystems' in self.admin.current_url()), \
+            'Not in ecosystems'
+
+        self.admin.find(By.LINK_TEXT, 'Download Manifest').click()
+        self.admin.sleep(5)
+        pf = os.path.isfile(os.path.expanduser("~/Downloads/College_Physics_031da8d3-b525-429c-80cf-6c8ed997733a.yml"))
+        
+        assert(pf is True), \
+            "Can't find downloaded manifest"
 
         self.ps.test_updates['passed'] = True
 
@@ -582,7 +1080,7 @@ class TestEpicName(unittest.TestCase):
 
         Expected Result:
         Ecosystem is successfully deleted.
-        """
+        
         self.ps.test_updates['name'] = 't1.58.017' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -594,8 +1092,41 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Content')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+
+        assert('ecosystems' in self.admin.current_url()), \
+            'Not in ecosystems'
+
+        delete = ''
+        lst = self.admin.driver.find_elements_by_link_text('Delete')
+        for link in lst:
+            if '334' in link.get_attribute("href"):
+                #link.click()
+                delete = link
+        #self.admin.find(By.LINK_TEXT, 'Delete').click()
+        
+        delete.click()
+        self.admin.sleep(3)
+        self.admin.driver.switch_to.alert.accept()
+        self.admin.sleep(60)
+        '''
+        How to verify?
+        Didn't want to delete anything so did not test, should work
+        '''
 
         self.ps.test_updates['passed'] = True
+        """
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
 
     # Case C8333 - 018 - Content Analyst | Delete an unused ecosystem
@@ -624,6 +1155,42 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"-hamburger-menu")]/',
+                     'a[@type="button"]')
+                )
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Customer Analyst')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//h1[text()="Content Analyst Console"]')
+            )
+        )
+        
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+
+        assert('content_analyst/ecosystems' in self.admin.current_url()), \
+            'Not in ecosystems'
+
+        self.admin.find(By.LINK_TEXT, 'Delete').click()
+        self.admin.sleep(10)
+
+        '''
+        How to verfiy?
+        Didn't want to delete so didn't test, should work
+        '''
 
         self.ps.test_updates['passed'] = True
         """
@@ -658,6 +1225,27 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Content')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Tags')
+            )
+        ).click()
+
+        assert('tags' in self.admin.current_url()), \
+            'Not in tags'
+
+        self.admin.find(By.NAME, 'query').send_keys('bio')
+        self.admin.find(By.NAME, 'query').send_keys(Keys.RETURN)
+
+        assert('&query=bio&commit=Search' in self.admin.current_url()), \
+            'Not viewing search results'
+        self.admin.sleep(10)
 
         self.ps.test_updates['passed'] = True
 
@@ -693,6 +1281,46 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        change = '%s' % randint(100, 999)
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Content')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Tags')
+            )
+        ).click()
+
+        assert('tags' in self.admin.current_url()), \
+            'Not in tags'
+
+        self.admin.find(By.NAME, 'query').send_keys('bio')
+        self.admin.find(By.NAME, 'query').send_keys(Keys.RETURN)
+
+        assert('&query=bio&commit=Search' in self.admin.current_url()), \
+            'Not viewing search results'
+
+        self.admin.find(By.LINK_TEXT, 'Edit').click()
+
+        assert('edit' in self.admin.current_url()), \
+            'Not editing a tag'
+
+        self.admin.find(By.ID, 'tag_name').clear()
+        self.admin.find(By.ID, 'tag_description').clear()
+        self.admin.find(By.ID, 'tag_name').send_keys('Automation' + change)
+        self.admin.find(By.ID, 'tag_description').send_keys('Automation' + change)
+        self.admin.find(By.NAME, 'commit').click()
+
+        assert('edit' not in self.admin.current_url()), \
+            'Should not be editing a tag'
+
+        assert('tags' in self.admin.current_url()), \
+            'Not at the tags page'
+
+        self.admin.sleep(10)
 
         self.ps.test_updates['passed'] = True
 
@@ -722,6 +1350,22 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Jobs')
+            )
+        ).click()
+
+        assert('jobs' in self.admin.current_url()), \
+            'Not at the jobs page'
+
+        self.admin.find(By.ID, 'filter_id').send_keys('4d')
+
+        assert('004eefa9-6d0e-4d7d-b708-9e4106a6bd30' in self.admin.driver.page_source), \
+            'Thing not in results'
+
+        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -751,6 +1395,29 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Jobs')
+            )
+        ).click()
+
+        assert('jobs' in self.admin.current_url()), \
+            'Not at the jobs page'
+
+        self.admin.find(By.ID, 'filter_id').send_keys('succeeded')
+        self.admin.sleep(5)
+        self.admin.find(By.ID, 'filter_id').clear()
+        self.admin.find(By.ID, 'filter_id').send_keys('failed')
+        self.admin.sleep(5)
+        self.admin.find(By.ID, 'filter_id').clear()
+        self.admin.find(By.ID, 'filter_id').send_keys('queued')
+        self.admin.sleep(5)
+        self.admin.find(By.ID, 'filter_id').clear()
+        self.admin.find(By.ID, 'filter_id').send_keys('started')
+        self.admin.sleep(5)
+
+
 
         self.ps.test_updates['passed'] = True
 
@@ -780,6 +1447,35 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Jobs')
+            )
+        ).click()
+
+        assert('jobs' in self.admin.current_url()), \
+            'Not at the jobs page'
+
+        self.admin.find(By.ID, 'filter_id').send_keys('100%')
+        self.admin.sleep(5)
+
+        assert('0011b6e4-9c58-4e73-a6ce-e53d0814afdc' in self.admin.driver.page_source), \
+            'Search results different from expected'
+
+        self.admin.find(By.ID, 'filter_id').clear()
+        self.admin.find(By.ID, 'filter_id').send_keys('20%')
+        self.admin.sleep(5)
+        self.admin.find(By.ID, 'filter_id').clear()
+        self.admin.find(By.ID, 'filter_id').send_keys(' 0%')
+        self.admin.sleep(5)
+
+        assert('008e4642-85a0-4fff-86ed-4f1e7be02233' in self.admin.driver.page_source), \
+            'Search results different from expected'
+
+        '''
+        How to verify?
+        '''
 
         self.ps.test_updates['passed'] = True
 
@@ -809,6 +1505,55 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Jobs')
+            )
+        ).click()
+
+        assert('jobs' in self.admin.current_url()), \
+            'Not at the jobs page'
+
+        self.admin.find(By.LINK_TEXT, 'all').click()
+        assert('all' in self.admin.current_url()), \
+            'Not viewing all jobs'
+        self.admin.sleep(5)
+
+        self.admin.find(By.LINK_TEXT, 'incomplete').click()
+        assert('incomplete' in self.admin.current_url()), \
+            'Not viewing incomplete jobs'
+        self.admin.sleep(5)
+
+        self.admin.find(By.LINK_TEXT, 'succeeded').click()
+        assert('succeeded' in self.admin.current_url()), \
+            'Not viewing succeeded jobs'
+        self.admin.sleep(5)
+
+        self.admin.find(By.LINK_TEXT, 'queued').click()
+        assert('queued' in self.admin.current_url()), \
+            'Not viewing queued jobs'
+        self.admin.sleep(5)
+
+        self.admin.find(By.LINK_TEXT, 'started').click()
+        assert('started' in self.admin.current_url()), \
+            'Not viewing started jobs'
+        self.admin.sleep(5)
+
+        self.admin.find(By.LINK_TEXT, 'failed').click()
+        assert('failed' in self.admin.current_url()), \
+            'Not viewing failed jobs'
+        self.admin.sleep(5)
+
+        self.admin.find(By.LINK_TEXT, 'killed').click()
+        assert('killed' in self.admin.current_url()), \
+            'Not viewing killed jobs'
+        self.admin.sleep(5)
+
+        self.admin.find(By.LINK_TEXT, 'unknown').click()
+        assert('unknown' in self.admin.current_url()), \
+            'Not viewing unknown jobs'
+        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -838,6 +1583,23 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+
+        self.admin.goto_admin_control()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Jobs')
+            )
+        ).click()
+
+        assert('jobs' in self.admin.current_url()), \
+            'Not at the jobs page'
+
+        self.admin.find(By.ID, 'filter_id').send_keys('008e4642-85a0-4fff-86ed-4f1e7be02233')
+        self.admin.find(By.LINK_TEXT, '008e4642-85a0-4fff-86ed-4f1e7be02233').click()
+        
+        assert('jobs/008e4642-85a0-4fff-86ed-4f1e7be02233' in self.admin.current_url()), \
+            'Not at the jobs page'
+        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
