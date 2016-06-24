@@ -13,7 +13,7 @@ from selenium.webdriver.support import expected_conditions as expect  # NOQA
 from staxing.assignment import Assignment  # NOQA
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher  # NOQA
+from staxing.helper import Student  # NOQA
 
 # for template command line testing only
 # - replace list_of_cases on line 31 with all test case IDs in this file
@@ -31,9 +31,10 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8281, 8282, 8283, 8284, 8285, 8286])  # NOQA
+    str([8285])  # NOQA
 )
 
+# 8281, 8282, 8283, 8284, 8285, 8286
 
 @PastaDecorator.on_platforms(BROWSERS)
 class TestEpicName(unittest.TestCase):
@@ -43,18 +44,20 @@ class TestEpicName(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        # self.Teacher = Teacher(
+        #    use_env_vars=True,
+        #    pasta_user=self.ps,
+        #    capabilities=self.desired_capabilities
+        # )
+        self.student = Student(use_env_vars=True)
+        self.student.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
+        self.ps.update_job(job_id=str(self.student.driver.session_id),
                            **self.ps.test_updates)
         try:
-            self.teacher.delete()
+            self.student.delete()
         except:
             pass
 
@@ -80,6 +83,20 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Jun 05, 2:34am'):
+                assignment.click()
+                break
+
+        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+            'Not viewing assignment page'
+
+        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -106,6 +123,30 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Jun 05, 2:34am'):
+                assignment.click()
+                break
+
+        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+            'Not viewing assignment page'
+
+        instructions = self.student.driver.find_elements_by_tag_name("p")
+        flag = False
+        for instruction in instructions:
+            if (instruction.text == 'instructions go here'):
+                flag = True
+                break
+
+        assert(flag), \
+            'Did not read instructions'
+
+        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -132,6 +173,33 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Jun 05, 2:34am'):
+                assignment.click()
+                break
+
+        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+            'Not viewing assignment page'
+
+        link = self.student.driver.find_element_by_link_text('due in a long time')
+        original = self.student.current_url()
+        page = link.get_attribute("href")
+        self.student.driver.get(link.get_attribute("href"))
+
+
+        assert('google' in self.student.current_url()), \
+            'Not viewing assignment link'
+
+        self.student.sleep(5)
+        self.student.driver.get(original)
+
+        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+            'Not viewing assignment page'
 
         self.ps.test_updates['passed'] = True
 
@@ -159,6 +227,33 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Jun 05, 2:34am'):
+                assignment.click()
+                break
+
+        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+            'Not viewing assignment page'
+
+        link = self.student.driver.find_element_by_link_text('due in a long time')
+        original = self.student.current_url()
+        page = link.get_attribute("href")
+        self.student.driver.get(link.get_attribute("href"))
+
+
+        assert('google' in self.student.current_url()), \
+            'Not viewing assignment link'
+
+        self.student.sleep(5)
+        self.student.driver.get(original)
+
+        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+            'Not viewing assignment page'
 
         self.ps.test_updates['passed'] = True
 
@@ -187,6 +282,40 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Jun 05, 2:34am'):
+                assignment.click()
+                break
+
+        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+            'Not viewing assignment page'
+
+        link = self.student.driver.find_element_by_link_text('due in a long time')
+        original = self.student.current_url()
+        page = link.get_attribute("href")
+        self.student.driver.get(link.get_attribute("href"))
+
+
+        assert('google' in self.student.current_url()), \
+            'Not viewing assignment link'
+
+        self.student.sleep(5)
+        self.student.driver.get(original)
+
+        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+            'Not viewing assignment page'
+        
+        self.student.find(By.LINK_TEXT, 'Back To Dashboard').click()
+
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
