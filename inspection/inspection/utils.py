@@ -60,9 +60,6 @@ def case_key_from_id(ident):
     return ident.split('(')[0]
 
 def generate_info_matrix(tests, results):
-    #results.errors
-    #results.skipped
-    #results.failures
 
     cases = set([ test.id().split('(')[0] for test in tests])
     pages_a = set([test.page_i for test in tests])
@@ -161,17 +158,21 @@ def lcs_length(comp_matrix):
     return length_matrix
 
 
-def backtrack(length_matrix, comp_matrix, i, j):
-    if i == 0 or j == 0:
-        return []
-    elif comp_matrix[i, j]:
-        return backtrack(length_matrix, comp_matrix, i - 1, j - 1) + [(i, j)]
-    else:
-        if length_matrix[i, j - 1] > length_matrix[i - 1, j]:
-            return backtrack(length_matrix, comp_matrix, i, j - 1)
+def backtrack(length_matrix, comp_matrix, i, j, accumulator=[]):
+    while True:
+        if i == 0 or j == 0:
+            return accumulator
+        elif comp_matrix[i, j]:
+            (length_matrix, comp_matrix, i, j, accumulator) = (length_matrix, comp_matrix, i - 1, j - 1, accumulator+[(i, j)])
+            continue
         else:
-            return backtrack(length_matrix, comp_matrix, i - 1, j)
-
+            if length_matrix[i, j - 1] > length_matrix[i - 1, j]:
+                (length_matrix, comp_matrix, i, j , accumulator) = (length_matrix, comp_matrix, i, j - 1, accumulator)
+                continue
+            else:
+                (length_matrix, comp_matrix, i, j , accumulator) = (length_matrix, comp_matrix, i - 1, j, accumulator)
+                continue
+        break
 
 def lcs_images(tests, results, require='ANY'):
     info_matrix = generate_info_matrix(tests, results)
@@ -189,24 +190,22 @@ def diff_images(tests, results, require='ANY'):
     diff = printDiff(length_matrix, comp_matrix, M - 1, N - 1)
     return diff
 
-def printDiff(C, XY, i, j):
-    if i > 0 and j > 0 and XY[i][j] == 1:
-        diff = printDiff(C, XY, i-1, j-1)
-        if diff is None:
-            return '\n' + str(i)
+def printDiff(C, XY, i, j, accumulator = ''):
+    while True:
+        if i > 0 and j > 0 and XY[i][j] == 1:
+            (C, XY, i, j, accumulator) = (C, XY, i-1, j-1,diff_statement(accumulator,'',i))
+            continue
         else:
-            return str(diff) + '\n' + str(i)
-    else:
-        if j > 0 and (i == 0 or C[i][j-1] >= C[i-1][j]):
-            diff = printDiff(C, XY, i, j-1)
-            if diff is None:
-                return '\n' + str(j)
+            if j > 0 and (i == 0 or C[i][j-1] >= C[i-1][j]):
+                (C, XY, i, j, accumulator) = (C, XY, i, j-1,diff_statement(accumulator,'+',j))
+                continue
+            elif i > 0 and (j == 0 or C[i][j-1] < C[i-1][j]):
+                (C, XY, i, j, accumulator) = (C, XY, i-1, j, diff_statement(accumulator,'-',i))
+                continue
             else:
-                return str(diff) + '\n' + "+ " + str(j)
-        elif i > 0 and (j == 0 or C[i][j-1] < C[i-1][j]):
-            diff = printDiff(C, XY, i-1, j)
-            if diff is None:
-                return '\n' + str(i)
-            else: 
-                return str(diff) + '\n' + "- " + str(i)
+                return accumulator
+        break
+
+def diff_statement(diff, sign, index):
+    return "{0} \n {1} {2}".format(diff or '',sign,index)
       
