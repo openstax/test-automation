@@ -191,18 +191,20 @@ def diff_images(tests, results, require='ANY'):
     return diff
 
 def printDiff(C, XY, i, j, accumulator = ''):
-    if i > 0 and j > 0 and XY[i][j] == 1:
-        accumulator = diff_statement(accumulator,'',i)
-        return printDiff(C, XY, i-1, j-1,accumulator)
-    else:
-        if j > 0 and (i == 0 or C[i][j-1] >= C[i-1][j]):
-            accumulator = diff_statement(accumulator,'+',j)
-            return printDiff(C, XY, i, j-1,accumulator)
-        elif i > 0 and (j == 0 or C[i][j-1] < C[i-1][j]):
-            accumulator = diff_statement(accumulator,'-',i)
-            return printDiff(C, XY, i-1, j,accumulator)
+    while True:
+        if i > 0 and j > 0 and XY[i][j] == 1:
+            (C, XY, i, j, accumulator) = (C, XY, i-1, j-1,diff_statement(accumulator,'',i))
+            continue
         else:
-            return accumulator
+            if j > 0 and (i == 0 or C[i][j-1] >= C[i-1][j]):
+                (C, XY, i, j, accumulator) = (C, XY, i, j-1,diff_statement(accumulator,'+',j))
+                continue
+            elif i > 0 and (j == 0 or C[i][j-1] < C[i-1][j]):
+                (C, XY, i, j, accumulator) = (C, XY, i-1, j, diff_statement(accumulator,'-',i))
+                continue
+            else:
+                return accumulator
+        break
 
 def diff_statement(diff, sign, index):
     return "{0} \n {1} {2}".format(diff or '',sign,index)
