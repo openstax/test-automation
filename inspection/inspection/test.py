@@ -130,7 +130,7 @@ class Core(unittest.TestCase):
                   (10, 10), ]
         result = self.target(run)
         self.assertEqual(expect, result)
-
+    @unittest.skip("need better testing cases")
     def test_multiple_changes(self):
         run = "python inspection.py data/test/A.pdf data/test/F.pdf"
         expect = [(1, 1),
