@@ -60,9 +60,6 @@ def case_key_from_id(ident):
     return ident.split('(')[0]
 
 def generate_info_matrix(tests, results):
-    #results.errors
-    #results.skipped
-    #results.failures
 
     cases = set([ test.id().split('(')[0] for test in tests])
     pages_a = set([test.page_i for test in tests])
