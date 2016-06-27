@@ -161,16 +161,16 @@ def lcs_length(comp_matrix):
     return length_matrix
 
 
-def backtrack(length_matrix, comp_matrix, i, j):
+def backtrack(length_matrix, comp_matrix, i, j, accumulator=[]):
     if i == 0 or j == 0:
-        return []
+        return accumulator
     elif comp_matrix[i, j]:
-        return backtrack(length_matrix, comp_matrix, i - 1, j - 1) + [(i, j)]
+        return backtrack(length_matrix, comp_matrix, i - 1, j - 1, accumulator+[(i, j)]) 
     else:
         if length_matrix[i, j - 1] > length_matrix[i - 1, j]:
-            return backtrack(length_matrix, comp_matrix, i, j - 1)
+            return backtrack(length_matrix, comp_matrix, i, j - 1, accumulator)
         else:
-            return backtrack(length_matrix, comp_matrix, i - 1, j)
+            return backtrack(length_matrix, comp_matrix, i - 1, j, accumulator)
 
 
 def lcs_images(tests, results, require='ANY'):
