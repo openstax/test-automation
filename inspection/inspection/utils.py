@@ -162,16 +162,20 @@ def lcs_length(comp_matrix):
 
 
 def backtrack(length_matrix, comp_matrix, i, j, accumulator=[]):
-    if i == 0 or j == 0:
-        return accumulator
-    elif comp_matrix[i, j]:
-        return backtrack(length_matrix, comp_matrix, i - 1, j - 1, accumulator+[(i, j)]) 
-    else:
-        if length_matrix[i, j - 1] > length_matrix[i - 1, j]:
-            return backtrack(length_matrix, comp_matrix, i, j - 1, accumulator)
+    while True:
+        if i == 0 or j == 0:
+            return accumulator
+        elif comp_matrix[i, j]:
+            (length_matrix, comp_matrix, i, j, accumulator) = (length_matrix, comp_matrix, i - 1, j - 1, accumulator+[(i, j)])
+            continue
         else:
-            return backtrack(length_matrix, comp_matrix, i - 1, j, accumulator)
-
+            if length_matrix[i, j - 1] > length_matrix[i - 1, j]:
+                (length_matrix, comp_matrix, i, j , accumulator) = (length_matrix, comp_matrix, i, j - 1, accumulator)
+                continue
+            else:
+                (length_matrix, comp_matrix, i, j , accumulator) = (length_matrix, comp_matrix, i - 1, j, accumulator)
+                continue
+        break
 
 def lcs_images(tests, results, require='ANY'):
     info_matrix = generate_info_matrix(tests, results)
