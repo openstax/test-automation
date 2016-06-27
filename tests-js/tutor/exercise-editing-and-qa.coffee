@@ -11,7 +11,7 @@ contentAnalyst = users.find('content-analyst')
 admin = users.find('admin')
 
 cases =
-  '7651':
+'7651':
     title: 'Content Analyst | See the full error list from a failed book import'
     spec: ->
       @user = new Helpers.User(@)
