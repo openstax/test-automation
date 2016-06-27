@@ -196,21 +196,13 @@ def diff_images(tests, results, require='ANY'):
 def printDiff(C, XY, i, j):
     if i > 0 and j > 0 and XY[i][j] == 1:
         diff = printDiff(C, XY, i-1, j-1)
-        if diff is None:
-            return '\n' + str(i)
-        else:
-            return str(diff) + '\n' + str(i)
+        return "{0} \n {1}".format(diff or '', i)
     else:
         if j > 0 and (i == 0 or C[i][j-1] >= C[i-1][j]):
             diff = printDiff(C, XY, i, j-1)
-            if diff is None:
-                return '\n' + str(j)
-            else:
-                return str(diff) + '\n' + "+ " + str(j)
+            return "{0} \n+ {1}".format(diff or '', j)
         elif i > 0 and (j == 0 or C[i][j-1] < C[i-1][j]):
             diff = printDiff(C, XY, i-1, j)
-            if diff is None:
-                return '\n' + str(i)
-            else: 
-                return str(diff) + '\n' + "- " + str(i)
+            return "{0} \n - {1}".format(diff or '', i)
+
       
