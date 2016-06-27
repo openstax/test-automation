@@ -190,16 +190,20 @@ def diff_images(tests, results, require='ANY'):
     diff = printDiff(length_matrix, comp_matrix, M - 1, N - 1)
     return diff
 
-def printDiff(C, XY, i, j):
+def printDiff(C, XY, i, j, accumulator = ''):
     if i > 0 and j > 0 and XY[i][j] == 1:
-        diff = printDiff(C, XY, i-1, j-1)
-        return "{0} \n {1}".format(diff or '', i)
+        accumulator = diff_statement(accumulator,'',i)
+        return printDiff(C, XY, i-1, j-1,accumulator)
     else:
         if j > 0 and (i == 0 or C[i][j-1] >= C[i-1][j]):
-            diff = printDiff(C, XY, i, j-1)
-            return "{0} \n+ {1}".format(diff or '', j)
+            accumulator = diff_statement(accumulator,'+',j)
+            return printDiff(C, XY, i, j-1,accumulator)
         elif i > 0 and (j == 0 or C[i][j-1] < C[i-1][j]):
-            diff = printDiff(C, XY, i-1, j)
-            return "{0} \n - {1}".format(diff or '', i)
+            accumulator = diff_statement(accumulator,'-',i)
+            return printDiff(C, XY, i-1, j,accumulator)
+        else:
+            return accumulator
 
+def diff_statement(diff, sign, index):
+    return "{0} \n {1} {2}".format(diff or '',sign,index)
       
