@@ -9,6 +9,7 @@ class Core(unittest.TestCase):
         except Exception as e:
             self.fail(e.output) 
         result = eval(output)
+        result.reverse()
         return result
 
     def test_identity(self):
