@@ -1,6 +1,5 @@
 import unittest
 import subprocess
-from utils import load_result_log 
 
 class Core(unittest.TestCase):
 
