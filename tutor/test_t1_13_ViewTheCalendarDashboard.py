@@ -233,6 +233,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
     #     """ View a homework assignment summary
 
     #     Steps:
+    #     create a homework assignemtn
     #     If the user has more than one course, click on a Tutor course name
     #     Click on a homework assignment on the calendar
 
@@ -245,7 +246,25 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
     #     self.ps.test_updates['passed'] = False
         
     #     self.teacher.select_course(appearance='physics')
-        
+    #     #create an assignment
+    #     assignemnt_name = "hw007"
+    #     today = datetime.date.today()
+    #     begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+    #     closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+    #     self.teacher.add_assignment( assignment='homework',
+    #                                  args={
+    #                                      'title' : assignment_name,
+    #                                      'description' : 'description',
+    #                                      'periods' : {'all': (begin, end)},
+    #                                      'problems' : {'4.1': (4, 8),}
+    #                                      'status' : 'publish'
+    #                                  })
+    #     #click on assignemnt
+    #     self.teacher.driver.find_element(
+    #         By.XPATH, '//div[contains(text(), "'+assignemnt_name+'")]').click() ##should it be label not div
+    #     #check that it opened
+    #     self.teacher.driver.find_element(
+    #         By.XPATH, '//h2[contains(text(), "'+assignemnt_name+'")]')
     #     self.ps.test_updates['passed'] = True
 
     # #NOT DONE
@@ -271,7 +290,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
     #     today = datetime.date.today()
     #     begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
     #     end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
-    #     ###I think there may be an issue in Assignemnts in select_sections, code may need an update?
     #     self.teacher.add_assignment( assignment='external',
     #                                  args={
     #                                      'title' : assignment_name,
@@ -282,7 +300,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
     #                                  })
     #     #click on assignemnt
     #     self.teacher.driver.find_element(
-    #         By.XPATH, '//div[contains(text(), "'+assignemnt_name+'")]').click()
+    #         By.XPATH, '//div[contains(text(), "'+assignemnt_name+'")]').click() ##should it be label not div
     #     #check that it opened
     #     self.teacher.driver.find_element(
     #         By.XPATH, '//h2[contains(text(), "'+assignemnt_name+'")]')
@@ -306,12 +324,26 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
     #         + inspect.currentframe().f_code.co_name[4:]
     #     self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.009', '7986']
     #     self.ps.test_updates['passed'] = False
-        
-    #     self.teacher.select_course(appearance='physics')
-    #     #click on an event
-    #     #assert(  , \
-    #     #    'Not viewing event summary'
 
+    #     self.teacher.select_course(appearance='physics')
+    #     #create an assignment
+    #     assignemnt_name = "hw007"
+    #     today = datetime.date.today()
+    #     begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+    #     closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+    #     self.teacher.add_assignment( assignment='homework',
+    #                                  args={
+    #                                      'title' : assignment_name,
+    #                                      'description' : 'description',
+    #                                      'periods' : {'all': (begin, end)},
+    #                                      'status' : 'publish'
+    #                                  })
+    #     #click on assignemnt
+    #     self.teacher.driver.find_element(
+    #         By.XPATH, '//div[contains(text(), "'+assignemnt_name+'")]').click() ##should it be label not div
+    #     #check that it opened
+    #     self.teacher.driver.find_element(
+    #         By.XPATH, '//h2[contains(text(), "'+assignemnt_name+'")]')
     #     self.ps.test_updates['passed'] = True
 
     # Case C7987 - 010 - Teacher | Open the refrenece book using the dashboard button

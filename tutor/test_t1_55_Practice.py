@@ -154,7 +154,6 @@ class TestPractice(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
 
-    #need case for it no free resposen choose a differnet breadcrumb
     # Case C8300 - 004 - Student | Inputting a free response activates the Answer button
     @pytest.mark.skipif(str(8300) not in TESTS, reason='Excluded')  # NOQA
     def test_student_inputting_a_free_response_activates_the_answer_button(self):
@@ -184,7 +183,7 @@ class TestPractice(unittest.TestCase):
                     )
                 )
                 for i in 'hello':
-                    element.send_keys("hello")
+                    element.send_keys(i)
                 self.wait.until(
                     expect.element_to_be_clickable(
                         ( By.XPATH,'//button/span[contains(text(),"Answer")]')
@@ -193,12 +192,13 @@ class TestPractice(unittest.TestCase):
                 break
             except:
                 count+=1
-                sections[count].click()
                 if count >= len(sections):
-                    return None
+                    print('no questions in this practice with free respnse')
+                    raise Exception
+
+                sections[count].click()
         self.ps.test_updates['passed'] = True
 
-    # #need case for it no free resposen choose a differnet breadcrumb
     # Case C8301 - 005 - Student | Answer a free reponse question
     @pytest.mark.skipif(str(8301) not in TESTS, reason='Excluded')  # NOQA
     def test_student_answer_a_free_response_question(self):
@@ -234,18 +234,14 @@ class TestPractice(unittest.TestCase):
                     expect.element_to_be_clickable(
                         ( By.XPATH,'//button/span[contains(text(),"Answer")]')
                     )
-                )
+                ).click()
                 break
             except:
                 count+=1
-                sections[count].click()
                 if count >= len(sections):
-                    return None
-        self.wait.until(
-            expect.visibility_of_element_located(
-                ( By.XPATH,'//button/span[contains(text(),"Answer")]')
-            )
-        ).click()
+                    print('no questions in this homework with free respnse')
+                    raise Exception
+                sections[count].click()
         self.student.driver.find_element(
             By.XPATH,'//div[@class="free-response" and contains(text(),"'+answer_text+'")]')
         self.student.driver.find_element(
@@ -273,7 +269,7 @@ class TestPractice(unittest.TestCase):
 
         # Test steps and verification assertions
         try:
-        #if the question is two part must answer free response to get to mc
+            #if the question is two part must answer free response to get to mc
             element = self.wait.until(
                 expect.visibility_of_element_located(
                     ( By.TAG_NAME,'textarea')
@@ -576,7 +572,7 @@ class TestPractice(unittest.TestCase):
                 ).click()
             except:
                 pass
-            #answer the free response portion
+            #answer the mc portion
             self.wait.until(
                 expect.visibility_of_element_located(
                     (By.XPATH,'//div[contains(@class,"question-stem")]')
@@ -613,8 +609,6 @@ class TestPractice(unittest.TestCase):
         self.student.driver.find_element(
             By.XPATH,'//div[contains(@class,"completed-message")]'\
             '//span[contains(@data-reactid,"0.3") and contains(text(),"'+str(len(sections)-1)+'")]')
-
-        ####assertion
         self.ps.test_updates['passed'] = True
 
 
