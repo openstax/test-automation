@@ -27,16 +27,7 @@ class Core(unittest.TestCase):
         result = self.target(run)
         self.assertEqual(expect, result)
 
-    def test_results(self):
-        run = "python inspection.py --cases example --exclude DefaultTest --include Example1 data/test/A.pdf data/test/A.pdf"
-        self.target(run)
-        results_list = load_result_log('results.log')
-        self.assertGreater(len(results_list),0)
-        result = results_list[0]
-        self.assertIn('measure',result.keys())
-        self.assertIsNotNone(result['measure'])
-        self.assertIn('threshold',result.keys())
-        self.assertIsNotNone(result['threshold'])
+
 
     def test_page_removed(self):
         run = "python inspection.py data/test/A.pdf data/test/B.pdf"
@@ -164,14 +155,6 @@ class Core(unittest.TestCase):
         self.assertEqual(expect, result)
 
 
-class Utils(unittest.TestCase):
-    def test_print_diff(self):
-        import utils 
-        # results log is the output of python inspection.py --diff data/test/A.pdf data/test/C.pdf
-        results_file_path = "data/results.log"
-        expected_diff = '\n1\n2\n- 3\n4\n5\n- 6\n7\n8\n9\n- 10'
-        returned_diff = utils.diff_images(results_file_path, require="ALL")
-        self.assertEqual(expected_diff, returned_diff)
 
 if __name__ == '__main__':
     unittest.main()

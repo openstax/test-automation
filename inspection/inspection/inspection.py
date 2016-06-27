@@ -1,6 +1,5 @@
 import unittest
 import argparse
-import logging
 from multiprocessing import Process
 
 from utils import generate_tests, lcs_images, diff_images
@@ -24,11 +23,6 @@ def main(argv=None):
         help="Include additional test classes (default=[DefaultTest])")
     parser.add_argument(
         '--exclude', action='append', default=[], help="Exclude test classes.")
-    parser.add_argument(
-        '--output',
-        type=str,
-        default='output.log',
-        help="Test execution output file (default=output.log).")
     parser.add_argument(
         '--results',
         type=str,
@@ -73,30 +67,31 @@ def main(argv=None):
 
     settings = vars(args)
 
-    logging.basicConfig(
-        filename=settings['results'],
-        level=logging.INFO,
-        filemode='w+',
-        format='')
+
 
     if not os.path.isabs(settings['pdf_a']):
         settings['pdf_a'] = os.path.join(start_dir,settings['pdf_a'])
     if not os.path.isabs(settings['pdf_b']):
         settings['pdf_b'] = os.path.join(start_dir,settings['pdf_b'])
-  
+ 
+ 
     if settings['debug']:
         load_tests = generate_tests(settings)
-        unittest.TextTestRunner(verbosity=3,stream=sys.stderr).run(load_tests)
+        results = unittest.TextTestRunner(verbosity=3,stream=sys.stderr).run(load_tests)
     else:
         load_tests = generate_tests(settings)
-        with open(settings['output'], 'w+') as f:
-            unittest.TextTestRunner(stream=f, verbosity=3).run(load_tests)
+        terminal_out = sys.stdout
+        f = open(os.devnull, 'w')
+        sys.stdout = f
+        results = unittest.TextTestRunner(stream=f, verbosity=3).run(load_tests)
+        sys.stdout = terminal_out 
+
 
     if settings['diff']:
-        diff = diff_images(settings['results'], settings['check'])
+        diff = diff_images(load_tests._tests, results, settings['check'])
         print(diff)
     else:
-        related_page_list = lcs_images(settings['results'], settings['check'])
+        related_page_list = lcs_images(load_tests._tests, results, settings['check'])
         print(related_page_list)
 
 if __name__ == "__main__":

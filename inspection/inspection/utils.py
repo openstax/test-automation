@@ -56,40 +56,60 @@ def generate_tests(settings):
     return test_cases
 
 
-def load_result_log(filepath):
-    results = []
-    with open(filepath, 'r') as f:
-        for line in f:
-            info = eval(line)
-            results.append(info)
-    return results
+def case_key_from_id(ident):
+    return ident.split('(')[0]
 
+def generate_info_matrix(tests, results):
+    #results.errors
+    #results.skipped
+    #results.failures
 
-def generate_info_matrix(info_list):
-    test_cases = set([(info['test'], info['case']) for info in info_list])
-    pages_a = set([info['page_i'] for info in info_list])
-    pages_b = set([info['page_j'] for info in info_list])
+    cases = set([ test.id().split('(')[0] for test in tests])
+    pages_a = set([test.page_i for test in tests])
+    pages_b = set([test.page_j for test in tests])
 
-    test_cases = list(test_cases)
-    pages_a = list(pages_a)
-    pages_b = list(pages_b)
-
-    info_matrix = numpy.chararray((len(test_cases),
+    info_matrix = numpy.chararray((len(cases),
                                    len(pages_a) + 1,
                                    len(pages_b) + 1))
 
     info_matrix[:] = 'f'
 
-    for info in info_list:
-        x = test_cases.index((info['test'], info['case']))
-        y = info['page_i']
-        z = info['page_j']
+    cases = list(cases)
 
-        value = info['result']
-        info_matrix[x, y, z] = value
+    for test in tests:
+        test_case = case_key_from_id(test.id())
+
+        x = cases.index(test_case)
+        y = test.page_i
+        z = test.page_j
+
+        info_matrix[x, y, z] = 'p'
+
+    for failure in results.failures:
+        test = failure[0]
+        test_case = case_key_from_id(test.id())
+        x = cases.index(test_case)
+        y = test.page_i
+        z = test.page_j
+        info_matrix[x, y, z] = 'f'
+
+    for error in results.errors:
+        test = failure[0]
+        test_case = case_key_from_id(test.id())
+        x = cases.index(test_case)
+        y = test.page_i
+        z = test.page_j
+        info_matrix[x, y, z] = 'e'
+
+    for skipped in results.skipped:
+        test = skipped[0]
+        test_case = case_key_from_id(test.id())
+        x = cases.index(test_case)
+        y = test.page_i
+        z = test.page_j
+        info_matrix[x, y, z] = 's'
 
     return info_matrix
-
 
 def generate_comp_matrix(info_matrix, operation, skip=False):
 
@@ -153,18 +173,16 @@ def backtrack(length_matrix, comp_matrix, i, j):
             return backtrack(length_matrix, comp_matrix, i - 1, j)
 
 
-def lcs_images(results_file_path, require='ANY'):
-    results_list = load_result_log(results_file_path)
-    info_matrix = generate_info_matrix(results_list)
+def lcs_images(tests, results, require='ANY'):
+    info_matrix = generate_info_matrix(tests, results)
     comp_matrix = generate_comp_matrix(info_matrix, require)
     length_matrix = lcs_length(comp_matrix)
     (M, N) = length_matrix.shape
     lcs = backtrack(length_matrix, comp_matrix, M - 1, N - 1)
     return lcs
 
-def diff_images(results_file_path, require='ANY'):
-    results_list = load_result_log(results_file_path)
-    info_matrix = generate_info_matrix(results_list)
+def diff_images(tests, results, require='ANY'):
+    info_matrix = generate_info_matrix(tests, results)
     comp_matrix = generate_comp_matrix(info_matrix, require)
     length_matrix = lcs_length(comp_matrix)
     (M, N) = length_matrix.shape
