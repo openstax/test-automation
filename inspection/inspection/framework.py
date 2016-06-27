@@ -29,7 +29,7 @@ class PDFCV(unittest.TestCase):
     def setUp(self):
         if self.page_i == 0 or self.page_j == 0:
             raise unittest.SkipTest("zero pages should be null")
-        if math.fabs(self.page_i - self.page_j ) > self._settings['window']:
+        if self._settings['window'] is not None and math.fabs(self.page_i - self.page_j ) > self._settings['window']:
             raise unittest.SkipTest("pages outside window range")
         self.image_i = utils.load_pdf_page(
             self._settings['pdf_a'], self.page_i - 1)

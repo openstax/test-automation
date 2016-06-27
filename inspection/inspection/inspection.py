@@ -50,9 +50,9 @@ def main(argv=None):
     parser.add_argument(
         '--window',
         type=int,
-        default=2,
+        default=None,
         help="If the absolute difference of index's of two pdf pages is"
-             "greater than the window range, then pages are not related. (default = 2)")
+             "greater than the window range, then pages are not related. (default = None)")
     parser.add_argument(
         '--debug',
         action='store_true',
