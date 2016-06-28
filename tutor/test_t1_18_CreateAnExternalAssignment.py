@@ -113,8 +113,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
         self.teacher.driver.find_element(
                 By.XPATH, '//button[contains(@class,"-publish")]').click()
-        self.teacher.driver.find_elements_by_xpath(
-            "//label[contains(text(), 'ext001')]")
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH, "//label[contains(text(), 'ext001')]")
+        except:
+            self.teacher.driver.find_element(
+                By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+            self.teacher.driver.find_element(
+                By.XPATH, "//label[contains(text(), 'ext001')]")
 
         self.ps.test_updates['passed'] = True
 
@@ -258,12 +264,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
     #     self.teacher.driver.find_element(
     #             By.XPATH, '//button[contains(@class,"-publish")]').click()
-    #     ##won't work if it goes over to next month
-    #     wait.until(
-    #          expect.visibility_of_element_located(
-    #             (By.XPATH, "//label[contains(text(), 'ext003')]")
-    #         )
-    #     )
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH, "//label[contains(text(), 'ext003')]")
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH, "//label[contains(text(), 'ext003')]")
     #     self.ps.test_updates['passed'] = True
 
     # Case C8088 - 004 - Teacher | Set open and due dates for  periods individually
@@ -368,12 +376,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(@class,"-publish")]').click()
-        ##won't work if it goes over to next month
-        wait.until(
-             expect.visibility_of_element_located(
-                (By.XPATH, "//label[contains(text(), 'ext004')]")
-            )
-        )
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH, "//label[contains(text(), 'ext004')]")
+        except:
+            self.teacher.driver.find_element(
+                By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+            self.teacher.driver.find_element(
+                By.XPATH, "//label[contains(text(), 'ext004')]")
         self.ps.test_updates['passed'] = True
 
     # # Case C8089 - 005 - Teacher | Save a draft external assignemnt
@@ -423,9 +433,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
     #     self.teacher.driver.find_element(
     #             By.XPATH, '//button[contains(@class,"-save")]').click()
-
-    #     self.teacher.driver.find_elements_by_xpath(
-    #         "//label[contains(text(), 'ext005')]")
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH, "//label[contains(text(), 'ext005')]")
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH, "//label[contains(text(), 'ext005')]")
 
     #     self.ps.test_updates['passed'] = True
 
@@ -495,16 +510,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #         '//label[contains(@data-title,"'+assignment_name+'")]').click()
     #     self.teacher.driver.find_element(
     #         By.XPATH,'//button[contains(@class,"-publish")]').click()
-    #     self.teacher.driver.find_elements_by_xpath(
-    #         "//label[contains(text(), 'ext007')]").click()
-    #     # assert that it has not gone to edit assignment but view assignment because not draft
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH, "//label[contains(text(), 'ext007')]").click()
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH, "//label[contains(text(), 'ext007')]").click()
+    #     # assert that it has not gone to view assignment because not draft
     #     assert('plans' in self.teacher.current_url()), \
     #         'assignment did not publish'
 
 
     #     self.ps.test_updates['passed'] = True
 
-    # # ###fails because now it needs the ok after without changes bug
     # # Case C8092 - 008 - Teacher | Cancel a new external assignemnt before changes using Cancel button
     # @pytest.mark.skipif(str(8092) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_cancel_a_new_external_assignemnt_before_changes_using_cancel_button(self):
@@ -538,7 +558,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #             (By.XPATH,//button[@aria-role="close" and @type="button" and text()="Cancel"]')
     #         )
     #     ).click()
-        
     #     assert('calendar' in self.teacher.current_url()), \
     #         'Not viewing the calendar dashboard, after caneling assignment 008'
 
@@ -596,7 +615,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     #     self.ps.test_updates['passed'] = True
     
-    # # ###fails because now it needs the ok after without changes bug
     # # Case C8094 - 010 - Teacher | Cancel a new external assignemnt before changes using the X
     # @pytest.mark.skipif(str(8094) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_cancel_a_new_external_assignemnt_before_changes_using_the_x(self):
@@ -694,7 +712,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     create a draft external assignemnt
     #     Click on the draft external assignment
     #     Click on the Cancel button
-    #     Click on the OK button
 
     #     Expected Result:
     #     No changes to calendar dashboard
@@ -709,7 +726,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     assignemnt_name = "ext007"
     #     today = datetime.date.today()
     #     begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-    #     closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+    #     end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
     #     self.teacher.add_assignment( assignment='external',
     #                                  args={
     #                                      'title' : assignment_name,
@@ -730,7 +747,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #             ( By.XPATH, '//button[contains(@aria-role,"close") and @type="button"]')
     #         )
     #     ).click()
-        
     #     assert('calendar' in self.teacher.current_url()), \
     #         'Not viewing the calendar dashboard, after caneling assignment 012'
     #     self.ps.test_updates['passed'] = True
@@ -760,7 +776,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     assignemnt_name = "ext007"
     #     today = datetime.date.today()
     #     begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-    #     closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+    #     end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
     #     self.teacher.add_assignment( assignment='external',
     #                                  args={
     #                                      'title' : assignment_name,
@@ -820,7 +836,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     # Test steps and verification assertions
     #     today = datetime.date.today()
     #     begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-    #     closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+    #     end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
     #     self.teacher.add_assignment( assignment='external',
     #                                  args={
     #                                      'title' : assignment_name,
@@ -868,7 +884,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     # Test steps and verification assertions
     #     today = datetime.date.today()
     #     begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-    #     closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+    #     end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
     #     self.teacher.add_assignment( assignment='external',
     #                                  args={
     #                                      'title' : assignment_name,
@@ -1006,7 +1022,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     assignemnt_name = "ext018"
     #     today = datetime.date.today()
     #     begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
-    #     closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+    #     end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
     #     self.teacher.add_assignment( assignment='external',
     #                                  args={
     #                                      'title' : assignment_name,
@@ -1064,7 +1080,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     assignemnt_name = "ext019"
     #     today = datetime.date.today()
     #     begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-    #     closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+    #     end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
     #     self.teacher.add_assignment( assignment='external',
     #                                  args={
     #                                      'title' : assignment_name,
@@ -1121,7 +1137,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     assignemnt_name = "ext020"
     #     today = datetime.date.today()
     #     begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-    #     closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+    #     end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
     #     self.teacher.add_assignment( assignment='external',
     #                                  args={
     #                                      'title' : assignment_name,
@@ -1200,7 +1216,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     assignemnt_name = "ext023"
     #     today = datetime.date.today()
     #     begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-    #     closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+    #     end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
     #     self.teacher.add_assignment( assignment='external',
     #                                  args={
     #                                      'title' : assignment_name,
@@ -1332,7 +1348,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     assignemnt_name = "ext025"
     #     today = datetime.date.today()
     #     begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-    #     closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+    #     end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
     #     self.teacher.add_assignment( assignment='external',
     #                                  args={
     #                                      'title' : assignment_name,
@@ -1358,9 +1374,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #             (By.XPATH, '//button[contains(@class,"-save")]')
     #         )
     #     ).click()
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"NEW'+assignment_name+'")]')
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH, "//label[contains(text(), 'NEW"+assignment_name+"')]")
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH, "//label[contains(text(), 'NEW"+assignmant_name+"')]")
+
     #     self.ps.test_updates['passed'] = True
 
     # # Case C8110 - 026 - Teacher | Change a name for an open external assignment
@@ -1384,7 +1406,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     assignemnt_name = "ext026"
     #     today = datetime.date.today()
     #     begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-    #     closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+    #     end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
     #     self.teacher.add_assignment( assignment='external',
     #                                  args={
     #                                      'title' : assignment_name,
@@ -1412,9 +1434,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #             (By.XPATH, '//button[contains(@class,"-save")]')
     #         )
     #     ).click()
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"NEW'+assignment_name+'")]')
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH, "//label[contains(text(), 'NEW"+assignment_name+"')]")
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH, "//label[contains(text(), 'NEW"+assignmant_name+"')]")
     #     self.ps.test_updates['passed'] = True
 
     # # ### not needed? these exact steps are done in other cases
@@ -1463,7 +1490,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     assignemnt_name = "ext026"
     #     today = datetime.date.today()
     #     begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-    #     closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+    #     end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
     #     self.teacher.add_assignment( assignment='external',
     #                                  args={
     #                                      'title' : assignment_name,
@@ -1555,7 +1582,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     assignemnt_name = "ext031"
     #     today = datetime.date.today()
     #     begin = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
-    #     closes_on = (today + datetime.timedelta(days=5)).strftime('%m/%d/%Y')
+    #     end = (today + datetime.timedelta(days=5)).strftime('%m/%d/%Y')
     #     self.teacher.add_assignment( assignment='external',
     #                                  args={
     #                                      'title' : assignment_name,
@@ -1591,8 +1618,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.teacher.driver.find_element(By.ID, 'external-url').send_keys('new_website.com')
     #     self.teacher.driver.find_element(
     #             By.XPATH, '//button[contains(@class,"-publish")]').click()
-    #     self.teacher.driver.find_elements_by_xpath(
-    #         "//*[contains(text(), 'NEW"+assignemnt_name+"')]")
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH, "//label[contains(text(), 'NEW"+assignment_name+"')]")
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH, "//label[contains(text(), 'NEW"+assignmant_name+"')]")
 
     #     self.ps.test_updates['passed'] = True
 
@@ -1623,7 +1656,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     assignemnt_name = "ext031"
     #     today = datetime.date.today()
     #     begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-    #     closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+    #     end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
     #     self.teacher.add_assignment( assignment='external',
     #                                  args={
     #                                      'title' : assignment_name,
@@ -1659,8 +1692,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.teacher.driver.find_element(By.ID, 'external-url').send_keys('new_website.com')
     #     self.teacher.driver.find_element(
     #             By.XPATH, '//button[contains(@class,"-save")]').click()
-    #     self.teacher.driver.find_elements_by_xpath(
-    #         "//*[contains(text(), 'NEW"+assignemnt_name+"')]")
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH, "//label[contains(text(), 'NEW"+assignment_name+"')]")
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH, "//label[contains(text(), 'NEW"+assignmant_name+"')]")
 
     #     self.ps.test_updates['passed'] = True
 
@@ -1689,7 +1728,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     assignemnt_name = "ext032"
     #     today = datetime.date.today()
     #     begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-    #     closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+    #     end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
     #     self.teacher.add_assignment( assignment='external',
     #                                  args={
     #                                      'title' : assignment_name,
@@ -1725,8 +1764,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #     self.teacher.driver.find_element(By.ID, 'external-url').send_keys('new_website.com')
     #     self.teacher.driver.find_element(
     #             By.XPATH, '//button[contains(@class,"-publish")]').click()
-    #     self.teacher.driver.find_elements_by_xpath(
-    #         "//*[contains(text(), 'NEW"+assignemnt_name+"')]")
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH, "//label[contains(text(), 'NEW"+assignment_name+"')]")
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH, "//label[contains(text(), 'NEW"+assignmant_name+"')]")
 
     #     self.ps.test_updates['passed'] = True
 

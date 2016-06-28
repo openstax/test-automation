@@ -807,7 +807,6 @@ class TestCreateAReading(unittest.TestCase):
     #     Steps: 
     #     On the calendar click on a draft assignment
     #     Click on the 'Cancel' button
-    #     Click on the 'ok' button
 
     #     Expected Result:
     #     Takes user back to calendar dashboard. 
@@ -916,7 +915,6 @@ class TestCreateAReading(unittest.TestCase):
     #     Steps: 
     #     On the calendar click on a draft assignment 
     #     Click on the 'X' button
-    #     Click on the 'ok' button
 
     #     Expected Result:
     #     Takes user back to calendar dashboard. 
@@ -951,7 +949,6 @@ class TestCreateAReading(unittest.TestCase):
     #     ).click()
     #     assert ('calendar' in self.teacher.current_url()),\
     #         'not back at calendar after canceling reading with x'
-
 
     #     self.ps.test_updates['passed'] = True
 
@@ -1100,129 +1097,197 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
 
-    # # Case C8009 - 018 - Teacher | Delete an unopened reading
-    # @pytest.mark.skipif(str(8009) not in TESTS, reason='Excluded')  # NOQA
-    # def test_usertype_story_text(self):
-    #     """Delete an unopened reading.
+    # Case C8009 - 018 - Teacher | Delete an unopened reading
+    @pytest.mark.skipif(str(8009) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_delete_an_unopened_reading(self):
+        """Delete an unopened reading.
 
-    #     Steps: 
-
-    #     On the calendar click on a reading that is unopened
-    #     Click on the 'Edit Assignment' button
-    #     Click on the 'Delete Assignment' button
-    #     Click on the "ok" button
+        Steps: 
+        On the calendar click on a reading that is unopened
+        Click on the 'Edit Assignment' button
+        Click on the 'Delete Assignment' button
+        Click on the "ok" button
         
-    #     Expected Result:
+        Expected Result:
+        Takes user back to calendar dashboard. 
+        Chosen assignment no longer appears on teacher calendar dashboard.
+        """
+        self.ps.test_updates['name'] = 't1.14.018' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1','t1.14','t1.14.018','8009']
+        self.ps.test_updates['passed'] = False
 
-    #     Takes user back to calendar dashboard. 
-    #     Chosen assignment no longer appears on teacher calendar dashboard.
+        # Test steps and verification assertions
+        assignment_name = 'reading-018'
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment( assignment='reading',
+                                     args={
+                                         'title' : assignment_name,
+                                         'description' : 'description',
+                                         'periods' : {'all': (begin, end)},
+                                         'reading_list' : ['ch1'],
+                                         'status' : 'publish'
+                                     })
+        original_readings = self.teacher.driver.find_elements(
+            By.XPATH,'//label[@data-title="'+assignemnt_name+'"]')
+        self.teacher.driver.find_element(
+            By.XPATH,'//label[@data-title="'+assignemnt_name+'"]').click()
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contians(@class,"-edit-assignment")]')
+            )
+        ).click()
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button[contians(@class,"deltete-link")]')
+            )
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH,'//butto[contains(text(),"Yes")]').click()
+        assert ('calendar' in self.teacher.current_url()), \
+            'not returned to calendar after deleting an assignment'
+        deleted_reading = self.teacher.driver.find_elements(
+            By.XPATH,'//label[@data-title="'+assignemnt_name+'"]')
+        assert ( len(deleted_reading) == len(original_reaings)-1 ), \
+            'assignment not deleted'
 
-    #     """
-    #     self.ps.test_updates['name'] = 't1.14.018' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = [
-    #         't1',
-    #         't1.14',
-    #         't1.14.018',
-    #         '8009'
-    #     ]
-    #     self.ps.test_updates['passed'] = False
-
-    #     # Test steps and verification assertions
-
-    #     self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True
 
 
-    # # Case C8010 - 019 - Teacher | Attempt to delete an open reading
-    # @pytest.mark.skipif(str(8010) not in TESTS, reason='Excluded')  # NOQA
-    # def test_usertype_story_text(self):
-    #     """Attempt to delete an open reading.
+    # Case C8010 - 019 - Teacher | Delete an open reading
+    @pytest.mark.skipif(str(8010) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_delete_an_open_reading(self):
+        """Delete an open reading.
 
-    #     Steps: 
-
-    #     On the calendar click on an open reading
-    #     Click on the 'View Assignment' button
+        Steps: 
+        On the calendar click on an open reading
+        Click on the 'View Assignment' button
         
-    #     Expected Result:
+        Expected Result:
+        No "Delete Assignment" button found.
+        """
+        self.ps.test_updates['name'] = 't1.14.019' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1','t1.14','t1.14.019','8010']
+        self.ps.test_updates['passed'] = False
 
-    #     No "Delete Assignment" button found.
+        # Test steps and verification assertions
+        assignment_name = 'reading-019'
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment( assignment='reading',
+                                     args={
+                                         'title' : assignment_name,
+                                         'description' : 'description',
+                                         'periods' : {'all': (begin, end)},
+                                         'reading_list' : ['ch1'],
+                                         'status' : 'publish'
+                                     })
+        original_readings = self.teacher.driver.find_elements(
+            By.XPATH,'//label[@data-title="'+assignemnt_name+'"]')
+        self.teacher.driver.find_element(
+            By.XPATH,'//label[@data-title="'+assignemnt_name+'"]').click()
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contians(@class,"-edit-assignment")]')
+            )
+        ).click()
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button[contians(@class,"deltete-link")]')
+            )
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH,'//butto[contains(text(),"Yes")]').click()
+        assert ('calendar' in self.teacher.current_url()), \
+            'not returned to calendar after deleting an assignment'
+        deleted_reading = self.teacher.driver.find_elements(
+            By.XPATH,'//label[@data-title="'+assignemnt_name+'"]')
+        assert ( len(deleted_reading) == len(original_reaings)-1 ), \
+            'assignment not deleted'
 
-    #     """
-    #     self.ps.test_updates['name'] = 't1.14.019' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = [
-    #         't1',
-    #         't1.14',
-    #         't1.14.019',
-    #         '8010'
-    #     ]
-    #     self.ps.test_updates['passed'] = False
-
-    #     # Test steps and verification assertions
-
-    #     self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True
 
 
-    # # Case C8011 - 020 - Teacher | Delete a draft reading
-    # @pytest.mark.skipif(str(8011) not in TESTS, reason='Excluded')  # NOQA
-    # def test_usertype_story_text(self):
-    #     """Delete a draft reading.
+    # Case C8011 - 020 - Teacher | Delete a draft reading
+    @pytest.mark.skipif(str(8011) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_delete_a_draft_reading(self):
+        """Delete a draft reading.
 
-    #     Steps: 
-
-    #     On the calendar click on a draft
-    #     Click on the 'Delete Assignment' button
-    #     Click on the 'ok' button
+        Steps: 
+        On the calendar click on a draft
+        Click on the 'Delete Assignment' button
+        Click on the 'ok' button
         
-    #     Expected Result:
+        Expected Result:
+        Takes user back to calendar dashboard. 
+        Chosen assignment no longer appears on teacher calendar dashboard
+        """
+        self.ps.test_updates['name'] = 't1.14.020' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1','t1.14','t1.14.020','8011']
+        self.ps.test_updates['passed'] = False
 
-    #     Takes user back to calendar dashboard. 
-    #     Chosen assignment no longer appears on teacher calendar dashboard
+        # Test steps and verification assertions
+        assignment_name = 'reading-020'
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment( assignment='reading',
+                                     args={
+                                         'title' : assignment_name,
+                                         'description' : 'description',
+                                         'periods' : {'all': (begin, end)},
+                                         'reading_list' : ['ch1'],
+                                         'status' : 'draft'
+                                     })
+        original_readings = self.teacher.driver.find_elements(
+            By.XPATH,'//label[@data-title="'+assignemnt_name+'"]')
+        self.teacher.driver.find_element(
+            By.XPATH,'//label[@data-title="'+assignemnt_name+'"]').click()
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button[contians(@class,"deltete-link")]')
+            )
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH,'//butto[contains(text(),"Yes")]').click()
+        assert ('calendar' in self.teacher.current_url()), \
+            'not returned to calendar after deleting an assignment'
+        deleted_reading = self.teacher.driver.find_elements(
+            By.XPATH,'//label[@data-title="'+assignemnt_name+'"]')
+        assert ( len(deleted_reading) == len(original_reaings)-1 ), \
+            'assignment not deleted'
 
-    #     """
-    #     self.ps.test_updates['name'] = 't1.14.020' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = [
-    #         't1',
-    #         't1.14',
-    #         't1.14.020',
-    #         '8011'
-    #     ]
-    #     self.ps.test_updates['passed'] = False
+        self.ps.test_updates['passed'] = True
 
-    #     # Test steps and verification assertions
-
-    #     self.ps.test_updates['passed'] = True
-
-
+    # #exact steps already in case 001, adding description also in many other cases with additional steps
     # # Case C8012 - 021 - Teacher | Add a description to a reading 
     # @pytest.mark.skipif(str(8012) not in TESTS, reason='Excluded')  # NOQA
     # def test_usertype_story_text(self):
     #     """Add a description to a reading.
 
     #     Steps: 
-
     #     Click on the 'Add Assignment' drop down menu
     #     Click on the 'Add Reading' option
     #     Enter an assignment name into the Assignment name text box
-    #     Enter an assignment description into the Assignment description or special instructions text box
+    #     Enter an assignment description into the Assignment description text box
     #     Enter into Due Date text field date as MM/DD/YYYY
     #     Click on the 'Publish' button
         
     #     Expected Result:
-
     #     Takes user back to calendar dashboard. 
     #     Assignment with description should be on calendar on its due date.
-
     #     """
     #     self.ps.test_updates['name'] = 't1.14.021' \
     #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = [
-    #         't1',
-    #         't1.14',
-    #         't1.14.021',
-    #         '8012'
-    #     ]
+    #     self.ps.test_updates['tags'] = ['t1','t1.14','t1.14.021','8012']
     #     self.ps.test_updates['passed'] = False
 
     #     # Test steps and verification assertions
@@ -1230,83 +1295,130 @@ class TestCreateAReading(unittest.TestCase):
     #     self.ps.test_updates['passed'] = True
 
 
-    # # Case C8013 - 022 - Teacher | Change a description for a draft reading
-    # @pytest.mark.skipif(str(8013) not in TESTS, reason='Excluded')  # NOQA
-    # def test_usertype_story_text(self):
-    #     """Change a description for a draft reading.
+    # Case C8013 - 022 - Teacher | Change a description for a draft reading
+    @pytest.mark.skipif(str(8013) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_change_a_description_for_a_draft_reading(self):
+        """Change a description for a draft reading.
 
-    #     Steps: 
-
-    #     On the calendar click on a draft assignment 
-    #     Enter a new assignment description into the Assignment description or special instructions text box
-    #     CLick on the 'Save As Draft' button
+        Steps: 
+        On the calendar click on a draft assignment 
+        Enter a new assignment description into the Assignment description text box
+        CLick on the 'Save As Draft' button
         
-    #     Expected Result:
+        Expected Result:
+        Takes user back to calendar dashboard. 
+        Assignment description of the chosen draft should have the new description.
+        """
+        self.ps.test_updates['name'] = 't1.14.022' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1','t1.14','t1.14.022','8013']
+        self.ps.test_updates['passed'] = False
 
-    #     Takes user back to calendar dashboard. 
-    #     Assignment description of the chosen draft should have the new description.
+        # Test steps and verification assertions
+        assignment_name = 'reading-022'
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment( assignment='reading',
+                                     args={
+                                         'title' : assignment_name,
+                                         'description' : 'description',
+                                         'periods' : {'all': (begin, end)},
+                                         'reading_list' : ['ch1'],
+                                         'status' : 'draft'
+                                     })
+        self.teacher.driver.find_element(
+            By.XPATH,'//label[@data-title="'+assignemnt_name+'"]').click()
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]//textarea' +
+            '[contains(@class,"form-control")]'). \
+            send_keys('NEW description')
+        # no more save option, only publish
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"-publish")]').click()
+        assert('calendar' in self.teacher.current_url()),\
+            'not returned to caendar ater updating description'
+        self.ps.test_updates['passed'] = True
 
-    #     """
-    #     self.ps.test_updates['name'] = 't1.14.022' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = [
-    #         't1',
-    #         't1.14',
-    #         't1.14.022',
-    #         '8013'
-    #     ]
-    #     self.ps.test_updates['passed'] = False
 
-    #     # Test steps and verification assertions
+    # Case C8014 - 023 - Teacher | Change a description for an open reading
+    @pytest.mark.skipif(str(8014) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_change_a_description_for_an_open_reading(self):
+        """Change a description for an open reading.
 
-    #     self.ps.test_updates['passed'] = True
-
-
-    # # Case C8014 - 023 - Teacher | Change a description for an open reading
-    # @pytest.mark.skipif(str(8014) not in TESTS, reason='Excluded')  # NOQA
-    # def test_usertype_story_text(self):
-    #     """Change a description for an open reading.
-
-    #     Steps: 
-
-    #     On the calendar click on an open reading assignment 
-    #     Click on the "Edit Assignment" button
-    #     Enter a new assignment description into the Assignment description or special instructions text box
-    #     Click on the 'Publish' button
+        Steps: 
+        On the calendar click on an open reading assignment 
+        Click on the "Edit Assignment" button
+        Enter a new assignment description into the Assignment description text box
+        Click on the 'Publish' button
         
-    #     Expected Result:
+        Expected Result:
 
-    #     Takes user back to calendar dashboard. 
-    #     Assignment description of the chosen reading should have the new description.
+        Takes user back to calendar dashboard. 
+        Assignment description of the chosen reading should have the new description.
 
-    #     """
-    #     self.ps.test_updates['name'] = 't1.14.023' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = [
-    #         't1',
-    #         't1.14',
-    #         't1.14.023',
-    #         '8014'
-    #     ]
-    #     self.ps.test_updates['passed'] = False
+        """
+        self.ps.test_updates['name'] = 't1.14.023' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1','t1.14','t1.14.023','8014']
+        self.ps.test_updates['passed'] = False
 
-    #     # Test steps and verification assertions
+        # Test steps and verification assertions
+        assignment_name = 'reading-023'
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment( assignment='reading',
+                                     args={
+                                         'title' : assignment_name,
+                                         'description' : 'description',
+                                         'periods' : {'all': (begin, end)},
+                                         'reading_list' : ['ch1'],
+                                         'status' : 'publisj'
+                                     })
+        self.teacher.driver.find_element(
+            By.XPATH,'//label[@data-title="'+assignemnt_name+'"]').click()
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
+            )
+        ).click()
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]//textarea' +
+            '[contains(@class,"form-control")]'). \
+            send_keys('NEW description')
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"-publish")]').click()
+        assert('calendar' in self.teacher.current_url()),\
+            'not returned to caendar ater updating description'
 
-    #     self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True
 
-
+    
+    # # exact same steps as 001 and other cases, not needed?
     # # Case C8015 - 024 - Teacher | Add a name to a reading
     # @pytest.mark.skipif(str(8015) not in TESTS, reason='Excluded')  # NOQA
     # def test_usertype_story_text(self):
     #     """Add a name to a reading.
 
     #     Steps: 
-
     #     Click on the 'Add Assignment' drop down menu
     #     Click on the 'Add Reading' option
-
-    #     Enter an assignment name into the Assignment name text box [user decision]
-    #     [optional] Enter an assignment description into the Assignment description or special instructions text box
+    #     Enter an assignment name into the Assignment name text box 
     #     [optional] Enter into Open Date text field date as MM/DD/YYYY
     #     Enter into Due Date text field date as MM/DD/YYYY
     #     Click on the "+ Add Readings" button
@@ -1316,19 +1428,12 @@ class TestCreateAReading(unittest.TestCase):
     #     Click on the Publish' button
         
     #     Expected Result:
-
     #     Takes user back to calendar dashboard. 
     #     Assignment appears on its due date with its given name.
-
     #     """
     #     self.ps.test_updates['name'] = 't1.14.024' \
     #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = [
-    #         't1',
-    #         't1.14',
-    #         't1.14.024',
-    #         '8015'
-    #     ]
+    #     self.ps.test_updates['tags'] = ['t1','t1.14','t1.14.024','8015']
     #     self.ps.test_updates['passed'] = False
 
     #     # Test steps and verification assertions
@@ -1336,71 +1441,120 @@ class TestCreateAReading(unittest.TestCase):
     #     self.ps.test_updates['passed'] = True
 
 
-    # # Case C8016 - 025 - Teacher | Change a name for a draft reading
-    # @pytest.mark.skipif(str(8016) not in TESTS, reason='Excluded')  # NOQA
-    # def test_usertype_story_text(self):
-    #     """Change a name for a draft reading.
+    # Case C8016 - 025 - Teacher | Change a name for a draft reading
+    @pytest.mark.skipif(str(8016) not in TESTS, reason='Excluded')  # NOQA
+    def test_usertype_story_text(self):
+        """Change a name for a draft reading.
 
-    #     Steps: 
+        Steps: 
 
-    #     On the calendar click on a draft
-    #     Enter a new name into the Assignment name text box
-    #     Click on the 'Save As Draft' button
+        On the calendar click on a draft
+        Enter a new name into the Assignment name text box
+        Click on the 'Save As Draft' button
         
-    #     Expected Result:
+        Expected Result:
 
-    #     Takes user back to calendar dashboard. 
-    #     Assignment description of the chosen draft should have the new name.
+        Takes user back to calendar dashboard. 
+        Assignment description of the chosen draft should have the new name.
 
-    #     """
-    #     self.ps.test_updates['name'] = 't1.14.025' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = [
-    #         't1',
-    #         't1.14',
-    #         't1.14.025',
-    #         '8016'
-    #     ]
-    #     self.ps.test_updates['passed'] = False
+        """
+        self.ps.test_updates['name'] = 't1.14.025' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1','t1.14','t1.14.025','8016']
+        self.ps.test_updates['passed'] = False
 
-    #     # Test steps and verification assertions
+        # Test steps and verification assertions
+        assignment_name = 'reading-025'
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment( assignment='reading',
+                                     args={
+                                         'title' : assignment_name,
+                                         'description' : 'description',
+                                         'periods' : {'all': (begin, end)},
+                                         'reading_list' : ['ch1'],
+                                         'status' : 'publish'
+                                     })
+        self.teacher.driver.find_element(
+            By.XPATH,'//label[@data-title="'+assignemnt_name+'"]').click()
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.ID, 'reading-title').send_keys('NEW'+assignemnt_name)
+        # only publish option now, no more save
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"-publish")]').click()
+        assert('calendar' in self.teacher.current_url()),\
+            'not returned to caendar ater updating description'
+        self.teacher.driver.find_element(
+            By.XPATH,'//label[@data-title="NEW'+assignemnt_name+'"]')
+        self.ps.test_updates['passed'] = True
 
-    #     self.ps.test_updates['passed'] = True
 
+    # Case C8017 - 026 - Teacher | Change a name for an open reading
+    @pytest.mark.skipif(str(8017) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_change_a_name_for_an_open_reading(self):
+        """Change a name for an open reading.
 
-    # # Case C8017 - 026 - Teacher | Change a name for an open reading
-    # @pytest.mark.skipif(str(8017) not in TESTS, reason='Excluded')  # NOQA
-    # def test_usertype_story_text(self):
-    #     """Change a name for an open reading.
-
-    #     Steps: 
-
-    #     On the calendar click on an open reading assignment
-    #     click on the "Edit Assignment" button
-    #     Enter a new assignment name into the Assignment name text box
-    #     Click on the 'Publish' button
+        Steps: 
+        On the calendar click on an open reading assignment
+        click on the "Edit Assignment" button
+        Enter a new assignment name into the Assignment name text box
+        Click on the 'Publish' button
         
-    #     Expected Result:
+        Expected Result:
+        Takes user back to calendar dashboard, with chosen assignment open. 
+        Assignment name of the chosen reading should have the new name.
 
-    #     Takes user back to calendar dashboard, with chosen assignment open. 
-    #     Assignment name of the chosen reading should have the new name.
+        """
+        self.ps.test_updates['name'] = 't1.14.026' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1','t1.14','t1.14.026','8017']
+        self.ps.test_updates['passed'] = False
 
-    #     """
-    #     self.ps.test_updates['name'] = 't1.14.026' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = [
-    #         't1',
-    #         't1.14',
-    #         't1.14.026',
-    #         '8017'
-    #     ]
-    #     self.ps.test_updates['passed'] = False
+        # Test steps and verification assertions
+        assignment_name = 'reading-025'
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment( assignment='reading',
+                                     args={
+                                         'title' : assignment_name,
+                                         'description' : 'description',
+                                         'periods' : {'all': (begin, end)},
+                                         'reading_list' : ['ch1'],
+                                         'status' : 'publish'
+                                     })
+        self.teacher.driver.find_element(
+            By.XPATH,'//label[@data-title="'+assignemnt_name+'"]').click()
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
+            )
+        ).click()
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.ID, 'reading-title').send_keys('NEW'+assignemnt_name)
+        # only publish option now, no more save
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"-publish")]').click()
+        assert('calendar' in self.teacher.current_url()),\
+            'not returned to caendar ater updating description'
+        self.teacher.driver.find_element(
+            By.XPATH,'//label[@data-title="NEW'+assignemnt_name+'"]')
 
-    #     # Test steps and verification assertions
+        self.ps.test_updates['passed'] = True
 
-    #     self.ps.test_updates['passed'] = True
-
-    # Done
     # # Case C8018 - 027 - Teacher | Add a single section to a reading
     # @pytest.mark.skipif(str(8018) not in TESTS, reason='Excluded')  # NOQA
     # def test_teacher_add_a_single_section_to_a_reading(self):
