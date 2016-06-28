@@ -91,7 +91,7 @@ def generate_info_matrix(tests, results):
         info_matrix[x, y, z] = 'f'
 
     for error in results.errors:
-        test = failure[0]
+        test = error[0]
         test_case = case_key_from_id(test.id())
         x = cases.index(test_case)
         y = test.page_i
