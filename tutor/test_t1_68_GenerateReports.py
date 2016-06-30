@@ -36,49 +36,54 @@ class TestEpicName(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+        self.admin = Admin(
+            use_env_vars=True#,
+            #pasta_user=self.ps,
+            #capabilities=self.desired_capabilities
         )
+        self.admin.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
+        self.ps.update_job(job_id=str(self.admin.driver.session_id),
                            **self.ps.test_updates)
         try:
-            self.teacher.delete()
+            self.admin.delete()
         except:
             pass
 
     # Case C8361 - 001 - Admin | Export research data to OwnCloud Research
     @pytest.mark.skipif(str(8361) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_admin_export_research_data_to_own_cloud_research(self):
         """Export research data to OwnCloud Research.
 
         Steps:
-
-        Open the drop down menu by clicking on the user menu link containing the user's name
+        Open the user menu by clicking on the user's name
         Click on the 'Admin' button
         Click the 'Research Data' button
         Click on the 'Export Data' button
 
-
         Expected Result:
-
         The page is reloaded and a confirmation message is displayed.
-
         """
         self.ps.test_updates['name'] = 't1.68.001' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.68',
-            't1.68.001',
-            '8361'
-        ]
+        self.ps.test_updates['tags'] = ['t1','t1.68','t1.68.001','8361']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.open_user_menu()
+        self.admin.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Admin')
+            )
+        ).click()
+        self.admin.page.wait_for_page_load()
+        self.admin.driver.find_element(
+            By.XPATH,'//a[contains(text(),"Research Data")]').click()
+        self.admin.driver.find_element(
+            By.XPATH,'//input[@value="Export Data"]').click()
+        self.admin.driver.find_element(
+            By.XPATH,'//div[contains(@class,"alert-info")]')
 
         self.ps.test_updates['passed'] = True
