@@ -25,14 +25,9 @@ class Core(unittest.TestCase):
         with capture() as output:
             command[-1] = os.path.join("inspection/data/test",command[-1])
             command[-2] = os.path.join("inspection/data/test",command[-2])
+            command.insert(0,'--debug')
             inspection.main(command)
-           
-#        try:
-#            output = subprocess.check_output(run.split(),stderr=subprocess.STDOUT)
-#        except Exception as e:
-#            self.fail(e.output) 
         result = eval(output[0])
-        result.reverse()
         return result
 
     def test_identity(self):
