@@ -1,19 +1,42 @@
 import unittest
 import subprocess
+import inspection
+import contextlib
+import os
+
+@contextlib.contextmanager
+def capture():
+    import sys
+    from cStringIO import StringIO
+    oldout,olderr = sys.stdout, sys.stderr
+    try:
+        out=[StringIO(), StringIO()]
+        sys.stdout,sys.stderr = out
+        yield out
+    finally:
+        sys.stdout,sys.stderr = oldout, olderr
+        out[0] = out[0].getvalue()
+        out[1] = out[1].getvalue()
 
 class Core(unittest.TestCase):
 
     def target(self, run):
-        try:
-            output = subprocess.check_output(run.split(),stderr=subprocess.STDOUT)
-        except Exception as e:
-            self.fail(e.output) 
-        result = eval(output)
+        command = run.split()
+        with capture() as output:
+            command[-1] = os.path.join("inspection/data/test",command[-1])
+            command[-2] = os.path.join("inspection/data/test",command[-2])
+            inspection.main(command)
+           
+#        try:
+#            output = subprocess.check_output(run.split(),stderr=subprocess.STDOUT)
+#        except Exception as e:
+#            self.fail(e.output) 
+        result = eval(output[0])
         result.reverse()
         return result
 
     def test_identity(self):
-        run = "python inspection.py data/test/A.pdf data/test/A.pdf"
+        run = "A.pdf A.pdf"
         expect = [(1, 1),
                   (2, 2),
                   (3, 3),
@@ -30,7 +53,7 @@ class Core(unittest.TestCase):
 
 
     def test_page_removed(self):
-        run = "python inspection.py data/test/A.pdf data/test/B.pdf"
+        run = "A.pdf B.pdf"
         expect = [(1, 1),
                   (2, 2),
                   (4, 3),
@@ -43,7 +66,7 @@ class Core(unittest.TestCase):
         result = self.target(run)
         self.assertEqual(expect, result)
 
-        run = "python inspection.py data/test/B.pdf data/test/A.pdf"
+        run = "B.pdf A.pdf"
         expect = [(1, 1),
                   (2, 2),
                   (3, 4),
@@ -57,7 +80,7 @@ class Core(unittest.TestCase):
         self.assertEqual(expect, result)
 
     def test_several_pages_removed(self):
-        run = "python inspection.py data/test/A.pdf data/test/C.pdf"
+        run = "A.pdf C.pdf"
         expect = [(1, 1),
                   (2, 2),
                   (4, 3),
@@ -69,7 +92,7 @@ class Core(unittest.TestCase):
         result = self.target(run)
         self.assertEqual(expect, result)
 
-        run = "python inspection.py data/test/C.pdf data/test/A.pdf"
+        run = "C.pdf A.pdf"
         expect = [(1, 1),
                   (2, 2),
                   (3, 4),
@@ -82,7 +105,7 @@ class Core(unittest.TestCase):
         self.assertEqual(expect, result)
 
     def test_image_shift(self):
-        run = "python inspection.py data/test/A.pdf data/test/D.pdf"
+        run = "A.pdf D.pdf"
         expect = [(1, 1),
                   (3, 3),
                   (9, 9),
@@ -91,7 +114,7 @@ class Core(unittest.TestCase):
         result = self.target(run)
         self.assertEqual(expect, result)
 
-        run = "python inspection.py --cases example --include Example1 --check any data/test/A.pdf data/test/D.pdf"
+        run = "--cases example --include Example1 --check any A.pdf D.pdf"
         expect = [(1, 1),
                   (2, 2),
                   (3, 3),
@@ -106,7 +129,7 @@ class Core(unittest.TestCase):
         self.assertEqual(expect, result)
 
     def test_color_change(self):
-        run = "python inspection.py data/test/A.pdf data/test/E.pdf"
+        run = "A.pdf E.pdf"
         expect = [(1, 1),
                   (3, 3),
                   (4, 4),
@@ -117,7 +140,7 @@ class Core(unittest.TestCase):
         result = self.target(run)
         self.assertEqual(expect, result)
 
-        run = "python inspection.py --cases example --include Example1 --check any data/test/A.pdf data/test/E.pdf"
+        run = "--cases example --include Example1 --check any A.pdf E.pdf"
         expect = [(1, 1),
                   (2, 2),
                   (3, 3),
@@ -142,7 +165,7 @@ class Core(unittest.TestCase):
         self.assertEqual(expect, result)
 
         # FIXME
-        run = "python inspection.py --cases example --include Example2 --check any data/test/A.pdf data/test/F.pdf"
+        run = "--cases example --include Example2 --check any A.pdf F.pdf"
         expect = [(1, 1),
                   (2, 2),
                   (4, 3),

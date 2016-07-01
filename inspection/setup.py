@@ -12,6 +12,7 @@ setup(name='inspection',
       url='https://github.com/openstax/test-automation/tree/master/inspection',
       packages=find_packages(),
       install_requires=install_requires,
+      test_suite='inspection.test',
       entry_points="""
      [console_scripts]
      ox_inspect = inspection.inspection:main
