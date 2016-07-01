@@ -29,7 +29,7 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestGenerateReports(unittest.TestCase):
     """T1.68 - Generate Reports."""
 
     def setUp(self):

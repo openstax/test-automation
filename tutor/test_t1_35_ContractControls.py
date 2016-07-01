@@ -1,4 +1,4 @@
-"""Tutor v1, Epic 35 - Add a new contract."""
+"""Tutor v1, Epic 35 - Contract Controls."""
 
 import inspect
 import json
@@ -12,8 +12,6 @@ from selenium.webdriver.common.by import By  # NOQA
 from selenium.webdriver.support import expected_conditions as expect  # NOQA
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
-#from selenium.webdriver import ActionChains
-#from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions
 
 from staxing.helper import Admin  # NOQA
@@ -34,7 +32,7 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestContractControls(unittest.TestCase):
     """T1.35 - Contract Controls."""
 
     def setUp(self):

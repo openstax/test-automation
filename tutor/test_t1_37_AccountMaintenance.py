@@ -45,7 +45,7 @@ class TestAccountMaintenance(unittest.TestCase):
             #capabilities=self.desired_capabilities
         )
         self.admin.login()
-        self.wait = WebDriverWait(self.admin.driver, 15)
+        self.admin.wait = WebDriverWait(self.admin.driver, 15)
         self.admin.open_user_menu()
         self.admin.wait.until(
             expect.element_to_be_clickable(
@@ -249,7 +249,7 @@ class TestAccountMaintenance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         #create a user
-        num = '005'
+        num = '05'
         self.admin.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         self.admin.driver.find_element(
             By.XPATH,'//a[contains(text(),"Create user")]').click()
