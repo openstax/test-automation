@@ -180,6 +180,7 @@ def lcs_images(tests, results, require='ANY'):
     length_matrix = lcs_length(comp_matrix)
     (M, N) = length_matrix.shape
     lcs = backtrack(length_matrix, comp_matrix, M - 1, N - 1)
+    lcs.reverse()
     return lcs
 
 def diff_images(tests, results, require='ANY'):
@@ -188,6 +189,9 @@ def diff_images(tests, results, require='ANY'):
     length_matrix = lcs_length(comp_matrix)
     (M, N) = length_matrix.shape
     diff = printDiff(length_matrix, comp_matrix, M - 1, N - 1)
+    diff = diff.split('\n')
+    diff.reverse()
+    diff = '\n'.join(diff)
     return diff
 
 def printDiff(C, XY, i, j, accumulator = ''):
