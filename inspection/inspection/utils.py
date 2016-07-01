@@ -29,8 +29,7 @@ def load_pdf_page(filepath, page_number):
 def generate_tests(settings):
     """create parameterized tests"""
     test_cases = unittest.TestSuite()
-    cases = import_module(settings['cases'])
-
+    cases = import_module("inspection."+settings['cases'])
     pdf_a_im = pyPdf.PdfFileReader(file(settings['pdf_a'], "rb"))
     total_a_pages = pdf_a_im.getNumPages()
     pdf_b_im = pyPdf.PdfFileReader(file(settings['pdf_b'], "rb"))

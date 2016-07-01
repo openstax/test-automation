@@ -5,11 +5,11 @@ from multiprocessing import Process
 from utils import generate_tests, lcs_images, diff_images
 import sys
 import os 
-import ipdb # FIXME: for some reason adding this module helps solve linking errors
 
 start_dir = os.getcwd()
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 
 
 def main(argv=None):
@@ -73,10 +73,9 @@ def main(argv=None):
         settings['pdf_a'] = os.path.join(start_dir,settings['pdf_a'])
     if not os.path.isabs(settings['pdf_b']):
         settings['pdf_b'] = os.path.join(start_dir,settings['pdf_b'])
- 
+
     load_tests = generate_tests(settings)
 
-    
     terminal_out = sys.stdout
 
     if settings['debug']:
@@ -84,11 +83,13 @@ def main(argv=None):
     else:
         f = open(os.devnull, 'w')
         sys.stdout = f
-
-    results = unittest.TextTestRunner(verbosity=3,stream=f).run(load_tests)
+    
+    results = unittest.TextTestRunner(verbosity=3,
+                                      stream=f,
+                                      buffer=True,
+                                      failfast=False).run(load_tests)
 
     sys.stdout = terminal_out 
-
 
     if settings['diff']:
         diff = diff_images(load_tests._tests, results, settings['check'])
