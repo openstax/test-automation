@@ -8,6 +8,7 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint  # NOQA
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By  # NOQA
 from selenium.webdriver.support import expected_conditions as expect  # NOQA
 from staxing.assignment import Assignment  # NOQA
@@ -32,7 +33,7 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8184])  # NOQA
+    str([8204])  # NOQA
 )
 '''
 8184, 8185, 8186, 8187, 8188, 8189, 
@@ -40,6 +41,8 @@ TESTS = os.getenv(
         8196, 8197, 8198, 8199, 8200, 8201, 
         8202, 8203, 8204, 8205, 8206
 '''
+
+#8190
 
 @PastaDecorator.on_platforms(BROWSERS)
 class TestEpicName(unittest.TestCase):
@@ -92,11 +95,17 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        self.student.wait.until(
-            expect.element_to_be_clickable(
-                (By.CLASS_NAME, 'task row reading workable')
-            )
-        ).click()
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Dec 31, 8:54am'):
+                assignment.click()
+                break
+
+        name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
+
+        assert('December Reading' in name.text), \
+            'Not viewing the reading'
+        
         self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
@@ -111,7 +120,7 @@ class TestEpicName(unittest.TestCase):
 
         Expected Result:
         The user is presented with the due date in the right corner of the footer.
-        """
+        
         self.ps.test_updates['name'] = 't1.28.002' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -125,6 +134,8 @@ class TestEpicName(unittest.TestCase):
         # Test steps and verification assertions
 
         self.ps.test_updates['passed'] = True
+        """
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
     # Case C8186 - 003 - Student | Reading sections are listed in the footer
     @pytest.mark.skipif(str(8186) not in TESTS, reason='Excluded')  # NOQA
@@ -136,7 +147,7 @@ class TestEpicName(unittest.TestCase):
 
         Expected Result:
         The user is presented with the reading sections in the footer.
-        """
+        
         self.ps.test_updates['name'] = 't1.28.003' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -150,6 +161,8 @@ class TestEpicName(unittest.TestCase):
         # Test steps and verification assertions
 
         self.ps.test_updates['passed'] = True
+        """
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
     # Case C8187 - 004 - Student | Reading sections in the footer link to the respective section in the reference book
     @pytest.mark.skipif(str(8187) not in TESTS, reason='Excluded')  # NOQA
@@ -162,7 +175,7 @@ class TestEpicName(unittest.TestCase):
 
         Expected Result:
         The user is presented with that reading section in the reference book
-        """
+        
         self.ps.test_updates['name'] = 't1.28.004' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -176,6 +189,8 @@ class TestEpicName(unittest.TestCase):
         # Test steps and verification assertions
 
         self.ps.test_updates['passed'] = True
+        """
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
     # Case C8188 - 005 - Student | Click the Continue button in the footer to go to the next reading section
     @pytest.mark.skipif(str(8188) not in TESTS, reason='Excluded')  # NOQA
@@ -188,7 +203,7 @@ class TestEpicName(unittest.TestCase):
 
         Expected Result:
         The user is presented with the next reading section
-        """
+        
         self.ps.test_updates['name'] = 't1.28.005' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -202,6 +217,8 @@ class TestEpicName(unittest.TestCase):
         # Test steps and verification assertions
 
         self.ps.test_updates['passed'] = True
+        """
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
     # Case C8189 - 006 - Student | If a card has a assessment free response textbox, inputting a free response activates the Answer button
     @pytest.mark.skipif(str(8189) not in TESTS, reason='Excluded')  # NOQA
@@ -227,6 +244,69 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Dec 31, 8:54am'):
+                assignment.click()
+                break
+
+        name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
+
+        assert('December Reading' in name.text), \
+            'Not viewing the reading'
+
+        #self.student.driver.find_elements_by_link_text('')[3].click()
+        while (1):
+            while ('arrow right' in self.student.driver.page_source):
+                self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()
+            #self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()
+            #self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()
+            
+            # multiple choice case
+            if('exercise-multiple-choice' in self.student.driver.page_source):
+                
+
+                answers = self.student.driver.find_elements(By.CLASS_NAME, 'answer-letter')
+                self.student.sleep(0.8)
+                rand = randint(0, len(answers) - 1)
+                answer = chr(ord('a') + rand)
+                #print('Selecting %s' % answer)
+                Assignment.scroll_to(self.student.driver, answers[0])
+                if answer == 'a':
+                    self.student.driver.execute_script('window.scrollBy(0, -160);')
+                elif answer == 'd':
+                    self.student.driver.execute_script('window.scrollBy(0, 160);')
+                answers[rand].click()
+
+
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+                self.student.sleep(5)
+                assert('question-feedback bottom' in self.student.driver.page_source), \
+                    'Did not submit MC'
+
+
+            # free response case
+            elif('textarea' in self.student.driver.page_source):
+                self.student.find(By.TAG_NAME, 'textarea').send_keys('An answer for this textarea')
+                self.student.sleep(2)
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                )
+                self.student.sleep(3)
+                break
+
+        
+
 
         self.ps.test_updates['passed'] = True
 
@@ -255,6 +335,69 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Dec 31, 8:54am'):
+                assignment.click()
+                break
+
+        name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
+
+        assert('December Reading' in name.text), \
+            'Not viewing the reading'
+
+        while(1):
+            while ('arrow right' in self.student.driver.page_source):
+                self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()
+
+            # multiple choice case
+            if('exercise-multiple-choice' in self.student.driver.page_source):
+                
+
+                answers = self.student.driver.find_elements(By.CLASS_NAME, 'answer-letter')
+                self.student.sleep(0.8)
+                rand = randint(0, len(answers) - 1)
+                answer = chr(ord('a') + rand)
+                #print('Selecting %s' % answer)
+                Assignment.scroll_to(self.student.driver, answers[0])
+                if answer == 'a':
+                    self.student.driver.execute_script('window.scrollBy(0, -160);')
+                elif answer == 'd':
+                    self.student.driver.execute_script('window.scrollBy(0, 160);')
+                answers[rand].click()
+
+
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+                self.student.sleep(5)
+                assert('question-feedback bottom' in self.student.driver.page_source), \
+                    'Did not submit MC'
+
+            # free response case
+            elif('textarea' in self.student.driver.page_source):
+                self.student.find(By.TAG_NAME, 'textarea').send_keys('An answer for this textarea')
+                self.student.sleep(2)
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+
+                self.student.wait.until(
+                    expect.visibility_of_element_located(
+                        (By.CLASS_NAME, 'exercise-multiple-choice')
+                    )
+                )
+
+                self.student.sleep(2)
+                break
 
         self.ps.test_updates['passed'] = True
 
@@ -284,6 +427,68 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Dec 31, 8:54am'):
+                assignment.click()
+                break
+
+        name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
+
+        assert('December Reading' in name.text), \
+            'Not viewing the reading'
+
+        while(1):
+            while ('arrow right' in self.student.driver.page_source):
+                self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()
+
+            # multiple choice case
+            if('exercise-multiple-choice' in self.student.driver.page_source):
+                
+
+                answers = self.student.driver.find_elements(By.CLASS_NAME, 'answer-letter')
+                self.student.sleep(0.8)
+                rand = randint(0, len(answers) - 1)
+                answer = chr(ord('a') + rand)
+                #print('Selecting %s' % answer)
+                Assignment.scroll_to(self.student.driver, answers[0])
+                if answer == 'a':
+                    self.student.driver.execute_script('window.scrollBy(0, -160);')
+                elif answer == 'd':
+                    self.student.driver.execute_script('window.scrollBy(0, 160);')
+                answers[rand].click()
+
+
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                )
+                self.student.sleep(5)
+                break
+
+            # free response case
+            elif('textarea' in self.student.driver.page_source):
+                self.student.find(By.TAG_NAME, 'textarea').send_keys('An answer for this textarea')
+                self.student.sleep(2)
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+
+                self.student.wait.until(
+                    expect.visibility_of_element_located(
+                        (By.CLASS_NAME, 'exercise-multiple-choice')
+                    )
+                )
+
+                self.student.sleep(2)
+                
 
         self.ps.test_updates['passed'] = True
 
@@ -314,6 +519,71 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Dec 31, 8:54am'):
+                assignment.click()
+                break
+
+        name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
+
+        assert('December Reading' in name.text), \
+            'Not viewing the reading'
+
+        while(1):
+            while ('arrow right' in self.student.driver.page_source):
+                self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()
+
+            # multiple choice case
+            if('exercise-multiple-choice' in self.student.driver.page_source):
+                
+
+                answers = self.student.driver.find_elements(By.CLASS_NAME, 'answer-letter')
+                self.student.sleep(0.8)
+                rand = randint(0, len(answers) - 1)
+                answer = chr(ord('a') + rand)
+                #print('Selecting %s' % answer)
+                Assignment.scroll_to(self.student.driver, answers[0])
+                if answer == 'a':
+                    self.student.driver.execute_script('window.scrollBy(0, -160);')
+                elif answer == 'd':
+                    self.student.driver.execute_script('window.scrollBy(0, 160);')
+                answers[rand].click()
+
+
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+                self.student.sleep(5)
+
+                assert('question-feedback bottom' in self.student.driver.page_source), \
+                    'Did not submit MC'
+
+                break
+
+            # free response case
+            elif('textarea' in self.student.driver.page_source):
+                self.student.find(By.TAG_NAME, 'textarea').send_keys('An answer for this textarea')
+                self.student.sleep(2)
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+
+                self.student.wait.until(
+                    expect.visibility_of_element_located(
+                        (By.CLASS_NAME, 'exercise-multiple-choice')
+                    )
+                )
+
+                self.student.sleep(2)
 
         self.ps.test_updates['passed'] = True
 
@@ -344,6 +614,71 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Dec 31, 8:54am'):
+                assignment.click()
+                break
+
+        name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
+
+        assert('December Reading' in name.text), \
+            'Not viewing the reading'
+
+        while(1):
+            while ('arrow right' in self.student.driver.page_source):
+                self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()
+
+            # multiple choice case
+            if('exercise-multiple-choice' in self.student.driver.page_source):
+                
+
+                answers = self.student.driver.find_elements(By.CLASS_NAME, 'answer-letter')
+                self.student.sleep(0.8)
+                rand = randint(0, len(answers) - 1)
+                answer = chr(ord('a') + rand)
+                #print('Selecting %s' % answer)
+                Assignment.scroll_to(self.student.driver, answers[0])
+                if answer == 'a':
+                    self.student.driver.execute_script('window.scrollBy(0, -160);')
+                elif answer == 'd':
+                    self.student.driver.execute_script('window.scrollBy(0, 160);')
+                answers[rand].click()
+
+
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+                self.student.sleep(5)
+
+                assert('question-feedback bottom' in self.student.driver.page_source), \
+                    'Did not submit MC'
+                    
+                break
+
+            # free response case
+            elif('textarea' in self.student.driver.page_source):
+                self.student.find(By.TAG_NAME, 'textarea').send_keys('An answer for this textarea')
+                self.student.sleep(2)
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+
+                self.student.wait.until(
+                    expect.visibility_of_element_located(
+                        (By.CLASS_NAME, 'exercise-multiple-choice')
+                    )
+                )
+
+                self.student.sleep(2)
 
         self.ps.test_updates['passed'] = True
 
@@ -362,7 +697,7 @@ class TestEpicName(unittest.TestCase):
 
         Expected Result:
 
-        """
+        
         self.ps.test_updates['name'] = 't1.28.011' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -376,6 +711,8 @@ class TestEpicName(unittest.TestCase):
         # Test steps and verification assertions
 
         self.ps.test_updates['passed'] = True
+        """
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
     # Case C8195 - 012 - Student | If an assessment follows a Grasp Check, answering correctly activates the Continue button
     @pytest.mark.skipif(str(8195) not in TESTS, reason='Excluded')  # NOQA
@@ -531,6 +868,74 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Dec 31, 8:54am'):
+                assignment.click()
+                break
+
+        name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
+
+        assert('December Reading' in name.text), \
+            'Not viewing the reading'
+
+        while(1):
+            while ('arrow right' in self.student.driver.page_source and 'video-step' not in self.student.driver.page_source):
+                self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()
+
+            # multiple choice case
+            if('exercise-multiple-choice' in self.student.driver.page_source):
+                
+
+                answers = self.student.driver.find_elements(By.CLASS_NAME, 'answer-letter')
+                self.student.sleep(0.8)
+                rand = randint(0, len(answers) - 1)
+                answer = chr(ord('a') + rand)
+                #print('Selecting %s' % answer)
+                Assignment.scroll_to(self.student.driver, answers[0])
+                if answer == 'a':
+                    self.student.driver.execute_script('window.scrollBy(0, -160);')
+                elif answer == 'd':
+                    self.student.driver.execute_script('window.scrollBy(0, 160);')
+                answers[rand].click()
+
+
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+                self.student.sleep(5)
+
+                assert('question-feedback bottom' in self.student.driver.page_source), \
+                    'Did not submit MC'
+
+            # free response case
+            elif('textarea' in self.student.driver.page_source):
+                self.student.find(By.TAG_NAME, 'textarea').send_keys('An answer for this textarea')
+                self.student.sleep(2)
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+
+                self.student.wait.until(
+                    expect.visibility_of_element_located(
+                        (By.CLASS_NAME, 'exercise-multiple-choice')
+                    )
+                )
+
+                self.student.sleep(2)
+
+            elif('video-step' in self.student.driver.page_source):
+                self.student.find(By.TAG_NAME, "iframe").click()
+                self.student.sleep(5)
+                break
 
         self.ps.test_updates['passed'] = True
 
@@ -557,6 +962,74 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Dec 31, 8:54am'):
+                assignment.click()
+                break
+
+        name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
+
+        assert('December Reading' in name.text), \
+            'Not viewing the reading'
+
+        while(1):
+            while ('arrow right' in self.student.driver.page_source and 'Concept Coach' not in self.student.driver.page_source):
+                self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()
+
+            # multiple choice case
+            if('exercise-multiple-choice' in self.student.driver.page_source):
+                
+
+                answers = self.student.driver.find_elements(By.CLASS_NAME, 'answer-letter')
+                self.student.sleep(0.8)
+                rand = randint(0, len(answers) - 1)
+                answer = chr(ord('a') + rand)
+                #print('Selecting %s' % answer)
+                Assignment.scroll_to(self.student.driver, answers[0])
+                if answer == 'a':
+                    self.student.driver.execute_script('window.scrollBy(0, -160);')
+                elif answer == 'd':
+                    self.student.driver.execute_script('window.scrollBy(0, 160);')
+                answers[rand].click()
+
+
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+                self.student.sleep(5)
+
+                assert('question-feedback bottom' in self.student.driver.page_source), \
+                    'Did not submit MC'
+
+            # free response case
+            elif('textarea' in self.student.driver.page_source):
+                self.student.find(By.TAG_NAME, 'textarea').send_keys('An answer for this textarea')
+                self.student.sleep(2)
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+
+                self.student.wait.until(
+                    expect.visibility_of_element_located(
+                        (By.CLASS_NAME, 'exercise-multiple-choice')
+                    )
+                )
+
+                self.student.sleep(2)
+
+            # Reached Concept Coach card
+            elif('Concept Coach' in self.student.driver.page_source and 'spacer-step' in self.student.driver.page_source):
+                self.student.sleep(5)
+                break
 
         self.ps.test_updates['passed'] = True
 
@@ -583,7 +1056,89 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
 
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Dec 31, 8:54am'):
+                assignment.click()
+                break
+
+        name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
+
+        assert('December Reading' in name.text), \
+            'Not viewing the reading'
+
+        flag = False
+
+        while(1):
+            while ('arrow right' in self.student.driver.page_source):
+                if 'openstax-step-group-label' in self.student.driver.page_source:
+                    if self.student.find(By.CLASS_NAME, 'openstax-step-group-label').text == 'Review':
+                        flag = True
+                        break
+                self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()
+
+            if flag:
+                break
+
+            # multiple choice case
+            if('exercise-multiple-choice' in self.student.driver.page_source):
+
+                if 'openstax-step-group-label' in self.student.driver.page_source:
+                    if self.student.find(By.CLASS_NAME, 'openstax-step-group-label').text == 'Review':
+                        break
+
+                answers = self.student.driver.find_elements(By.CLASS_NAME, 'answer-letter')
+                self.student.sleep(0.8)
+                rand = randint(0, len(answers) - 1)
+                answer = chr(ord('a') + rand)
+                #print('Selecting %s' % answer)
+                Assignment.scroll_to(self.student.driver, answers[0])
+                if answer == 'a':
+                    self.student.driver.execute_script('window.scrollBy(0, -160);')
+                elif answer == 'd':
+                    self.student.driver.execute_script('window.scrollBy(0, 160);')
+                answers[rand].click()
+
+
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+                self.student.sleep(5)
+
+                assert('question-feedback bottom' in self.student.driver.page_source), \
+                    'Did not submit MC'
+
+            # free response case
+            elif('textarea' in self.student.driver.page_source):
+
+                if 'openstax-step-group-label' in self.student.driver.page_source:
+                    if self.student.find(By.CLASS_NAME, 'openstax-step-group-label').text == 'Review':
+                        break
+
+                self.student.find(By.TAG_NAME, 'textarea').send_keys('An answer for this textarea')
+                self.student.sleep(2)
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+
+                self.student.wait.until(
+                    expect.visibility_of_element_located(
+                        (By.CLASS_NAME, 'exercise-multiple-choice')
+                    )
+                )
+
+                self.student.sleep(2)
+
+
+        self.student.sleep(5)
         self.ps.test_updates['passed'] = True
 
     # Case C8202 - 019 - Student | A reading may have a Personalized assessment
@@ -608,8 +1163,89 @@ class TestEpicName(unittest.TestCase):
         ]
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
+        # Test steps and verification assertionsself.student.select_course(appearance='physics')
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
 
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Dec 31, 8:54am'):
+                assignment.click()
+                break
+
+        name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
+
+        assert('December Reading' in name.text), \
+            'Not viewing the reading'
+
+        flag = False
+
+        while(1):
+            while ('arrow right' in self.student.driver.page_source):
+                if 'openstax-step-group-label' in self.student.driver.page_source:
+                    if self.student.find(By.CLASS_NAME, 'openstax-step-group-label').text == 'Personalized':
+                        flag = True
+                        break
+                self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()
+
+            if flag:
+                break
+
+            # multiple choice case
+            if('exercise-multiple-choice' in self.student.driver.page_source):
+
+                if 'openstax-step-group-label' in self.student.driver.page_source:
+                    if self.student.find(By.CLASS_NAME, 'openstax-step-group-label').text == 'Personalized':
+                        break
+
+                answers = self.student.driver.find_elements(By.CLASS_NAME, 'answer-letter')
+                self.student.sleep(0.8)
+                rand = randint(0, len(answers) - 1)
+                answer = chr(ord('a') + rand)
+                #print('Selecting %s' % answer)
+                Assignment.scroll_to(self.student.driver, answers[0])
+                if answer == 'a':
+                    self.student.driver.execute_script('window.scrollBy(0, -160);')
+                elif answer == 'd':
+                    self.student.driver.execute_script('window.scrollBy(0, 160);')
+                answers[rand].click()
+
+
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+                self.student.sleep(5)
+
+                assert('question-feedback bottom' in self.student.driver.page_source), \
+                    'Did not submit MC'
+
+            # free response case
+            elif('textarea' in self.student.driver.page_source):
+
+                if 'openstax-step-group-label' in self.student.driver.page_source:
+                    if self.student.find(By.CLASS_NAME, 'openstax-step-group-label').text == 'Personalized':
+                        break
+
+                self.student.find(By.TAG_NAME, 'textarea').send_keys('An answer for this textarea')
+                self.student.sleep(2)
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+
+                self.student.wait.until(
+                    expect.visibility_of_element_located(
+                        (By.CLASS_NAME, 'exercise-multiple-choice')
+                    )
+                )
+
+                self.student.sleep(2)
+
+        self.student.sleep(2)
         self.ps.test_updates['passed'] = True
 
     # Case C8203 - 020 - Student | View the completion report and click the Back To Dashboard button to return to the dashboard
@@ -624,7 +1260,7 @@ class TestEpicName(unittest.TestCase):
 
         Expected Result:
         The user views the completion report and return to the dashboard
-        
+        """
         self.ps.test_updates['name'] = 't1.28.020' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -636,10 +1272,85 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Dec 31, 8:54am'):
+                assignment.click()
+                break
+
+        name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
+
+        assert('December Reading' in name.text), \
+            'Not viewing the reading'
+
+        while(1):
+            while ('arrow right' in self.student.driver.page_source):
+                self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()
+
+            # multiple choice case
+            if('exercise-multiple-choice' in self.student.driver.page_source):
+
+                answers = self.student.driver.find_elements(By.CLASS_NAME, 'answer-letter')
+                self.student.sleep(0.8)
+                rand = randint(0, len(answers) - 1)
+                answer = chr(ord('a') + rand)
+                #print('Selecting %s' % answer)
+                Assignment.scroll_to(self.student.driver, answers[0])
+                if answer == 'a':
+                    self.student.driver.execute_script('window.scrollBy(0, -160);')
+                elif answer == 'd':
+                    self.student.driver.execute_script('window.scrollBy(0, 160);')
+                answers[rand].click()
+
+
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+                self.student.sleep(5)
+
+                assert('question-feedback bottom' in self.student.driver.page_source), \
+                    'Did not submit MC'
+
+            # free response case
+            elif('textarea' in self.student.driver.page_source):
+
+                self.student.find(By.TAG_NAME, 'textarea').send_keys('An answer for this textarea')
+                self.student.sleep(2)
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+
+                self.student.wait.until(
+                    expect.visibility_of_element_located(
+                        (By.CLASS_NAME, 'exercise-multiple-choice')
+                    )
+                )
+
+                self.student.sleep(2)
+
+            # Reached the end of the reading assignment
+            elif('task task-completed' in self.student.driver.page_source):
+                self.student.sleep(2)
+
+                # May need to change 'to' to 'To'
+                self.student.find(By.LINK_TEXT, 'Back To Dashboard').click()
+                assert('list' in self.student.current_url()), \
+                        'Not at the dashboard'
+
+                self.student.sleep(2)
+                break
 
         self.ps.test_updates['passed'] = True
-        """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        
+        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
     # Case C8204 - 021 - Student | A completed reading should show You are done. in the completion report
     @pytest.mark.skipif(str(8204) not in TESTS, reason='Excluded')  # NOQA
@@ -665,6 +1376,82 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Dec 31, 8:54am'):
+                assignment.click()
+                break
+
+        name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
+
+        assert('December Reading' in name.text), \
+            'Not viewing the reading'
+
+        while(1):
+            while ('arrow right' in self.student.driver.page_source):
+                self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()
+
+            # multiple choice case
+            if('exercise-multiple-choice' in self.student.driver.page_source):
+
+                answers = self.student.driver.find_elements(By.CLASS_NAME, 'answer-letter')
+                self.student.sleep(0.8)
+                rand = randint(0, len(answers) - 1)
+                answer = chr(ord('a') + rand)
+                #print('Selecting %s' % answer)
+                Assignment.scroll_to(self.student.driver, answers[0])
+                if answer == 'a':
+                    self.student.driver.execute_script('window.scrollBy(0, -160);')
+                elif answer == 'd':
+                    self.student.driver.execute_script('window.scrollBy(0, 160);')
+                answers[rand].click()
+
+
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+                self.student.sleep(5)
+
+                assert('question-feedback bottom' in self.student.driver.page_source), \
+                    'Did not submit MC'
+
+            # free response case
+            elif('textarea' in self.student.driver.page_source):
+
+                self.student.find(By.TAG_NAME, 'textarea').send_keys('An answer for this textarea')
+                self.student.sleep(2)
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                    )
+                ).click()
+
+                self.student.wait.until(
+                    expect.visibility_of_element_located(
+                        (By.CLASS_NAME, 'exercise-multiple-choice')
+                    )
+                )
+
+                self.student.sleep(2)
+
+            # Reached the end of the reading assignment
+            elif('task task-completed' in self.student.driver.page_source):
+                self.student.sleep(2)
+
+                done = self.student.find(By.TAG_NAME, 'h1')
+                steps = self.student.find(By.TAG_NAME, 'h3')
+
+                assert(done.text == 'You are done.' and steps.text == 'Great job completing all the steps.'), \
+                        'Not viewing the completion page'
+
+                self.student.sleep(2)
+                break
 
         self.ps.test_updates['passed'] = True
 

@@ -31,10 +31,11 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8285])  # NOQA
+    str([8286])  # NOQA
 )
 
 # 8281, 8282, 8283, 8284, 8285, 8286
+# 8286
 
 @PastaDecorator.on_platforms(BROWSERS)
 class TestEpicName(unittest.TestCase):
@@ -344,5 +345,46 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
 
-        self.ps.test_updates['passed'] = True
+        assignments = self.student.driver.find_elements_by_tag_name("time")
+        for assignment in assignments:
+            if (assignment.text == 'Jun 05, 2:34am'):
+                assignment.click()
+                break
+
+        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+            'Not viewing assignment page'
+
+        link = self.student.driver.find_element_by_link_text('due in a long time')
+        original = self.student.current_url()
+        page = link.get_attribute("href")
+        self.student.driver.get(link.get_attribute("href"))
+
+
+        assert('google' in self.student.current_url()), \
+            'Not viewing assignment link'
+
+        self.student.sleep(5)
+        self.student.driver.get(original)
+
+        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+            'Not viewing assignment page'
+        
+        self.student.find(By.LINK_TEXT, 'Back To Dashboard').click()
+
+        assert('list' in self.student.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        externals = self.student.driver.find_elements_by_xpath("//div[@class = 'task row external workable']")
+        flag = False
+
+        for assignment in externals:
+            if assignment.text.find("Clicked") >= 0 and assignment.text.find("Jun 05, 2:34am") >= 0:
+                flag = True
+                break
+
+        if flag:
+            self.ps.test_updates['passed'] = True
