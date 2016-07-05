@@ -29,7 +29,12 @@ def load_pdf_page(filepath, page_number):
 def generate_tests(settings):
     """create parameterized tests"""
     test_cases = unittest.TestSuite()
-    cases = import_module("inspection."+settings['cases'])
+    try:
+        cases = import_module("inspection."+settings['cases'])
+    except ImportError: 
+        cases = import_module(settings['cases'])
+    except ImportError:
+        raise RuntimeError("module {} not found".format(settings['cases']))
     pdf_a_im = pyPdf.PdfFileReader(file(settings['pdf_a'], "rb"))
     total_a_pages = pdf_a_im.getNumPages()
     pdf_b_im = pyPdf.PdfFileReader(file(settings['pdf_b'], "rb"))
@@ -60,7 +65,7 @@ def case_key_from_id(ident):
 
 def generate_info_matrix(tests, results):
 
-    cases = set([ test.id().split('(')[0] for test in tests])
+    cases = set([ case_key_from_id(test.id()) for test in tests])
     pages_a = set([test.page_i for test in tests])
     pages_b = set([test.page_j for test in tests])
 
