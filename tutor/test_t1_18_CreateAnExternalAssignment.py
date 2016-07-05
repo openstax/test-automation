@@ -47,12 +47,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
-            use_env_vars=True#,
+            username = 'teacher01',
+            password = 'password',
+            site = 'http://tutor-staging.openstax.org'
+            #use_env_vars=True#,
             #pasta_user=self.ps,
             #capabilities=self.desired_capabilities
         )
         self.teacher.login()
-        self.teacher.select_course(appearance='physics')
+        self.teacher.select_course(appearance='biology')
 
     def tearDown(self):
         """Test destructor."""
@@ -107,8 +110,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             '[contains(@class,"form-control")]'). \
             send_keys('external assignemnt description')
         today = datetime.date.today()
-        opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        opens_on = (today + datetime.timedelta(days=10)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=13)).strftime('%m/%d/%Y')
         assignment.assign_periods(self.teacher.driver, {'all':(opens_on,closes_on)})
         self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
         self.teacher.driver.find_element(
@@ -325,8 +328,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,'//div[contains(@class,"tasking-plan")]')
         today = datetime.date.today()
         for x in range(len(periods)):
-            opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-            closes_on = (today + datetime.timedelta(days=(2))).strftime('%m/%d/%Y')
+            opens_on = (today + datetime.timedelta(days=5)).strftime('%m/%d/%Y')
+            closes_on = (today + datetime.timedelta(days=(66))).strftime('%m/%d/%Y')
             element = self.teacher.driver.find_element(
                 By.XPATH, '//div[contains(@class,"tasking-plan")'\
                 'and contains(@data-reactid,":'+str(x+1)+'")]'\
@@ -348,8 +351,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                     month = 1
                     year += 1
             self.teacher.driver.find_element(
-                By.XPATH, '//div[contains(@class,"datepicker__day")'\
-                'and contains(text(),"'+ (closes_on[3:5]) +'")]').click()
+                By.XPATH, '//div[contains(@class,"datepicker__day") '\
+                'and contains(text(),"'+ (closes_on[3:5]).lstrip('0') +'")]').click()
             time.sleep(0.5)
             #self.teacher.driver.find_element(By.CLASS_NAME, 'assign-to-label').click()
             self.teacher.driver.find_element(
@@ -370,7 +373,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                     year += 1
             self.teacher.driver.find_element(
                 By.XPATH, '//div[contains(@class,"datepicker__day")'\
-                'and contains(text(),"'+ (opens_on[3:5]) +'")]').click()
+                'and contains(text(),"'+ (opens_on[3:5]).lstrip('0') +'")]').click()
             time.sleep(0.5)
             #self.teacher.driver.find_element(By.CLASS_NAME, 'assign-to-label').click()
         self.teacher.driver.find_element(By.ID, 'external-url').send_keys('website.com')
@@ -505,9 +508,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #                                      'url' : 'website.com',
     #                                      'status' : 'publish'
     #                                  })
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
     #     self.teacher.driver.find_element(
     #         By.XPATH,'//button[contains(@class,"-publish")]').click()
     #     try:
@@ -736,9 +746,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #                                      'status' : 'draft'
     #                                  })
     #     # click on draft
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
     #     #cancel editing the draft
     #     time.sleep(1)
     #     wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
@@ -786,9 +803,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #                                      'status' : 'draft'
     #                                  })
     #     # click on draft
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
     #     # edit draft then cancel
     #     time.sleep(1)
     #     wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
@@ -846,9 +870,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #                                      'status' : 'draft'
     #                                  })
     #     # click on draft
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
     #     # cancel editing the draft
     #     wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
     #     wait.until(
@@ -894,9 +925,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #                                      'status' : 'draft'
     #                                  })
     #     # click on draft
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
     #     # make change and cancel editing
     #     wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
     #     wait.until(
@@ -1032,9 +1070,17 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #                                      'status' : 'publish'
     #                                  })
     #     #click on the unopened assignment
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     # edit the assignemnt
     #     self.teacher.driver.find_element(
     #         By.XPATH,'//a[contains(@class,"edit-assignment")]')
     #     wait = WebDriverWait(driver, Assignment.WAIT_TIME)
@@ -1090,9 +1136,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #                                      'status' : 'publish'
     #                                  })
     #     #click in the open assignment
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
     #     self.teacher.driver.find_element(
     #         By.XPATH,'//a[contains(@class,"edit-assignment")]')
     #     wait = WebDriverWait(driver, Assignment.WAIT_TIME)
@@ -1146,10 +1199,17 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #                                      'url' : 'website.com',
     #                                      'status' : 'draft'
     #                                  })
-    #     #click in the open assignment
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     #click on the open assignment
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
     #     wait = WebDriverWait(driver, Assignment.WAIT_TIME)
     #     wait.until(
     #         expect.visibility_of_element_located(
@@ -1226,9 +1286,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #                                      'status' : 'draft'
     #                                  })
     #     #click in the open assignment
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
     #     wait = WebDriverWait(driver, Assignment.WAIT_TIME)
     #     wait.until(
     #         expect.element_to_be_clickable(
@@ -1280,9 +1347,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #                                      'status' : 'publish'
     #                                  })
     #     #click in the open assignment
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
     #     self.teacher.driver.find_element(
     #         By.XPATH,'//a[contains(@class,"edit-assignment")]')
     #     wait = WebDriverWait(driver, Assignment.WAIT_TIME)
@@ -1357,10 +1431,17 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #                                      'url' : 'website.com',
     #                                      'status' : 'draft'
     #                                  })
-    #     #click in the open assignment
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     #click on the open assignment
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
     #     wait = WebDriverWait(driver, Assignment.WAIT_TIME)
     #     wait.until(
     #         expect.element_to_be_clickable(
@@ -1416,9 +1497,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #                                      'status' : 'publish'
     #                                  })
     #     #click in the open assignment
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
     #     self.teacher.driver.find_element(
     #         By.XPATH,'//a[contains(@class,"edit-assignment")]')
     #     wait = WebDriverWait(driver, Assignment.WAIT_TIME)
@@ -1500,9 +1588,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #                                      'status' : 'draft'
     #                                  })
     #     #click in the open assignment
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
     #     wait = WebDriverWait(driver, Assignment.WAIT_TIME)
     #     wait.until(
     #         expect.element_to_be_clickable(
@@ -1592,9 +1687,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #                                      'status' : 'publish'
     #                                  })
     #     #click in the open assignment
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
     #     #edit draft
     #     assignemnt = Assignemnt()
     #     time.sleep(1)
@@ -1666,9 +1768,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #                                      'status' : 'draft'
     #                                  })
     #     #click in the open assignment
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
     #     #edit draft
     #     assignemnt = Assignemnt()
     #     time.sleep(1)
@@ -1738,9 +1847,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     #                                      'status' : 'publish'
     #                                  })
     #     #click in the open assignment
-    #     self.teacher.driver.find_element(
-    #         By.XPATH,'//a[contains(@href,"external")]'\
-    #         '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     try:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
+    #     except:
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[@class="calendar-header-control-next"]').click()
+    #         self.teacher.driver.find_element(
+    #             By.XPATH,'//a[contains(@href,"external")]'\
+    #             '//label[contains(@data-title,"'+assignment_name+'")]').click()
     #     #edit draft
     #     assignemnt = Assignemnt()
     #     time.sleep(1)
