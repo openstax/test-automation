@@ -3,7 +3,7 @@ import subprocess
 import inspection
 import contextlib
 import os
-
+from utils import working_directory
 @contextlib.contextmanager
 def capture():
     import sys
@@ -21,12 +21,13 @@ def capture():
 class Core(unittest.TestCase):
 
     def target(self, run):
-        command = run.split()
-        with capture() as output:
-            command[-1] = os.path.join("inspection/data/test",command[-1])
-            command[-2] = os.path.join("inspection/data/test",command[-2])
-            command.insert(0,'--debug')
-            inspection.main(command)
+        with working_directory(os.path.dirname(os.path.realpath(__file__))):
+            command = run.split()
+            with capture() as output:
+                command[-1] = os.path.join("data/test",command[-1])
+                command[-2] = os.path.join("data/test",command[-2])
+                command.insert(0,'--debug')
+                inspection.main(command)
         result = eval(output[0])
         return result
 
