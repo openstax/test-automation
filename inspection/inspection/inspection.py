@@ -82,6 +82,11 @@ def main(argv=None):
     if not os.path.isabs(settings['pdf_b']):
         settings['pdf_b'] = os.path.abspath(settings['pdf_b'])
 
+    if settings['debug']:
+        f = sys.stderr
+    else:
+        f = open(os.devnull, 'w')
+
     test_results = []
 
     with working_directory(os.path.dirname(os.path.realpath(__file__))):     
@@ -117,8 +122,9 @@ def main(argv=None):
                         page_i = start
                         page_j = start
                         value = 'p'
-                        test_results.append((case_name,page_i,page_j,value))
                         start += 1
+                        test_results.append((case_name,page_i,page_j,value))
+                        f.write("{0} ... ok\n".format(test.id()))
                     else:
                         break
                 # trim off the matching items at the end
@@ -134,6 +140,7 @@ def main(argv=None):
                         test_results.append((case_name,page_i,page_j,value))
                         m_end -=1
                         n_end -=1
+                        f.write("{0} ... ok\n".format(test.id()))
                     else:
                         break
                 # only loop over the items that have changed
@@ -145,12 +152,17 @@ def main(argv=None):
                         case_name = test.case_key_from_id()
                         if result.wasSuccessful():
                             value = 'p'
+                            f.write("{0} ... ok\n".format(test.id()))
                         elif result.failures:
                             value = 'f'
+                            f.write("{0} ... FAIL\n".format(test.id()))
                         elif result.skipped:
                             value = 's'
+                            f.write("{0} ... skip\n".format(test.id()))
                         elif result.error:
                             value = 'e'
+                            f.write("{0} ... ERROR\n".format(test.id()))
+
                         else:
                             raise RuntimeError("result not recognized")
                         test_results.append((case_name,page_i,page_j,value))
