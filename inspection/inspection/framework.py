@@ -38,27 +38,3 @@ class PDFCV(unittest.TestCase):
         self.threshold = None
         self.measure = None
 
-    def tearDown(self):
-        sys_info = sys.exc_info()
-        result = None
-        test_info = {}
-        if sys_info == (None, None, None):
-            result = "pass"
-        elif isinstance(sys_info[1], exceptions.AssertionError):
-            result = "fail"
-        elif isinstance(sys_info[1], unittest.case.SkipTest):
-            result = "skip"
-        else:
-            result = "error"
-
-        test_info['result'] = result
-        test_info['page_i'] = self.page_i
-        test_info['page_j'] = self.page_j
-        test_info['test'] = self.methodName
-        test_info['case'] = self._casename
-        test_info['threshold'] = self.threshold
-        test_info['measure'] = self.measure
-
-    @classmethod
-    def tearDownClass(self):
-        pass
