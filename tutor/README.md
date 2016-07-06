@@ -2,305 +2,54 @@ Tutor Automation Project
 ========================
 Status:
 -------
-<table>
-    <tr>
-        <td><strong>Done</strong></td>
-        <td><strong>Epic</strong></td>
-        <td><strongEpic Title</strong></td>
-        <td><strong>Notes</strong></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked=""  /></td>
-        <td>CC1.05</td>
-        <td>CNX Navigation</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>CC1.06</td>
-        <td>Concept Coach Widget Mechanics and Infrastructure</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>CC1.07</td>
-        <td>Student Registration, Enrollment, Login and Authentication</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>CC1.08</td>
-        <td>Students Work Assignments</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>CC1.09</td>
-        <td>Student Progress Views</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>CC1.10</td>
-        <td>Admin and Teacher Course Setup</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>CC1.11</td>
-        <td>Teacher Login and Authentication</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>CC1.12</td>
-        <td>Delivering Assignments</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>CC1.13</td>
-        <td>Teacher Views</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>CC1.14</td>
-        <td>Training and Supporting Teachers and Students</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>CC1.15</td>
-        <td>OpenStax Metrics</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>CC2.08</td>
-        <td>Improves Scores Reporting</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>CC2.09</td>
-        <td>Improve Login, Registration, Enrollment</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>CC2.11</td>
-        <td>Improve Question Management</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>CC2.18</td>
-        <td>Guide, Monitor, Support &amp; Train Users</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T1.13</td>
-        <td>View the calendar dashboard</td>
-        <td>In progress</td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T1.14</td>
-        <td>Create a reading</td>
-        <td>In progress</td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T1.16</td>
-        <td>Create a homework</td>
-        <td>In progress</td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T1.18</td>
-        <td>Create an external assignment</td>
-        <td>In progress</td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T1.21</td>
-        <td>Create an event</td>
-        <td>In progress</td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="checked" disabled="disabled" /></td>
-        <td>T1.22</td>
-        <td>View class performance</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="checked" disabled="disabled" /></td>
-        <td>T1.23</td>
-        <td>View class scores</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T1.27</td>
-        <td>Tutor works with CNX</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T1.28</td>
-        <td>Work a reading</td>
-        <td>In progress</td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T1.34</td>
-        <td>Account management</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T1.35</td>
-        <td>Contract controls</td>
-        <td>In progress</td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T1.36</td>
-        <td>User login</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="checked" disabled="disabled" /></td>
-        <td>T1.37</td>
-        <td>Account maintenance</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="checked" disabled="disabled" /></td>
-        <td>T1.38</td>
-        <td>Choose course</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T1.42</td>
-        <td>Edit course settings and roster</td>
-        <td>In progress</td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="checked" disabled="disabled" /></td>
-        <td>T1.45</td>
-        <td>View the list dashboard</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T1.48</td>
-        <td>Work an external assignment</td>
-        <td>In progress</td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="checked" disabled="disabled" /></td>
-        <td>T1.50</td>
-        <td>View student performance</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="checked" disabled="disabled" /></td>
-        <td>T1.55</td>
-        <td>Practice</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T1.57</td>
-        <td>Course maintenance</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="checked" disabled="disabled" /></td>
-        <td>T1.58</td>
-        <td>Manage ecosystems</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T1.59</td>
-        <td>Manage districts, schools, and courses</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="checked" disabled="disabled" /></td>
-        <td>T1.68</td>
-        <td>Generate reports</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T1.71</td>
-        <td>Work a homework</td>
-        <td>In progress</td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T2.05</td>
-        <td>Analyze College Workflow</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T2.07</td>
-        <td>Improve Course Management</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T2.08</td>
-        <td>Improve Scores Reporting</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T2.09</td>
-        <td>Improve Login, Registration, Enrollment</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T2.10</td>
-        <td>Improve Assignment Management</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T2.11</td>
-        <td>Question Work: Faculty Reviews, Excludes, Edits, Creates Assignments</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T2.12</td>
-        <td>Create New Question &amp; Assignment Types</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T2.13</td>
-        <td>Simplify &amp; Improve Readings</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T2.14</td>
-        <td>Improve Practice and Forecast</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td><input type="checkbox" checked="" disabled="disabled" /></td>
-        <td>T2.18</td>
-        <td>Guide, Monitor, Support &amp; Train Users</td>
-        <td></td>
-    </tr>
-</table>
+Finished?|Epic|Epic Name|Notes
+:-------:|----|---------|-----
+ |CC1.05|CNX Navigation|
+ |CC1.06|Concept Coach Widget Mechanics and Infrastructure|
+ |CC1.07|Student Registration, Enrollment, Login and Authentication|
+ |CC1.08|Students Work Assignments|
+ |CC1.09|Student Progress Views|
+ |CC1.10|Admin and Teacher Course Setup|
+ |CC1.11|Teacher Login and Authentication|
+ |CC1.12|Delivering Assignments|
+ |CC1.13|Teacher Views|
+ |CC1.14|Training and Supporting Teachers and Students|
+ |CC1.15|OpenStax Metrics|
+ |CC2.08|Improves Scores Reporting|
+ |CC2.09|Improve Login, Registration, Enrollment|
+ |CC2.11|Improve Question Management|
+ |CC2.18|Guide, Monitor, Support &amp; Train Users|
+ |T1.13|View the calendar dashboard|In progress
+ |T1.14|Create a reading|In progress
+ |T1.16|Create a homework|In progress
+ |T1.18|Create an external assignment|In progress
+ |T1.21|Create an event|In progress
+&#x2611;|T1.22|View class performance|
+&#x2611;|T1.23|View class scores|
+ |T1.27|Tutor works with CNX|
+ |T1.28|Work a reading|In progress
+ |T1.34|Account management|
+ |T1.35|Contract controls|In progress
+ |T1.36|User login|
+&#x2611;|T1.37|Account maintenance|
+&#x2611;|T1.38|Choose course|
+ |T1.42|Edit course settings and roster|In progress
+&#x2611;|T1.45|View the list dashboard|
+ |T1.48|Work an external assignment|In progress
+&#x2611;|T1.50|View student performance|
+&#x2611;|T1.55|Practice|
+ |T1.57|Course maintenance|
+&#x2611;|T1.58|Manage ecosystems|
+ |T1.59|Manage districts, schools, and courses|
+&#x2611;|T1.68|Generate reports|
+ |T1.71|Work a homework|In progress
+ |T2.05|Analyze College Workflow|
+ |T2.07|Improve Course Management|
+ |T2.08|Improve Scores Reporting|
+ |T2.09|Improve Login, Registration, Enrollment|
+ |T2.10|Improve Assignment Management|
+ |T2.11|Question Work: Faculty Reviews, Excludes, Edits, Creates Assignments|
+ |T2.12|Create New Question &amp; Assignment Types|
+ |T2.13|Simplify &amp; Improve Readings|
+ |T2.14|Improve Practice and Forecast|
+ |T2.18|Guide, Monitor, Support &amp; Train Users|
