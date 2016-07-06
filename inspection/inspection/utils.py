@@ -173,18 +173,17 @@ def backtrack(length_matrix, comp_matrix, i, j, accumulator=[]):
                 continue
         break
 
-def lcs_images(tests, results, require='ANY'):
-    info_matrix = generate_info_matrix(tests, results)
-    comp_matrix = generate_comp_matrix(info_matrix, require)
+def lcs_images( results_matrix, require='ANY'):
+
+    comp_matrix = generate_comp_matrix(results_matrix, require)
     length_matrix = lcs_length(comp_matrix)
     (M, N) = length_matrix.shape
     lcs = backtrack(length_matrix, comp_matrix, M - 1, N - 1)
     lcs.reverse()
     return lcs
 
-def diff_images(tests, results, require='ANY'):
-    info_matrix = generate_info_matrix(tests, results)
-    comp_matrix = generate_comp_matrix(info_matrix, require)
+def diff_images(results_matrix,erequire='ANY'):
+    comp_matrix = generate_comp_matrix(results_matrix, require)
     length_matrix = lcs_length(comp_matrix)
     (M, N) = length_matrix.shape
     diff = printDiff(length_matrix, comp_matrix, M - 1, N - 1)

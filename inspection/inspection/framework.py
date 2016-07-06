@@ -37,4 +37,6 @@ class PDFCV(unittest.TestCase):
             self._settings['pdf_b'], self.page_j - 1)
         self.threshold = None
         self.measure = None
+    def case_key_from_id(self):
+        return self.id().split('(')[0]
 
