@@ -5,12 +5,13 @@ import json
 import os
 import pytest
 import unittest
+import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint  # NOQA
 from selenium.webdriver.common.by import By
 # from selenium.webdriver.support import expected_conditions as expect
-# from staxing.assignment import Assignment
+from staxing.assignment import Assignment
 from staxing.helper import Teacher
 
 basic_test_env = json.dumps([
@@ -20,19 +21,19 @@ basic_test_env = json.dumps([
         'version': '50.0',
         'screenResolution': "1024x768",
     },
-    {
-        'platform': 'Windows 7',
-        'browserName': 'firefox',
-        'version': 'latest',
-        'screenResolution': '1024x768',
-    },
+    # {
+    #     'platform': 'Windows 7',
+    #     'browserName': 'firefox',
+    #     'version': 'latest',
+    #     'screenResolution': '1024x768',
+    # },
 ])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7978, 7980, 7981, 7982, 7983,
-         7984, 7985, 7986, 7987, 7988,
-         7989, 7990, 7991])
+    str([7978, 7879, 7980, 7981, 7982, 
+         7983, 7984, 7985, 7986, 7987,
+         7988, 7989, 7990, 7991])
 )
 
 
@@ -59,23 +60,23 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
             self.teacher.delete()
         except:
             pass
-
+        
     # Case C7978 - 001 - Teacher | View the calendar dashboard
     @pytest.mark.skipif(str(7978) not in TESTS, reason='Excluded')
     def test_teacher_view_the_calendar_dashboard(self):
         """View the calendar dashboard.
-
+        
         Steps:
         If the user has more than one course, click on a Tutor course name
-
+        
         Expected Result:
         The teacher is presented their calendar dashboard.
         """
         self.ps.test_updates['name'] = 't1.13.001' \
-            + inspect.currentframe().f_code.co_name[4:]
+                                    + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.001', '7978']
         self.ps.test_updates['passed'] = False
-    
+        
         self.teacher.select_course(appearance='physics')
         assert('calendar' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
@@ -96,7 +97,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         The teacher is presented with the student scores
         """
         self.ps.test_updates['name'] = 't1.13.002' \
-            + inspect.currentframe().f_code.co_name[4:]
+                                       + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.002', '7979']
         self.ps.test_updates['passed'] = False
         
@@ -106,7 +107,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
             'Not viewing student scores'
         
         self.ps.test_updates['passed'] = True
-
 
     # Case C7980 - 003 - Teacher | View student scores using the user menu link
     @pytest.mark.skipif(str(7980) not in TESTS, reason='Excluded')
@@ -184,6 +184,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         
         self.ps.test_updates['passed'] = True
 
+    # # code in staxing not up to date for assignment creation
     # Case C7983 - 006 - Teacher | View a reading assignment summary
     @pytest.mark.skipif(str(7983) not in TESTS, reason='Excluded')
     def test_teacher_view_a_reading_assignment_summary(self):
@@ -203,83 +204,147 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
         
         self.teacher.select_course(appearance='physics')
-        #click on a reading assignment
-        #assert(  , \
-        #    'Not viewing reading assignemnt summary'
-        
-        self.ps.test_updates['passed'] = True
-
-   # Case C7984 - 007 - Teacher | View a homework assignment summary
-    @pytest.mark.skipif(str(7984) not in TESTS, reason='Excluded')
-    def test_teacher_view_a_homework_assignment_summary(self):
-        """ View a homework assignment summary
-
-        Steps:
-        If the user has more than one course, click on a Tutor course name
-        Click on a homework assignment on the calendar
-
-        Expected Result:
-        The teacher is presented with the homework assignment summary
-        """
-        self.ps.test_updates['name'] = 't1.13.007' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.007', '7984']
-        self.ps.test_updates['passed'] = False
-        
-        self.teacher.select_course(appearance='physics')
-        #click on a homework assignment
-        #assert(  , \
-        #    'Not viewing homework assignemnt summary'
-        
-        self.ps.test_updates['passed'] = True
-
-    # Case C7985 - 008 - Teacher | View an external assignment summary
-    @pytest.mark.skipif(str(7985) not in TESTS, reason='Excluded')
-    def test_teacher_view_an_external_assignment_summary(self):
-        """ View an external assignment summary
-
-        Steps:
-        If the user has more than one course, click on a Tutor course name
-        Click on an external assignment on the calendar
-
-        Expected Result:
-        The teacher is presented with the external assignment summary
-        """
-        self.ps.test_updates['name'] = 't1.13.008' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.008', '7985']
-        self.ps.test_updates['passed'] = False
-        
-        self.teacher.select_course(appearance='physics')
-        #click on a external assignment
-        #assert(  , \
-        #    'Not viewing external assignemnt summary'
+        #create an assignemnt
+        assignment_name = 'reading-006'
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment( assignment='reading',
+                                     args={
+                                         'title' : assignment_name,
+                                         'description' : 'description',
+                                         'periods' : {'all': (begin, end)},
+                                         'reading_list' : ['ch1'],
+                                         'status' : 'publish'
+                                     })
+        #click on assignemnt
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(text(), "'+assignment_name+'")]').click()
+        #check that it opened
+        self.teacher.driver.find_element(
+            By.XPATH, '//h2[contains(text(), "'+assignment_name+'")]')
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7986 - 009 - Teacher | View an event summary
-    @pytest.mark.skipif(str(7986) not in TESTS, reason='Excluded')
-    def test_teacher_view_an_event_summary(self):
-        """ View an event summary
+    # #NOT DONE
+    # # Case C7984 - 007 - Teacher | View a homework assignment summary
+    # @pytest.mark.skipif(str(7984) not in TESTS, reason='Excluded')
+    # def test_teacher_view_a_homework_assignment_summary(self):
+    #     """ View a homework assignment summary
 
-        Steps:
-        If the user has more than one course, click on a Tutor course name
-        Click on an event on the calendar
+    #     Steps:
+    #     create a homework assignemtn
+    #     If the user has more than one course, click on a Tutor course name
+    #     Click on a homework assignment on the calendar
 
-        Expected Result:
-        The teacher is presented with the event summary
-        """
-        self.ps.test_updates['name'] = 't1.13.009' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.009', '7986']
-        self.ps.test_updates['passed'] = False
+    #     Expected Result:
+    #     The teacher is presented with the homework assignment summary
+    #     """
+    #     self.ps.test_updates['name'] = 't1.13.007' \
+    #         + inspect.currentframe().f_code.co_name[4:]
+    #     self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.007', '7984']
+    #     self.ps.test_updates['passed'] = False
         
-        self.teacher.select_course(appearance='physics')
-        #click on an event
-        #assert(  , \
-        #    'Not viewing event summary'
+    #     self.teacher.select_course(appearance='physics')
+    #     #create an assignment
+    #     assignemnt_name = "hw007"
+    #     today = datetime.date.today()
+    #     begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+    #     closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+    #     self.teacher.add_assignment( assignment='homework',
+    #                                  args={
+    #                                      'title' : assignment_name,
+    #                                      'description' : 'description',
+    #                                      'periods' : {'all': (begin, end)},
+    #                                      'problems' : {'4.1': (4, 8),}
+    #                                      'status' : 'publish'
+    #                                  })
+    #     #click on assignemnt
+    #     self.teacher.driver.find_element(
+    #         By.XPATH, '//div[contains(text(), "'+assignemnt_name+'")]').click() ##should it be label not div
+    #     #check that it opened
+    #     self.teacher.driver.find_element(
+    #         By.XPATH, '//h2[contains(text(), "'+assignemnt_name+'")]')
+    #     self.ps.test_updates['passed'] = True
 
-        self.ps.test_updates['passed'] = True
+    # #NOT DONE
+    # # Case C7985 - 008 - Teacher | View an external assignment summary
+    # @pytest.mark.skipif(str(7985) not in TESTS, reason='Excluded')
+    # def test_teacher_view_an_external_assignment_summary(self):
+    #     """ View an external assignment summary
+
+    #     Steps:
+    #     If the user has more than one course, click on a Tutor course name
+    #     Click on an external assignment on the calendar
+
+    #     Expected Result:
+    #     The teacher is presented with the external assignment summary
+    #     """
+    #     self.ps.test_updates['name'] = 't1.13.008' \
+    #         + inspect.currentframe().f_code.co_name[4:]
+    #     self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.008', '7985']
+    #     self.ps.test_updates['passed'] = False
+        
+    #     #create an assignemnt
+    #     assignment_name = 'external-008'
+    #     today = datetime.date.today()
+    #     begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+    #     end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+    #     self.teacher.add_assignment( assignment='external',
+    #                                  args={
+    #                                      'title' : assignment_name,
+    #                                      'description' : 'description',
+    #                                      'periods' : {'all': (begin, end)},
+    #                                      'url' : 'google.com',
+    #                                      'status' : 'publish'
+    #                                  })
+    #     #click on assignemnt
+    #     self.teacher.driver.find_element(
+    #         By.XPATH, '//div[contains(text(), "'+assignemnt_name+'")]').click() ##should it be label not div
+    #     #check that it opened
+    #     self.teacher.driver.find_element(
+    #         By.XPATH, '//h2[contains(text(), "'+assignemnt_name+'")]')
+
+    #     self.ps.test_updates['passed'] = True
+
+    # #NOT DONE
+    # # Case C7986 - 009 - Teacher | View an event summary
+    # @pytest.mark.skipif(str(7986) not in TESTS, reason='Excluded')
+    # def test_teacher_view_an_event_summary(self):
+    #     """ View an event summary
+
+    #     Steps:
+    #     If the user has more than one course, click on a Tutor course name
+    #     Click on an event on the calendar
+
+    #     Expected Result:
+    #     The teacher is presented with the event summary
+    #     """
+    #     self.ps.test_updates['name'] = 't1.13.009' \
+    #         + inspect.currentframe().f_code.co_name[4:]
+    #     self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.009', '7986']
+    #     self.ps.test_updates['passed'] = False
+
+    #     self.teacher.select_course(appearance='physics')
+    #     #create an assignment
+    #     assignemnt_name = "hw007"
+    #     today = datetime.date.today()
+    #     begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+    #     closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+    #     self.teacher.add_assignment( assignment='homework',
+    #                                  args={
+    #                                      'title' : assignment_name,
+    #                                      'description' : 'description',
+    #                                      'periods' : {'all': (begin, end)},
+    #                                      'status' : 'publish'
+    #                                  })
+    #     #click on assignemnt
+    #     self.teacher.driver.find_element(
+    #         By.XPATH, '//div[contains(text(), "'+assignemnt_name+'")]').click() ##should it be label not div
+    #     #check that it opened
+    #     self.teacher.driver.find_element(
+    #         By.XPATH, '//h2[contains(text(), "'+assignemnt_name+'")]')
+    #     self.ps.test_updates['passed'] = True
 
     # Case C7987 - 010 - Teacher | Open the refrenece book using the dashboard button
     @pytest.mark.skipif(str(7987) not in TESTS, reason='Excluded')
@@ -387,28 +452,29 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         
         self.ps.test_updates['passed'] = True
 
-    # Case C7991 - 014 - Teacher | CLick in the OpenStax logo to return to the dashboard
-    @pytest.mark.skipif(str(7991) not in TESTS, reason='Excluded')
-    def test_teacher_click_on_the_openstax_logo_to_return_to_the_dashboard(self):
-        """ 
-        CLick in the OpenStax logo to return to the dashboard
+    # #SHOULD WORK BUT DON'T KNOW HOW TO LOGIN WITH DIFFERENT TEACHER
+    # # Case C7991 - 014 - Teacher | CLick in the OpenStax logo to return to the dashboard
+    # @pytest.mark.skipif(str(7991) not in TESTS, reason='Excluded')
+    # def test_teacher_click_on_the_openstax_logo_to_return_to_the_dashboard(self):
+    #     """ 
+    #     CLick in the OpenStax logo to return to the dashboard
 
-        Steps:
-        Click on the 'Performance Forecast' button
-        Click on the OpenStax logo in the header
+    #     Steps:
+    #     Click on the 'Performance Forecast' button
+    #     Click on the OpenStax logo in the header
 
-        Expected Result:
-        The teacher is presented with their calendar dashboard
-        """
-        self.ps.test_updates['name'] = 't1.13.014' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.014', '7991']
-        self.ps.test_updates['passed'] = False
+    #     Expected Result:
+    #     The teacher is presented with their calendar dashboard
+    #     """
+    #     self.ps.test_updates['name'] = 't1.13.014' \
+    #         + inspect.currentframe().f_code.co_name[4:]
+    #     self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.014', '7991']
+    #     self.ps.test_updates['passed'] = False
         
-        self.teacher.driver.find_element(By.CLASS_NAME,'viewTeacherPerformanceForecast').click()
-        self.teacher.driver.find_element(By.CLASS_NAME,'ui-brand-logo').click()
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
+    #     self.teacher.driver.find_element(By.CLASS_NAME,'viewTeacherPerformanceForecast').click()
+    #     self.teacher.driver.find_element(By.CLASS_NAME,'ui-brand-logo').click()
+    #     assert('calendar' in self.teacher.current_url()), \
+    #         'Not viewing the calendar dashboard'
         
-        self.ps.test_updates['passed'] = True
+    #     self.ps.test_updates['passed'] = True
 
