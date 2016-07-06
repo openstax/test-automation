@@ -16,24 +16,22 @@ def main(argv=None):
 
     parser = argparse.ArgumentParser(
         description='Return a list of related pages between two pdfs.')
+
     parser.add_argument(
         '--include',
         action='append',
         default=['DefaultTest'],
         help="Include additional test classes (default=[DefaultTest])")
+
     parser.add_argument(
         '--exclude', action='append', default=[], help="Exclude test classes.")
-    parser.add_argument(
-        '--results',
-        type=str,
-        default='results.log',
-        help="Test results output file, "
-             "each line is a python dictionary (default=results.log).")
+
     parser.add_argument(
         '--cases',
         type=str,
         default='cases',
         help="Python module which stores test cases (default=cases).")
+
     parser.add_argument(
         '--check',
         type=str,
@@ -43,16 +41,19 @@ def main(argv=None):
         default='all',
         help="Require that any/all test cases pass "
              "for pages to be related (default=all).")
+
     parser.add_argument(
         '--diff',
         action='store_true',
         default=False,)
+
     parser.add_argument(
         '--window',
         type=int,
         default=None,
         help="If the absolute difference of index's of two pdf pages is"
              "greater than the window range, then pages are not related. (default = None)")
+
     parser.add_argument(
         '--debug',
         action='store_true',
@@ -66,8 +67,6 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     settings = vars(args)
-
-
 
     if not os.path.isabs(settings['pdf_a']):
         settings['pdf_a'] = os.path.join(start_dir,settings['pdf_a'])
