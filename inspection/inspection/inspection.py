@@ -109,15 +109,16 @@ def main(argv=None):
                 # stop testing beginning indexs
                 break
             else:
-               # fail other pages to reduce problem
-               fail_tests = [ t for t in test_cases if (t.page_i == test.page_i 
+                f.write(test.id() + " ... ok\n")
+                # fail other pages to reduce problem
+                fail_tests = [ t for t in test_cases if (t.page_i == test.page_i 
                                                           or t.page_j == test.page_j ) 
                                                     and t!=test]
-               for ft in fail_tests:
-                   test_info = (AssertionError, AssertionError(""), None)
-                   results.addFailure(ft,test_info)
-                   checked_tests.append(ft)
-               start_index = start_index + 1
+                for ft in fail_tests:
+                    test_info = (AssertionError, AssertionError(""), None)
+                    results.addFailure(ft,test_info)
+                    checked_tests.append(ft)
+                start_index = start_index + 1
 
 #        print("{}: test end indexs".format(case))
         end_tests = []
@@ -131,6 +132,7 @@ def main(argv=None):
             if current_total_failures<len(results.failures):
                 break
             else:
+                f.write(test.id() + " ... ok\n")
                 fail_tests = [ t for t in test_cases if (t.page_i ==test.page_i 
                                                            or t.page_j ==test.page_j )
                                                      and t!=test]
@@ -145,7 +147,19 @@ def main(argv=None):
         remaining_tests = [t for t in test_cases if t not in checked_tests]
         test_suite = unittest.TestSuite()
         test_suite.addTests(remaining_tests)
-        test_suite.run(results)
+        changed_item_results = unittest.TextTestRunner(verbosity=3,
+                                                       stream=f,
+                                                       buffer=True,
+                                                       failfast=False).run(test_suite)
+        for test, errr in changed_item_results.failures:
+            results.addFailure(test,(None,None,None))
+        for (test, err) in changed_item_results.errors:
+            results.addFailure(test,(None,None,None))
+        for (test, reason) in changed_item_results.skipped:
+            results.addError(test,reason)
+  
+#        test_suite.run(results)
+ 
 #            if test.page_i == m_end and test.page_j == n_end:
 #                end_tests.append(test)
 #    print("Test End")
