@@ -6,6 +6,18 @@ from utils import generate_tests, lcs_images, diff_images
 import sys
 import os 
 
+import unittest
+from importlib import import_module
+import inspect
+import numpy
+import pyPdf
+import PythonMagick
+import cv2
+import cv
+import numpy
+import functools
+
+
 start_dir = os.getcwd()
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -73,8 +85,9 @@ def main(argv=None):
     if not os.path.isabs(settings['pdf_b']):
         settings['pdf_b'] = os.path.join(start_dir,settings['pdf_b'])
 
-    load_tests = generate_tests(settings)
 
+
+    load_tests = generate_tests(settings)
     terminal_out = sys.stdout
 
     if settings['debug']:
@@ -96,6 +109,6 @@ def main(argv=None):
     else:
         related_page_list = lcs_images(load_tests._tests, results, settings['check'])
         print(related_page_list)
-
+    os.chdir(start_dir)
 if __name__ == "__main__":
     main()
