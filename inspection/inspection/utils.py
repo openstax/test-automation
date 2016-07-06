@@ -182,7 +182,7 @@ def lcs_images( results_matrix, require='ANY'):
     lcs.reverse()
     return lcs
 
-def diff_images(results_matrix,erequire='ANY'):
+def diff_images(results_matrix, require='ANY'):
     comp_matrix = generate_comp_matrix(results_matrix, require)
     length_matrix = lcs_length(comp_matrix)
     (M, N) = length_matrix.shape
