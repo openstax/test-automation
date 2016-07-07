@@ -29,8 +29,7 @@ def load_pdf_page(filepath, page_number):
 def generate_tests(settings):
     """create parameterized tests"""
     test_cases = unittest.TestSuite()
-    cases = import_module(settings['cases'])
-
+    cases = import_module("inspection."+settings['cases'])
     pdf_a_im = pyPdf.PdfFileReader(file(settings['pdf_a'], "rb"))
     total_a_pages = pdf_a_im.getNumPages()
     pdf_b_im = pyPdf.PdfFileReader(file(settings['pdf_b'], "rb"))
@@ -174,20 +173,24 @@ def backtrack(length_matrix, comp_matrix, i, j, accumulator=[]):
                 continue
         break
 
-def lcs_images(tests, results, require='ANY'):
-    info_matrix = generate_info_matrix(tests, results)
-    comp_matrix = generate_comp_matrix(info_matrix, require)
+def lcs_images( results_matrix, require='ANY'):
+
+    comp_matrix = generate_comp_matrix(results_matrix, require)
     length_matrix = lcs_length(comp_matrix)
     (M, N) = length_matrix.shape
     lcs = backtrack(length_matrix, comp_matrix, M - 1, N - 1)
+    lcs.reverse()
     return lcs
 
-def diff_images(tests, results, require='ANY'):
-    info_matrix = generate_info_matrix(tests, results)
-    comp_matrix = generate_comp_matrix(info_matrix, require)
+def diff_images(results_matrix, require='ANY'):
+    comp_matrix = generate_comp_matrix(results_matrix, require)
     length_matrix = lcs_length(comp_matrix)
     (M, N) = length_matrix.shape
     diff = printDiff(length_matrix, comp_matrix, M - 1, N - 1)
+    diff = diff.split('\n')
+    diff.reverse()
+    diff = '\n'.join(diff)
+    diff = diff.strip()
     return diff
 
 def printDiff(C, XY, i, j, accumulator = ''):
@@ -207,5 +210,22 @@ def printDiff(C, XY, i, j, accumulator = ''):
         break
 
 def diff_statement(diff, sign, index):
-    return "{0} \n {1} {2}".format(diff or '',sign,index)
+    return "{0}\n{1} {2}".format(diff or '',sign,index)
+
+import contextlib
+import os
+
+
+@contextlib.contextmanager
+def working_directory(path):
+    """A context manager which changes the working directory to the given
+    path, and then changes it back to its previous value on exit.
+
+    """
+    prev_cwd = os.getcwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(prev_cwd)
       
