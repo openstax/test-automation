@@ -15,7 +15,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher  # NOQA
+from staxing.helper import Teacher,Admin  # NOQA
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -26,8 +26,9 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8258, 8259, 8260, 8261, 8262, 
-         8263, 8264, 8265, 8266, 8267])  # NOQA
+    #str([8258, 8259, 8260, 8261, 8262, 
+    #     8263, 8264, 8265, 8266, 8267])  # NOQA
+    str([8263])
 )
 
 
@@ -127,8 +128,6 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         )
         self.ps.test_updates['passed'] = True
 
-    # need a way to add a second instructor who can then be droped
-    # also caused error in manual testinf
     # Case C8259 - 002 - Teacher | Remove an instructor from the course
     @pytest.mark.skipif(str(8259) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_remove_an_instructor_from_a_course(self):
@@ -141,9 +140,67 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         Expected Result:
         The instructor is removed from the Instructors list.
         """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.teacher.logout()
+        #add extra instructor through admin first
+        admin = Admin(
+            username = 'admin',
+            password = 'password',
+            site = 'https://tutor-qa.openstax.org',
+            existing_driver = self.teacher.driver
+            #pasta_user=self.ps,
+            #capabilities=self.desired_capabilities
+        )
+        admin.login()
+        admin.driver.get('https://tutor-qa.openstax.org/admin/courses/1/edit')
+        admin.page.wait_for_page_load()
+        teacher_name = 'Jennifer'
+        admin.driver.find_element(
+            By.XPATH,'//a[contains(text(),"Teachers")]').click()
+        admin.driver.find_element(
+            By.ID,'course_teacher').send_keys(teacher_name)
+        admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,'//li[contains(text(),"'+teacher_name+'")]')
+            )
+        ).click()
+        admin.sleep(1)
+        admin.driver.find_element(
+            By.LINK_TEXT,'Main Dashboard').click()
+        admin.page.wait_for_page_load()
+        admin.logout()
+        # redo set-up
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        self.teacher.open_user_menu()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Course Settings and Roster')
+            )
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        # delete teacher
+        teachers_list = self.teacher.driver.find_elements(
+            By.XPATH,'//div[@class="teachers-table"]//tbody//tr')
+        print(len(teachers_list))
+        for x in range(len(teachers_list)):
+            temp_first = self.teacher.driver.find_element(
+                By.XPATH,'//div[@class="teachers-table"]//tbody//tr['+str(x+1)+']/td').text
+            if temp_first == teacher_name:
+                self.teacher.driver.find_element(
+                    By.XPATH,'//div[@class="teachers-table"]//tbody//tr['+str(x+1)+']'\
+                    '//td//span[contains(text(),"Remove")]').click()
+                self.teacher.sleep(1)
+                self.teacher.driver.find_element(
+                    By.XPATH,'//div[@class="popover-content"]//button').click()
+                break
+        deleted_teacher = self.teacher.driver.find_elements(
+            By.XPATH,'//td[contains(text(),"'+teacher_name+'")]')
+        assert(len(deleted_teacher)==0),'teacher not deleted'
+        self.ps.test_updates['passed'] = True
 
 
+    #what does last mean? alphabetically
     # Case C8260 - 003 - Teacher | Remove the last instructor from the course
     @pytest.mark.skipif(str(8260) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_remove_the_last_instructor_from_the_course(self):
@@ -288,34 +345,54 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.teacher.driver.find_element(
             By.XPATH,'//div[contains(@class,"popover-content")]'\
             '//button[contains(@class,"archive")]').click()
-        try:
-            self.teacher.driver.find_element(
-                By.XPATH,'//a[contains(text(),"'+period_name+'")]')
-        except NoSuchElementException:
-                self.ps.test_updates['passed'] = True
+        self.teacher.sleep(2)
+        archived_period = self.teacher.driver.find_elements(
+            By.XPATH,'//a[contains(text(),"'+period_name+'")]')
+        assert(len(archived_period)==0),'period not archived'
 
-    # # how to create a non-empty period that can be used for testing archived
-    # # Case C8264 - 007 - Teacher | Archive a non-empty period 
-    # @pytest.mark.skipif(str(8264) not in TESTS, reason='Excluded')  # NOQA
-    # def test_teacher_archive_a_non_empty_period(self):
-    #     """Archive a non-empty period.
+        self.ps.test_updates['passed'] = True
 
-    #     Steps:
-    #     Click on a non-empty period 
-    #     Click "Archive Period"
-    #     Click Archive
+    # how to create a non-empty period that can be used for testing archived
+    # Case C8264 - 007 - Teacher | Archive a non-empty period 
+    @pytest.mark.skipif(str(8264) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_archive_a_non_empty_period(self):
+        """Archive a non-empty period.
 
-    #     Expected Result:
-    #     period is archived
-    #     """
-    #     self.ps.test_updates['name'] = 't1.42.007' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1','t1.42','t1.42.007','8264']
-    #     self.ps.test_updates['passed'] = False
+        Steps:
+        Click on a non-empty period 
+        Click "Archive Period"
+        Click Archive
 
-    #     # Test steps and verification assertions
+        Expected Result:
+        period is archived
+        """
+        self.ps.test_updates['name'] = 't1.42.007' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1','t1.42','t1.42.007','8264']
+        self.ps.test_updates['passed'] = False
 
-    #     self.ps.test_updates['passed'] = True
+        # Test steps and verification assertions
+        period_name = '1st'
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                ( By.XPATH,'//a[contains(text(),"'+period_name+'")]')
+            )
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH,'//a[contains(@class,"archive-period")]').click()
+        self.teacher.driver.find_element(
+            By.XPATH,'//div[contains(@class,"popover-content")]'\
+            '//button[contains(@class,"archive")]').click()
+        self.teacher.sleep(2)
+        archived_period = self.teacher.driver.find_elements(
+            By.XPATH,'//a[contains(text(),"'+period_name+'")]')
+        assert(len(archived_period)==0),'period not archived'
+        # add the section back
+        self.teacher.driver.find_element(
+            By.XPATH,'//span[contains(text(),"View Archived")]').click()
+        ####to be continued
+
+        self.ps.test_updates['passed'] = True
 
 
     # Case C8265 - 008 - Teacher | Move a student to another period
