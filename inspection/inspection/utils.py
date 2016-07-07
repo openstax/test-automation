@@ -190,6 +190,7 @@ def diff_images(results_matrix, require='ANY'):
     diff = diff.split('\n')
     diff.reverse()
     diff = '\n'.join(diff)
+    diff = diff.strip()
     return diff
 
 def printDiff(C, XY, i, j, accumulator = ''):
@@ -209,7 +210,7 @@ def printDiff(C, XY, i, j, accumulator = ''):
         break
 
 def diff_statement(diff, sign, index):
-    return "{0} \n {1} {2}".format(diff or '',sign,index)
+    return "{0}\n{1} {2}".format(diff or '',sign,index)
 
 import contextlib
 import os
