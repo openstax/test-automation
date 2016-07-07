@@ -13,6 +13,8 @@ from selenium.webdriver.support import expected_conditions as expect  # NOQA
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 from staxing.helper import Admin  # NOQA
 
@@ -25,9 +27,10 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8228, 8229, 8230, 8231,
-         8232, 8233, 8234, 8235,
-         8236, 8237, 8389])  # NOQA
+    #str([8228, 8229, 8230, 8231,
+    #     8232, 8233, 8234, 8235,
+    #     8236, 8237, 8389])  # NOQA
+    str([8235])
 )
 
 
@@ -48,6 +51,9 @@ class TestContractControls(unittest.TestCase):
             #capabilities=self.desired_capabilities
         )
         self.admin.login()
+        #admin messed up right now, goes to textbook instead of dashboard
+        #uncomment next line and comment out following 7 if admin still messed
+        #self.admin.driver.get('http://tutor-qa.openstax.org/admin')
         self.wait = WebDriverWait(self.admin.driver, 15)
         self.admin.open_user_menu()
         self.admin.wait.until(
@@ -164,77 +170,74 @@ class TestContractControls(unittest.TestCase):
         ).click()
         self.admin.driver.find_element(
             By.XPATH,'//div[contains(@class,"alert-info")]')
+        contracts = self.admin.driver.find_elements(
+            By.XPATH,'//a[contains(text(),"test_contract_title_002")]')
+        assert( len(contracts) == 0), 'contract not cancled'
+
+        self.ps.test_updates['passed'] = True
+
+    # NOT DONE
+    # Case C8230 - 003 - Admin | Publish a draft contract
+    @pytest.mark.skipif(str(8230) not in TESTS, reason='Excluded')  # NOQA
+    def test_admin_publish_a_draft_contract(self):
+        """Publish a draft contract.
+
+        Steps:
+        Click on the 'Terms' option
+        Create a draft contract and return to contract list
+        Click on the draft contract
+        Click on the Publish link
+        Click ok
+
+        Expected Result:
+        Draft contract is published
+        """
+        self.ps.test_updates['name'] = 't1.35.003' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1','t1.35','t1.35.003','8230']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.admin.wait.until(
+            expect.element_to_be_clickable(
+                ( By.XPATH,'//a[contains(text(),"Terms")]')
+            )
+        ).click()
+        self.admin.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"links")]/a[text()="New Contract"]').click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                ( By.XPATH,'//h1[text()="New Contract"]')
+            )
+        ).click()
+        self.admin.driver.find_element(
+            By.ID,'contract_name').send_keys('test_contract_name_003')
+        self.admin.driver.find_element(
+            By.ID,'contract_title').send_keys('test_contract_title_003')
+        self.admin.driver.find_element(
+            By.ID,'contract_content').send_keys('test_contract_content_003')
+        self.admin.driver.find_element(
+            By.XPATH,'//input[@value="Create contract"]').click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                ( By.XPATH,'//a[text()="List"]')
+            )
+        ).click()
+        self.admin.driver.find_element(
+            By.XPATH,
+            '//li//a[contains(text(),"test_contract_title_003")]').click()
+        self.admin.driver.find_element(
+            By.XPATH,'//a[contains(text(),"Publish")]').click()
         try:
-            self.admin.driver.find_element(
-                By.XPATH,'//a[contains(text(),"test_contract_title_002")]')
-        except NoSuchElementException:
-            self.ps.test_updates['passed'] = True
-
-    # # NOT DONE
-    # # Case C8230 - 003 - Admin | Publish a draft contract
-    # @pytest.mark.skipif(str(8230) not in TESTS, reason='Excluded')  # NOQA
-    # def test_admin_publish_a_draft_contract(self):
-    #     """Publish a draft contract.
-
-    #     Steps:
-    #     Click on the 'Terms' option
-    #     Create a draft contract and return to contract list
-    #     Click on the draft contract
-    #     Click on the Publish link
-    #     Click ok
-
-    #     Expected Result:
-    #     Draft contract is published
-    #     """
-    #     self.ps.test_updates['name'] = 't1.35.003' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1','t1.35','t1.35.003','8230']
-    #     self.ps.test_updates['passed'] = False
-
-    #     # Test steps and verification assertions
-    #     self.admin.wait.until(
-    #         expect.element_to_be_clickable(
-    #             ( By.XPATH,'//a[contains(text(),"Terms")]')
-    #         )
-    #     ).click()
-    #     self.admin.driver.find_element(
-    #         By.XPATH,
-    #         '//div[contains(@class,"links")]/a[text()="New Contract"]').click()
-    #     self.admin.wait.until(
-    #         expect.visibility_of_element_located(
-    #             ( By.XPATH,'//h1[text()="New Contract"]')
-    #         )
-    #     ).click()
-    #     self.admin.driver.find_element(
-    #         By.ID,'contract_name').send_keys('test_contract_name_003')
-    #     self.admin.driver.find_element(
-    #         By.ID,'contract_title').send_keys('test_contract_title_003')
-    #     self.admin.driver.find_element(
-    #         By.ID,'contract_content').send_keys('test_contract_content_003')
-    #     self.admin.driver.find_element(
-    #         By.XPATH,'//input[@value="Create contract"]').click()
-    #     self.admin.wait.until(
-    #         expect.visibility_of_element_located(
-    #             ( By.XPATH,'//a[text()="List"]')
-    #         )
-    #     ).click()
-    #     self.admin.driver.find_element(
-    #         By.XPATH,
-    #         '//li//a[contains(text(),"test_contract_title_003")]').click()
-    #     self.admin.driver.find_element(
-    #         By.XPATH,'//a[contains(text(),"Publish")]').click()
-    #     # don't know how to click ok in dialouge box
-    #     #if expected_consitions.alert_is_present:
-    #     #    print("Alert Exists")
-    #     #    self.admin.driver.switch_to_alert().accept()
-    #     #    print("Alert accepted")
-    #     #else:
-    #     #    print("No alert exists")
-    #     #self.admin.driver.find_element(
-    #     #    By.XPATH,
-    #     #    '//li//a[contains(text(),"test_contract_title_003")]').click()
-    #     #self.admin.driver.find_element(
-    #     #    By.XPATH,'//a[contains(text(),"Unpublish")]').click()
+            WebDriverWait(self.admin.driver, 3).until(EC.alert_is_present(),
+                                            'Timed out waiting for alert.')
+            alert = self.admin.driver.switch_to_alert()
+            alert.accept()
+            print('alert accepted')
+        except TimeoutException:
+            print('no alert')
+        self.ps.test_updates['passed'] = True
 
     # Case C8231 - 004 - Admin | Delete a draft contract
     @pytest.mark.skipif(str(8231) not in TESTS, reason='Excluded')  # NOQA
@@ -417,9 +420,10 @@ class TestContractControls(unittest.TestCase):
                 ( By.XPATH,'//a[contains(text(),"Terms")]')
             )
         ).click()
+        wait = WebDriverWait(self.admin.driver, 45)
         self.admin.driver.find_element(
             By.XPATH,'//a[text()="Signatures"]').click()
-        self.admin.wait.until(
+        wait.until(
             expect.element_to_be_clickable(
                 ( By.XPATH,'//div[contains(@class,"signature_index")]')
             )
@@ -427,41 +431,50 @@ class TestContractControls(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
 
-    # # Case C8235 - 008 - Admin | Terminate a signatory's contract
-    # @pytest.mark.skipif(str(8235) not in TESTS, reason='Excluded')  # NOQA
-    # def test_admin_terminate_a_signnatorys_contract(self):
-    #     """Terminate a signatory's contract.
+    # Case C8235 - 008 - Admin | Terminate a signatory's contract
+    @pytest.mark.skipif(str(8235) not in TESTS, reason='Excluded')  # NOQA
+    def test_admin_terminate_a_signnatorys_contract(self):
+        """Terminate a signatory's contract.
 
-    #     Steps:
-    #     Click on the 'Terms' option
-    #     Click on Signatures next to chosen draft contract
-    #     Click on Terminate next to chosen user
-    #     Click on the 'ok' button
+        Steps:
+        Click on the 'Terms' option
+        Click on Signatures next to chosen draft contract
+        Click on Terminate next to chosen user
+        Click on the 'ok' button
 
-    #     Expected Result:
-    #     Selected user's signing of contract is terminated.
-    #     """
-    #     self.ps.test_updates['name'] = 't1.35.008' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1','t1.35','t1.35.008','8235']
-    #     self.ps.test_updates['passed'] = False
+        Expected Result:
+        Selected user's signing of contract is terminated.
+        """
+        self.ps.test_updates['name'] = 't1.35.008' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1','t1.35','t1.35.008','8235']
+        self.ps.test_updates['passed'] = False
 
-    #     # Test steps and verification assertions
-    #     self.admin.wait.until(
-    #         expect.element_to_be_clickable(
-    #             ( By.XPATH,'//a[contains(text(),"Terms")]')
-    #         )
-    #     ).click()
-    #     self.admin.driver.find_element(
-    #         By.XPATH,'//a[text()="Signatures"]').click()
-    #     # is it okay to just terminate some random person's signature
-    #     self.admin.wait.until(
-    #         expect.element_to_be_clickable(
-    #             ( By.XPATH,'//td[contains(text(),"Terminate")]')
-    #         )
-    #     )
-    #     #don't know how to deal with the dialouge box
-    #     self.ps.test_updates['passed'] = True
+        # Test steps and verification assertions
+        self.admin.wait.until(
+            expect.element_to_be_clickable(
+                ( By.XPATH,'//a[contains(text(),"Terms")]')
+            )
+        ).click()
+        self.admin.driver.find_element(
+            By.XPATH,'//a[text()="Signatures"]').click()
+        # is it okay to just terminate some random person's signature
+        wait = WebDriverWait(self.admin.driver, 45)
+        wait.until(
+            expect.element_to_be_clickable(
+                ( By.XPATH,'//td//a[contains(text(),"Terminate")]')
+            )
+        ).click()
+        try:
+            WebDriverWait(self.admin.driver, 3).until(EC.alert_is_present(),
+                                            'Timed out waiting for PA creation ' +
+                                            'confirmation popup to appear.')
+            alert = self.admin.driver.switch_to_alert()
+            alert.accept()
+            print('alert accepted')
+        except TimeoutException:
+            print('no alert')        
+        self.ps.test_updates['passed'] = True
 
 
     # Case C8236 - 009 - Admin | Add a targeted contract
