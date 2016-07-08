@@ -10,10 +10,12 @@ from pastasauce import PastaSauce, PastaDecorator
 from random import randint  # NOQA
 from selenium.webdriver.common.by import By  # NOQA
 from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher  # NOQA
+from staxing.helper import Student  # NOQA
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -40,19 +42,19 @@ class TestAccountManagement(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+        self.student = Student(
+            use_env_vars=True#,
+            #pasta_user=self.ps,
+            #capabilities=self.desired_capabilities
         )
-        ###got to accounts-XXXX.openstax.org
+        self.student.driver.get("http://accounts-qa.openstax.org")
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
+        self.ps.update_job(job_id=str(self.student.driver.session_id),
                            **self.ps.test_updates)
         try:
-            self.teacher.delete()
+            self.student.delete()
         except:
             pass
 
@@ -66,12 +68,11 @@ class TestAccountManagement(unittest.TestCase):
         Click on the Sign up with password button
         Enter first name into the 'First Name' text box
         Enter last name into the 'Last Name' text box
-        Enter email into the 'Email Address' text box [in the form example@example.example]
+        Enter email into the 'Email Address' text box
         Enter username into the 'Username' text box
         Enter password into the 'Password' text box
         Renter password into the 'Confirm Password' text box
         Click the "Create Account Button"
-        ########?????click the don't save passwords stuff, is this part of test case??????????????
         Click the checkbox, and click 'I Agree' for the Terms of Use
         Click the checkbox, and click 'I Agree' for the Privacy Policy
         
@@ -84,7 +85,28 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
+        self.student.driver.find_element(By.ID, 'identity-login-button').click()
+        self.student.driver.find_element(
+            By.ID, 'signup_first_name').send_keys('first_name_001')
+        self.student.driver.find_element(
+            By.ID, 'signup_last_name').send_keys('last_name_001')
+        self.student.driver.find_element(
+            By.ID, 'signup_email_address').send_keys('email_001@test.com')
+        self.student.driver.find_element(
+            By.ID, 'signup_username').send_keys('automated_34_001')
+        self.student.driver.find_element(
+            By.ID, 'signup_password').send_keys('password')
+        self.student.driver.find_element(
+            By.ID, 'signup_password_confirmation').send_keys('password')
+        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
+        self.student.driver.find_element(
+            By.ID, 'create_account_submit').click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@id="session-info"]//a[text()="automated_34_001"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C8208 - 002 - User | Create a new Account with Facebook
@@ -143,73 +165,54 @@ class TestAccountManagement(unittest.TestCase):
         Steps:
         Click on the Sign up link
         Click on the Sign up with Twitter button
-        ??????????????????????????????????????????????????
+        ?
         
         Expected Result:
         User logged in and presented with their dashboard
         """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
-    # Case C8211 - 005 - User | Accept the terms of service
-    @pytest.mark.skipif(str(8211) not in TESTS, reason='Excluded')  # NOQA
-    def test_user_accept_the_terms_of_service(self):
-        """ Accept the terms of service
+    # # sign up now includes this, would be exact same as 001
+    # # Case C8211 - 005 - User | Accept the terms of service
+    # @pytest.mark.skipif(str(8211) not in TESTS, reason='Excluded')  # NOQA
+    # def test_user_accept_the_terms_of_service(self):
+    #     """ Accept the terms of service
 
-        Steps:
-        Click on the Sign up link
-        Click on the Sign up with password button
-        Enter first name into the 'First Name' text box
-        Enter last name into the 'Last Name' text box
-        Enter email into the 'Email Address' text box [in the form example@example.example]
-        Enter username into the 'Username' text box
-        Enter password into the 'Password' text box
-        Renter password into the 'Confirm Password' text box
-        Click the "Create Account Button"
-        ########?????click the don't save passwords stuff, is this part of test case??????????????
-        Click the checkbox, and click 'I Agree' for the Terms of Use
+    #     Steps:
+    #     Sign up with password 
        
-        Expected Result:
-        Terms of use are accepted and user is presented witht the privacy policy
-        """
-        self.ps.test_updates['name'] = 't1.34.005' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.005', '8211']
-        self.ps.test_updates['passed'] = False
+    #     Expected Result:
+    #     Terms of use are accepted and user is presented witht the privacy policy
+    #     """
+    #     self.ps.test_updates['name'] = 't1.34.005' \
+    #         + inspect.currentframe().f_code.co_name[4:]
+    #     self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.005', '8211']
+    #     self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
+    #     # Test steps and verification assertions
 
-        self.ps.test_updates['passed'] = True
+    #     self.ps.test_updates['passed'] = True
 
-    # Case C8212 - 006 - User | Accept the privacy policy
-    @pytest.mark.skipif(str(8212) not in TESTS, reason='Excluded')  # NOQA
-    def test_user_accept_the_privacy_policy(self):
-        """ Accept the privacy policy
+    # # sign up now includes this, would be exact same as 001
+    # # Case C8212 - 006 - User | Accept the privacy policy
+    # @pytest.mark.skipif(str(8212) not in TESTS, reason='Excluded')  # NOQA
+    # def test_user_accept_the_privacy_policy(self):
+    #     """ Accept the privacy policy
 
-        Steps:
-        Click on the Sign up link
-        Click on the Sign up with password button
-        Enter first name into the 'First Name' text box
-        Enter last name into the 'Last Name' text box
-        Enter email into the 'Email Address' text box [in the form example@example.example]
-        Enter username into the 'Username' text box
-        Enter password into the 'Password' text box
-        Renter password into the 'Confirm Password' text box
-        Click the "Create Account Button"
-        ########?????click the don't save passwords stuff, is this part of test case??????????????
-        Click the checkbox, and click 'I Agree' for the Terms of Use
-        Click the checkbox, and click 'I Agree' for the Privacy Policy
+    #     Steps:
+    #     Sign up with password
        
-        Expected Result:
-        User logged in and presented with their dashboard
-        """
-        self.ps.test_updates['name'] = 't1.34.006' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.006', '8212']
-        self.ps.test_updates['passed'] = False
+    #     Expected Result:
+    #     User logged in and presented with their dashboard
+    #     """
+    #     self.ps.test_updates['name'] = 't1.34.006' \
+    #         + inspect.currentframe().f_code.co_name[4:]
+    #     self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.006', '8212']
+    #     self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
+    #     # Test steps and verification assertions
 
-        self.ps.test_updates['passed'] = True
+    #     self.ps.test_updates['passed'] = True
 
 
     # Case C8213 - 007 - User | Log into Accounts
@@ -218,7 +221,7 @@ class TestAccountManagement(unittest.TestCase):
         """ Log into Accounts
 
         Steps:
-        Enter the teacher user account in the username and password text boxes
+        Enter the  user account in the username and password text boxes
         Click on the Sign in button
 
         Expected Result:
@@ -230,7 +233,20 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.student.driver.find_element(
+            By.ID, 'auth_key').send_keys(self.student.username)
+        self.student.driver.find_element(
+            By.ID, 'password').send_keys(self.student.password)
+        # click on the sign in button
+        self.student.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@id="session-info"]'\
+                 '//a[text()="'+self.student.username+'"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C8214 - 008 - User | Edit account name
@@ -254,7 +270,33 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.student.login(url='http://accounts-qa.openstax.org')
+        name_original = self.student.wait.until(
+            expect.visibility_of_element_located((By.ID,'name'))
+        )
+        first = name_original.text.split(' ')[0]
+        last = name_original.text.split(' ')[1]
+        name_original.click()
+        self.student.driver.find_element(
+            By.XPATH,'//input[@name="first_name"]').send_keys('_NEW')
+        self.student.driver.find_element(
+            By.XPATH,'//input[@name="last_name"]').send_keys('_NEW')
+        self.student.driver.find_element(
+            By.XPATH,'//button[@type="submit"]//i[contains(@class,"ok")]').click()
+        name = self.student.wait.until(
+            expect.visibility_of_element_located((By.ID,'name'))
+        )
+        assert(name.text.split(' ')[0] == first+('_NEW')),'first name not changed'
+        assert(name.text.split(' ')[1] == last+('_NEW')),'last name not changed'
+        # change back
+        name.click()
+        for x in range(len('_NEW')):
+            self.student.driver.find_element(
+                By.XPATH,'//input[@name="first_name"]').send_keys(Keys.BACKSPACE)
+            self.student.driver.find_element(
+                By.XPATH,'//input[@name="last_name"]').send_keys(Keys.BACKSPACE)
+        self.student.driver.find_element(
+            By.XPATH,'//button[@type="submit"]//i[contains(@class,"ok")]').click()
         self.ps.test_updates['passed'] = True
 
     # Case C8215 - 009 - User | Cancel editing the account name
@@ -278,6 +320,24 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.student.login(url='http://accounts-qa.openstax.org')
+        name_original = self.student.wait.until(
+            expect.visibility_of_element_located((By.ID,'name'))
+        )
+        first = name_original.text.split(' ')[0]
+        last = name_original.text.split(' ')[1]
+        name_original.click()
+        self.student.driver.find_element(
+            By.XPATH,'//input[@name="first_name"]').send_keys('_NEW')
+        self.student.driver.find_element(
+            By.XPATH,'//input[@name="last_name"]').send_keys('_NEW')
+        self.student.driver.find_element(
+            By.XPATH,'//button[@type="button"]//i[contains(@class,"remove")]').click()
+        name = self.student.wait.until(
+            expect.visibility_of_element_located((By.ID,'name'))
+        )
+        assert(name.text.split(' ')[0] == first),'first changed'
+        assert(name.text.split(' ')[1] == last),'last changed'
 
         self.ps.test_updates['passed'] = True
 
@@ -302,7 +362,27 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.student.login(url='http://accounts-qa.openstax.org')
+        original = self.student.wait.until(
+            expect.visibility_of_element_located((By.ID,'username'))
+        )
+        username_original = original.text        
+        original.click()
+        self.student.driver.find_element(
+            By.XPATH,'//input[@type="text"]').send_keys('_NEW')
+        self.student.driver.find_element(
+            By.XPATH,'//button[@type="submit"]//i[contains(@class,"ok")]').click()
+        username_edit= self.student.wait.until(
+            expect.visibility_of_element_located((By.ID,'username'))
+        )
+        assert(username_edit.text == username_original+('_NEW')),'username not changed'
+        # change back
+        username_edit.click()
+        for x in range(len('_NEW')):
+            self.student.driver.find_element(
+                By.XPATH,'//input[@type="text"]').send_keys(Keys.BACKSPACE)
+        self.student.driver.find_element(
+            By.XPATH,'//button[@type="submit"]//i[contains(@class,"ok")]').click()
         self.ps.test_updates['passed'] = True
 
     # Case C8217 - 011 - User | Cancel editing the username
@@ -326,32 +406,20 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
-        self.ps.test_updates['passed'] = True
-
-    # Case C8218 - 012 - User | Add an email address
-    @pytest.mark.skipif(str(8218) not in TESTS, reason='Excluded')  # NOQA
-    def test_user_add_an_email_address(self):
-        """ Add an email address
-
-        Steps:
-        Enter the teacher user account in the username and password text boxes
-        Click on the Sign in button
-        Click Add an email   
-        Enter email adress into the textbox
-        Click on the checkmark button
-
-        Expected Result:
-        Email adress has been added to the end of the list of email adresses
-        """
-        self.ps.test_updates['name'] = 't1.34.012' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.012', '8218']
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-
-        self.ps.test_updates['passed'] = True
+        self.student.login(url='http://accounts-qa.openstax.org')
+        original = self.student.wait.until(
+            expect.visibility_of_element_located((By.ID,'username'))
+        )
+        username_original = original.text        
+        original.click()
+        self.student.driver.find_element(
+            By.XPATH,'//input[@type="text"]').send_keys('_NEW')
+        self.student.driver.find_element(
+            By.XPATH,'//button[@type="button"]//i[contains(@class,"remove")]').click()
+        username_edit= self.student.wait.until(
+            expect.visibility_of_element_located((By.ID,'username'))
+        )
+        assert(username_edit.text == username_original),'username not changed'
 
     # Case C8218 - 012 - User | Add an email address
     @pytest.mark.skipif(str(8218) not in TESTS, reason='Excluded')  # NOQA
@@ -374,8 +442,27 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.student.login(url='http://accounts-qa.openstax.org')
+        self.student.wait.until(
+            expect.visibility_of_element_located((By.ID,'add-an-email'))
+        ).click()
+        self.student.driver.find_element(
+            By.XPATH,'//input[@type="text"]').send_keys('email_2@test.com')
+        self.student.driver.find_element(
+            By.XPATH,'//button[@type="submit"]//i[contains(@class,"ok")]').click()
+        email = self.student.driver.find_element(
+            By.XPATH,'//span[contains(text(),"email_2@test.com")]')
+        # delete the new email
+        email.click()
+        #self.student.sleep(1)
+        self.student.driver.find_element(
+            By.XPATH,'//div[@class="email-entry"]'\
+            '//span[contains(@class,"trash")]').click()
+        self.student.driver.find_element(
+            By.XPATH,'//div[@class="popover-content"]'\
+            '//button[contains(text(),"OK")]').click()
         self.ps.test_updates['passed'] = True
+
 
     # Case C8219 - 013 - User | Verify an email address
     @pytest.mark.skipif(str(8219) not in TESTS, reason='Excluded')  # NOQA
@@ -386,7 +473,7 @@ class TestAccountManagement(unittest.TestCase):
         Enter the teacher user account in the username and password text boxes
         Click on the Sign in button
         Click on Click to verify next to an email address
-        #####then log into chosen emailadress and verify
+        #####then log into chosen email address and verify
 
         Expected Result:
         Confirmation message displayed saying an email has been sent.
@@ -415,7 +502,27 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.student.login(url='http://accounts-qa.openstax.org')
+        self.student.wait.until(
+            expect.visibility_of_element_located((By.ID,'add-an-email'))
+        ).click()
+        self.student.driver.find_element(
+            By.XPATH,'//input[@type="text"]').send_keys('email_2@test.com')
+        self.student.driver.find_element(
+            By.XPATH,'//button[@type="submit"]//i[contains(@class,"ok")]').click()
+        email = self.student.driver.find_element(
+            By.XPATH,'//span[contains(text(),"email_2@test.com")]')
+        email.click()
+        self.student.driver.find_element(
+            By.XPATH,'//input[@type="checkbox" and @class="searchable"]').click()        
+        # delete the new email
+        self.student.sleep(1)
+        self.student.driver.find_element(
+            By.XPATH,'//div[@class="email-entry"]'\
+            '//span[contains(@class,"trash")]').click()
+        self.student.driver.find_element(
+            By.XPATH,'//div[@class="popover-content"]'\
+            '//button[contains(text(),"OK")]').click()
         self.ps.test_updates['passed'] = True
 
     # Case C8221 - 015 - User | Delete an email address
@@ -438,8 +545,25 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.015', '8221']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
-
+        # create an email
+        self.student.login(url='http://accounts-qa.openstax.org')
+        self.student.wait.until(
+            expect.visibility_of_element_located((By.ID,'add-an-email'))
+        ).click()
+        self.student.driver.find_element(
+            By.XPATH,'//input[@type="text"]').send_keys('email_2@test.com')
+        self.student.driver.find_element(
+            By.XPATH,'//button[@type="submit"]//i[contains(@class,"ok")]').click()
+        email = self.student.driver.find_element(
+            By.XPATH,'//span[contains(text(),"email_2@test.com")]')
+        # delete the new email
+        email.click()
+        self.student.driver.find_element(
+            By.XPATH,'//div[@class="email-entry"]'\
+            '//span[contains(@class,"trash")]').click()
+        self.student.driver.find_element(
+            By.XPATH,'//div[@class="popover-content"]'\
+            '//button[contains(text(),"OK")]').click()
         self.ps.test_updates['passed'] = True
 
     # Case C8222 - 016 - User | Edit the account password
@@ -463,7 +587,18 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.student.login(url='http://accounts-qa.openstax.org')
+        self.student.driver.find_element(
+            By.XPATH,'//div[@data-provider="identity"]'\
+            '//span[contains(@class,"pencil")]').click()
+        self.student.driver.find_element(
+            By.XPATH,'//input[@name="password"]').send_keys('password')
+        self.student.driver.find_element(
+            By.XPATH,'//input[@name="password_confirmation"]').send_keys('password')
+        self.student.driver.find_element(
+            By.XPATH,'//button[@type="submit"]//i[contains(@class,"ok")]').click()
+        self.student.driver.find_element(
+            By.XPATH,'//span[contains(text(),"Password changed")]')
         self.ps.test_updates['passed'] = True
 
     # Case C8223 - 017 - User | Cancel editing the account password
@@ -487,7 +622,16 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.student.login(url='http://accounts-qa.openstax.org')
+        self.student.driver.find_element(
+            By.XPATH,'//div[@data-provider="identity"]'\
+            '//span[contains(@class,"pencil")]').click()
+        self.student.driver.find_element(
+            By.XPATH,'//input[@name="password"]').send_keys('password')
+        self.student.driver.find_element(
+            By.XPATH,'//input[@name="password_confirmation"]').send_keys('password')
+        self.student.driver.find_element(
+            By.XPATH,'//button[@type="button"]//i[contains(@class,"remove")]').click()
         self.ps.test_updates['passed'] = True
 
     # Case C8224 - 018 - User | Enable standard login with username and password
@@ -544,9 +688,6 @@ class TestAccountManagement(unittest.TestCase):
         """ Delete login option 
 
         Steps:
-        Enter the user account in the username and password text boxes
-        Click on the Sign in button
-        ######should the user have to login as someone with mutiple login options, or add a second option then delete it?
 
         Expected Result:
         Login option removed, and no longer visible under the list of How you sign in
@@ -572,6 +713,36 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.023', '8388']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
+        # create an email
+        self.student.login(url='http://accounts-qa.openstax.org')
+        self.student.wait.until(
+            expect.visibility_of_element_located((By.ID,'add-an-email'))
+        ).click()
+        self.student.driver.find_element(
+            By.XPATH,'//input[@type="text"]').send_keys('email_2@test.com')
+        self.student.driver.find_element(
+            By.XPATH,'//button[@type="submit"]//i[contains(@class,"ok")]').click()
+        self.student.sleep(1)
+        # check info icon (must reload page to work)
+        self.student.driver.get('https://accounts-qa.openstax.org/profile')
+        self.student.page.wait_for_page_load()
+        email = self.student.driver.find_element(
+            By.XPATH,'//span[contains(text(),"email_2@test.com")]')
+        email.click()
+        info_icon = self.student.driver.find_element(
+            By.XPATH,'//input[@type="checkbox" and @class="searchable"]')
+        actions = ActionChains(self.student.driver)
+        actions.move_to_element(info_icon).perform()
+        self.student.sleep(1)
+        self.student.driver.find_element(
+            By.XPATH,'//i[@data-toggle="tooltip"]')
+        # delete the new email
+        self.student.sleep(1)
+        self.student.driver.find_element(
+            By.XPATH,'//div[@class="email-entry"]'\
+            '//span[contains(@class,"trash")]').click()
+        self.student.driver.find_element(
+            By.XPATH,'//div[@class="popover-content"]'\
+            '//button[contains(text(),"OK")]').click()
 
         self.ps.test_updates['passed'] = True
