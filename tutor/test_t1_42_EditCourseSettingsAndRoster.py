@@ -28,7 +28,7 @@ TESTS = os.getenv(
     'CASELIST',
     #str([8258, 8259, 8260, 8261, 8262, 
     #     8263, 8264, 8265, 8266, 8267])  # NOQA
-    str([8263])
+    str([8264])
 )
 
 
@@ -200,7 +200,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
 
-    #what does last mean? alphabetically
+    #what does last mean? alphabetically? last added? same as 002?
     # Case C8260 - 003 - Teacher | Remove the last instructor from the course
     @pytest.mark.skipif(str(8260) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_remove_the_last_instructor_from_the_course(self):
@@ -352,7 +352,6 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # how to create a non-empty period that can be used for testing archived
     # Case C8264 - 007 - Teacher | Archive a non-empty period 
     @pytest.mark.skipif(str(8264) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_archive_a_non_empty_period(self):
@@ -372,7 +371,8 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        period_name = '1st'
+        period_name = self.teacher.driver.find_element(
+            By.XPATH,'//ul[@role="tablist"]//a[@role="tab"]').text
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 ( By.XPATH,'//a[contains(text(),"'+period_name+'")]')
@@ -383,15 +383,22 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.teacher.driver.find_element(
             By.XPATH,'//div[contains(@class,"popover-content")]'\
             '//button[contains(@class,"archive")]').click()
-        self.teacher.sleep(2)
-        archived_period = self.teacher.driver.find_elements(
-            By.XPATH,'//a[contains(text(),"'+period_name+'")]')
-        assert(len(archived_period)==0),'period not archived'
-        # add the section back
         self.teacher.driver.find_element(
             By.XPATH,'//span[contains(text(),"View Archived")]').click()
-        ####to be continued
-
+        self.teacher.driver.find_element(
+            By.XPATH,'//div[@class="modal-body"]//td[contains(text(),"'+period_name+'")]')
+        # add the section back
+        periods = self.teacher.driver.find_elements(
+            By.XPATH,'//div[@class="modal-body"]//table//tbody//tr')
+        for x in range(len(periods)):
+            temp_period = self.teacher.driver.find_element(
+                By.XPATH,'//div[@class="modal-body"]//table//tbody'\
+                '//tr['+str(x+1)+']/td').text
+            if temp_period == period_name:
+                self.teacher.driver.find_element(
+                    By.XPATH,'//div[@class="modal-body"]//table//tbody'\
+                    '//tr['+str(x+1)+']//button//span[contains(text(),"Unarchive")]').click()
+                break
         self.ps.test_updates['passed'] = True
 
 
