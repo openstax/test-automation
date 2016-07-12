@@ -26,11 +26,12 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8207, 8208, 8209, 8210, 8211,
-         8212, 8213, 8214, 8215, 8216,
-         8217, 8218, 8219, 8220, 8221,
-         8222, 8223, 8224, 8225, 8226,
-         8387, 8388])
+    #str([8207, 8208, 8209, 8210, 8211,
+    #     8212, 8213, 8214, 8215, 8216,
+    #     8217, 8218, 8219, 8220, 8221,
+    #     8222, 8223, 8224, 8225, 8226,
+    #     8387, 8388])
+    str([8225])
 )
 
 
@@ -109,6 +110,7 @@ class TestAccountManagement(unittest.TestCase):
         )
         self.ps.test_updates['passed'] = True
 
+    # delete login oprion from student, but still automatically logs into account
     # Case C8208 - 002 - User | Create a new Account with Facebook
     @pytest.mark.skipif(str(8208) not in TESTS, reason='Excluded')  # NOQA
     def test_user_create_a_new_account_with_facebook(self):
@@ -129,7 +131,55 @@ class TestAccountManagement(unittest.TestCase):
         Expected Result:
         User logged in and presented with their dashboard
         """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.ps.test_updates['name'] = 't1.34.002' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.002', '8208']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
+        self.student.driver.find_element(By.ID, 'facebook-login-button').click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.ID, 'email').send_keys('kp23@rice.edu')
+        self.student.driver.find_element(
+            By.ID, 'pass').send_keys('alphabeta123'+Keys.RETURN)
+        #self.student.driver.find_element(
+        #    By.XPATH, '//button[@name="login"]').click()
+        self.student.page.wait_for_page_load()
+        username = self.student.driver.find_element(
+            By.ID, 'signup_username').get_attribute('value')
+        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
+        self.student.driver.find_element(
+            By.ID, 'create_account_submit').click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@id="session-info"]//a[text()="'+username+'"]')
+            )
+        )
+        # add password sign in, (and delete facebook so account can be reused)
+        self.student.driver.find_element(
+            By.ID,'enable-other-sign-in').click()
+        self.student.sleep(2)
+        self.student.driver.find_element(
+            By.XPATH,'//div[@data-provider="identity"]//'\
+            'span[contains(@class,"add mod")]').click()
+        self.student.sleep(1)
+        self.student.driver.find_element(
+            By.XPATH,'//input[@name="password"]').send_keys('password')
+        self.student.driver.find_element(
+            By.XPATH,'//input[@name="password_confirmation"]').send_keys('password')
+        self.student.driver.find_element(
+            By.XPATH,'//button[@type="submit"]//i[contains(@class,"ok")]').click()
+        self.student.sleep(1)
+        #delete login option
+        self.student.driver.find_element(
+            By.XPATH,'//div[contains(@class,"enabled-providers")]'\
+            '//div[@data-provider="facebook"]//span[contains(@class,"trash")]').click()
+        self.student.driver.find_element(
+            By.XPATH,'//div[@class="popover-content"]//button[text()="OK"]').click()
+
+        self.ps.test_updates['passed'] = True
 
    # Case C8209 - 003 - User | Create a new Account with Google
     @pytest.mark.skipif(str(8209) not in TESTS, reason='Excluded')  # NOQA
@@ -155,7 +205,54 @@ class TestAccountManagement(unittest.TestCase):
         Expected Result:
         User logged in and presented with their dashboard
         """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.ps.test_updates['name'] = 't1.34.003' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.003', '8208']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
+        self.student.driver.find_element(By.ID, 'google-login-button').click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.ID, 'Email').send_keys('osconceptcoach@gmail.com')
+        self.student.driver.find_element(By.ID, 'next').click()
+        self.student.driver.find_element(
+            By.ID, 'Passwd').send_keys('kajalparekh')
+        self.student.driver.find_element(By.ID, 'signIn').click()
+        self.student.page.wait_for_page_load()
+        username = self.student.driver.find_element(
+            By.ID, 'signup_username').get_attribute('value')
+        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
+        self.student.driver.find_element(
+            By.ID, 'create_account_submit').click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@id="session-info"]//a[text()="'+username+'"]')
+            )
+        )
+        # add password sign in, (and delete google so account can be reused)
+        self.student.driver.find_element(
+            By.ID,'enable-other-sign-in').click()
+        self.student.sleep(2)
+        self.student.driver.find_element(
+            By.XPATH,'//div[@data-provider="identity"]//'\
+            'span[contains(@class,"add mod")]').click()
+        self.student.sleep(1)
+        self.student.driver.find_element(
+            By.XPATH,'//input[@name="password"]').send_keys('password')
+        self.student.driver.find_element(
+            By.XPATH,'//input[@name="password_confirmation"]').send_keys('password')
+        self.student.driver.find_element(
+            By.XPATH,'//button[@type="submit"]//i[contains(@class,"ok")]').click()
+        self.student.sleep(1)
+        #delete login option
+        self.student.driver.find_element(
+            By.XPATH,'//div[contains(@class,"enabled-providers")]'\
+            '//div[@data-provider="google_oauth2"]//span[contains(@class,"trash")]').click()
+        self.student.driver.find_element(
+            By.XPATH,'//div[@class="popover-content"]//button[text()="OK"]').click()
+        self.ps.test_updates['passed'] = True
 
     # Case C8210 - 004 - User | Create a new Account with Twitter
     @pytest.mark.skipif(str(8210) not in TESTS, reason='Excluded')  # NOQA
@@ -165,54 +262,138 @@ class TestAccountManagement(unittest.TestCase):
         Steps:
         Click on the Sign up link
         Click on the Sign up with Twitter button
-        ?
+        enter email and password on twitter
+        click login
+        enter email and last name on signup page on openstax
+        accept terms
+        click button to create account
         
         Expected Result:
         User logged in and presented with their dashboard
         """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.ps.test_updates['name'] = 't1.34.003' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.003', '8208']
+        self.ps.test_updates['passed'] = False
 
-    # # sign up now includes this, would be exact same as 001
-    # # Case C8211 - 005 - User | Accept the terms of service
-    # @pytest.mark.skipif(str(8211) not in TESTS, reason='Excluded')  # NOQA
-    # def test_user_accept_the_terms_of_service(self):
-    #     """ Accept the terms of service
+        # Test steps and verification assertions
+        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
+        self.student.driver.find_element(By.ID, 'twitter-login-button').click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.ID, 'username_or_email').send_keys('osconceptcoach@gmail.com')
+        self.student.driver.find_element(
+            By.ID, 'password').send_keys('openstax')
+        self.student.driver.find_element(By.ID, 'allow').click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.ID, 'signup_last_name').send_keys('last_name_004')
+        self.student.driver.find_element(
+            By.ID, 'signup_email_address').send_keys('email_004@test.com')
+        username = self.student.driver.find_element(
+            By.ID, 'signup_username').get_attribute('value')
+        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
+        self.student.driver.find_element(
+            By.ID, 'create_account_submit').click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@id="session-info"]//a[text()="'+username+'"]')
+            )
+        )
+        # add password sign in, (and delete twitter so account can be reused)
+        self.student.driver.find_element(
+            By.ID,'enable-other-sign-in').click()
+        self.student.sleep(2)
+        self.student.driver.find_element(
+            By.XPATH,'//div[@data-provider="identity"]//'\
+            'span[contains(@class,"add mod")]').click()
+        self.student.sleep(1)
+        self.student.driver.find_element(
+            By.XPATH,'//input[@name="password"]').send_keys('password')
+        self.student.driver.find_element(
+            By.XPATH,'//input[@name="password_confirmation"]').send_keys('password')
+        self.student.driver.find_element(
+            By.XPATH,'//button[@type="submit"]//i[contains(@class,"ok")]').click()
+        self.student.sleep(1)
+        #delete login option
+        self.student.driver.find_element(
+            By.XPATH,'//div[contains(@class,"enabled-providers")]'\
+            '//div[@data-provider="twitter"]//span[contains(@class,"trash")]').click()
+        self.student.driver.find_element(
+            By.XPATH,'//div[@class="popover-content"]//button[text()="OK"]').click()
+        self.ps.test_updates['passed'] = True
 
-    #     Steps:
-    #     Sign up with password 
+    # Case C8211 - 005 - User | Accept the terms of service
+    @pytest.mark.skipif(str(8211) not in TESTS, reason='Excluded')  # NOQA
+    def test_user_accept_the_terms_of_service(self):
+        """ Accept the terms of service
+
+        Steps:
+        Sign up with password (same as 001)
        
-    #     Expected Result:
-    #     Terms of use are accepted and user is presented witht the privacy policy
-    #     """
-    #     self.ps.test_updates['name'] = 't1.34.005' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.005', '8211']
-    #     self.ps.test_updates['passed'] = False
+        Expected Result:
+        Terms of use are accepted and user is presented witht the privacy policy
+        """
+        self.ps.test_updates['name'] = 't1.34.005' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.005', '8211']
+        self.ps.test_updates['passed'] = False
 
-    #     # Test steps and verification assertions
+        # Test steps and verification assertions
+        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
+        self.student.driver.find_element(By.ID, 'identity-login-button').click()
+        self.student.driver.find_element(
+            By.ID, 'signup_first_name').send_keys('first_name_005')
+        self.student.driver.find_element(
+            By.ID, 'signup_last_name').send_keys('last_name_005')
+        self.student.driver.find_element(
+            By.ID, 'signup_email_address').send_keys('email_005@test.com')
+        self.student.driver.find_element(
+            By.ID, 'signup_username').send_keys('automated_34_005')
+        self.student.driver.find_element(
+            By.ID, 'signup_password').send_keys('password')
+        self.student.driver.find_element(
+            By.ID, 'signup_password_confirmation').send_keys('password')
+        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
+        self.student.driver.find_element(
+            By.ID, 'create_account_submit').click()
+        self.ps.test_updates['passed'] = True
 
-    #     self.ps.test_updates['passed'] = True
+    # Case C8212 - 006 - User | Accept the privacy policy
+    @pytest.mark.skipif(str(8212) not in TESTS, reason='Excluded')  # NOQA
+    def test_user_accept_the_privacy_policy(self):
+        """ Accept the privacy policy
 
-    # # sign up now includes this, would be exact same as 001
-    # # Case C8212 - 006 - User | Accept the privacy policy
-    # @pytest.mark.skipif(str(8212) not in TESTS, reason='Excluded')  # NOQA
-    # def test_user_accept_the_privacy_policy(self):
-    #     """ Accept the privacy policy
-
-    #     Steps:
-    #     Sign up with password
+        Steps:
+        Sign up with password (same as 001)
        
-    #     Expected Result:
-    #     User logged in and presented with their dashboard
-    #     """
-    #     self.ps.test_updates['name'] = 't1.34.006' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.006', '8212']
-    #     self.ps.test_updates['passed'] = False
+        Expected Result:
+        User logged in and presented with their dashboard
+        """
+        self.ps.test_updates['name'] = 't1.34.006' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.006', '8212']
+        self.ps.test_updates['passed'] = False
 
-    #     # Test steps and verification assertions
-
-    #     self.ps.test_updates['passed'] = True
+        # Test steps and verification assertions
+        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
+        self.student.driver.find_element(By.ID, 'identity-login-button').click()
+        self.student.driver.find_element(
+            By.ID, 'signup_first_name').send_keys('first_name_006')
+        self.student.driver.find_element(
+            By.ID, 'signup_last_name').send_keys('last_name_006')
+        self.student.driver.find_element(
+            By.ID, 'signup_email_address').send_keys('email_006@test.com')
+        self.student.driver.find_element(
+            By.ID, 'signup_username').send_keys('automated_34_006')
+        self.student.driver.find_element(
+            By.ID, 'signup_password').send_keys('password')
+        self.student.driver.find_element(
+            By.ID, 'signup_password_confirmation').send_keys('password')
+        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
+        self.student.driver.find_element(
+            By.ID, 'create_account_submit').click()
+        self.ps.test_updates['passed'] = True
 
 
     # Case C8213 - 007 - User | Log into Accounts
@@ -640,23 +821,114 @@ class TestAccountManagement(unittest.TestCase):
         """ Enable standard login with username and password
 
         Steps:
+        login with something other than password
+        click enable other login options
+        click the plus sign next to password
+        enter password into input, and enter agian to confirm
+        click check mark
 
         Expected Result:
         Confirmation message displayed. Password has been added to How you sign in list
         """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.ps.test_updates['name'] = 't1.34.003' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.003', '8208']
+        self.ps.test_updates['passed'] = False
 
+        # Test steps and verification assertions
+        #create a social login account
+        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
+        self.student.driver.find_element(By.ID, 'google-login-button').click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.ID, 'Email').send_keys('osconceptcoach@gmail.com')
+        self.student.driver.find_element(By.ID, 'next').click()
+        self.student.driver.find_element(
+            By.ID, 'Passwd').send_keys('kajalparekh')
+        self.student.driver.find_element(By.ID, 'signIn').click()
+        self.student.page.wait_for_page_load()
+        username = self.student.driver.find_element(
+            By.ID, 'signup_username').get_attribute('value')
+        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
+        self.student.driver.find_element(
+            By.ID, 'create_account_submit').click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@id="session-info"]//a[text()="'+username+'"]')
+            )
+        )
+        # add password sign in
+        self.student.driver.find_element(
+            By.ID,'enable-other-sign-in').click()
+        self.student.sleep(2)
+        self.student.driver.find_element(
+            By.XPATH,'//div[@data-provider="identity"]//'\
+            'span[contains(@class,"add mod")]').click()
+        self.student.sleep(1)
+        self.student.driver.find_element(
+            By.XPATH,'//input[@name="password"]').send_keys('password')
+        self.student.driver.find_element(
+            By.XPATH,'//input[@name="password_confirmation"]').send_keys('password')
+        self.student.driver.find_element(
+            By.XPATH,'//button[@type="submit"]//i[contains(@class,"ok")]').click()
+        self.student.sleep(1)
+        #delete social login option so it can be reused
+        self.student.driver.find_element(
+            By.XPATH,'//div[contains(@class,"enabled-providers")]'\
+            '//div[@data-provider="google_oauth2"]//span[contains(@class,"trash")]').click()
+        self.student.driver.find_element(
+            By.XPATH,'//div[@class="popover-content"]//button[text()="OK"]').click()
+        self.ps.test_updates['passed'] = True
+
+
+    # facebook being differnt for manual v automated 
     # Case C8225 - 019 - User | Enable Facebook login 
     @pytest.mark.skipif(str(8225) not in TESTS, reason='Excluded')  # NOQA
     def test_user_enable_facebook_login(self):
         """ Enable Facebook login 
 
         Steps:
+        sign in with password
+        click on Enable other sign in options
+        click on the plus sign next to facebook
+        enter email and passwork on facebook
+        click login OR click return
 
         Expected Result:
         Confirmation message displayed. Facebook has been added to How you sign in list
         """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.ps.test_updates['name'] = 't1.34.019' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.019', '8225']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.student.login(url='http://accounts-qa.openstax.org')
+        self.student.driver.find_element(
+            By.ID,'enable-other-sign-in').click()
+        self.student.sleep(2)
+        self.student.driver.find_element(
+            By.XPATH,'//div[@data-provider="facebook"]//'\
+            'span[contains(@class,"add mod")]').click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.ID, 'email').send_keys('kp23@rice.edu')
+        self.student.driver.find_element(
+            By.ID, 'pass').send_keys('alphabeta123'+Keys.RETURN)
+        #self.student.driver.find_element(
+        #    By.XPATH, '//button[@name="login"]').click()
+        self.student.page.wait_for_page_load()
+        #check that it was added
+        self.student.driver.find_element(
+            By.XPATH,'//div[contains(@class,"enabled-providers")]'\
+            '//div[@class="authentication" and @data-provider="facebook"]')
+        #delete login option
+        self.student.driver.find_element(
+            By.XPATH,'//div[contains(@class,"enabled-providers")]'\
+            '//div[@data-provider="facebook"]//span[contains(@class,"trash")]').click()
+        self.student.driver.find_element(
+            By.XPATH,'//div[@class="popover-content"]//button[text()="OK"]').click()
+        self.ps.test_updates['passed'] = True
 
     # Case C8226 - 020 - User | Enable Google login 
     @pytest.mark.skipif(str(8226) not in TESTS, reason='Excluded')  # NOQA
@@ -664,11 +936,48 @@ class TestAccountManagement(unittest.TestCase):
         """ Enable Google login 
 
         Steps:
+        login with  password
+        click enable other login options
+        click the plus sign next to google
+        enter email into input and then click next
+        enter password and then click sign in
 
         Expected Result:
         Confirmation message displayed. Google has been added to How you sign in list
         """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.ps.test_updates['name'] = 't1.34.020' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.020', '8226']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.student.login(url='http://accounts-qa.openstax.org')
+        self.student.driver.find_element(
+            By.ID,'enable-other-sign-in').click()
+        self.student.sleep(2)
+        self.student.driver.find_element(
+            By.XPATH,'//div[@data-provider="google_oauth2"]//'\
+            'span[contains(@class,"add mod")]').click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.ID, 'Email').send_keys('osconceptcoach@gmail.com')
+        self.student.driver.find_element(By.ID, 'next').click()
+        self.student.driver.find_element(
+            By.ID, 'Passwd').send_keys('kajalparekh')
+        self.student.driver.find_element(By.ID, 'signIn').click()
+        self.student.page.wait_for_page_load()
+        #check that it was added
+        self.student.driver.find_element(
+            By.XPATH,'//div[contains(@class,"enabled-providers")]'\
+            '//div[@class="authentication" and @data-provider="google_oauth2"]')
+        #delete login option
+        self.student.driver.find_element(
+            By.XPATH,'//div[contains(@class,"enabled-providers")]'\
+            '//div[@data-provider="google_oauth2"]//span[contains(@class,"trash")]').click()
+        self.student.driver.find_element(
+            By.XPATH,'//div[@class="popover-content"]//button[text()="OK"]').click()
+        self.ps.test_updates['passed'] = True
+
 
     # Case C8227 - 021 - User | Enable Twitter login 
     @pytest.mark.skipif(str(8227) not in TESTS, reason='Excluded')  # NOQA
@@ -676,14 +985,50 @@ class TestAccountManagement(unittest.TestCase):
         """ Enable Twitter login 
 
         Steps:
+        login with  password
+        click enable other login options
+        click the plus sign next to twitter
+        enter email and password into input boxes
+        click login
 
         Expected Result:
         Confirmation message displayed. Twitter has been added to How you sign in list
         """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.ps.test_updates['name'] = 't1.34.021' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.021', '8227']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.student.login(url='http://accounts-qa.openstax.org')
+        self.student.driver.find_element(
+            By.ID,'enable-other-sign-in').click()
+        self.student.sleep(2)
+        self.student.driver.find_element(
+            By.XPATH,'//div[@data-provider="twitter"]//'\
+            'span[contains(@class,"add mod")]').click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.ID, 'username_or_email').send_keys('osconceptcoach@gmail.com')
+        self.student.driver.find_element(
+            By.ID, 'password').send_keys('openstax')
+        self.student.driver.find_element(By.ID, 'allow').click()
+        self.student.page.wait_for_page_load()
+        #check that it was added
+        self.student.driver.find_element(
+            By.XPATH,'//div[contains(@class,"enabled-providers")]'\
+            '//div[@class="authentication" and @data-provider="twitter"]')
+        #delete login option
+        self.student.driver.find_element(
+            By.XPATH,'//div[contains(@class,"enabled-providers")]'\
+            '//div[@data-provider="twitter"]//span[contains(@class,"trash")]').click()
+        self.student.driver.find_element(
+            By.XPATH,'//div[@class="popover-content"]//button[text()="OK"]').click()
+        self.ps.test_updates['passed'] = True
+
 
     # Case C8387 - 022 - User | Delete login option 
-    @pytest.mark.skipif(str(8227) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8287) not in TESTS, reason='Excluded')  # NOQA
     def test_user_delete_login_option(self):
         """ Delete login option 
 
@@ -692,7 +1037,38 @@ class TestAccountManagement(unittest.TestCase):
         Expected Result:
         Login option removed, and no longer visible under the list of How you sign in
         """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.ps.test_updates['name'] = 't1.34.022' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.022', '8287']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.student.login(url='http://accounts-qa.openstax.org')
+        self.student.driver.find_element(
+            By.ID,'enable-other-sign-in').click()
+        self.student.sleep(2)
+        self.student.driver.find_element(
+            By.XPATH,'//div[@data-provider="twitter"]//'\
+            'span[contains(@class,"add mod")]').click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.ID, 'username_or_email').send_keys('osconceptcoach@gmail.com')
+        self.student.driver.find_element(
+            By.ID, 'password').send_keys('openstax')
+        self.student.driver.find_element(By.ID, 'allow').click()
+        self.student.page.wait_for_page_load()
+        #check that it was added
+        self.student.driver.find_element(
+            By.XPATH,'//div[contains(@class,"enabled-providers")]'\
+            '//div[@class="authentication" and @data-provider="twitter"]')
+        #delete login option
+        self.student.driver.find_element(
+            By.XPATH,'//div[contains(@class,"enabled-providers")]'\
+            '//div[@data-provider="twitter"]//span[contains(@class,"trash")]').click()
+        self.student.driver.find_element(
+            By.XPATH,'//div[@class="popover-content"]//button[text()="OK"]').click()
+        self.ps.test_updates['passed'] = True
+
 
     # Case C8388 - 023 - User | Info Icon shows definiton for searchable option
     @pytest.mark.skipif(str(8388) not in TESTS, reason='Excluded')  # NOQA
