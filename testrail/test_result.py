@@ -63,12 +63,15 @@ def get_time_string(time):
 
 path = './'
 file = path + 'result.xml'
-run = os.getenv('RUNID', 150)
+run = os.getenv('RUNID')
+print('RunID', run)
 tree = ElementTree.parse(file)
 root = tree.getroot()
 tr = TestRailAPI(url='https://openstax.testrail.net/')
 test_set = tr.get_tests(run_id=int(run))
 for child in root:
+    for x, y in child:
+        print(x, y)
     child.attrib['case'] = child.attrib['name'].split('_')[-1]
     child.attrib['test'] = find_test_id(child.attrib['case'], test_set)
     sub = list(child.iter())
