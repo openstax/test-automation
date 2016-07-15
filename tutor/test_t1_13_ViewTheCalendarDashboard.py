@@ -63,7 +63,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         
     # Case C7978 - 001 - Teacher | View the calendar dashboard
     @pytest.mark.skipif(str(7978) not in TESTS, reason='Excluded')
-    def test_teacher_view_the_calendar_dashboard(self):
+    def test_teacher_view_the_calendar_dashboard_7978(self):
         """View the calendar dashboard.
         
         Steps:
