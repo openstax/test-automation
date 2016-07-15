@@ -23,7 +23,7 @@ def find_test_id(case_id, tests):
     try:
         case = int(case_id)
     except ValueError:
-        print('Case "%s" is not a valid case ID.' % case_id)
+        print('Case "%s" is not a valid case ID in %s.' % (case_id, tests))
         return -1
     for test in tests:
         if case == test['case_id']:
