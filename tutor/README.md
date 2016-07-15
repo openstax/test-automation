@@ -4,13 +4,13 @@ Status:
 -------
 <table>
     <tr>
-        <td>*Done*</td>
-        <td>*Epic*</td>
-        <td>*Epic Title*</td>
-        <td>Notes</td>
+        <td><strong>Done</strong></td>
+        <td><strong>Epic</strong></td>
+        <td><strong>Epic Title</strong></td>
+        <td><strong>Notes</strong></td>
     </tr>
     <tr>
-        <td>- [ ] </td>
+        <td><input type="checkbox" checked="false" /></td>
         <td>CC1.05</td>
         <td>CNX Navigation</td>
         <td></td>
