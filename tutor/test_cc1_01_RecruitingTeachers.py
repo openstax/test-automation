@@ -27,7 +27,7 @@ TESTS = os.getenv(
     str([7751, 7752, 7753, 7754, 7755,
          7756, 7757, 7758, 7759, 7760,
          7761, 7762, 7763, 7764, 7765,
-         7766, 7767, 7770, 7771, 7772, 
+         7766, 7767, 7770, 7771, 7772,
          7773, 7774, 7775])  # NOQA
 )
 
@@ -55,12 +55,12 @@ class TestEpicName(unittest.TestCase):
         except:
             pass
 
-    # Case C7751 - 001 - Admin | Recruitment and promo website is available 
+    # Case C7751 - 001 - Admin | Recruitment and promo website is available
     @pytest.mark.skipif(str(7751) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_usertype_story_text_7751(self):
         """Recruitment and promo website is available.
 
-        Steps: 
+        Steps:
 
         Go to the recruitment website ( http://cc.openstax.org/ )
 
@@ -83,13 +83,13 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7752 - 002 - Teacher | Information about Concept Coach and the pilot are available on the demo site
+    # Case C7752 - 002 - Teacher | Information about Concept Coach and the
+    # pilot are available on the demo site
     @pytest.mark.skipif(str(7752) not in TESTS, reason='Excluded')  # NOQA
     def test_usertype_story_text(self):
         """Information about Concept Coach and the pilot are available on the demo site.
 
-        Steps: 
+        Steps:
 
         Go to the recruitment website ( http://cc.openstax.org/ )
 
@@ -118,7 +118,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Can interact with a Concept Coach wire frame for each subject.
 
-        Steps: 
+        Steps:
 
         Go to the recruitment website ( http://cc.openstax.org/)
         Click on the 'demo' link in the header OR scroll down until 'Interactive Demos' is displayed
@@ -130,7 +130,7 @@ class TestEpicName(unittest.TestCase):
 
         """
         self.ps.test_updates['name'] = 'cc1.01.003' \
-            + inspect.currentframe().f_code.co_name[4:]
+            + inspect.currentframe().f_code.co_name[4:] + self.ps.test_updates.__str__()
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.01',
@@ -149,7 +149,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """View a Concept Coach demo video.
 
-        Steps: 
+        Steps:
 
         Open recruitment website ( http://cc.openstax.org/ )
         Click on the 'demo' link in the header OR scroll down until 'Interactive Demos' is displayed
@@ -171,7 +171,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Sample exercise questions are seen in the wire frames.
 
-        Steps: 
+        Steps:
 
         Open recruitment website ( http://cc.openstax.org/ )
         Click on the 'demo' link in the header OR scroll down until 'Interactive Demos' is displayed
@@ -203,7 +203,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Access Concept Coach help and support before the teacher's course is created.
 
-        Steps: 
+        Steps:
 
         Send a test e-mail to 'ccsupport@openstax.org'
         Open the recruitment website ( http://cc.openstax.org/ )
@@ -235,7 +235,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Teacher registers to use a Concept Coach course.
 
-        Steps: 
+        Steps:
 
         Go to the recruitment website ( http://cc.openstax.org )
         Click on the 'sign up now' button
@@ -266,9 +266,9 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Teacher uses a web form to sign up for Concept Coach.
 
-        Steps: 
+        Steps:
 
-        Teacher fills out the form 
+        Teacher fills out the form
 
 
         Expected Result:
@@ -296,7 +296,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Receive error messages if required fields on the sign up form are blank.
 
-        Steps: 
+        Steps:
 
         Go to the recruitment website ( http://cc.openstax.org/ )
         Click on the 'sign up now' button
@@ -328,7 +328,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Submit a form to supply required course information.
 
-        Steps: 
+        Steps:
 
         Go to the recruitment website ( http://cc.openstax.org )
         Click on the 'sign up now' button
@@ -362,7 +362,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Submit co-instructors, classes, names and other data.
 
-        Steps: 
+        Steps:
 
         Go to the recruitment and promo website ( http://cc.openstax.org/ )
         Click on the 'sign up now' button
@@ -395,7 +395,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Select the textbook to use in the course.
 
-        Steps: 
+        Steps:
 
         Go to the recruitment website ( http://cc.openstax.org )
         Click on the 'sign up now' button
@@ -427,7 +427,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Indicate if the teacher was or was not recruited by OpenStax.
 
-        Steps: 
+        Steps:
 
         Go to the recruitment and promo website ( http://cc.openstax.org/ )
         Click on the 'sign up now' button ( http://cc.openstax.org/sign-up )
@@ -459,7 +459,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Presented a thank you page after registering to use Concept Coach.
 
-        Steps: 
+        Steps:
 
         Go to the recruitment website ( http://cc.openstax.org )
         Click on the 'sign up now' button
@@ -492,7 +492,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Sign up for an OpenStax Accounts username.
 
-        Steps: 
+        Steps:
 
         Go to the recruitment website ( http://cc.openstax.org )
         Click on the 'sign up now' button
@@ -525,7 +525,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Sign up to receive additional Concept Coach information by e-mail.
 
-        Steps: 
+        Steps:
 
         Go to the recruitment website ( http://cc.openstax.org/ )
         Click on the 'faq' header link
@@ -556,7 +556,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Sign up to receive additional Concept Coach information by webform.
 
-        Steps: 
+        Steps:
 
         Go to the recruitment website ( http://cc.openstax.org/ )
         Click on the 'sign up now' button
@@ -589,7 +589,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Add co-instructors to a course.
 
-        Steps: 
+        Steps:
 
         Log into Tutor as an admin (admin : password)
         From the user menu, select 'Admin'
@@ -625,7 +625,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Log in with an Existing OpenStax Accounts username.
 
-        Steps: 
+        Steps:
 
         Go to the recruitment website ( http://cc.openstax.org/ )
         Click on faculty login
@@ -647,9 +647,9 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Access the Concept Coach course.
 
-        Steps: 
+        Steps:
 
-        Once you login you will be taken to a course picker page. 
+        Once you login you will be taken to a course picker page.
         Click on the course you want to check the dashboard
 
 
@@ -666,7 +666,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Distribute access codes for the teacher's course.
 
-        Steps: 
+        Steps:
 
         CC approves a faculty.
         Login as admin [admin | password]
@@ -691,7 +691,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Access Concept Coach help and support during the course.
 
-        Steps: 
+        Steps:
 
         Login as teacher
         Click on the course name
@@ -726,7 +726,7 @@ class TestEpicName(unittest.TestCase):
     def test_usertype_story_text(self):
         """Access Concept Coach help and support after the end of the course.
 
-        Steps: 
+        Steps:
 
         Login as teacher
         Click on the course name
