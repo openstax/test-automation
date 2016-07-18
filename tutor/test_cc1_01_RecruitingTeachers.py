@@ -33,7 +33,7 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestRecruitingTeachers(unittest.TestCase):
     """CC1.01 - Recruiting Teachers."""
 
     def setUp(self):
@@ -57,7 +57,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C7751 - 001 - Admin | Recruitment and promo website is available
     @pytest.mark.skipif(str(7751) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text_7751(self):
+    def test_admin_recruitment_and_promo_website_is_available_7751(self):
         """Recruitment and promo website is available.
 
         Steps:
@@ -86,8 +86,8 @@ class TestEpicName(unittest.TestCase):
     # Case C7752 - 002 - Teacher | Information about Concept Coach and the
     # pilot are available on the demo site
     @pytest.mark.skipif(str(7752) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
-        """Information about Concept Coach and the pilot are available on the demo site.
+    def test_teacher_information_about_cc_is_available_on_demo_site_7752(self):
+        """Information about CC and pilot are available on the demo site.
 
         Steps:
 
@@ -112,25 +112,27 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7753 - 003 - Teacher | Can interact with a Concept Coach wire frame for each subject
+    # Case C7753 - 003 - Teacher | Can interact with a Concept Coach wire frame
+    # for each subject
     @pytest.mark.skipif(str(7753) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_can_interact_with_a_cc_wire_frame_for_subjects_7753(self):
         """Can interact with a Concept Coach wire frame for each subject.
 
         Steps:
 
         Go to the recruitment website ( http://cc.openstax.org/)
-        Click on the 'demo' link in the header OR scroll down until 'Interactive Demos' is displayed
-        Click on a Concept Coach book title
+        Hover over "demos" in the header
+        Click "Interactice Demo"
+        CLick on a Concept Coach book title
 
         Expected Result:
 
-        A new tab or window opens rendering the demo content for the selected book
+        A new tab or window opens rendering the demo content for the selected
+        book
 
         """
         self.ps.test_updates['name'] = 'cc1.01.003' \
-            + inspect.currentframe().f_code.co_name[4:] + self.ps.test_updates.__str__()
+            + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.01',
@@ -143,16 +145,16 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
     # Case C7754 - 004 - Teacher | View a Concept Coach demo video
     @pytest.mark.skipif(str(7754) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_view_a_concept_coach_demo_video_7754(self):
         """View a Concept Coach demo video.
 
         Steps:
 
         Open recruitment website ( http://cc.openstax.org/ )
-        Click on the 'demo' link in the header OR scroll down until 'Interactive Demos' is displayed
+        Hover over "demos" in the header
+        Click "Interactive Demo"
         Click on a Concept Coach book title
         Scroll down until an embedded video pane is displayed
         Click on the right-pointing arrow to play the video
@@ -165,22 +167,24 @@ class TestEpicName(unittest.TestCase):
         """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
-
-    # Case C7755 - 005 - Teacher | Sample exercise questions are seen in the wire frames
+    # Case C7755 - 005 - Teacher | Sample exercise questions are seen in
+    # the wire frames
     @pytest.mark.skipif(str(7755) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_sample_exercise_questions_are_in_wire_frames_7755(self):
         """Sample exercise questions are seen in the wire frames.
 
         Steps:
 
         Open recruitment website ( http://cc.openstax.org/ )
-        Click on the 'demo' link in the header OR scroll down until 'Interactive Demos' is displayed
+        Hover over "demos" in the header
+        Click "Interactive Demo"
         Click on a Concept Coach book title
         Scroll down until the 'CONCEPT COACH' pane is displayed
 
         Expected Result:
 
-        Demo exercises are rendered and can be answered along with showing feedback
+        Demo exercises are rendered and can be answered along with showing
+        feedback
 
         """
         self.ps.test_updates['name'] = 'cc1.01.005' \
@@ -197,22 +201,21 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7756 - 006 - Teacher | Access Concept Coach help and support before the teacher's course is created
+    # Case C7756 - 006 - Teacher | Access Concept Coach help and support before
+    # the teacher's course is created
     @pytest.mark.skipif(str(7756) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
-        """Access Concept Coach help and support before the teacher's course is created.
+    def test_teacher_access_cc_support_before_course_is_created_7756(self):
+        """Access CC help and support before the teacher's course is created.
 
         Steps:
 
-        Send a test e-mail to 'ccsupport@openstax.org'
         Open the recruitment website ( http://cc.openstax.org/ )
-        Click on the 'faq' link in the header
+        Click "Support" in the header
+
 
         Expected Result:
 
-        E-mail sends successfully
-        Frequently Asked Questions are displayed on the recruitment website
+        A new tab opens with the CC Help Center
 
         """
         self.ps.test_updates['name'] = 'cc1.01.006' \
@@ -229,10 +232,9 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7757 - 007 - Teacher | Teacher registers to use a Concept Coach course
+    # Case C7757 - 007 - Teacher | Teacher registers to use a CC course
     @pytest.mark.skipif(str(7757) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_teacher_registers_to_use_a_cc_course(self):
         """Teacher registers to use a Concept Coach course.
 
         Steps:
@@ -260,10 +262,9 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7758 - 008 - Teacher | Teacher uses a web form to sign up for Concept Coach
+    # Case C7758 - 008 - Teacher | Teacher uses a web form to sign up for CC
     @pytest.mark.skipif(str(7758) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_teacher_uses_a_web_form_to_sign_up_for_cc_7758(self):
         """Teacher uses a web form to sign up for Concept Coach.
 
         Steps:
@@ -273,7 +274,8 @@ class TestEpicName(unittest.TestCase):
 
         Expected Result:
 
-        Preconditions pass. Teacher is able to submit the application successfully.
+        Preconditions pass.
+        User is presented with a confirmation message
 
         """
         self.ps.test_updates['name'] = 'cc1.01.008' \
@@ -290,10 +292,10 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7759 - 009 - Teacher | Receive error messages if required fields on the sign up form are blank
+    # Case C7759 - 009 - Teacher | Receive error messages if required fields on
+    # the sign up form are blank
     @pytest.mark.skipif(str(7759) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_receive_error_messages_if_required_fields_are_7759(self):
         """Receive error messages if required fields on the sign up form are blank.
 
         Steps:
@@ -305,7 +307,8 @@ class TestEpicName(unittest.TestCase):
 
         Expected Result:
 
-        Receive 'Please fill out this field.' error messages in red for each blank required field
+        Receive 'Please fill out this field' error messages in red for
+        each blank required field
 
         """
         self.ps.test_updates['name'] = 'cc1.01.009' \
@@ -322,17 +325,16 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7760 - 010 - Teacher | Submit a form to supply required course information
+    # Case C7760 - 010 - Teacher | Submit a form to supply required course info
     @pytest.mark.skipif(str(7760) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_submit_a_form_to_supply_required_course_info_7760(self):
         """Submit a form to supply required course information.
 
         Steps:
 
         Go to the recruitment website ( http://cc.openstax.org )
         Click on the 'sign up now' button
-        Fill out the intent to participate form ( http://cc.openstax.org/sign-up )
+        Fill out the intent to participate form
         Submit the form
 
 
@@ -356,10 +358,9 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7761 - 011 - Teacher | Submit co-instructors, classes, names and other data
+    # Case C7761 - 011 - Teacher | Submit co-instructors, classes, names, etc.
     @pytest.mark.skipif(str(7761) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_submit_coinstructors_classes_names_etc_7761(self):
         """Submit co-instructors, classes, names and other data.
 
         Steps:
@@ -368,11 +369,14 @@ class TestEpicName(unittest.TestCase):
         Click on the 'sign up now' button
         Click on the 'Co-Teaching class with a colleague?' circle button
         Enter the co-instructor's (or co-instructors') information
+        Enter text into other fields concerning classe, names, etc.
 
 
         Expected Result:
 
-        Input box exists for instructor information, class details and other data
+        Input box exists for instructor information, class details and
+        other data.
+        The user is able to input information.
 
         """
         self.ps.test_updates['name'] = 'cc1.01.011' \
@@ -389,17 +393,16 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
     # Case C7762 - 012 - Teacher | Select the textbook to use in the course
     @pytest.mark.skipif(str(7762) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_select_the_textbook_to_use_in_the_course_7762(self):
         """Select the textbook to use in the course.
 
         Steps:
 
         Go to the recruitment website ( http://cc.openstax.org )
         Click on the 'sign up now' button
-        Select the course textbook from the 'Book' pull down menu
+        Select the course textbook from the 'Book' dropdown options
 
 
         Expected Result:
@@ -421,17 +424,18 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7763 - 013 - Teacher | Indicate if the teacher was or was not recruited by OpenStax
+    # Case C7763 - 013 - Teacher | Indicate whether the teacher was recruited
+    # by OpenStax
     @pytest.mark.skipif(str(7763) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_indicate_whether_the_teacher_was_recruited_by_7763(self):
         """Indicate if the teacher was or was not recruited by OpenStax.
 
         Steps:
 
         Go to the recruitment and promo website ( http://cc.openstax.org/ )
         Click on the 'sign up now' button ( http://cc.openstax.org/sign-up )
-        Input recruitment information into the 'Anything else we need to know?' text box
+        Enter recruitment information into the 'Anything else we need to know?'
+        text box
 
 
         Expected Result:
@@ -452,7 +456,6 @@ class TestEpicName(unittest.TestCase):
         # Test steps and verification assertions
 
         self.ps.test_updates['passed'] = True
-
 
     # Case C7764 - 014 - Teacher | Presented a thank you page after registering to use Concept Coach
     @pytest.mark.skipif(str(7764) not in TESTS, reason='Excluded')  # NOQA
