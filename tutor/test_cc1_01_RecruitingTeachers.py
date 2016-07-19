@@ -27,8 +27,8 @@ TESTS = os.getenv(
     str([7751, 7752, 7753, 7754, 7755,
          7756, 7757, 7758, 7759, 7760,
          7761, 7762, 7763, 7764, 7765,
-         7766, 7767, 7770, 7771, 7772,
-         7773, 7774, 7775])  # NOQA
+         7770, 7771, 7772, 7773, 7774,
+         7775])  # NOQA
 )
 
 
@@ -457,16 +457,17 @@ class TestRecruitingTeachers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7764 - 014 - Teacher | Presented a thank you page after registering to use Concept Coach
+    # Case C7764 - 014 - Teacher | Presented a thank you page after registering
+    # to use Concept Coach
     @pytest.mark.skipif(str(7764) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_presented_a_thank_you_page_after_registering_7764(self):
         """Presented a thank you page after registering to use Concept Coach.
 
         Steps:
 
         Go to the recruitment website ( http://cc.openstax.org )
         Click on the 'sign up now' button
-        Fill out the intent to participate form ( http://cc.openstax.org/sign-up )
+        Fill out the intent to participate form
         Submit the form
 
 
@@ -489,17 +490,16 @@ class TestRecruitingTeachers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
     # Case C7765 - 015 - Teacher | Sign up for an OpenStax Accounts username
     @pytest.mark.skipif(str(7765) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_sign_up_for_an_openstax_accounts_username_7765(self):
         """Sign up for an OpenStax Accounts username.
 
         Steps:
 
         Go to the recruitment website ( http://cc.openstax.org )
         Click on the 'sign up now' button
-        Fill out the intent to participate form ( http://cc.openstax.org/sign-up )
+        Fill out the intent to participate form
         Submit the form
 
 
@@ -522,74 +522,9 @@ class TestRecruitingTeachers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7766 - 016 - Teacher | Sign up to receive additional Concept Coach information by e-mail
-    @pytest.mark.skipif(str(7766) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
-        """Sign up to receive additional Concept Coach information by e-mail.
-
-        Steps:
-
-        Go to the recruitment website ( http://cc.openstax.org/ )
-        Click on the 'faq' header link
-
-
-        Expected Result:
-
-        'Contact Us' pane is visible with the info@ email and the general phone number
-
-        """
-        self.ps.test_updates['name'] = 'cc1.01.016' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.01',
-            'cc1.01.016',
-            '7766'
-        ]
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-
-        self.ps.test_updates['passed'] = True
-
-
-    # Case C7767 - 017 - Teacher | Sign up to receive additional Concept Coach information by webform
-    @pytest.mark.skipif(str(7767) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
-        """Sign up to receive additional Concept Coach information by webform.
-
-        Steps:
-
-        Go to the recruitment website ( http://cc.openstax.org/ )
-        Click on the 'sign up now' button
-        Fill out the web form required fields
-        Click on the submit button
-
-
-        Expected Result:
-
-        'Display a Thank You message
-
-        """
-        self.ps.test_updates['name'] = 'cc1.01.017' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.01',
-            'cc1.01.017',
-            '7767'
-        ]
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-
-        self.ps.test_updates['passed'] = True
-
-
-    # Case C7770 - 020 - Teacher | Add co-instructors to a course
+    # Case C7770 - 020 - Admin | Add co-instructors to a course
     @pytest.mark.skipif(str(7770) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_admin_add_coinstructors_to_a_course_7770(self):
         """Add co-instructors to a course.
 
         Steps:
@@ -597,10 +532,13 @@ class TestRecruitingTeachers(unittest.TestCase):
         Log into Tutor as an admin (admin : password)
         From the user menu, select 'Admin'
         From the 'Course Organization' menu, select 'Courses'
-        In the Courses table, find the correct course and click the 'Edit' button on the right side of that row
+
+        In the Courses table, find the correct course and click the 'Edit'
+        button on the right side of that row
         Click on the 'Teachers' tab
         In the search box, enter the teacher's name or username
-        Select the teacher in the list below the search bar or hit the down arrow followed by the enter/return key
+        Select the teacher in the list below the search bar or hit the down
+        arrow followed by the enter/return key
 
 
         Expected Result:
@@ -622,10 +560,9 @@ class TestRecruitingTeachers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7771 - 021 - Teacher | Log in with an Existing OpenStax Accounts username
+    # Case C7771 - 021 - Teacher | Login with an Existing OpenStax Account
     @pytest.mark.skipif(str(7771) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_login_with_an_existing_openstax_account_7771(self):
         """Log in with an Existing OpenStax Accounts username.
 
         Steps:
@@ -639,15 +576,15 @@ class TestRecruitingTeachers(unittest.TestCase):
 
         Expected Result:
 
-        Login should be successful. It should take you to the teacher course picker/dashboard page.
+        Login should be successful. It should take you to the teacher course
+        picker/dashboard page.
 
         """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
-
     # Case C7772 - 022 - Teacher | Access the Concept Coach course
     @pytest.mark.skipif(str(7772) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_access_the_cc_course_7772(self):
         """Access the Concept Coach course.
 
         Steps:
@@ -663,10 +600,9 @@ class TestRecruitingTeachers(unittest.TestCase):
         """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
-
-    # Case C7773 - 023 - Teacher | Distribute access codes for the teacher's course
+    # Case C7773 - 023 - Teacher | Distribute access codes for the course
     @pytest.mark.skipif(str(7773) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_distribute_access_codes_for_the_course_7773(self):
         """Distribute access codes for the teacher's course.
 
         Steps:
@@ -676,22 +612,23 @@ class TestRecruitingTeachers(unittest.TestCase):
         Click on user menu
         Click on Admin
         Click on Salesforce tab
-        Click on import [Do not check the box. For testing we work ONLY with Denver University]
+        Click on import [Do not check the box]
         This will automatically create a course for the teacher created.
-        Email is sent to the email id used when signing up with the unique course URL.
+        Email is sent to the email id used when signing up with
+        the unique course URL.
 
 
         Expected Result:
 
-        Instructors are emailed the unique course url to the address provided when they signed up.
+        Instructors are emailed the unique course url to the address provided
+        when they signed up.
 
         """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
-
-    # Case C7774 - 024 - Teacher | Access Concept Coach help and support during the course
+    # Case C7774 - 024 - Teacher | Access CC help and support during the course
     @pytest.mark.skipif(str(7774) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_acccess_cc_help_and_support_during_the_course_7774(self):
         """Access Concept Coach help and support during the course.
 
         Steps:
@@ -701,12 +638,11 @@ class TestRecruitingTeachers(unittest.TestCase):
         On dashboard click on the name of the teacher
         It drops down and displays several options.
         Click on Get Help
-        It should open a new tab which shows the openstaxcc.zendesk
 
 
         Expected Result:
 
-        It should open a new tab which shows the openstaxcc.zendesk
+        It should open a new tab which shows the openstax.force.com
 
         """
         self.ps.test_updates['name'] = 'cc1.01.024' \
@@ -723,10 +659,9 @@ class TestRecruitingTeachers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7775 - 025 - Teacher | Access Concept Coach help and support after the end of the course
+    # Case C7775 - 025 - Teacher | Access CC help and support after course ends
     @pytest.mark.skipif(str(7775) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_access_cc_help_and_support_after_course_ends_7775(self):
         """Access Concept Coach help and support after the end of the course.
 
         Steps:
@@ -736,12 +671,11 @@ class TestRecruitingTeachers(unittest.TestCase):
         On dashboard click on the name of the teacher
         It drops down and displays several options.
         Click on Get Help
-        It should open a new tab which shows the openstaxcc.zendesk
 
 
         Expected Result:
 
-        It should open a new tab which shows the openstaxcc.zendesk
+        It should open a new tab which shows the openstax.force.com
 
         """
         self.ps.test_updates['name'] = 'cc1.01.025' \
