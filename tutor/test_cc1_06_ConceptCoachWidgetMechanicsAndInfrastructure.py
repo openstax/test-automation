@@ -1,4 +1,7 @@
-"""Concept Coach v1, Epic 6 - Concept Coach Widget Mechanics and Infrastructure."""
+"""Concept Coach v1, Epic 6.
+
+Concept Coach Widget Mechanics and Infrastructure.
+"""
 
 import inspect
 import json
@@ -29,7 +32,7 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestConceptCoachWidgetMechanicsAndInfrastructure(unittest.TestCase):
     """CC1.06 - Concept Coach Widget Mechanics and Infrastructure."""
 
     def setUp(self):
@@ -53,13 +56,13 @@ class TestEpicName(unittest.TestCase):
 
     # Case C7748 - 001 - Student | View a Concept Coach book and see the widget
     @pytest.mark.skipif(str(7748) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_student_view_a_cc_book_and_see_the_widget_7748(self):
         """View a Concept Coach book and see the widget.
 
-        Steps: 
+        Steps:
 
-        go to https://tutor-staging.openstax.org/
-        login as a student 
+        go to tutor-qa
+        login as a student
         click on a concept coach book
         Click on the 'Contents +' button
         Click on the a chapter in the contents
@@ -70,7 +73,7 @@ class TestEpicName(unittest.TestCase):
 
         Expected Result:
 
-        Concept Coach widget visible 
+        Concept Coach widget visible
 
         """
         self.ps.test_updates['name'] = 'cc1.06.001' \
@@ -87,16 +90,15 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
     # Case C7749 - 002 - Teacher | View a Concept Coach book and see the widget
     @pytest.mark.skipif(str(7749) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_view_a_cc_book_and_see_the_widget_7749(self):
         """View a Concept Coach book and see the widget.
 
-        Steps: 
+        Steps:
 
-        go to https://tutor-staging.openstax.org/
-        login as a teacher 
+        go to tutor-qa
+        login as a teacher
         Click on a concept coach book
         Click on 'Online Book' in the header
         Click on the 'Contents +' button
@@ -107,7 +109,7 @@ class TestEpicName(unittest.TestCase):
 
         Expected Result:
 
-        Concept Coach widget visible 
+        Concept Coach widget visible
 
         """
         self.ps.test_updates['name'] = 'cc1.06.002' \
@@ -124,16 +126,15 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
     # Case C7750 - 003 - Student | Doesn't see end-of-page exercise sections
     @pytest.mark.skipif(str(7750) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_student_doesnt_see_end_of_page_exercise_sections_7750(self):
         """Doesn't see end-of-page exercise sections.
 
-        Steps: 
+        Steps:
 
-        go to https://tutor-staging.openstax.org/
-        login as a student 
+        go to tutor-qa
+        login as a student
         click on a concept coach book
         Click on the 'Contents +' button
         Click on the a chapter in the contents
@@ -143,7 +144,7 @@ class TestEpicName(unittest.TestCase):
 
         Expected Result:
 
-        End-of-page exercise sections are not displayed. 
+        End-of-page exercise sections are not displayed.
 
         """
         self.ps.test_updates['name'] = 'cc1.06.003' \
