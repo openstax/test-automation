@@ -31,7 +31,7 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8182, 8183])  # NOQA 
+    str([8182, 8183])  # NOQA
 )
 
 
@@ -61,7 +61,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8182 - 001 - System | CNX needs to handle LaTeX in Exercises
     @pytest.mark.skipif(str(8182) not in TESTS, reason='Excluded')  # NOQA
     def test_system_cnx_needs_to_handle_latex_in_exercises(self):
-        """CNX needs to handle LaTeX in Exercises
+        r"""CNX needs to handle LaTeX in Exercises.
 
         Steps:
 
@@ -82,20 +82,19 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
         """
-
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
     # Case C8183 - 002 - System | CNX pulls exercises from Tutor
     @pytest.mark.skipif(str(8183) not in TESTS, reason='Excluded')  # NOQA
     def test_system_cnx_pulls_exercises_from_tutor(self):
-        """Story Text.
+        r"""Story Text.
 
         Steps:
 
 
         Expected Result:
 
-        
+
 
         self.ps.test_updates['name'] = 't1.27.002' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -111,5 +110,4 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
         """
-
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
