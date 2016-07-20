@@ -37,9 +37,10 @@ TESTS = os.getenv(
 # 8281, 8282, 8283, 8284, 8285, 8286
 # 8286
 
+
 @PastaDecorator.on_platforms(BROWSERS)
 class TestEpicName(unittest.TestCase):
-    """T1.48 - Work an external assignment"""
+    """T1.48 - Work an external assignment."""
 
     def setUp(self):
         """Pretest settings."""
@@ -65,10 +66,11 @@ class TestEpicName(unittest.TestCase):
     # Case C8281 - 001 - Student | Click on an external assignment
     @pytest.mark.skipif(str(8281) not in TESTS, reason='Excluded')  # NOQA
     def test_student_click_on_a_external_assignment(self):
-        """Click on an external assignment 
+        """Click on an external assignment.
 
         Steps:
-        Click on an external assignment under the tab "This Week" on the dashboard
+        Click on an external assignment under the tab "This Week"
+        on the dashboard
 
         Expected Result:
         The user is presented with the assignment link and instructions
@@ -94,20 +96,25 @@ class TestEpicName(unittest.TestCase):
                 assignment.click()
                 break
 
-        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+        assert('tasks' in self.student.current_url()), \
+            'Not viewing assignment page'
+
+        assert('steps' in self.student.current_url()), \
             'Not viewing assignment page'
 
         self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8282 - 002 - Student | Read the directions below the assignment link or hover over the info icon in the footer
+    # Case C8282 - 002 - Student | Read the directions below the assignment
+    # link or hover over the info icon in the footer
     @pytest.mark.skipif(str(8282) not in TESTS, reason='Excluded')  # NOQA
     def test_student_read_directions_below_or_hover_over_info_icon(self):
-        """Read the directions below the assignment link or hover over the info icon in the footer
+        """Read directions below assignment link or hover over the info icon.
 
         Steps:
-        Click on an external assignment under the tab "This Week" on the dashboard
+        Click on an external assignment under the tab "This Week"
+        on the dashboard
         Hover the cursor over the info icon in the footer
 
         Expected Result:
@@ -134,7 +141,10 @@ class TestEpicName(unittest.TestCase):
                 assignment.click()
                 break
 
-        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+        assert('tasks' in self.student.current_url()), \
+            'Not viewing assignment page'
+
+        assert('steps' in self.student.current_url()), \
             'Not viewing assignment page'
 
         instructions = self.student.driver.find_elements_by_tag_name("p")
@@ -154,10 +164,11 @@ class TestEpicName(unittest.TestCase):
     # Case C8283 - 003 - Student | Click the assignment link
     @pytest.mark.skipif(str(8283) not in TESTS, reason='Excluded')  # NOQA
     def test_student_click_the_assignment_link(self):
-        """Click the assignment link
+        """Click the assignment link.
 
         Steps:
-        Click on an external assignment under the tab "This Week" on the dashboard
+        Click on an external assignment under the tab "This Week"
+        on the dashboard
         Click on the link to the external assignment
 
         Expected Result:
@@ -184,14 +195,16 @@ class TestEpicName(unittest.TestCase):
                 assignment.click()
                 break
 
-        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+        assert('tasks' in self.student.current_url()), \
             'Not viewing assignment page'
 
-        link = self.student.driver.find_element_by_link_text('due in a long time')
-        original = self.student.current_url()
-        page = link.get_attribute("href")
-        self.student.driver.get(link.get_attribute("href"))
+        assert('steps' in self.student.current_url()), \
+            'Not viewing assignment page'
 
+        link = self.student.driver.find_element_by_link_text(
+            'due in a long time')
+        original = self.student.current_url()
+        self.student.driver.get(link.get_attribute("href"))
 
         assert('google' in self.student.current_url()), \
             'Not viewing assignment link'
@@ -199,7 +212,10 @@ class TestEpicName(unittest.TestCase):
         self.student.sleep(5)
         self.student.driver.get(original)
 
-        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+        assert('tasks' in self.student.current_url()), \
+            'Not viewing assignment page'
+
+        assert('steps' in self.student.current_url()), \
             'Not viewing assignment page'
 
         self.ps.test_updates['passed'] = True
@@ -207,15 +223,17 @@ class TestEpicName(unittest.TestCase):
     # Case C8284 - 004 - Student | Close the assignment tab or window
     @pytest.mark.skipif(str(8284) not in TESTS, reason='Excluded')  # NOQA
     def test_student_close_the_assignment(self):
-        """Close the assignment tab or window
+        """Close the assignment tab or window.
 
         Steps:
-        Click on an external assignment under the tab "This Week" on the dashboard
+        Click on an external assignment under the tab "This Week"
+        on the dashboard
         Click on the link to the external assignment
         Close the assignment tab
 
         Expected Result:
-        The assignment tab is closed and the user is presented with the external assignment link and instructions on Tutor
+        The assignment tab is closed and the user is presented with the
+        external assignment link and instructions on Tutor
         """
         self.ps.test_updates['name'] = 't1.48.004' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -238,14 +256,16 @@ class TestEpicName(unittest.TestCase):
                 assignment.click()
                 break
 
-        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+        assert('tasks' in self.student.current_url()), \
             'Not viewing assignment page'
 
-        link = self.student.driver.find_element_by_link_text('due in a long time')
-        original = self.student.current_url()
-        page = link.get_attribute("href")
-        self.student.driver.get(link.get_attribute("href"))
+        assert('steps' in self.student.current_url()), \
+            'Not viewing assignment page'
 
+        link = self.student.driver.find_element_by_link_text(
+            'due in a long time')
+        original = self.student.current_url()
+        self.student.driver.get(link.get_attribute("href"))
 
         assert('google' in self.student.current_url()), \
             'Not viewing assignment link'
@@ -253,18 +273,23 @@ class TestEpicName(unittest.TestCase):
         self.student.sleep(5)
         self.student.driver.get(original)
 
-        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+        assert('tasks' in self.student.current_url()), \
+            'Not viewing assignment page'
+
+        assert('steps' in self.student.current_url()), \
             'Not viewing assignment page'
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8285 - 005 - Student | Click the Back To Dashboard button to finish the assignment
+    # Case C8285 - 005 - Student | Click the Back To Dashboard button to
+    # finish the assignment
     @pytest.mark.skipif(str(8285) not in TESTS, reason='Excluded')  # NOQA
     def test_student_click_back_to_dashboard_button(self):
-        """Click the Back To Dashboard button to finish the assignment
+        """Click the Back To Dashboard button to finish the assignment.
 
         Steps:
-        Click on an external assignment under the tab "This Week" on the dashboard
+        Click on an external assignment under the tab "This Week"
+        on the dashboard
         Click on the link to the external assignment
         Close the assignment tab
         Click "Back To Dashboard"
@@ -293,14 +318,16 @@ class TestEpicName(unittest.TestCase):
                 assignment.click()
                 break
 
-        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+        assert('tasks' in self.student.current_url()), \
             'Not viewing assignment page'
 
-        link = self.student.driver.find_element_by_link_text('due in a long time')
-        original = self.student.current_url()
-        page = link.get_attribute("href")
-        self.student.driver.get(link.get_attribute("href"))
+        assert('steps' in self.student.current_url()), \
+            'Not viewing assignment page'
 
+        link = self.student.driver.find_element_by_link_text(
+            'due in a long time')
+        original = self.student.current_url()
+        self.student.driver.get(link.get_attribute("href"))
 
         assert('google' in self.student.current_url()), \
             'Not viewing assignment link'
@@ -308,9 +335,12 @@ class TestEpicName(unittest.TestCase):
         self.student.sleep(5)
         self.student.driver.get(original)
 
-        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+        assert('tasks' in self.student.current_url()), \
             'Not viewing assignment page'
-        
+
+        assert('steps' in self.student.current_url()), \
+            'Not viewing assignment page'
+
         self.student.find(By.LINK_TEXT, 'Back To Dashboard').click()
 
         assert('list' in self.student.current_url()), \
@@ -323,16 +353,18 @@ class TestEpicName(unittest.TestCase):
     # Case C8286 - 006 - Student | Verify the assignment status as Clicked
     @pytest.mark.skipif(str(8286) not in TESTS, reason='Excluded')  # NOQA
     def test_student_verify_assignment_status_as_clicked(self):
-        """Verify the assignment status as Clicked
+        """Verify the assignment status as Clicked.
 
         Steps:
-        Click on an external assignment under the tab "This Week" on the dashboard
+        Click on an external assignment under the tab "This Week"
+        on the dashboard
         Click on the link to the external assignment
         Close the assignment tab
         Click "Back To Dashboard"
 
         Expected Result:
-        The external assignment is marked as "Clicked" in the Progress column on the dashboard
+        The external assignment is marked as "Clicked" in the Progress column
+        on the dashboard
         """
         self.ps.test_updates['name'] = 't1.48.006' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -355,14 +387,16 @@ class TestEpicName(unittest.TestCase):
                 assignment.click()
                 break
 
-        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+        assert('tasks' in self.student.current_url()), \
             'Not viewing assignment page'
 
-        link = self.student.driver.find_element_by_link_text('due in a long time')
-        original = self.student.current_url()
-        page = link.get_attribute("href")
-        self.student.driver.get(link.get_attribute("href"))
+        assert('steps' in self.student.current_url()), \
+            'Not viewing assignment page'
 
+        link = self.student.driver.find_element_by_link_text(
+            'due in a long time')
+        original = self.student.current_url()
+        self.student.driver.get(link.get_attribute("href"))
 
         assert('google' in self.student.current_url()), \
             'Not viewing assignment link'
@@ -370,19 +404,23 @@ class TestEpicName(unittest.TestCase):
         self.student.sleep(5)
         self.student.driver.get(original)
 
-        assert('tasks' in self.student.current_url() and 'steps' in self.student.current_url()), \
+        assert('tasks' in self.student.current_url()), \
             'Not viewing assignment page'
-        
+
+        assert('steps' in self.student.current_url()), \
+            'Not viewing assignment page'
+
         self.student.find(By.LINK_TEXT, 'Back To Dashboard').click()
 
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        externals = self.student.driver.find_elements_by_xpath("//div[@class = 'task row external workable']")
+        externals = self.student.driver.find_elements_by_xpath(
+            "//div[@class = 'task row external workable']")
         flag = False
 
         for assignment in externals:
-            if assignment.text.find("Clicked") >= 0 and assignment.text.find("Jun 05, 2:34am") >= 0:
+            if assignment.text.find("Clicked") >= 0 and assignment.text.find("Jun 05, 2:34am") >= 0:  # NOQA
                 flag = True
                 break
 
