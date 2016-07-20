@@ -106,7 +106,10 @@ class Result(object):
             sub = list(child.iter())
             if len(sub) >= 2:
                 child.attrib['status'] = sub[1].tag
-                message = sub[1].attrib['message']
+                if DEBUG:
+                    print(child.attrib)
+                message = sub[1].attrib['message'] if 'message' in \
+                    sub[1].attrib else ''
                 parts = message.split(
                     '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ' +
                     '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _'
@@ -139,6 +142,7 @@ def main(argv):
     path = './'
     file_name = 'result.xml'
     server = ''
+    # Process arguments
     try:
         options, arguments = getopt.getopt(
             argv,
@@ -161,33 +165,43 @@ def main(argv):
             server = argument
             if DEBUG:
                 print('URL: ', server)
+    # Break up the XML file
     runner = Result(path=path, data=file_name, url=server)
+    # Process the tests
+    runner.retrieve_test_results()
+    # Build the data results for load
     results = []
     for child in runner.root:
         if DEBUG:
+            print(Result.NEW_LINE)
             for key in child.attrib:
                 print(key, ':', child.attrib[key])
         if 'status' not in child.attrib:
             child.attrib['status'] = 'skipped'
         if child.attrib['status'] != 'skipped':
-            results.append({
-                'test_id': child.attrib['test'],
-                'status_id': runner.get_status(child.attrib['status']),
-                'comment': child.attrib['message'],
-                'version': '',
-                'elapsed': runner.get_time_string(child.attrib['time']),
-                'defects': '',
-                'assignedto_id': '',
-            })
+            if 'test_id' in child.attrib and child.attrib['test_id'] != -1:
+                results.append({
+                    'test_id': child.attrib['test'],
+                    'status_id': runner.get_status(child.attrib['status']),
+                    'comment': child.attrib['message'],
+                    'version': '',
+                    'elapsed': runner.get_time_string(child.attrib['time']),
+                    'defects': '',
+                    'assignedto_id': '',
+                })
     if DEBUG:
         print(' ')
         print('Run:', int(runner.run_id))
         print('Results:')
-        if len(results) < 2:
-            results = [results]
+    if len(results) < 2:
+        results = [results]
+    if DEBUG:
         for result in results:
             print('\t', result)
-    # package = tr.add_results(run_id=int(run), data={'results': results})
+    package = runner.test_rail.add_results(run_id=int(runner.run_id),
+                                           data={'results': results})
+    if DEBUG:
+        print(package)
 
 
 if __name__ == '__main__':
