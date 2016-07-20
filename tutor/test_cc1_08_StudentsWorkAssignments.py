@@ -544,3 +544,89 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         # Test steps and verification assertions
 
         self.ps.test_updates['passed'] = True
+
+    # Case C7701 - 011 - Student | Able to work an assignment on an
+    # Android tablet device
+    @pytest.mark.skipif(str(7701) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_able_to_work_an_assignment_on_android_tablet_7701(self):
+        """Able to work an assignment on an Android tablet device.
+
+        Steps:
+
+        Click the 'Contents' button to open the table of contents
+        Click on a chapter
+        Click on a non-introductory section
+        Click the 'Launch Concept Coach' button at the bottom of the page
+        Type text into the 'Enter your response' text box
+        Click a multiple choice answer
+        Click the 'Submit' button
+
+
+
+        Expected Result:
+
+        Answer is successfully submitted.
+
+
+        """
+        self.ps.test_updates['name'] = 'cc1.08.011' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.08',
+            'cc1.08.011',
+            '7701'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C7702 - 012 - Student | Able to work an assignment on a
+    # Windows tablet device
+    @pytest.mark.skipif(str(7701) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_able_to_work_an_assignment_on_windows_tablet_7702(self):
+        """Able to work an assignment on a WIndows tablet device.
+
+        Steps:
+
+        Click the 'Contents' button to open the table of contents
+        Click on a chapter
+        Click on a non-introductory section
+        Click the 'Launch Concept Coach' button at the bottom of the page
+        Type text into the 'Enter your response' text box
+        Click a multiple choice answer
+        Click the 'Submit' button
+
+
+
+        Expected Result:
+
+        Answer is successfully submitted.
+
+
+        """
+        self.ps.test_updates['name'] = 'cc1.08.012' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.08',
+            'cc1.08.012',
+            '7702'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C7703 - 013 - Student | Sees product error modals
+    @pytest.mark.skipif(str(7703) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_sees_product_error_modals_7703(self):
+        """See product error modals.
+
+        Steps:
+
+        """
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
