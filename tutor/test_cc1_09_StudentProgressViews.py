@@ -29,7 +29,7 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestStudentProgressViews(unittest.TestCase):
     """CC1.09 - Student Progress Views."""
 
     def setUp(self):
@@ -53,32 +53,33 @@ class TestEpicName(unittest.TestCase):
 
     # Case C7732 - 001 - Student | View section completion report
     @pytest.mark.skipif(str(7732) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_student_view_section_completion_report_7732(self):
         """View section completion report.
 
-        Steps: 
+        Steps:
 
-        Go to https://tutor-staging.openstax.org/
+        Go to https://tutor-qa.openstax.org/
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
         Click on the 'Sign in' button
-        If the user has more than one course, click on a Concept Coach course name
+        If the user has more than one course, click on a CC course name
 
         Click on "Contents"
-        Select a section 
+        Select a section
         Scroll to bottom of the section
-        Click "Launch Concept Coach" 
+        Click "Launch Concept Coach"
         Enter a response into the free response text box
         Click "Answer"
         Select a multiple choice answer
         Click "Submit"
-        Click "Next question" 
+        Click "Next question"
         Continue answering questions
 
 
         Expected Result:
 
-        The user is presented with section completion report that shows "You're done"
+        The user is presented with section completion report
+        that shows "You're done"
 
         """
         self.ps.test_updates['name'] = 'cc1.09.001' \
@@ -95,29 +96,30 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7733 - 002 - Student | Completion report shows the section status of started and completed modules
+    # Case C7733 - 002 - Student | Completion report shows the section status
+    # of started and completed modules
     @pytest.mark.skipif(str(7733) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_student_completion_report_shows_the_section_status_of_7733(self):
         """Completion report shows the section status of started and completed modules.
 
-        Steps: 
+        Steps:
 
         Click on "Contents"
-        Select a section 
+        Select a section
         Scroll to bottom of the section
-        Click "Launch Concept Coach" 
+        Click "Launch Concept Coach"
         Enter a response into the free response text box
         Click "Answer"
         Select a multiple choice answer
         Click "Submit"
-        Click "Next question" 
+        Click "Next question"
         Continue answering questions
 
 
         Expected Result:
 
-        The user is presented with the completion report, which shows the section status of completed modules
+        The user is presented with the completion report, which shows the
+        section status of completed modules
 
         """
         self.ps.test_updates['name'] = 'cc1.09.002' \
@@ -134,18 +136,17 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7735 - 003 - Student | Able to access the progress views at any point
+    # Case C7735 - 003 - Student | Access the progress views at any point
     @pytest.mark.skipif(str(7735) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_student_access_the_progress_views_at_any_point_7735(self):
         """Able to access the progress views at any point.
 
-        Steps: 
+        Steps:
 
         Click on "Contents"
-        Select a section 
+        Select a section
         Scroll to bottom of the section
-        Click "Launch Concept Coach" 
+        Click "Launch Concept Coach"
         Click "My Progress" in the header
 
 
@@ -168,18 +169,17 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
     # Case C7736 - 004 - Student | Return to current position in an assignment
     @pytest.mark.skipif(str(7736) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_student_return_to_current_position_in_an_assignment_7736(self):
         """Return to current position in an assignment.
 
-        Steps: 
+        Steps:
 
         Click on "Contents"
-        Select a section 
+        Select a section
         Scroll to bottom of the section
-        Click "Launch Concept Coach" 
+        Click "Launch Concept Coach"
         Enter a response into the free response text box
         Click "Answer"
         Select a multiple choice answer
@@ -197,18 +197,17 @@ class TestEpicName(unittest.TestCase):
         """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
-
     # Case C7737 - 005 - Student | Able to review previous modules
     @pytest.mark.skipif(str(7737) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_student_able_to_review_previous_modules_7737(self):
         """Able to review previous modules.
 
-        Steps: 
+        Steps:
 
         Click on "Contents"
-        Select a section 
+        Select a section
         Scroll to bottom of the section
-        Click "Launch Concept Coach" 
+        Click "Launch Concept Coach"
         Click "My Progress" in the header
         Click on the desired module under the "Previous" section
 
