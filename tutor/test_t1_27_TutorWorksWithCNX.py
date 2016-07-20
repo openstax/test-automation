@@ -1,6 +1,6 @@
-"""Product, Epic ## - Epic Text."""
+"""Tutor v1, Epic 27 - Tutor works with CNX."""
 
-import inspect
+import inspect 
 import json
 import os
 import pytest
@@ -31,13 +31,13 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([list_of_cases])  # NOQA
+    str([8182, 8183])  # NOQA 
 )
 
 
 @PastaDecorator.on_platforms(BROWSERS)
 class TestEpicName(unittest.TestCase):
-    """Product.Epic - Epic Text."""
+    """T1.27 - Tutor works with CNX."""
 
     def setUp(self):
         """Pretest settings."""
@@ -58,9 +58,36 @@ class TestEpicName(unittest.TestCase):
         except:
             pass
 
-    # Case CaseID - Story# - UserType
-    @pytest.mark.skipif(str(CaseID) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_storytext_CaseID(self):  # NOQA
+    # Case C8182 - 001 - System | CNX needs to handle LaTeX in Exercises
+    @pytest.mark.skipif(str(8182) not in TESTS, reason='Excluded')  # NOQA
+    def test_system_cnx_needs_to_handle_latex_in_exercises(self):
+        """CNX needs to handle LaTeX in Exercises
+
+        Steps:
+
+
+        Expected Result:
+
+        self.ps.test_updates['name'] = 't1.27.001' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.27',
+            't1.27.001',
+            '8182'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+        """
+
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+    # Case C8183 - 002 - System | CNX pulls exercises from Tutor
+    @pytest.mark.skipif(str(8183) not in TESTS, reason='Excluded')  # NOQA
+    def test_system_cnx_pulls_exercises_from_tutor(self):
         """Story Text.
 
         Steps:
@@ -68,17 +95,21 @@ class TestEpicName(unittest.TestCase):
 
         Expected Result:
 
-        """
-        self.ps.test_updates['name'] = 'product.epic.story' \
+        
+
+        self.ps.test_updates['name'] = 't1.27.002' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
-            'product',
-            'product.epic',
-            'product.epic.story',
-            'CaseID'
+            't1',
+            't1.27',
+            't1.27.002',
+            '8183'
         ]
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
 
         self.ps.test_updates['passed'] = True
+        """
+
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)

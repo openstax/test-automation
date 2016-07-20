@@ -29,8 +29,7 @@ def load_pdf_page(filepath, page_number):
 def generate_tests(settings):
     """create parameterized tests"""
     test_cases = unittest.TestSuite()
-    cases = import_module(settings['cases'])
-
+    cases = import_module("inspection."+settings['cases'])
     pdf_a_im = pyPdf.PdfFileReader(file(settings['pdf_a'], "rb"))
     total_a_pages = pdf_a_im.getNumPages()
     pdf_b_im = pyPdf.PdfFileReader(file(settings['pdf_b'], "rb"))
@@ -56,40 +55,57 @@ def generate_tests(settings):
     return test_cases
 
 
-def load_result_log(filepath):
-    results = []
-    with open(filepath, 'r') as f:
-        for line in f:
-            info = eval(line)
-            results.append(info)
-    return results
+def case_key_from_id(ident):
+    return ident.split('(')[0]
 
+def generate_info_matrix(tests, results):
 
-def generate_info_matrix(info_list):
-    test_cases = set([(info['test'], info['case']) for info in info_list])
-    pages_a = set([info['page_i'] for info in info_list])
-    pages_b = set([info['page_j'] for info in info_list])
+    cases = set([ test.id().split('(')[0] for test in tests])
+    pages_a = set([test.page_i for test in tests])
+    pages_b = set([test.page_j for test in tests])
 
-    test_cases = list(test_cases)
-    pages_a = list(pages_a)
-    pages_b = list(pages_b)
-
-    info_matrix = numpy.chararray((len(test_cases),
+    info_matrix = numpy.chararray((len(cases),
                                    len(pages_a) + 1,
                                    len(pages_b) + 1))
 
     info_matrix[:] = 'f'
 
-    for info in info_list:
-        x = test_cases.index((info['test'], info['case']))
-        y = info['page_i']
-        z = info['page_j']
+    cases = list(cases)
 
-        value = info['result']
-        info_matrix[x, y, z] = value
+    for test in tests:
+        test_case = case_key_from_id(test.id())
+
+        x = cases.index(test_case)
+        y = test.page_i
+        z = test.page_j
+
+        info_matrix[x, y, z] = 'p'
+
+    for failure in results.failures:
+        test = failure[0]
+        test_case = case_key_from_id(test.id())
+        x = cases.index(test_case)
+        y = test.page_i
+        z = test.page_j
+        info_matrix[x, y, z] = 'f'
+
+    for error in results.errors:
+        test = error[0]
+        test_case = case_key_from_id(test.id())
+        x = cases.index(test_case)
+        y = test.page_i
+        z = test.page_j
+        info_matrix[x, y, z] = 'e'
+
+    for skipped in results.skipped:
+        test = skipped[0]
+        test_case = case_key_from_id(test.id())
+        x = cases.index(test_case)
+        y = test.page_i
+        z = test.page_j
+        info_matrix[x, y, z] = 's'
 
     return info_matrix
-
 
 def generate_comp_matrix(info_matrix, operation, skip=False):
 
@@ -141,54 +157,75 @@ def lcs_length(comp_matrix):
     return length_matrix
 
 
-def backtrack(length_matrix, comp_matrix, i, j):
-    if i == 0 or j == 0:
-        return []
-    elif comp_matrix[i, j]:
-        return backtrack(length_matrix, comp_matrix, i - 1, j - 1) + [(i, j)]
-    else:
-        if length_matrix[i, j - 1] > length_matrix[i - 1, j]:
-            return backtrack(length_matrix, comp_matrix, i, j - 1)
+def backtrack(length_matrix, comp_matrix, i, j, accumulator=[]):
+    while True:
+        if i == 0 or j == 0:
+            return accumulator
+        elif comp_matrix[i, j]:
+            (length_matrix, comp_matrix, i, j, accumulator) = (length_matrix, comp_matrix, i - 1, j - 1, accumulator+[(i, j)])
+            continue
         else:
-            return backtrack(length_matrix, comp_matrix, i - 1, j)
+            if length_matrix[i, j - 1] > length_matrix[i - 1, j]:
+                (length_matrix, comp_matrix, i, j , accumulator) = (length_matrix, comp_matrix, i, j - 1, accumulator)
+                continue
+            else:
+                (length_matrix, comp_matrix, i, j , accumulator) = (length_matrix, comp_matrix, i - 1, j, accumulator)
+                continue
+        break
 
+def lcs_images( results_matrix, require='ANY'):
 
-def lcs_images(results_file_path, require='ANY'):
-    results_list = load_result_log(results_file_path)
-    info_matrix = generate_info_matrix(results_list)
-    comp_matrix = generate_comp_matrix(info_matrix, require)
+    comp_matrix = generate_comp_matrix(results_matrix, require)
     length_matrix = lcs_length(comp_matrix)
     (M, N) = length_matrix.shape
     lcs = backtrack(length_matrix, comp_matrix, M - 1, N - 1)
+    lcs.reverse()
     return lcs
 
-def diff_images(results_file_path, require='ANY'):
-    results_list = load_result_log(results_file_path)
-    info_matrix = generate_info_matrix(results_list)
-    comp_matrix = generate_comp_matrix(info_matrix, require)
+def diff_images(results_matrix, require='ANY'):
+    comp_matrix = generate_comp_matrix(results_matrix, require)
     length_matrix = lcs_length(comp_matrix)
     (M, N) = length_matrix.shape
     diff = printDiff(length_matrix, comp_matrix, M - 1, N - 1)
+    diff = diff.split('\n')
+    diff.reverse()
+    diff = '\n'.join(diff)
+    diff = diff.strip()
     return diff
 
-def printDiff(C, XY, i, j):
-    if i > 0 and j > 0 and XY[i][j] == 1:
-        diff = printDiff(C, XY, i-1, j-1)
-        if diff is None:
-            return '\n' + str(i)
+def printDiff(C, XY, i, j, accumulator = ''):
+    while True:
+        if i > 0 and j > 0 and XY[i][j] == 1:
+            (C, XY, i, j, accumulator) = (C, XY, i-1, j-1,diff_statement(accumulator,'',i))
+            continue
         else:
-            return str(diff) + '\n' + str(i)
-    else:
-        if j > 0 and (i == 0 or C[i][j-1] >= C[i-1][j]):
-            diff = printDiff(C, XY, i, j-1)
-            if diff is None:
-                return '\n' + str(j)
+            if j > 0 and (i == 0 or C[i][j-1] >= C[i-1][j]):
+                (C, XY, i, j, accumulator) = (C, XY, i, j-1,diff_statement(accumulator,'+',j))
+                continue
+            elif i > 0 and (j == 0 or C[i][j-1] < C[i-1][j]):
+                (C, XY, i, j, accumulator) = (C, XY, i-1, j, diff_statement(accumulator,'-',i))
+                continue
             else:
-                return str(diff) + '\n' + "+ " + str(j)
-        elif i > 0 and (j == 0 or C[i][j-1] < C[i-1][j]):
-            diff = printDiff(C, XY, i-1, j)
-            if diff is None:
-                return '\n' + str(i)
-            else: 
-                return str(diff) + '\n' + "- " + str(i)
+                return accumulator
+        break
+
+def diff_statement(diff, sign, index):
+    return "{0}\n{1} {2}".format(diff or '',sign,index)
+
+import contextlib
+import os
+
+
+@contextlib.contextmanager
+def working_directory(path):
+    """A context manager which changes the working directory to the given
+    path, and then changes it back to its previous value on exit.
+
+    """
+    prev_cwd = os.getcwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(prev_cwd)
       

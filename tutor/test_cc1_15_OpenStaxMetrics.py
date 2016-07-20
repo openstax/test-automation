@@ -1,4 +1,4 @@
-"""Product, Epic ## - Epic Text."""
+"""Concept Coach v1, Epic 15 - OpenStax Metrics."""
 
 import inspect
 import json
@@ -13,14 +13,7 @@ from selenium.webdriver.support import expected_conditions as expect  # NOQA
 from staxing.assignment import Assignment  # NOQA
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher  # NOQA
-
-# for template command line testing only
-# - replace list_of_cases on line 31 with all test case IDs in this file
-# - replace CaseID on line 52 with the actual cass ID
-# - delete lines 17 - 22
-list_of_cases = 0
-CaseID = 0
+from staxing.helper import Admin  # NOQA
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -31,13 +24,13 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([list_of_cases])  # NOQA
+    str([7608])  # NOQA
 )
 
 
 @PastaDecorator.on_platforms(BROWSERS)
 class TestEpicName(unittest.TestCase):
-    """Product.Epic - Epic Text."""
+    """CC1.15 - OpenStax Metrics."""
 
     def setUp(self):
         """Pretest settings."""
@@ -58,24 +51,36 @@ class TestEpicName(unittest.TestCase):
         except:
             pass
 
-    # Case CaseID - Story# - UserType
-    @pytest.mark.skipif(str(CaseID) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_storytext_CaseID(self):  # NOQA
-        """Story Text.
+    # Case C7608 - 001 - Admin | View a report of enrolled students by course
+    @pytest.mark.skipif(str(7608) not in TESTS, reason='Excluded')  # NOQA
+    def test_usertype_story_text(self):
+        """View a report of enrolled students by course
 
-        Steps:
+        Steps: 
+
+        Go to https://tutor-qa.openstax.org/
+        Click on the 'Login' button
+        Enter the admin user account [ admin | password ] in the username and password text boxes
+        Click on the 'Sign in' button
+        Open the drop down menu by clicking on the user menu link containing the user's name
+        Click on the 'Admin' button
+        Open the drop down menu by clicking 'Course Organization'
+        Click the 'Courses' option
+        Click the 'List Students' button for the chosen course
 
 
         Expected Result:
 
+        List of students for chosen course is displayed
+
         """
-        self.ps.test_updates['name'] = 'product.epic.story' \
+        self.ps.test_updates['name'] = 'cc1.15.001' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
-            'product',
-            'product.epic',
-            'product.epic.story',
-            'CaseID'
+            'cc1',
+            'cc1.15',
+            'cc1.15.001',
+            '7608'
         ]
         self.ps.test_updates['passed'] = False
 
