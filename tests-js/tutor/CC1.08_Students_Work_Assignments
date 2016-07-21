@@ -1,0 +1,253 @@
+Helpers = require 'openstax-tutor/test-integration/helpers'
+{expect} = require 'chai'
+USERS = require './users.json'
+selenium = require 'selenium-webdriver'
+
+SimpleCollection = require '../helpers/simple-collection'
+
+users = new SimpleCollection(USERS)
+
+tutorTeacher = users.find('teacher', 'tutor')
+student = users.find('student')
+contentAnalyst = users.find('content-analyst')
+admin = users.find('admin')
+driver = new selenium.Builder()
+  .withCapabilities(selenium.Capabilities.chrome())
+  .build()
+
+cases =
+  '7691':
+    title: '001 - Student | Selects an exercise answer'
+    before: ->
+      @driver.get 'https://tutor-staging.openstax.org'
+    spec: ->
+      @utils.wait.click(linkText: 'Login')
+      @user.waitUntilLoaded()
+
+      @user.driver.findElement(By.Xpath(//*[@id="auth_key"])).SendKeys("student01")
+      @user.driver.findElement(By.Xpath(//*[@id="password"])).SendKeys("password")
+      @utils.wait.click(linkText: 'Sign in')
+      @user.waitUntilLoaded()
+
+      @courseSelect.el.courseByAppearance(null, true).click()
+
+      @utils.wait.click(linkText: 'Next')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Next')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Launch Concept Coach')
+      @user.waitUntilLoaded()
+
+  '7692':
+    title: '002 - Student | After answering an exercise feedback is presented'
+    before: ->
+      @driver.get 'https://tutor-staging.openstax.org'
+    spec: ->
+      @utils.wait.click(linkText: 'Login')
+      @user.waitUntilLoaded()
+
+      @user.driver.findElement(By.Xpath(//*[@id="auth_key"])).SendKeys("student01")
+      @user.driver.findElement(By.Xpath(//*[@id="password"])).SendKeys("password")
+      @utils.wait.click(linkText: 'Sign in')
+      @user.waitUntilLoaded()
+
+      @courseSelect.el.courseByAppearance(null, true).click()
+
+      @utils.wait.click(linkText: 'Next')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Next')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Launch Concept Coach')
+      @user.waitUntilLoaded()
+
+      @user.driver.findElement(By.Xpath(//*[@id="textarea"])).SendKeys("test")
+      @utils.wait.click(linkText: 'Answer')
+      @user.waitUntilLoaded()
+
+      #select answer "a"
+      @utils.wait.click(linkText: 'a')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Submit')
+      @user.waitUntilLoaded()
+
+  '7695':
+    title: '005 - System | Modules without assessments do not display the Concept Coach widget'
+    before: ->
+      @driver.get 'https://tutor-staging.openstax.org'
+    spec: ->
+      @utils.wait.click(linkText: 'Login')
+      @user.waitUntilLoaded()
+
+      @user.driver.findElement(By.Xpath(//*[@id="auth_key"])).SendKeys("student01")
+      @user.driver.findElement(By.Xpath(//*[@id="password"])).SendKeys("password")
+      @utils.wait.click(linkText: 'Sign in')
+      @user.waitUntilLoaded()
+
+      @courseSelect.el.courseByAppearance(null, true).click()
+
+      # This is the introduction page of the concept coach book. So the CC widget should not be displayed
+
+  '7696':
+    title: '006 - Student | Assignments are assistive technology-friendly'
+    before: ->
+      @driver.get 'https://tutor-staging.openstax.org'
+    spec: ->
+      @utils.wait.click(linkText: 'Login')
+      @user.waitUntilLoaded()
+
+      @user.driver.findElement(By.Xpath(//*[@id="auth_key"])).SendKeys("student01")
+      @user.driver.findElement(By.Xpath(//*[@id="password"])).SendKeys("password")
+      @utils.wait.click(linkText: 'Sign in')
+      @user.waitUntilLoaded()
+
+      @courseSelect.el.courseByAppearance(null, true).click()
+
+      @utils.wait.click(linkText: 'Next')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Next')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Launch Concept Coach')
+      @user.waitUntilLoaded()
+
+      @user.driver.findElement(By.Xpath(//*[@id="textarea"])).SendKeys("test")
+      @utils.wait.click(linkText: 'Answer')
+      @user.waitUntilLoaded()
+
+      # Type a, b, c, or d
+      @user.driver.SendKeys("A")
+      @user.driver.SendKeys("B")
+      @user.driver.SendKeys("C")
+      @user.driver.SendKeys("D")
+
+  '7697':
+    title: '007 - Student | Display the assignment summary after completing the assignment'
+    before: ->
+      @driver.get 'https://tutor-staging.openstax.org'
+    spec: ->
+      @utils.wait.click(linkText: 'Login')
+      @user.waitUntilLoaded()
+
+      @user.driver.findElement(By.Xpath(//*[@id="auth_key"])).SendKeys("student01")
+      @user.driver.findElement(By.Xpath(//*[@id="password"])).SendKeys("password")
+      @utils.wait.click(linkText: 'Sign in')
+      @user.waitUntilLoaded()
+
+      @courseSelect.el.courseByAppearance(null, true).click()
+
+      @utils.wait.click(linkText: 'Next')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Next')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Launch Concept Coach')
+      @user.waitUntilLoaded()
+
+      # answer the first question 
+      @user.driver.findElement(By.Xpath(//*[@id="textarea"])).SendKeys("test")
+      @utils.wait.click(linkText: 'Answer')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'a')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Submit')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Next Question')
+      @user.waitUntilLoaded()
+
+      # answer the second question
+      @user.driver.findElement(By.Xpath(//*[@id="textarea"])).SendKeys("test")
+      @utils.wait.click(linkText: 'Answer')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'a')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Submit')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Next Question')
+      @user.waitUntilLoaded()
+
+      # answer the third question
+      @user.driver.findElement(By.Xpath(//*[@id="textarea"])).SendKeys("test")
+      @utils.wait.click(linkText: 'Answer')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'a')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Submit')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Next Question')
+      @user.waitUntilLoaded()
+
+  '7698':
+    title: '008 - Student | The exercise ID is visible within the assessment pane'
+    before: ->
+      @driver.get 'https://tutor-staging.openstax.org'
+    spec: ->
+      @utils.wait.click(linkText: 'Login')
+      @user.waitUntilLoaded()
+
+      @user.driver.findElement(By.Xpath(//*[@id="auth_key"])).SendKeys("student01")
+      @user.driver.findElement(By.Xpath(//*[@id="password"])).SendKeys("password")
+      @utils.wait.click(linkText: 'Sign in')
+      @user.waitUntilLoaded()
+
+      @courseSelect.el.courseByAppearance(null, true).click()
+
+      @utils.wait.click(linkText: 'Next')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Next')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Launch Concept Coach')
+      @user.waitUntilLoaded()
+
+      # The exercise ID is visible on the exercise.
+
+  '7699':
+    title: '009 - Student | Able to refer an assessment to OpenStax via Errata Form'
+    before: ->
+      @driver.get 'https://tutor-staging.openstax.org'
+    spec: ->
+      @utils.wait.click(linkText: 'Login')
+      @user.waitUntilLoaded()
+
+      @user.driver.findElement(By.Xpath(//*[@id="auth_key"])).SendKeys("student01")
+      @user.driver.findElement(By.Xpath(//*[@id="password"])).SendKeys("password")
+      @utils.wait.click(linkText: 'Sign in')
+      @user.waitUntilLoaded()
+
+      @courseSelect.el.courseByAppearance(null, true).click()
+
+      @utils.wait.click(linkText: 'Next')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Next')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Launch Concept Coach')
+      @user.waitUntilLoaded()
+
+      @utils.wait.click(linkText: 'Report an error')
+      @user.waitUntilLoaded()
+
+
+module.exports =
+  cases: cases
+
+
+

@@ -13,7 +13,7 @@ from selenium.webdriver.support import expected_conditions as expect  # NOQA
 from staxing.assignment import Assignment  # NOQA
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Admin, ContentQA  # NOQA
+from staxing.helper import Admin, ContentQA, Teacher  # NOQA
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -30,14 +30,14 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestContentPreparationAndImport(unittest.TestCase):
     """CC1.03 - Content Preparation and Import."""
 
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
+        self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
@@ -54,19 +54,18 @@ class TestEpicName(unittest.TestCase):
 
     # Case C7603 - 001 - Content Analyst | Import content into Tutor
     @pytest.mark.skipif(str(7603) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_content_analyst_import_content_into_tutor_7603(self):
         """Import content into Tutor.
 
-        Steps: 
-
-        Go to tutor-staging
+        Steps:
+        Go to tutor-qa
         login as content
         Select Customer Analyst from the dropdown menu on the name
         Click on Ecosystems in the header
         Click "Download Manifest" for the desired course
-        Scroll down and click Import a new Ecosystem button. 
-        Click "Choose File" 
-        Select the desired file
+        Scroll down and click Import a new Ecosystem button.
+        Click "Choose File"
+        Select the downloaded
         In comment section add today's date and your name. Eg: 2016-03-03 Kajal
         Click on the button Import
         Now wait for at most 5 mins.
@@ -90,20 +89,19 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
     # Case C7604 - 002 - Admin | Import content into Tutor
     @pytest.mark.skipif(str(7604) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_admin_import_content_into_tutor_7604(self):
         """Import content into Tutor.
 
-        Steps: 
+        Steps:
 
         Select Customer Analyst from the dropdown menu on the name
         Click on Ecosystems in the header
         Click "Download Manifest" for the desired course
-        Scroll down and click Import a new Ecosystem button. 
-        Click "Choose File" 
-        Select the desired file
+        Scroll down and click Import a new Ecosystem button.
+        Click "Choose File"
+        Select the downloaded file
         In comment section add today's date and your name. Eg: 2016-03-03 Kajal
         Click on the button Import
         Now wait for at most 5 mins.
@@ -127,16 +125,16 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7962 - 003 - Content Analyst| Verify question availability for CC-Derived Biology
+    # Case C7962 - 003 - Content Analyst| Verify question availability for
+    # CC-Derived Biology
     @pytest.mark.skipif(str(7962) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_content_analyst_verify_question_availability_for_bio_7962(self):
         """Verify question availability for CC-Derived Biology.
 
-        Steps: 
+        Steps:
 
-        Click QA content 
-        Click Available Books 
+        Click QA content
+        Click Available Books
         Select CC-Derived Biology
         Click on a section in the table of contents
 
@@ -159,16 +157,16 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7963 - 004 - Content Analyst| Verify question availability for CC-Derived College Physics
+    # Case C7963 - 004 - Content Analyst| Verify question availability for
+    # CC-Derived College Physics
     @pytest.mark.skipif(str(7963) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_content_analyst_verify_question_availability_for_phys_7963(self):
         """Verify question availability for CC-Derived College Physics.
 
-        Steps: 
-        
-        Click QA content 
-        Click Available Books 
+        Steps:
+
+        Click QA content
+        Click Available Books
         Select CC-Derived College Physics
         Click on a section in the table of contents
 
@@ -192,16 +190,16 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7964 - 005 - Content Analyst| Verify question availability for CC-Derived Concepts of Biology
+    # Case C7964 - 005 - Content Analyst| Verify question availability for
+    # CC-Derived Concepts of Biology
     @pytest.mark.skipif(str(7964) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_content_analyst_verify_question_avilability_for_concep_7964(self):
         """Verify question availability for CC-Derived Concepts of Biology.
 
-        Steps: 
-        
-        Click QA content 
-        Click Available Books 
+        Steps:
+
+        Click QA content
+        Click Available Books
         Select CC-Derived Concepts of Biology
         Click on a section in the table of contents
 
@@ -225,16 +223,16 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7965 - 006 - Content Analyst| Verify question availability for CC-Derived Anatomy & Physiology
+    # Case C7965 - 006 - Content Analyst| Verify question availability for
+    # CC-Derived Anatomy & Physiology
     @pytest.mark.skipif(str(7965) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_content_analyst_verify_question_availability_for_ap_7965(self):
         """Verify question availability for CC-Derived Anatomy & Physiology.
 
-        Steps: 
-        
-        Click QA content 
-        Click Available Books 
+        Steps:
+
+        Click QA content
+        Click Available Books
         Select CC-Derived Anatomy and Physiology
         Click on a section in the table of contents
 
@@ -258,16 +256,16 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7966 - 007 - Content Analyst| Verify question availability for CC-Derived Macroeconomics
+    # Case C7966 - 007 - Content Analyst| Verify question availability for
+    # CC-Derived Macroeconomics
     @pytest.mark.skipif(str(7966) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_content_analyst_verify_question_availability_for_macro_7966(self):
         """Verify question availability for CC-Derived Macroeconomics.
 
-        Steps: 
-        
-        Click QA content 
-        Click Available Books 
+        Steps:
+
+        Click QA content
+        Click Available Books
         Select CC-Derived Macroeconomics
         Click on a section in the table of contents
 
@@ -291,16 +289,16 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7967 - 008 - Content Analyst| Verify question availability for CC-Derived Microeconomics
+    # Case C7967 - 008 - Content Analyst| Verify question availability for
+    # CC-Derived Microeconomics
     @pytest.mark.skipif(str(7967) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_content_analyst_verify_question_availability_for_micro_7967(self):
         """Verify question availability for CC-Derived Microeconomics.
 
-        Steps: 
-        
-        Click QA content 
-        Click Available Books 
+        Steps:
+
+        Click QA content
+        Click Available Books
         Select CC-Derived Microeconomics
         Click on a section in the table of contents
 
@@ -324,16 +322,16 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7968 - 009 - Content Analyst| Verify question availability for CC-Derived Principles of Economics
+    # Case C7968 - 009 - Content Analyst| Verify question availability for
+    # CC-Derived Principles of Economics
     @pytest.mark.skipif(str(7968) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_content_analyst_verify_question_availability_for_princ_7968(self):
         """Verify question availability for CC-Derived Principles of Economics.
 
-        Steps: 
-        
-        Click QA content 
-        Click Available Books 
+        Steps:
+
+        Click QA content
+        Click Available Books
         Select CC-Derived Principles of Economics
         Click on a section in the table of contents
 
@@ -357,16 +355,16 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7969 - 010 - Content Analyst| Verify question availability for CC-Derived Introduction to Sociology
+    # Case C7969 - 010 - Content Analyst| Verify question availability for
+    # CC-Derived Introduction to Sociology
     @pytest.mark.skipif(str(7969) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_content_analyst_verify_question_availability_for_soci_7969(self):
         """Verify question availability for CC-Derived Introduction to Sociology.
 
-        Steps: 
-        
-        Click QA content 
-        Click Available Books 
+        Steps:
+
+        Click QA content
+        Click Available Books
         Select CC-Derived Introcution to Sociology
         Click on a section in the table of contents
 
@@ -389,5 +387,3 @@ class TestEpicName(unittest.TestCase):
         # Test steps and verification assertions
 
         self.ps.test_updates['passed'] = True
-        
-

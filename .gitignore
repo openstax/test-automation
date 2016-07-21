@@ -11,6 +11,7 @@ res.txt
 res
 result*.xml
 *.sublime*
+
 .bashrc
 .zshrc
 .bash_profile

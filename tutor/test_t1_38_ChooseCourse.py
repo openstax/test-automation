@@ -206,4 +206,4 @@ class TestEpicName(unittest.TestCase):
         self.user.sleep(5)
 
         self.ps.test_updates['passed'] = True
-        #teacher1.delete()
+        
