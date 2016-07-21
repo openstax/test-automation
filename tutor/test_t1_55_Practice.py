@@ -175,7 +175,7 @@ class TestPractice(unittest.TestCase):
         sections = self.student.driver.find_elements(
             By.XPATH, '//span[contains(@class,"breadcrumbs")]')
         count = 0
-        while(True):
+        while True:
             try:
                 element = self.wait.until(
                     expect.visibility_of_element_located(
@@ -221,7 +221,7 @@ class TestPractice(unittest.TestCase):
             By.XPATH, '//span[contains(@class,"breadcrumbs")]')
         count = 0
         answer_text = "hello"
-        while(True):
+        while True:
             try:
                 element = self.wait.until(
                     expect.visibility_of_element_located(
@@ -620,7 +620,7 @@ class TestPractice(unittest.TestCase):
             By.XPATH, '//span[contains(@class,"breadcrumbs")]')
         stop_point = len(sections)//2
 
-        for q in range(stop_point):
+        for _ in range(stop_point):
             try:
                 # if the question is two part must answer free response first
                 element = self.wait.until(
@@ -704,7 +704,7 @@ class TestPractice(unittest.TestCase):
         # Test steps and verification assertions
         sections = self.student.driver.find_elements(
             By.XPATH, '//span[contains(@class,"breadcrumbs")]')
-        for q in range(len(sections) - 1):
+        for _ in range(len(sections) - 1):
             try:
                 # if the question is two part must answer free response first
                 element = self.wait.until(
