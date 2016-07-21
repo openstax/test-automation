@@ -212,7 +212,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         self.teacher.select_course(appearance='physics')
         # create an assignemnt
-        assignment_name = 'reading-%s' % randint(999)
+        assignment_name = 'reading-%s' % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
@@ -260,7 +260,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         self.teacher.select_course(appearance='physics')
         # create an assignment
-        assignment_name = "homework-%s" % randint(999)
+        assignment_name = "homework-%s" % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -303,7 +303,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # create an assignemnt
-        assignment_name = 'external-%s' % randint(999)
+        assignment_name = 'external-%s' % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
@@ -350,7 +350,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         self.teacher.select_course(appearance='physics')
         # create an assignment
-        assignment_name = "homework-%s" % randint(999)
+        assignment_name = "homework-%s" % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
