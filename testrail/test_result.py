@@ -23,7 +23,7 @@ class Result(object):
         self.debugging = debug
         self.file = ''.join([path, '/', data])
         self.run_id = os.getenv('RUNID')
-        self.tree, self.root, self.xml = self.get_tree()
+        self.tree, self.root = self.get_tree()
         self.test_rail = TestRailAPI(url=url)
         self.test_set = self.test_rail.get_tests(run_id=int(self.run_id))
 
@@ -35,7 +35,7 @@ class Result(object):
     def get_tree(self):
         """Return the tree and the tree root."""
         tree = ElementTree.parse(self.file)
-        return tree, tree.getroot(), tree.dump(tree.getroot())
+        return tree, tree.getroot()
 
     def find_test_id(self, case_id, tests):
         """Return a test ID."""
@@ -146,7 +146,10 @@ def main(argv):
             server = argument
     print('Break up the XML file')
     runner = Result(path=path, data=file_name, url=server)
-    print('Results:', runner.xml)
+    print(
+        'Results:',
+        ElementTree.tostring(runner.root, encoding='utf8', method='xml')
+    )
     print('Process the tests')
     runner.retrieve_test_results()
     print('Build the data results for load')
