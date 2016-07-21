@@ -29,7 +29,7 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestOpenStaxMetrics(unittest.TestCase):
     """CC1.15 - OpenStax Metrics."""
 
     def setUp(self):
@@ -53,17 +53,17 @@ class TestEpicName(unittest.TestCase):
 
     # Case C7608 - 001 - Admin | View a report of enrolled students by course
     @pytest.mark.skipif(str(7608) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
-        """View a report of enrolled students by course
+    def test_admin_view_a_report_of_enrolled_students_by_course_7608(self):
+        """View a report of enrolled students by course.
 
-        Steps: 
+        Steps:
 
         Go to https://tutor-qa.openstax.org/
         Click on the 'Login' button
-        Enter the admin user account [ admin | password ] in the username and password text boxes
+        Enter the admin user account in the username and password text boxes
         Click on the 'Sign in' button
-        Open the drop down menu by clicking on the user menu link containing the user's name
-        Click on the 'Admin' button
+
+        Click on the 'Admin' button from the user menu
         Open the drop down menu by clicking 'Course Organization'
         Click the 'Courses' option
         Click the 'List Students' button for the chosen course

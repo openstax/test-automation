@@ -7,14 +7,14 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
+# from random import randint  # NOQA
 from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from selenium.webdriver.support import expected_conditions as expect  # NOQA
+# from staxing.assignment import Assignment  # NOQA
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher  # NOQA
-from staxing.helper import Student  # NOQA
+# from staxing.helper import Student  # NOQA
 from staxing.helper import User  # NOQA
 
 # for template command line testing only
@@ -38,7 +38,7 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestChooseCourse(unittest.TestCase):
     """T1.38 - Choose Course."""
 
     def setUp(self):
@@ -67,7 +67,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8254 - 001 - Student | Select a course
     @pytest.mark.skipif(str(8254) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_select_a_course(self):
+    def test_student_select_a_course_8254(self):
         """Select a course.
 
         Steps:
@@ -87,8 +87,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.user = User(username='student01', password='password',
-                         site='https://tutor-qa.openstax.org/')
+        self.user = User(use_env_vars=True)
         self.user.login()
         self.user.find(By.PARTIAL_LINK_TEXT, 'AP Physics').click()
 
@@ -101,7 +100,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8255 - 002 - Student | Bypass the course picker
     @pytest.mark.skipif(str(8255) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_bypass_the_course_picker(self):
+    def test_student_bypass_the_course_picker_8255(self):
         """Bypass the course picker.
 
         Steps:
@@ -138,7 +137,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8256 - 003 - Teacher | Select a course
     @pytest.mark.skipif(str(8256) not in TESTS, reason='Excluded')  # NOQA
-    def test_teacher_select_a_course(self):
+    def test_teacher_select_a_course_8256(self):
         """Select a course.
 
         Steps:
@@ -158,8 +157,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.user = User(username='teacher01', password='password',
-                         site='https://tutor-qa.openstax.org/')
+        self.user = Teacher(use_env_vars=True)
         self.user.login()
         self.user.find(By.PARTIAL_LINK_TEXT, 'AP Physics').click()
         assert('calendar' in self.user.current_url()), \
@@ -170,7 +168,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8257 - 004 - Teacher | Bypass the course picker
     @pytest.mark.skipif(str(8257) not in TESTS, reason='Excluded')  # NOQA
-    def test_teacher_bypass_the_course_picker(self):
+    def test_teacher_bypass_the_course_picker_8257(self):
         """Bypass the course picker.
 
         Steps:

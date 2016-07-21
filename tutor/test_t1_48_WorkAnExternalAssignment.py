@@ -49,7 +49,7 @@ class TestEpicName(unittest.TestCase):
         # self.Teacher = Teacher(
         #    use_env_vars=True,
         #    pasta_user=self.ps,
-        #    capabilities=self.desired_capabilities
+        #    capabilities=self.desired_capabilities 
         # )
         self.student = Student(use_env_vars=True)
         self.student.login()

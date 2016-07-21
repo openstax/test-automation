@@ -29,7 +29,7 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestTeacherLoginAndAuthentification(unittest.TestCase):
     """CC1.11 - Teacher Login and Authentification."""
 
     def setUp(self):
@@ -53,16 +53,16 @@ class TestEpicName(unittest.TestCase):
 
     # Case C7688 - 001 - Teacher | Log into Concept Coach
     @pytest.mark.skipif(str(7688) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
-        """Log into Concept Coach. 
+    def test_teacher_log_into_concept_coach_7688(self):
+        """Log into Concept Coach.
 
-        Steps: 
+        Steps:
 
-        Go to https://tutor-staging.openstax.org/
+        Go to https://tutor-qa.openstax.org/
         Click on the 'Login' button
         Enter the teacher user account in the username and password text boxes
         Click on the 'Sign in' button
-        If the user has more than one course, click on a Concept Coach course name
+        If the user has more than one course, click on a CC course name
 
 
         Expected Result:
@@ -84,13 +84,12 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
     # Case C7689 - 002 - Teacher | Logging out returns to the login page
     @pytest.mark.skipif(str(7689) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
-        """Logging out returns to the login page. 
+    def test_teacher_loggin_out_returns_to_the_login_page_7689(self):
+        """Logging out returns to the login page.
 
-        Steps: 
+        Steps:
 
         Click the user menu containing the user's name
         Click the 'Log Out' button
@@ -115,19 +114,18 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7690 - 003 - Teacher | Can log into Tutor and be redirected to Concept Coach
+    # Case C7690 - 003 - Teacher | Can log into Tutor and be redirected to CC
     @pytest.mark.skipif(str(7690) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_can_log_into_tutor_and_be_redirected_to_cc_7690(self):
         """Can log into Tutor and be redirected to Concept Coach.
 
-        Steps: 
+        Steps:
 
         Go to https://tutor-staging.openstax.org/
         Click on the 'Login' button
-        Enter the teacher user account [ teacher05 | password ] in the username and password text boxes
+        Enter the teacher user account in the username and password text boxes
         Click on the 'Sign in' button
-        If the user has more than one course, click on a Concept Coach course name
+        If the user has more than one course, click on a CC course name
 
 
         Expected Result:

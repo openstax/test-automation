@@ -1,6 +1,6 @@
 """Tutor v1, Epic 27 - Tutor works with CNX."""
 
-import inspect
+import inspect 
 import json
 import os
 import pytest

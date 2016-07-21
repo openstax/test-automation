@@ -45,7 +45,10 @@ TESTS = os.getenv(
 
 # Use the long reading for 8189, 8190, 8191, 8192, and 8206
 # May need to make the long reading shorter, five chapters still causes hanging
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
 
 @PastaDecorator.on_platforms(BROWSERS)
 class TestEpicName(unittest.TestCase):
@@ -224,6 +227,7 @@ class TestEpicName(unittest.TestCase):
             if (assignment.text == 'Dec 31, 8:54am'):
                 assignment.click()
                 break
+<<<<<<< HEAD
 
         name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
 
@@ -235,12 +239,30 @@ class TestEpicName(unittest.TestCase):
 
         self.student.find(By.XPATH, "//a[contains(@class,'arrow') and " +
                           "contains(@class,'right')]").click()
+=======
+
+        name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
+
+        assert('December Reading' in name.text), \
+            'Not viewing the reading'
+
+        assert('/steps/1/' in self.student.current_url()), \
+            'Not on the first page of the reading'
+
+        self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()
+>>>>>>> origin/master
 
         assert('/steps/2/' in self.student.current_url()), \
             'Not on the first page of the reading'
 
         self.student.sleep(2)
         self.ps.test_updates['passed'] = True
+<<<<<<< HEAD
+=======
+        
+
+        #raise NotImplementedError(inspect.currentframe().f_code.co_name)
+>>>>>>> origin/master
 
     # Case C8189 - 006 - Student | If a card has a assessment free response
     # textbox, inputting a free response activates the Answer button
@@ -1571,9 +1593,15 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
+<<<<<<< HEAD
         assignments = self.student.driver.find_elements_by_xpath("//div[@class='-upcoming panel panel-default']/div[@class='panel-body']/div[@class='task row reading workable']")  # NOQA
         for assignment in assignments:
             if (assignment.text.find('Dec 31, 8:54am') >= 0 and assignment.text.find('December Reading') >= 0 and assignment.text.find("Complete") >= 0):  # NOQA
+=======
+        assignments = self.student.driver.find_elements_by_xpath("//div[@class='-upcoming panel panel-default']/div[@class='panel-body']/div[@class='task row reading workable']")
+        for assignment in assignments:
+            if (assignment.text.find('Dec 31, 8:54am') >= 0 and assignment.text.find('December Reading') >= 0 and assignment.text.find("Complete") >= 0):
+>>>>>>> origin/master
                 self.ps.test_updates['passed'] = True
                 break
 
@@ -1616,6 +1644,7 @@ class TestEpicName(unittest.TestCase):
 
         home = self.student.current_url()
 
+<<<<<<< HEAD
         assignments = self.student.driver.find_elements_by_xpath(
             "//div[@class='-upcoming panel panel-default']/div[@class" +
             "='panel-body']/div[@class='task row reading workable']")
@@ -1628,12 +1657,24 @@ class TestEpicName(unittest.TestCase):
                 assignment.click()
                 name = self.student.find(
                     By.CLASS_NAME, 'center-control-assignment')
+=======
+        assignments = self.student.driver.find_elements_by_xpath("//div[@class='-upcoming panel panel-default']/div[@class='panel-body']/div[@class='task row reading workable']")
+        for assignment in assignments:
+            if (assignment.text.find('Dec 29, 8:42am') >= 0 and assignment.text.find('Long Automation Reading') >= 0 and assignment.text.find("In progress") >= 0):
+                self.ps.test_updates['passed'] = True
+                break
+
+            elif (assignment.text.find('Dec 29, 8:42am') >= 0 and assignment.text.find('Long Automation Reading') >= 0 and assignment.text.find("Not started") >= 0):
+                assignment.click()
+                name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
+>>>>>>> origin/master
 
                 assert('Long Automation Reading' in name.text), \
                     'Not viewing the reading'
 
                 while(1):
                     while ('arrow right' in self.student.driver.page_source):
+<<<<<<< HEAD
                         self.student.find(
                             By.XPATH, "//a[contains(@class,'arrow') " +
                             "and contains(@class,'right')]").click()
@@ -1666,12 +1707,42 @@ class TestEpicName(unittest.TestCase):
                         self.student.sleep(5)
                         page = self.student.driver.page_source
                         assert('question-feedback bottom' in page), \
+=======
+                        self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()
+
+                    # multiple choice case
+                    if('exercise-multiple-choice' in self.student.driver.page_source):
+                        
+
+                        answers = self.student.driver.find_elements(By.CLASS_NAME, 'answer-letter')
+                        self.student.sleep(0.8)
+                        rand = randint(0, len(answers) - 1)
+                        answer = chr(ord('a') + rand)
+                        #print('Selecting %s' % answer)
+                        Assignment.scroll_to(self.student.driver, answers[0])
+                        if answer == 'a':
+                            self.student.driver.execute_script('window.scrollBy(0, -160);')
+                        elif answer == 'd':
+                            self.student.driver.execute_script('window.scrollBy(0, 160);')
+                        answers[rand].click()
+
+
+                        self.student.wait.until(
+                            expect.element_to_be_clickable(
+                                (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+                            )
+                        ).click()
+                        self.student.sleep(5)
+
+                        assert('question-feedback bottom' in self.student.driver.page_source), \
+>>>>>>> origin/master
                             'Did not submit MC'
 
                         break
 
                     # free response case
                     elif('textarea' in self.student.driver.page_source):
+<<<<<<< HEAD
                         self.student.find(
                             By.TAG_NAME, 'textarea').send_keys(
                             'An answer for this textarea')
@@ -1681,6 +1752,13 @@ class TestEpicName(unittest.TestCase):
                                 (By.XPATH,
                                     '//button[contains(@class,"async-b' +
                                     'utton") and contains(@class,"continue")]')
+=======
+                        self.student.find(By.TAG_NAME, 'textarea').send_keys('An answer for this textarea')
+                        self.student.sleep(2)
+                        self.student.wait.until(
+                            expect.element_to_be_clickable(
+                                (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
+>>>>>>> origin/master
                             )
                         ).click()
 
@@ -1695,10 +1773,16 @@ class TestEpicName(unittest.TestCase):
                 self.student.sleep(20)
                 self.student.driver.get(home)
 
+<<<<<<< HEAD
                 assignments = self.student.driver.find_elements_by_xpath(
                     "//div[@class='-upcoming panel panel-default']/div[@clas" +
                     "s='panel-body']/div[@class='task row reading workable']")
                 for assignment in assignments:
                     if (assignment.text.find('Dec 29, 8:42am') >= 0 and assignment.text.find('Long Automation Reading') >= 0 and assignment.text.find("In progress") >= 0):  # NOQA
+=======
+                assignments = self.student.driver.find_elements_by_xpath("//div[@class='-upcoming panel panel-default']/div[@class='panel-body']/div[@class='task row reading workable']")
+                for assignment in assignments:
+                    if (assignment.text.find('Dec 29, 8:42am') >= 0 and assignment.text.find('Long Automation Reading') >= 0 and assignment.text.find("In progress") >= 0):
+>>>>>>> origin/master
                         self.ps.test_updates['passed'] = True
                         break

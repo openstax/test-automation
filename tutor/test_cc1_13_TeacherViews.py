@@ -25,13 +25,13 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([7609, 7610, 7611, 7612, 7613,
-         7614, 7615, 7616, 7617, 7618, 
+         7614, 7615, 7616, 7617, 7618,
          7619, 7620, 7622, 7624])  # NOQA
 )
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestTeacherViews(unittest.TestCase):
     """CC1.13 - Teacher Views."""
 
     def setUp(self):
@@ -53,19 +53,18 @@ class TestEpicName(unittest.TestCase):
         except:
             pass
 
-    # Case C7609 - 002 - Teacher | View the Concept Coach dashboard
+    # Case C7609 - 001 - Teacher | View the Concept Coach dashboard
     @pytest.mark.skipif(str(7609) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_view_the_concept_coach_dashboard_7609(self):
         """View the Concept Coach dashboard.
 
-        Steps: 
+        Steps:
 
-        Go to https://tutor-staging.openstax.org/
+        Go to https://tutor-qa.openstax.org/
         Click on the 'Login' button
         Enter the teacher user account in the username and password text boxes
         Click on the 'Sign in' button
-        If the user has more than one course, click on a Concept Coach course name
-
+        If the user has more than one course, click on a CC course name
 
 
         Expected Result:
@@ -73,12 +72,12 @@ class TestEpicName(unittest.TestCase):
         The user is presented with the Concept Coach dashbaord
 
         """
-        self.ps.test_updates['name'] = 'cc1.13.002' \
+        self.ps.test_updates['name'] = 'cc1.13.001' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.13',
-            'cc1.13.002',
+            'cc1.13.001',
             '7609'
         ]
         self.ps.test_updates['passed'] = False
@@ -87,28 +86,28 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7610 - 003 - Teacher | Able to switch between concurrently running courses
+    # Case C7610 - 002 - Teacher | Switch between concurrently running courses
     @pytest.mark.skipif(str(7610) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_switch_between_concurrently_running_courses_7610(self):
         """Able to switch between concurrently running courses.
 
-        Steps: 
+        Steps:
 
         Click on the OpenStax logo in the left corner of the header
 
 
         Expected Result:
 
-        The user is presented with a list of Concept Coach courses and is able to switch to another course
+        The user is presented with a list of Concept Coach courses
+        Is able to switch to another course
 
         """
-        self.ps.test_updates['name'] = 'cc1.13.003' \
+        self.ps.test_updates['name'] = 'cc1.13.002' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.13',
-            'cc1.13.003',
+            'cc1.13.002',
             '7610'
         ]
         self.ps.test_updates['passed'] = False
@@ -117,19 +116,18 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7611 - 004 - Teacher | View links on dashboard to course materials
+    # Case C7611 - 003 - Teacher | View links on dashboard to course materials
     @pytest.mark.skipif(str(7611) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_view_links_on_dashboard_to_course_materials_7611(self):
         """View links on dashboard to course materials.
 
-        Steps: 
+        Steps:
 
-        Go to https://tutor-staging.openstax.org/
+        Go to https://tutor-qa.openstax.org/
         Click on the 'Login' button
         Enter the teacher user account in the username and password text boxes
         Click on the 'Sign in' button
-        If the user has more than one course, click on a Concept Coach course name
+        If the user has more than one course, click on a CC course name
 
 
         Expected Result:
@@ -137,12 +135,12 @@ class TestEpicName(unittest.TestCase):
         On header there is a link to 'Homework PDF', and 'Online Book'
 
         """
-        self.ps.test_updates['name'] = 'cc1.13.004' \
+        self.ps.test_updates['name'] = 'cc1.13.003' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.13',
-            'cc1.13.004',
+            'cc1.13.003',
             '7611'
         ]
         self.ps.test_updates['passed'] = False
@@ -151,17 +149,17 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7612 - 005 - Teacher | Able to copy a system-generated message with a student code, links, and other information
+    # Case C7612 - 004 - Teacher | Able to copy a system-generated message
+    # with a student code, links, and other information
     @pytest.mark.skipif(str(7612) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
-        """Able to copy a system-generated message with a student code, links, and other information.
+    def test_able_to_copy_a_system_generated_message_with_a_student_7612(self):
+        """Copy a system-generated message with a student code, links, etc.
 
-        Steps: 
+        Steps:
 
         Click on the user menu in the right corner of the header
-        Click "Course Roster" 
-        Click "Get Student Enrollment Code" 
+        Click "Course Roster"
+        Click "Get Student Enrollment Code"
         Copy the system generated message
 
 
@@ -170,12 +168,12 @@ class TestEpicName(unittest.TestCase):
         The user is able to copy the system generated message
 
         """
-        self.ps.test_updates['name'] = 'cc1.13.005' \
+        self.ps.test_updates['name'] = 'cc1.13.004' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.13',
-            'cc1.13.005',
+            'cc1.13.004',
             '7612'
         ]
         self.ps.test_updates['passed'] = False
@@ -184,18 +182,18 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7613 - 006 - Teacher | Periods are relabeled as sections for college courses
+    # Case C7613 - 005 - Teacher | Periods are relabeled as sections for all
+    # courses
     @pytest.mark.skipif(str(7613) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
-        """Periods are relabeled as sections for college courses.
+    def test_teacher_periods_are_relabeled_as_sections_for_all_cour_7613(self):
+        """Period is relabeled as section for college courses.
 
-        Steps: 
+        Steps:
 
         go to user menu
         click on course roster
-        check that there is an '+ add section' button instead of an '+ add period' button
-
+        check that there is an '+ add section' button instead
+        of an '+ add period' button
 
 
         Expected Result:
@@ -203,12 +201,12 @@ class TestEpicName(unittest.TestCase):
         There is an '+ add section' button instead of an '+ add period' button
 
         """
-        self.ps.test_updates['name'] = 'cc1.13.006' \
+        self.ps.test_updates['name'] = 'cc1.13.005' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.13',
-            'cc1.13.006',
+            'cc1.13.005',
             '7613'
         ]
         self.ps.test_updates['passed'] = False
@@ -217,13 +215,12 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7614 - 007 - Teacher | View a score report
+    # Case C7614 - 006 - Teacher | View a score report
     @pytest.mark.skipif(str(7614) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_view_a_score_report_7614(self):
         """View a score report.
 
-        Steps: 
+        Steps:
 
         Click the user menu in the right corner of the header
         Click "Student Scores"
@@ -233,6 +230,43 @@ class TestEpicName(unittest.TestCase):
         Expected Result:
 
         The user is presented with a score report
+
+        """
+        self.ps.test_updates['name'] = 'cc1.13.006' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.13',
+            'cc1.13.006',
+            '7614'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C7615 - 007 - Teacher | View a report showing an individual
+    # student's work pages
+    @pytest.mark.skipif(str(7615) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_view_a_report_showing_an_individual_students_7615(self):
+        """View a report showing an individual student's work pages.
+
+        Steps:
+
+        Go to https://tutor-qa.openstax.org/
+        Click on the 'Login' button
+        Enter the teacher user account in the username and password text boxes
+        Click on the 'Sign in' button
+        If the user has more than one course, click on a CC course name
+
+        Click the user menu in the right corner of the header
+        Click "Student Scores"
+        Click on the percentage in the "Score" column
+
+
+        Expected Result:
+
 
         """
         self.ps.test_updates['name'] = 'cc1.13.007' \
@@ -249,28 +283,13 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7615 - 008 - Teacher | View a report showing an individual student's work pages
-    @pytest.mark.skipif(str(7615) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
-        """View a report showing an individual student's work pages.
-
-        Steps: 
-
-        
-        Expected Result:
-
-
-        """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
-
-    # Case C7616 - 009 - Teacher | View a summary report showing a class's work pages
+    # Case C7616 - 008 - Teacher | View a summary report showing a class's work
+    # pages
     @pytest.mark.skipif(str(7616) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
-        """View a summary report showing a class's work pages. 
+    def test_teacher_view_a_summary_report_showing_a_class_work_pag_7616(self):
+        """View a summary report showing a class's work pages.
 
-        Steps: 
+        Steps:
 
         Click on the desired period tab
 
@@ -280,12 +299,12 @@ class TestEpicName(unittest.TestCase):
         The user is presented with a summary report
 
         """
-        self.ps.test_updates['name'] = 'cc1.13.009' \
+        self.ps.test_updates['name'] = 'cc1.13.008' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.13',
-            'cc1.13.009',
+            'cc1.13.008',
             '7616'
         ]
         self.ps.test_updates['passed'] = False
@@ -294,13 +313,12 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7617 - 010 - Teacher | View the aggregate student scores
+    # Case C7617 - 009 - Teacher | View the aggregate student scores
     @pytest.mark.skipif(str(7617) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
-        """View the aggregate student scores. 
+    def test_teacher_view_the_aggregate_student_scores_7617(self):
+        """View the aggregate student scores.
 
-        Steps: 
+        Steps:
 
         Click the user menu in the right corner of the header
         Click "Student Scores"
@@ -311,12 +329,12 @@ class TestEpicName(unittest.TestCase):
         The user is presented with Student scores
 
         """
-        self.ps.test_updates['name'] = 'cc1.13.010' \
+        self.ps.test_updates['name'] = 'cc1.13.009' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.13',
-            'cc1.13.010',
+            'cc1.13.009',
             '7617'
         ]
         self.ps.test_updates['passed'] = False
@@ -325,13 +343,13 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7618 - 011 - Teacher | View scores for an individual student's scores
+    # Case C7618 - 010 - Teacher | View scores for an individual student's
+    # scores
     @pytest.mark.skipif(str(7618) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
-        """View scores for an individual student's scores. 
+    def test_teacher_view_scores_for_an_individual_student_scores_7618(self):
+        """View scores for an individual student's scores.
 
-        Steps: 
+        Steps:
 
         Click the user menu in the right corner of the header
         Click "Student Scores"
@@ -343,12 +361,12 @@ class TestEpicName(unittest.TestCase):
         The user is presented with scores for an individual student
 
         """
-        self.ps.test_updates['name'] = 'cc1.13.011' \
+        self.ps.test_updates['name'] = 'cc1.13.010' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.13',
-            'cc1.13.011',
+            'cc1.13.010',
             '7618'
         ]
         self.ps.test_updates['passed'] = False
@@ -357,13 +375,13 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7619 - 012 - Teacher | View an individual student's question set for an assignment
+    # Case C7619 - 011 - Teacher | View an individual student's question set
+    # for an assignment
     @pytest.mark.skipif(str(7619) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
-        """View an individual student's question set for an assignment. 
+    def test_teacher_view_an_individual_student_question_set_7619(self):
+        """View an individual student's question set for an assignment.
 
-        Steps: 
+        Steps:
 
         Click the user menu in the right corner of the header
         Click "Student Scores"
@@ -375,12 +393,12 @@ class TestEpicName(unittest.TestCase):
         The user is presented with a student's question set for the assignment
 
         """
-        self.ps.test_updates['name'] = 'cc1.13.012' \
+        self.ps.test_updates['name'] = 'cc1.13.011' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.13',
-            'cc1.13.012',
+            'cc1.13.011',
             '7619'
         ]
         self.ps.test_updates['passed'] = False
@@ -389,13 +407,12 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7620 - 013 - Teacher | View an assignment summary
+    # Case C7620 - 012 - Teacher | View an assignment summary
     @pytest.mark.skipif(str(7620) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_view_an_assignment_summary_7620(self):
         """View an assignment summary.
 
-        Steps: 
+        Steps:
 
         Click the user menu in the right corner of the header
         Click "Student Scores"
@@ -408,12 +425,12 @@ class TestEpicName(unittest.TestCase):
         The user is presented with an assignmnent summary
 
         """
-        self.ps.test_updates['name'] = 'cc1.13.013' \
+        self.ps.test_updates['name'] = 'cc1.13.012' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.13',
-            'cc1.13.013',
+            'cc1.13.012',
             '7620'
         ]
         self.ps.test_updates['passed'] = False
@@ -422,13 +439,12 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7622 - 014 - Teacher | Download student scores
+    # Case C7622 - 013 - Teacher | Download student scores
     @pytest.mark.skipif(str(7622) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_download_student_scores_7622(self):
         """Download student scores.
 
-        Steps: 
+        Steps:
 
         Click the user menu in the right corner of the header
         Click "Student Scores"
@@ -440,12 +456,12 @@ class TestEpicName(unittest.TestCase):
         Student scores are downloaded in an excel spreadsheet
 
         """
-        self.ps.test_updates['name'] = 'cc1.13.014' \
+        self.ps.test_updates['name'] = 'cc1.13.013' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.13',
-            'cc1.13.014',
+            'cc1.13.013',
             '7622'
         ]
         self.ps.test_updates['passed'] = False
@@ -454,30 +470,31 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
-    # Case C7624 - 015 - Teacher | Exercise IDs are shown for each assessment
+    # Case C7624 - 014 - Teacher | Exercise IDs are shown for each assessment
     @pytest.mark.skipif(str(7624) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    def test_teacher_exercise_ids_are_shown_for_each_assessment_7624(self):
         """Exercise IDs are shown for each assessment.
 
-        Steps: 
+        Steps:
 
         Click the user menu in the right corner of the header
-        Click "Student Scores"
-        Click on a student's score for the desired assignment
+        Click "Question Library"
+        Select a chapter
+        Click "Show Questions"
 
 
         Expected Result:
 
-        Exercise IDs are shown for each assessment in the bottom right hang corner of the box holding the question.
+        Exercise IDs are shown for each assessment in the bottom right hand
+        corner of the box holding the question.
 
         """
-        self.ps.test_updates['name'] = 'cc1.13.015' \
+        self.ps.test_updates['name'] = 'cc1.13.014' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.13',
-            'cc1.13.015',
+            'cc1.13.014',
             '7624'
         ]
         self.ps.test_updates['passed'] = False
@@ -485,5 +502,3 @@ class TestEpicName(unittest.TestCase):
         # Test steps and verification assertions
 
         self.ps.test_updates['passed'] = True
-
-
