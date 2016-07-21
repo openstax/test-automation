@@ -7,6 +7,10 @@ result*.xml
 tmp/
 webserver*.py
 .DS_Store
+res.txt
+res
+result*.xml
+*.sublime*
 
 .bashrc
 .zshrc
