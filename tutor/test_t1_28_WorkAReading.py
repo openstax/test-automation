@@ -191,16 +191,16 @@ class TestEpicName(unittest.TestCase):
         """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
-    # Case C8188 - 005 - Student | Click the Continue button in the footer
+    # Case C8188 - 005 - Student | Click the forward arrow
     # to go to the next reading section
     @pytest.mark.skipif(str(8188) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_click_continue_in_footer_to_go_to_next_section(self):
-        """Click the Continue button in footer to go to next reading section.
+    def test_student_click_forward_arrow_to_go_to_next_section(self):
+        """Click the forward arrow to go to next reading section.
 
         Steps:
         Click on a reading assignment under the tab
         "This Week" on the dashboard
-        Click on the "Continue" button in the left corner of the footer
+        Click on the forward arrow
         Expected Result:
         The user is presented with the next reading section
         """
@@ -899,7 +899,7 @@ class TestEpicName(unittest.TestCase):
         Steps:
         Click on a reading assignment under the tab
         "This Week" on the dashboard
-        Click the "Continue" button
+        Click the forward arrow
         On a card with a video, click the play button
         Expected Result:
         The video plays
@@ -999,7 +999,7 @@ class TestEpicName(unittest.TestCase):
         Steps:
         Click on a reading assignment under the tab "This Week"
         on the dashboard
-        Click the "Continue" button
+        Click the forward arrow
         Expected Result:
         At the end of the reading, the user is presented with a Concept Coach
         card that precedes the question review.
@@ -1100,7 +1100,7 @@ class TestEpicName(unittest.TestCase):
         Steps:
         Click on a reading assignment under the tab
         "This Week" on the dashboard
-        Click the "Continue" button
+        Click the forward arrow
         Expected Result:
         The user may be presented with a Review assessment at the
         end of the reading assignment
@@ -1329,7 +1329,7 @@ class TestEpicName(unittest.TestCase):
         Steps:
         Click on a reading assignment under the tab "This Week"
         on the dashboard
-        Click the "Continue" button
+        Click the forward arrow
         At the end of the reading, click the "Back to Dashboard" button
         Expected Result:
         The user views the completion report and return to the dashboard
@@ -1438,7 +1438,7 @@ class TestEpicName(unittest.TestCase):
         Steps:
         Click on a reading assignment under the tab "This Week"
         on the dashboard
-        Click the "Continue" button
+        Click the forward arrow
         Keep clicking the "Continue" button until the reading is over
         Expected Result:
         Once finished with the reading, the user is presented with the
@@ -1551,7 +1551,7 @@ class TestEpicName(unittest.TestCase):
         Steps:
         Click on a reading assignment under the tab "This Week"
         on the dashboard
-        Click the "Continue" button
+        Click the forward arrow
         At the end of the reading, click the "Back to Dashboard" button
         Expected Result:
         The reading is marked "Complete" in the dashboard progress column
@@ -1586,7 +1586,7 @@ class TestEpicName(unittest.TestCase):
         Steps:
         Click on a reading assignment under the tab "This Week"
         on the dashboard
-        Click the "Continue" button
+        Click the forward arrow
         On a card with a free response assessment, enter a free response
         into the free response assessment text box
         Click the "Answer" button

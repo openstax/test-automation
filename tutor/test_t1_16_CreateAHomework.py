@@ -236,8 +236,14 @@ class TestCreateAHomework(unittest.TestCase):
         # Choose the second date calendar[1], first is calendar[0]
         self.teacher.driver.find_elements_by_xpath(
             "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker" +
+                "__navigation--next']").click()
 
         # Choose the due date of December 31, 2016
         weekends = self.teacher.driver.find_elements_by_xpath(
@@ -307,16 +313,26 @@ class TestCreateAHomework(unittest.TestCase):
             calendar.click()
             if odd:
                 # Choose today as the open date
-                today = self.teacher.driver.find_elements_by_xpath("//div[contains(@class,'datepicker__day datepicker__day--today')]")
+                today = self.teacher.driver.find_elements_by_xpath(
+                    "//div[contains(@class,'datepicker__" +
+                    "day datepicker__day--today')]")
                 today[0].click()
                 odd = False
 
             else:
-                while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-                    self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+                while(self.teacher.find(
+                    By.XPATH,
+                    "//span[@class = 'datepicker__current-month']"
+                ).text != 'December 2016'):
+                    self.teacher.find(
+                        By.XPATH,
+                        "//a[@class = 'datepicker__navigation datepicker__" +
+                        "navigation--next']").click()
 
                 # Choose the due date of December 31, 2016
-                weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+                weekends = self.teacher.driver.find_elements_by_xpath(
+                    "//div[@class = 'datepicker__day datepicker__" +
+                    "day--weekend']")
                 for day in weekends:
                     if day.text == '31':
                         due = day
@@ -380,12 +396,20 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -445,7 +469,10 @@ class TestCreateAHomework(unittest.TestCase):
             if assignment.text == 'Epic 16-5':
                 assignment.click()
                 self.teacher.sleep(2)
-                self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button delete-" +
+                    "link pull-right btn btn-default']").click()
                 self.teacher.find(
                     By.XPATH, "//button[@class='btn btn-primary']").click()
                 self.teacher.sleep(5)
@@ -530,12 +557,19 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH, "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -598,7 +632,10 @@ class TestCreateAHomework(unittest.TestCase):
                     By.XPATH,
                     "//a[@class='btn btn-default -edit-assignment']").click()
                 self.teacher.sleep(5)
-                self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button delete-link pull-" +
+                    "right btn btn-default']").click()
                 self.teacher.find(
                     By.XPATH, "//button[@class='btn btn-primary']").click()
                 self.teacher.sleep(5)
@@ -670,12 +707,20 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -735,7 +780,10 @@ class TestCreateAHomework(unittest.TestCase):
             if assignment.text == 'Epic 16-7':
                 assignment.click()
                 self.teacher.sleep(2)
-                self.teacher.find(By.XPATH, "//button[@class='async-button -publish btn btn-primary']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button -publish " +
+                    "btn btn-primary']").click()
                 self.teacher.sleep(5)
                 break
 
@@ -763,7 +811,10 @@ class TestCreateAHomework(unittest.TestCase):
                     By.XPATH,
                     "//a[@class='btn btn-default -edit-assignment']").click()
                 self.teacher.sleep(5)
-                self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button delete-link pull-" +
+                    "right btn btn-default']").click()
                 self.teacher.find(
                     By.XPATH, "//button[@class='btn btn-primary']").click()
                 self.teacher.sleep(5)
@@ -794,7 +845,7 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.teacher.sleep(5)
 
-    # Case C8035 - 008 - Teacher | Cancel hw before making changes w/ Cancel button
+    # Case C8035 - 008 - Teacher | Cancel hw before making changes w/ Cancel
     @pytest.mark.skipif(str(8035) not in TESTS, reason='Excluded')
     def test_teacher_cancel_hw_before_making_changes_with_cancel_button(self):
         """Cancel new homework before making changes using the Cancel button.
@@ -842,7 +893,7 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8036 - 009 - Teacher | Cancel a new homework after making any changes using the Cancel button
+    # Case C8036 - 009 - Teacher | Cancel new hw after any changes w/Cancel
     @pytest.mark.skipif(str(8036) not in TESTS, reason='Excluded')
     def test_teacher_cancel_hw_after_making_changes_with_cancel_button(self):
         """Cancel a homework after making any changes using the Cancel button.
@@ -1058,12 +1109,19 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH, "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -1146,7 +1204,9 @@ class TestCreateAHomework(unittest.TestCase):
         for assignment in assignments:
             if assignment.text == 'Epic 16-12':
                 assignment.click()
-                self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH, "//button[@class='async-button delete-link " +
+                    "pull-right btn btn-default']").click()
                 self.teacher.find(
                     By.XPATH, "//button[@class='btn btn-primary']").click()
                 self.teacher.sleep(5)
@@ -1221,12 +1281,20 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -1314,7 +1382,10 @@ class TestCreateAHomework(unittest.TestCase):
         for assignment in assignments:
             if assignment.text == 'Epic 16-13':
                 assignment.click()
-                self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button delete-link pull-" +
+                    "right btn btn-default']").click()
                 self.teacher.find(
                     By.XPATH, "//button[@class='btn btn-primary']").click()
                 self.teacher.sleep(5)
@@ -1345,7 +1416,7 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.teacher.sleep(5)
 
-    # Case C8041 - 014 - Teacher | Cancel a draft homework before making any changes using the X
+    # Case C8041 - 014 - Teacher | Cancel a draft hw before changes using the X
     @pytest.mark.skipif(str(8041) not in TESTS, reason='Excluded')
     def test_teacher_cancel_draft_hw_before_making_changes_using_the_x(self):
         """Cancel a draft homework before making any changes using the X.
@@ -1387,12 +1458,20 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -1452,7 +1531,10 @@ class TestCreateAHomework(unittest.TestCase):
             if assignment.text == 'Epic 16-14':
                 assignment.click()
                 self.teacher.sleep(2)
-                self.teacher.find(By.XPATH, "//button[@class='openstax-close-x close pull-right']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='openstax-close-x close pull-right']"
+                ).click()
                 self.teacher.sleep(5)
                 break
 
@@ -1474,7 +1556,9 @@ class TestCreateAHomework(unittest.TestCase):
         for assignment in assignments:
             if assignment.text == 'Epic 16-14':
                 assignment.click()
-                self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH, "//button[@class='async-button delete-link " +
+                    "pull-right btn btn-default']").click()
                 self.teacher.find(
                     By.XPATH, "//button[@class='btn btn-primary']").click()
                 self.teacher.sleep(5)
@@ -1550,12 +1634,20 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigati" +
+                "on datepicker__navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -1618,7 +1710,10 @@ class TestCreateAHomework(unittest.TestCase):
                 self.teacher.find(
                     By.XPATH,
                     "//input[@id = 'reading-title']").send_keys('edit')
-                self.teacher.find(By.XPATH, "//button[@class='openstax-close-x close pull-right']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='openstax-close-x close pull-right']"
+                ).click()
                 self.teacher.find(
                     By.XPATH, "//button[@class='ok btn btn-primary']").click()
                 self.teacher.sleep(5)
@@ -1642,7 +1737,10 @@ class TestCreateAHomework(unittest.TestCase):
         for assignment in assignments:
             if assignment.text == 'Epic 16-15':
                 assignment.click()
-                self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button delete-link pull-right " +
+                    "btn btn-default']").click()
                 self.teacher.find(
                     By.XPATH, "//button[@class='btn btn-primary']").click()
                 self.teacher.sleep(5)
@@ -1823,12 +1921,20 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -1890,7 +1996,10 @@ class TestCreateAHomework(unittest.TestCase):
                 self.teacher.find(
                     By.XPATH,
                     "//a[@class='btn btn-default -edit-assignment']").click()
-                self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button delete-link pull-right " +
+                    "btn btn-default']").click()
                 self.teacher.find(
                     By.XPATH, "//button[@class='btn btn-primary']").click()
                 self.teacher.sleep(5)
@@ -1961,16 +2070,26 @@ class TestCreateAHomework(unittest.TestCase):
 
         # Choose the first date calendar[0], second is calendar[1]
         # and set the open date to today
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[0].click()
-        self.teacher.driver.find_element_by_xpath("//div[@class = 'datepicker__day datepicker__day--today']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[0].click()
+        self.teacher.driver.find_element_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--today']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -2032,7 +2151,10 @@ class TestCreateAHomework(unittest.TestCase):
                 self.teacher.find(
                     By.XPATH,
                     "//a[@class='btn btn-default -edit-assignment']").click()
-                self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button delete-link pull" +
+                    "-right btn btn-default']").click()
                 self.teacher.find(
                     By.XPATH, "//button[@class='btn btn-primary']").click()
                 self.teacher.sleep(5)
@@ -2105,12 +2227,20 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -2169,7 +2299,10 @@ class TestCreateAHomework(unittest.TestCase):
         for assignment in assignments:
             if assignment.text == 'Epic 16-20':
                 assignment.click()
-                self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button delete-link pull-" +
+                    "right btn btn-default']").click()
                 self.teacher.find(
                     By.XPATH, "//button[@class='btn btn-primary']").click()
                 self.teacher.sleep(5)
@@ -2288,12 +2421,20 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -2356,7 +2497,10 @@ class TestCreateAHomework(unittest.TestCase):
                     By.XPATH, "//textarea").send_keys('new description')
                 self.teacher.sleep(2)
                 self.teacher.find(By.XPATH, "//textarea")
-                self.teacher.find(By.XPATH, "//button[@class='async-button -save btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button -save btn btn-default']"
+                ).click()
 
         self.teacher.sleep(5)
 
@@ -2381,7 +2525,10 @@ class TestCreateAHomework(unittest.TestCase):
                     By.XPATH, "//textarea[@class='form-control']").text), \
                     'Not viewing the calendar dashboard'
 
-                self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button delete-link pull-" +
+                    "right btn btn-default']").click()
                 self.teacher.find(
                     By.XPATH, "//button[@class='btn btn-primary']").click()
                 self.teacher.sleep(5)
@@ -2455,16 +2602,26 @@ class TestCreateAHomework(unittest.TestCase):
 
         # Choose the first date calendar[0], second is calendar[1]
         # and set the open date to today
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[0].click()
-        self.teacher.driver.find_element_by_xpath("//div[@class = 'datepicker__day datepicker__day--today']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[0].click()
+        self.teacher.driver.find_element_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--today']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -2531,7 +2688,10 @@ class TestCreateAHomework(unittest.TestCase):
                     By.XPATH, "//textarea").send_keys('new description')
                 self.teacher.sleep(2)
                 self.teacher.find(By.XPATH, "//textarea")
-                self.teacher.find(By.XPATH, "//button[@class='async-button -publish btn btn-primary']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button -publish btn btn-primary']"
+                ).click()
 
         self.teacher.sleep(5)
 
@@ -2545,7 +2705,10 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//textarea[@class='form-control']").text), \
             'Not viewing the calendar dashboard'
 
-        self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button delete-link pull" +
+            "-right btn btn-default']").click()
         self.teacher.find(
             By.XPATH, "//button[@class='btn btn-primary']").click()
         self.teacher.sleep(5)
@@ -2662,12 +2825,20 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -2734,7 +2905,10 @@ class TestCreateAHomework(unittest.TestCase):
                 self.teacher.find(
                     By.XPATH, "//input[@id = 'reading-title']").send_keys('!')
                 self.teacher.sleep(2)
-                self.teacher.find(By.XPATH, "//button[@class='async-button -save btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button -save btn btn-default']"
+                ).click()
 
         self.teacher.sleep(5)
 
@@ -2760,7 +2934,10 @@ class TestCreateAHomework(unittest.TestCase):
                     "value")), \
                     'Not on the add a homework page'
 
-                self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button delete-link pull-rig" +
+                    "ht btn btn-default']").click()
                 self.teacher.find(
                     By.XPATH, "//button[@class='btn btn-primary']").click()
                 self.teacher.sleep(5)
@@ -2833,16 +3010,26 @@ class TestCreateAHomework(unittest.TestCase):
 
         # Choose the first date calendar[0], second is calendar[1]
         # and set the open date to today
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[0].click()
-        self.teacher.driver.find_element_by_xpath("//div[@class = 'datepicker__day datepicker__day--today']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[0].click()
+        self.teacher.driver.find_element_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--today']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -2908,7 +3095,10 @@ class TestCreateAHomework(unittest.TestCase):
                 self.teacher.find(
                     By.XPATH, "//input[@id = 'reading-title']").send_keys('!')
                 self.teacher.sleep(2)
-                self.teacher.find(By.XPATH, "//button[@class='async-button -publish btn btn-primary']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button -publis" +
+                    "h btn btn-primary']").click()
 
         self.teacher.sleep(5)
 
@@ -2923,7 +3113,10 @@ class TestCreateAHomework(unittest.TestCase):
             "value")), \
             'Epic 16-26!'
 
-        self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button delete-link pull-" +
+            "right btn btn-default']").click()
         self.teacher.find(
             By.XPATH, "//button[@class='btn btn-primary']").click()
         self.teacher.sleep(5)
@@ -3040,12 +3233,20 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -3110,7 +3311,10 @@ class TestCreateAHomework(unittest.TestCase):
                     'instantly after the student answers each question' +
                     Keys.RETURN)
                 self.teacher.sleep(2)
-                self.teacher.find(By.XPATH, "//button[@class='async-button -save btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button -save btn btn-default']"
+                ).click()
 
         self.teacher.sleep(5)
 
@@ -3131,7 +3335,10 @@ class TestCreateAHomework(unittest.TestCase):
             if assignment.text == 'Epic 16-28':
                 assignment.click()
 
-                self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button delete-link pull-" +
+                    "right btn btn-default']").click()
                 self.teacher.find(
                     By.XPATH, "//button[@class='btn btn-primary']").click()
                 self.teacher.sleep(5)
@@ -3205,12 +3412,20 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -3279,7 +3494,10 @@ class TestCreateAHomework(unittest.TestCase):
                     'instantly after the student answers each question' +
                     Keys.RETURN)
                 self.teacher.sleep(2)
-                self.teacher.find(By.XPATH, "//button[@class='async-button -publish btn btn-primary']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button -publish btn btn-primary']"
+                ).click()
 
         self.teacher.sleep(5)
 
@@ -3289,7 +3507,10 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.find(
             By.XPATH, "//a[@class='btn btn-default -edit-assignment']").click()
 
-        self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button delete-link pull-" +
+            "right btn btn-default']").click()
         self.teacher.find(
             By.XPATH, "//button[@class='btn btn-primary']").click()
         self.teacher.sleep(5)
@@ -3362,16 +3583,26 @@ class TestCreateAHomework(unittest.TestCase):
 
         # Choose the first date calendar[0], second is calendar[1]
         # and set the open date to today
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[0].click()
-        self.teacher.driver.find_element_by_xpath("//div[@class = 'datepicker__day datepicker__day--today']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[0].click()
+        self.teacher.driver.find_element_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--today']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -3434,9 +3665,15 @@ class TestCreateAHomework(unittest.TestCase):
                 self.teacher.find(
                     By.XPATH,
                     "//a[@class='btn btn-default -edit-assignment']").click()
-                self.teacher.find(By.XPATH, "//select").send_keys('instantly after the student answers each question' + Keys.RETURN)
+                self.teacher.find(
+                    By.XPATH, "//select").send_keys(
+                    'instantly after the student answers each question' +
+                    Keys.RETURN)
                 self.teacher.sleep(2)
-                self.teacher.find(By.XPATH, "//button[@class='async-button -publish btn btn-primary']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button -publish btn btn-primary']"
+                ).click()
 
         self.teacher.sleep(5)
 
@@ -3445,7 +3682,10 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.execute_script('window.scrollBy(0, 9000);')
         self.teacher.find(
             By.XPATH, "//a[@class='btn btn-default -edit-assignment']").click()
-        self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button delete-link pull-" +
+            "right btn btn-default']").click()
         self.teacher.find(
             By.XPATH, "//button[@class='btn btn-primary']").click()
         self.teacher.sleep(5)
@@ -3568,7 +3808,10 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.teacher.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, "//div[@class = 'openstax-exercise-preview exercise-card has-actions non-interactive is-vertically-truncated panel panel-default']")
+                (By.XPATH,
+                    "//div[@class = 'openstax-exercise-preview exercise-" +
+                    "card has-actions non-interactive is-vertically-trunca" +
+                    "ted panel panel-default']")
             )
         )
 
@@ -3626,7 +3869,10 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.teacher.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, "//div[@class = 'openstax-exercise-preview exercise-card has-actions non-interactive is-vertically-truncated panel panel-default']")
+                (By.XPATH,
+                    "//div[@class = 'openstax-exercise-preview exercise-" +
+                    "card has-actions non-interactive is-vertically-trunc" +
+                    "ated panel panel-default']")
             )
         )
 
@@ -3683,7 +3929,10 @@ class TestCreateAHomework(unittest.TestCase):
             "//button[@class='-show-problems btn btn-primary']").click()
         self.teacher.sleep(10)
 
-        assert('openstax-exercise-preview exercise-card has-actions non-interactive is-vertically-truncated panel panel-default' not in self.teacher.driver.page_source), \
+        info = 'openstax-exercise-preview exercise-card has-actions non'
+        info += '-interactive is-vertically-truncated panel panel-default'
+
+        assert(info not in self.teacher.driver.page_source), \
             'Exercises should not be visible'
 
         self.ps.test_updates['passed'] = True
@@ -3994,13 +4243,17 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.teacher.sleep(2)
 
-        self.teacher.find(By.XPATH, "//div[@class = 'openstax-exercise-preview exercise-card has-actions actions-on-side is-displaying-feedback panel panel-default']")
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class = 'openstax-exercise-preview exercise-card has-" +
+            "actions actions-on-side is-displaying-feedback panel panel-de" +
+            "fault']")
 
         self.ps.test_updates['passed'] = True
 
     # Case C8066 - 039 - Teacher | Assessments show their exercise ID + version
     @pytest.mark.skipif(str(8066) not in TESTS, reason='Excluded')
-    def test_teacher_assessment_shows_their_exercise_id_and_version(self):
+    def test_teacher_assessment_shows_their_exercise_id_and_version(self):  # NOQA
         """Assessments show their exercise ID and exercise version.
 
         Steps:
@@ -4052,7 +4305,10 @@ class TestCreateAHomework(unittest.TestCase):
 
         ids = self.teacher.driver.find_elements_by_xpath(
             "//div[@class = 'exercise-uid']")
-        cards = self.teacher.driver.find_elements_by_xpath("//div[@class = 'openstax-exercise-preview exercise-card has-actions non-interactive is-vertically-truncated panel panel-default']")
+        cards = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'openstax-exercise-preview exercise-card has-act" +
+            "ions non-interactive is-vertically-truncated panel panel" +
+            "-default']")
 
         # Verify that each visible card has an ID
         assert(len(ids) == len(cards)), \
@@ -4203,7 +4459,7 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.find(By.XPATH, "//div[@class='exercise-tags']")
 
         """
-        while "//div[@class='page-navigation next']" in self.teacher.driver.page_source:
+        while "//div[@class='page-navigation next']" in self.teacher.driver.page_source:  # NOQA
             #self.teacher.find(By.XPATH, "//div[@class='page-navigation next']").click()
 
             actions = ActionChains(self.teacher.driver)
@@ -4272,7 +4528,10 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.sleep(10)
 
         self.teacher.driver.execute_script('window.scrollBy(0, -9000);')
-        self.teacher.find(By.XPATH, "//div[@class='panel-footer']/button[@class='btn btn-default']").click()
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='panel-footer']/button[@class='btn btn-default']"
+        ).click()
         self.teacher.sleep(2)
 
         self.teacher.find(
@@ -4370,7 +4629,10 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.sleep(2)
 
         self.teacher.driver.execute_script('window.scrollBy(0, -9000);')
-        self.teacher.find(By.XPATH, "//div[@class='panel-footer']/button[@class='btn btn-default']").click()
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='panel-footer']/button[@class='btn btn-default']"
+        ).click()
         self.teacher.sleep(2)
 
         self.teacher.find(
@@ -4833,14 +5095,35 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.teacher.find(By.XPATH, "//table[@class = 'exercise-table']")
 
-        elem_1_text = self.teacher.find(By.XPATH, "//div[@class = 'openstax exercise-wrapper'][1]/div[@class = 'openstax-exercise-preview exercise-card non-interactive is-vertically-truncated panel panel-default']/div[@class = 'panel-body']/div[@class = 'openstax-question openstax-question-preview']/div[@class = 'openstax-has-html question-stem']").text
+        elem_1_text = self.teacher.find(
+            By.XPATH,
+            "//div[@class = 'openstax exercise-wrapper'][1]/div[@class = 'o" +
+            "penstax-exercise-preview exercise-card non-interactive is-vert" +
+            "ically-truncated panel panel-default']/div[@class = 'panel-bod" +
+            "y']/div[@class = 'openstax-question openstax-question-previe" +
+            "w']/div[@class = 'openstax-has-html question-stem']").text
 
-        self.teacher.find(By.XPATH, "//button[@class='btn-xs -move-exercise-up circle btn btn-default']").click()
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='btn-xs -move-exercise-up circle btn btn" +
+            "-default']").click()
 
-        assert(elem_1_text != self.teacher.find(By.XPATH, "//div[@class = 'openstax exercise-wrapper'][1]/div[@class = 'openstax-exercise-preview exercise-card non-interactive is-vertically-truncated panel panel-default']/div[@class = 'panel-body']/div[@class = 'openstax-question openstax-question-preview']/div[@class = 'openstax-has-html question-stem']").text), \
+        assert(elem_1_text != self.teacher.find(
+            By.XPATH, "//div[@class = 'openstax exercise-wrapper'][1]/div[@" +
+            "class = 'openstax-exercise-preview exercise-card non-interacti" +
+            "ve is-vertically-truncated panel panel-default']/div[@clas" +
+            "s = 'panel-body']/div[@class = 'openstax-question openstax-que" +
+            "stion-preview']/div[@class = 'openstax-has-html question-stem']"
+        ).text), \
             'Assessment order was not changed'
 
-        assert(elem_1_text == self.teacher.find(By.XPATH, "//div[@class = 'openstax exercise-wrapper'][2]/div[@class = 'openstax-exercise-preview exercise-card non-interactive is-vertically-truncated panel panel-default']/div[@class = 'panel-body']/div[@class = 'openstax-question openstax-question-preview']/div[@class = 'openstax-has-html question-stem']").text), \
+        assert(elem_1_text == self.teacher.find(
+            By.XPATH, "//div[@class = 'openstax exercise-wrapper'][2]/div" +
+            "[@class = 'openstax-exercise-preview exercise-card non-intera" +
+            "ctive is-vertically-truncated panel panel-default']/div[@clas" +
+            "s = 'panel-body']/div[@class = 'openstax-question openstax-ques" +
+            "tion-preview']/div[@class = 'openstax-has-html question-stem']"
+        ).text), \
             'Assessment order was not changed'
 
         self.ps.test_updates['passed'] = True
@@ -4943,9 +5226,14 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.teacher.find(By.XPATH, "//table[@class = 'exercise-table']")
 
-        elem_1_text = self.teacher.find(By.XPATH, "//table/tbody/tr/td[@class = 'ellipses']/span[@class = 'openstax-has-html'][1]").text
+        elem_1_text = self.teacher.find(
+            By.XPATH,
+            "//table/tbody/tr/td[@class = 'ellipses']/span[@class = 'openst" +
+            "ax-has-html'][1]").text
 
-        self.teacher.find(By.XPATH, "//button[@class='btn-xs -move-exercise-up circle btn btn-default']").click()
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn-xs -move-exercise-up circle b" +
+            "tn btn-default']").click()
 
         table = self.teacher.find(
             By.XPATH, "//table[@class = 'exercise-table']")
@@ -4954,7 +5242,9 @@ class TestCreateAHomework(unittest.TestCase):
             "return arguments[0].scrollIntoView();", table)
         self.teacher.driver.execute_script('window.scrollBy(0, -500);')
 
-        rows = self.teacher.driver.find_elements_by_xpath("//table/tbody/tr/td[@class = 'ellipses']/span[@class = 'openstax-has-html']")
+        rows = self.teacher.driver.find_elements_by_xpath(
+            "//table/tbody/tr/td[@class = 'ellipses']/span[@class = 'open" +
+            "stax-has-html']")
 
         assert(elem_1_text != rows[0].text), \
             'Assessment order was not changed'
@@ -5080,7 +5370,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.find(
             By.XPATH,
             "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.find(By.XPATH, "//div[@class='openstax exercise-wrapper'][2]/div[@class='openstax-exercise-preview exercise-card non-interactive is-vertically-truncated panel panel-default']/div[@class='panel-heading']/span[@class='panel-title -exercise-header']/span[@class='exercise-number']")
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='openstax exercise-wrapper'][2]/div[@class='open" +
+            "stax-exercise-preview exercise-card non-interactive is-vertic" +
+            "ally-truncated panel panel-default']/div[@class='panel-head" +
+            "ing']/span[@class='panel-title -exercise-header']/span[@clas" +
+            "s='exercise-number']")
         self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
@@ -5280,8 +5576,14 @@ class TestCreateAHomework(unittest.TestCase):
         assert(total == len(problems)), \
             'Number of assessments does not match tutor bar'
 
-        self.teacher.find(By.XPATH, "//button[@class='btn-xs -remove-exercise circle btn btn-default']").click()
-        self.teacher.find(By.XPATH, "//div[@class='popover-content']/div[@class='controls']/button[@class='btn btn-primary']").click()
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='btn-xs -remove-exercise circle btn btn-default']"
+        ).click()
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='popover-content']/div[@class='controls']/butto" +
+            "n[@class='btn btn-primary']").click()
 
         assert('exercise-table' not in self.teacher.driver.page_source), \
             'Problem list should not be present'
@@ -5495,12 +5797,20 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -5572,12 +5882,21 @@ class TestCreateAHomework(unittest.TestCase):
                     By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
                 # Change the open date
-                self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[0].click()
-                while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-                    self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+                self.teacher.driver.find_elements_by_xpath(
+                    "//div[@class = 'datepicker__input-container']")[0].click()
+                while(self.teacher.find(
+                    By.XPATH,
+                    "//span[@class = 'datepicker__current-month']"
+                ).text != 'December 2016'):
+                    self.teacher.find(
+                        By.XPATH,
+                        "//a[@class = 'datepicker__navigation datepicker__" +
+                        "navigation--next']").click()
 
                 # Choose the open date of December 10, 2016
-                weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+                weekends = self.teacher.driver.find_elements_by_xpath(
+                    "//div[@class = 'datepicker__day datepicker__" +
+                    "day--weekend']")
                 for day in weekends:
                     if day.text == '10':
                         due = day
@@ -5585,12 +5904,21 @@ class TestCreateAHomework(unittest.TestCase):
                         break
 
                 # Change the due date
-                self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-                while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-                    self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+                self.teacher.driver.find_elements_by_xpath(
+                    "//div[@class = 'datepicker__input-container']")[1].click()
+                while(self.teacher.find(
+                    By.XPATH,
+                    "//span[@class = 'datepicker__current-month']"
+                ).text != 'December 2016'):
+                    self.teacher.find(
+                        By.XPATH,
+                        "//a[@class = 'datepicker__navigation datepicker__" +
+                        "navigation--next']").click()
 
                 # Choose the due date of December 24, 2016
-                weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+                weekends = self.teacher.driver.find_elements_by_xpath(
+                    "//div[@class = 'datepicker__day datepicker__day--" +
+                    "weekend']")
                 for day in weekends:
                     if day.text == '24':
                         due = day
@@ -5604,7 +5932,10 @@ class TestCreateAHomework(unittest.TestCase):
                     Keys.RETURN)
                 self.teacher.sleep(2)
                 self.teacher.driver.execute_script('window.scrollBy(0, 200);')
-                self.teacher.find(By.XPATH, "//button[@class='async-button -publish btn btn-primary']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button -publish btn btn-primary']"
+                ).click()
 
                 self.teacher.sleep(5)
                 break
@@ -5630,7 +5961,10 @@ class TestCreateAHomework(unittest.TestCase):
                     By.XPATH,
                     "//a[@class='btn btn-default -edit-assignment']").click()
                 self.teacher.sleep(5)
-                self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button delete-link pull-right bt" +
+                    "n btn-default']").click()
                 self.teacher.find(
                     By.XPATH, "//button[@class='btn btn-primary']").click()
                 self.teacher.sleep(5)
@@ -5706,12 +6040,20 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
         # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
         for day in weekends:
             if day.text == '31':
                 due = day
@@ -5745,7 +6087,7 @@ class TestCreateAHomework(unittest.TestCase):
         # Save the draft
         self.teacher.driver.execute_script('window.scrollBy(0, -200);')
         self.teacher.find(
-            By.XPATH, 
+            By.XPATH,
             "//button[@class='async-button -save btn btn-default']").click()
 
         # Give the assignment time to publish
@@ -5781,12 +6123,21 @@ class TestCreateAHomework(unittest.TestCase):
                     By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
                 # Change the open date
-                self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[0].click()
-                while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-                    self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+                self.teacher.driver.find_elements_by_xpath(
+                    "//div[@class = 'datepicker__input-container']")[0].click()
+                while(self.teacher.find(
+                    By.XPATH,
+                    "//span[@class = 'datepicker__current-month']"
+                ).text != 'December 2016'):
+                    self.teacher.find(
+                        By.XPATH,
+                        "//a[@class = 'datepicker__navigation datepicker__" +
+                        "navigation--next']").click()
 
                 # Choose the open date of December 10, 2016
-                weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+                weekends = self.teacher.driver.find_elements_by_xpath(
+                    "//div[@class = 'datepicker__day datepicker__day--" +
+                    "weekend']")
                 for day in weekends:
                     if day.text == '10':
                         due = day
@@ -5794,12 +6145,21 @@ class TestCreateAHomework(unittest.TestCase):
                         break
 
                 # Change the due date
-                self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-                while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-                    self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+                self.teacher.driver.find_elements_by_xpath(
+                    "//div[@class = 'datepicker__input-container']")[1].click()
+                while(self.teacher.find(
+                    By.XPATH,
+                    "//span[@class = 'datepicker__current-month']"
+                ).text != 'December 2016'):
+                    self.teacher.find(
+                        By.XPATH,
+                        "//a[@class = 'datepicker__navigation datepicker__" +
+                        "navigation--next']").click()
 
                 # Choose the due date of December 24, 2016
-                weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+                weekends = self.teacher.driver.find_elements_by_xpath(
+                    "//div[@class = 'datepicker__day datepicker__" +
+                    "day--weekend']")
                 for day in weekends:
                     if day.text == '24':
                         due = day
@@ -5813,7 +6173,9 @@ class TestCreateAHomework(unittest.TestCase):
                     Keys.RETURN)
                 self.teacher.sleep(2)
                 self.teacher.driver.execute_script('window.scrollBy(0, 200);')
-                self.teacher.find(By.XPATH, "//button[@class='async-button -save btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH, "//button[@class='async-button -save bt" +
+                    "n btn-default']").click()
 
                 self.teacher.sleep(5)
                 break
@@ -5835,7 +6197,9 @@ class TestCreateAHomework(unittest.TestCase):
             if assignment.text == 'Epic 16-56!':
                 assignment.click()
                 self.teacher.sleep(2)
-                self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH, "//button[@class='async-button del" +
+                    "ete-link pull-right btn btn-default']").click()
                 self.teacher.find(
                     By.XPATH, "//button[@class='btn btn-primary']").click()
                 self.teacher.sleep(5)
@@ -5924,8 +6288,14 @@ class TestCreateAHomework(unittest.TestCase):
         # Choose the second date calendar[1], first is calendar[0]
         self.teacher.driver.find_elements_by_xpath(
             "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-            self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
 
         # Choose the due date of December 31, 2016
         weekends = self.teacher.driver.find_elements_by_xpath(
@@ -6001,12 +6371,21 @@ class TestCreateAHomework(unittest.TestCase):
                     By.XPATH, "//input[@id = 'hide-periods-radio']").click()
 
                 # Change the due date
-                self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__input-container']")[1].click()
-                while(self.teacher.find(By.XPATH, "//span[@class = 'datepicker__current-month']").text != 'December 2016'):
-                    self.teacher.find(By.XPATH, "//a[@class = 'datepicker__navigation datepicker__navigation--next']").click()
+                self.teacher.driver.find_elements_by_xpath(
+                    "//div[@class = 'datepicker__input-container']")[1].click()
+                while(self.teacher.find(
+                    By.XPATH,
+                    "//span[@class = 'datepicker__current-month']"
+                ).text != 'December 2016'):
+                    self.teacher.find(
+                        By.XPATH,
+                        "//a[@class = 'datepicker__navigation datepicker__" +
+                        "navigation--next']").click()
 
                 # Choose the due date of December 24, 2016
-                weekends = self.teacher.driver.find_elements_by_xpath("//div[@class = 'datepicker__day datepicker__day--weekend']")
+                weekends = self.teacher.driver.find_elements_by_xpath(
+                    "//div[@class = 'datepicker__day datepicker__" +
+                    "day--weekend']")
                 for day in weekends:
                     if day.text == '24':
                         due = day
@@ -6020,7 +6399,10 @@ class TestCreateAHomework(unittest.TestCase):
                     Keys.RETURN)
                 self.teacher.sleep(2)
                 self.teacher.driver.execute_script('window.scrollBy(0, 200);')
-                self.teacher.find(By.XPATH, "//button[@class='async-button -publish btn btn-primary']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button -publish btn btn-primary']"
+                ).click()
 
                 self.teacher.sleep(5)
                 break
@@ -6046,7 +6428,10 @@ class TestCreateAHomework(unittest.TestCase):
                     By.XPATH,
                     "//a[@class='btn btn-default -edit-assignment']").click()
                 self.teacher.sleep(5)
-                self.teacher.find(By.XPATH, "//button[@class='async-button delete-link pull-right btn btn-default']").click()
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='async-button delete-link pull-rig" +
+                    "ht btn btn-default']").click()
                 self.teacher.find(
                     By.XPATH, "//button[@class='btn btn-primary']").click()
                 self.teacher.sleep(5)
