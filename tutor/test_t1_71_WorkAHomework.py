@@ -1,4 +1,4 @@
-"""Tutor v1, Epic 71 - Work a homework."""
+"""Tutor v1, Epic 71 - Work a Homework."""
 
 import inspect
 import json
@@ -29,14 +29,14 @@ TESTS = os.getenv(
     'CASELIST',
     str([8362, 8363, 8364, 8365, 8366,
          8367, 8368, 8369, 8370, 8371,
-         8372, 8373, 8374, 8375, 8376, 
+         8372, 8373, 8374, 8375, 8376,
          8377, 8378, 8379, 8380, 8381,
          8382, 8383, 8384, 8385, 8386])  # NOQA
 )
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestWorkAHomework(unittest.TestCase):
     """T1.71 - Work a Homework."""
 
     def setUp(self):
@@ -64,7 +64,7 @@ class TestEpicName(unittest.TestCase):
         self.teacher.driver = self.student.driver
         self.wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
         self.teacher.login()
-        
+
     def tearDown(self):
         """Test destructor."""
         self.ps.update_job(job_id=str(self.student.driver.session_id),
@@ -74,16 +74,17 @@ class TestEpicName(unittest.TestCase):
         except:
             pass
 
-    # Case C8362 - 001 - Student | Start an open homework assignment 
+    # Case C8362 - 001 - Student | Start an open homework assignment
     @pytest.mark.skipif(str(8362) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_start_an_open_homework_assignemnt(self):
+    def test_student_start_an_open_homework_assignemnt_8362(self):
         """Start an open homework assignment.
 
         Steps:
         Click on a homework assignment on the list dashboard
 
         Expected Result:
-        The user is presented with the first question of the homework assignment
+        The user is presented with the first question of the homework
+        assignment
 
         """
         self.ps.test_updates['name'] = 't1.71.001' \
@@ -138,7 +139,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1','t1.71','t1.71.002','8363']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions        
+        # Test steps and verification assertions
         assignment_name = 'hw002'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
@@ -171,10 +172,10 @@ class TestEpicName(unittest.TestCase):
             By.XPATH, '//div[contains(@id,"task-details-popover")]')
         self.ps.test_updates['passed'] = True
 
-
-    # Case C8364 - 003 - Student | Navigate between questions using the breadcrumbs
+    # Case C8364 - 003 - Student | Navigate between questions using the
+    # breadcrumbs
     @pytest.mark.skipif(str(8364) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_navigate_between_questions_using_the_breadcrumbs(self):
+    def test_student_navigate_between_questions_using_breadcrumbs_8364(self):
         """Navigate between questions using the breadcrumbs.
 
         Steps:
@@ -220,7 +221,6 @@ class TestEpicName(unittest.TestCase):
         self.student.driver.find_element(
             By.XPATH,'//div[@data-question-number="2"]')
         self.ps.test_updates['passed'] = True
-
 
     # Case C8365 - 004 - Student | Inputting a free response activates the Answer button
     @pytest.mark.skipif(str(8365) not in TESTS, reason='Excluded')  # NOQA
@@ -378,7 +378,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1','t1.71','t1.71.006','8367']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions        
+        # Test steps and verification assertions
         assignment_name = 'hw006'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
@@ -441,7 +441,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on a homework assignment on the list dashboard
-        If the assessment has a free response text box, 
+        If the assessment has a free response text box,
         enter a free response into the free response text box
         Click "Answer"
         Select a multiple choice answer
@@ -524,7 +524,7 @@ class TestEpicName(unittest.TestCase):
         """Verify the free response saved after entering it into the assessment.
 
         Steps:
-        If the assessment has a free response text box, 
+        If the assessment has a free response text box,
         enter a free response into the free response text box
         Click on the next breadcrumb to get to the next assessment
         Click back to the original assessment
@@ -683,7 +683,7 @@ class TestEpicName(unittest.TestCase):
         Click "Answer"
         If the assessment has multiple choices, select a multiple choice answer
         Click "Submit"
-        Click on the course name in the left corner of the header 
+        Click on the course name in the left corner of the header
 
         Expected Result:
         The user returns to dashboard
@@ -694,7 +694,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1','t1.71','t1.71.010','8371']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions        
+        # Test steps and verification assertions
         assignment_name = 'hw010'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
@@ -856,7 +856,7 @@ class TestEpicName(unittest.TestCase):
         If the assessment has multiple choices, select a multiple choice answer
         Click "Submit"
 
-        Click on the course name in the left corner of the header 
+        Click on the course name in the left corner of the header
         Click on the same homework assignment
         Change a multiple choice answer on an assessment
         Click "Submit"
@@ -987,7 +987,7 @@ class TestEpicName(unittest.TestCase):
                                         'title' : assignment_name,
                                         'description' : 'description',
                                         'periods' : {'all':(begin,end)},
-                                        'status' : 'publish'                                      
+                                        'status' : 'publish'
                                         'problems' : {'ch1':5}
                                         'feedback' : 'non-immediate'
                                     })
@@ -1153,7 +1153,7 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-  
+
 
     # # how to test this if it only happens sometimes? just keep looking at hw's until you find one?
     # # Case C8377 - 016 - Student | A homework may have a Review assessment
@@ -1265,7 +1265,7 @@ class TestEpicName(unittest.TestCase):
         Click on a homework assignment
         Enter a free response into the free response text box
         Click "Answer"
-        Select a multiple choice answer 
+        Select a multiple choice answer
         Click "Submit"
 
         Expected Result:
@@ -1342,7 +1342,7 @@ class TestEpicName(unittest.TestCase):
         Click on a homework assignment
         Enter a free response into the free response text box
         Click "Answer"
-        Select a multiple choice answer 
+        Select a multiple choice answer
         Click "Submit"
 
         Expected Result:
@@ -1419,7 +1419,7 @@ class TestEpicName(unittest.TestCase):
         Click on a homework assignment
         Enter a free response into the free response text box
         Click "Answer"
-        Select a multiple choice answer 
+        Select a multiple choice answer
         Click "Submit"
 
         Expected Result:
@@ -1541,7 +1541,7 @@ class TestEpicName(unittest.TestCase):
         Click on a homework assignment on the list dashboard
         Enter a free response into the free response text box
         Click "Answer"
-        Select a multiple choice answer 
+        Select a multiple choice answer
         Click "Submit"
 
         Expected Result:
@@ -1626,7 +1626,7 @@ class TestEpicName(unittest.TestCase):
         Click on a homework assignment on the list dashboard
         Enter a free response into the free response text box
         Click "Answer"
-        Select a multiple choice answer 
+        Select a multiple choice answer
         Click "Submit"
 
         Expected Result:
@@ -1712,7 +1712,7 @@ class TestEpicName(unittest.TestCase):
         Click on a homework assignment on the list dashboard
         Enter a free response into the free response text box
         Click "Answer"
-        Select a multiple choice answer 
+        Select a multiple choice answer
         Click "Submit"
 
         Expected Result:
@@ -1723,7 +1723,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1','t1.71','t1.71.025','8386']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions       
+        # Test steps and verification assertions
         assignment_name = 'hw025'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')

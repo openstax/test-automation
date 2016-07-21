@@ -83,8 +83,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7979 - 002 - Teacher | View student scores using the dashboard
-    # button
+    # Case C7979 - 002 - Teacher | View student scores using dashboard button
     @pytest.mark.skipif(str(7979) not in TESTS, reason='Excluded')
     def test_teacher_view_student_scores_using_the_dashboard_button_7979(self):
         """View student scores using the dashboard button.
@@ -120,6 +119,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         Expected Result:
         The teacher is presented with the student scores
+
         """
         self.ps.test_updates['name'] = 't1.13.003' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -142,7 +142,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         Steps:
         If the user has more than one course, click on a Tutor course name
-        Click on the 'Performace Forecast' button
+        Click on the 'Performace Forecast' button on the dashboard
 
         Expected Result:
         The teacher is presented with the performance forecast
@@ -162,8 +162,8 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7982 - 005 - Teacher | View performace forecast using the user menu
-    # link
+    # Case C7982 - 005 - Teacher | View performace forecast using
+    # the user menu link
     @pytest.mark.skipif(str(7982) not in TESTS, reason='Excluded')
     def test_teacher_view_performace_forecast_using_user_menu_link_7982(self):
         """View performance forecast using the user menu link.
@@ -384,7 +384,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         Click on the 'Browse The Book'button
 
         Expected Result:
-        A new window or tab is opened with the PDF view of the textbook
+        THe teacher is preseneted with the book in a new tab
         """
         self.ps.test_updates['name'] = 't1.13.010' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -403,8 +403,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7988 - 011 - Teacher | Open the refrenece book using the user menu
-    # link
+    # Case C7988 - 011 - Teacher | Open the refrenece book using user menu link
     @pytest.mark.skipif(str(7988) not in TESTS, reason='Excluded')
     def test_teacher_open_the_reference_book_using_user_menu_link_7988(self):
         """Open the refrenece book using the user menu link.
@@ -415,7 +414,8 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         Click on the 'Browse the Book' link
 
         Expected Result:
-        A new window or tab is opened with the PDF view of the textbook
+        The teacher is presented with the book in a new tab
+
         """
         self.ps.test_updates['name'] = 't1.13.011' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -435,8 +435,8 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7989 - 012 - Teacher | Click on the course name to return to the
-    # dashboard
+    # Case C7989 - 012 - Teacher | Click on the course name to return to
+    # the dashboard
     @pytest.mark.skipif(str(7989) not in TESTS, reason='Excluded')
     def test_teacher_click_course_name_to_return_to_the_dashboard_7989(self):
         """Click on the course name to return to the dashboard.
@@ -468,13 +468,14 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7990 - 013 - Teacher | Cick on the OpenStax logo to return to the
-    # course picker
+    # Case C7990 - 013 - Teacher | Cick on the OpenStax logo to return to
+    # the course picker
     @pytest.mark.skipif(str(7990) not in TESTS, reason='Excluded')
     def test_teacher_click_openstax_logo_to_return_to_course_picker_7990(self):
         """Cick on the OpenStax logo to return to the course picker.
 
         Steps:
+
         If the user has more than one course, click on a Tutor course name
         Click in the OpenStax logo in the header
 
