@@ -63,11 +63,13 @@ class TestEpicName(unittest.TestCase):
     # Case C8148 - 001 - Teacher | View the period Performance Forecast
     @pytest.mark.skipif(str(8148) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_view_the_period_performance_forecast(self):
-        """View the period Performance Froecast
+        """View the period Performance Forecast.
 
         Steps:
-        On the calendar dashboard, click on the "Performance Forecast" button on the upper right corner of the calendar OR 
-        click on the user drop down menu then click on the "Performance Forecast" button
+        On the calendar dashboard, click on the "Performance Forecast" button
+        on the upper right corner of the calendar OR
+        click on the user drop down menu then click on the
+        "Performance Forecast" button
         Click on the desired period
 
         Expected Result:
@@ -95,19 +97,20 @@ class TestEpicName(unittest.TestCase):
         self.teacher.page.wait_for_page_load()
         self.teacher.sleep(10)
 
-
         self.ps.test_updates['passed'] = True
-
 
     # Case C8149 - 002 - Teacher | Info icon shows an explanation of the data
     @pytest.mark.skipif(str(8149) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_info_icon_shows_an_explanation_of_the_data(self):
-        """Info icon shows an explanation of the data
+        """Info icon shows an explanation of the data.
 
         Steps:
-        On the calendar dashboard, click on the "Performance Forecast" button on the upper right corner of the calendar OR 
-        click on the user drop down menu then click on the "Performance Forecast" button
-        Hover the cursor over the info icon that is next to the "Performance Forecast" header
+        On the calendar dashboard, click on the "Performance Forecast" button
+        on the upper right corner of the calendar OR
+        click on the user drop down menu then click on the
+        "Performance Forecast" button
+        Hover the cursor over the info icon that is next to the
+        "Performance Forecast" header
 
         Expected Result:
         Info icon shows an explanation of the data
@@ -142,14 +145,17 @@ class TestEpicName(unittest.TestCase):
     # Case C8150 - 003 - Teacher | View the performance color key
     @pytest.mark.skipif(str(8150) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_view_the_performance_color_key(self):
-        """View the performance color key
+        """View the performance color key.
 
         Steps:
-        On the calendar dashboard, click on the "Performance Forecast" button on the upper right corner of the calendar OR click on the user drop down menu 
+        On the calendar dashboard, click on the "Performance Forecast"
+        button on the upper right corner of the calendar OR
+        click on the user drop down menu
         click on the "Performance Forecast" button
 
         Expected Result:
-        The performance color key is presented to the user (next to the 'Return to Dashboard' button)
+        The performance color key is presented to the user
+        (next to the 'Return to Dashboard' button)
         """
         self.ps.test_updates['name'] = 't1.22.003' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -178,13 +184,16 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8151 - 004 - Teacher | Return to Dashboard button returns to the calendar
+    # Case C8151 - 004 - Teacher | Return to Dashboard button returns to
+    # the calendar
     @pytest.mark.skipif(str(8151) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_return_to_dashboard_button_returns_to_the_calendar(self):
-        """Return to Dashboard button returns to the calendar
+        """Return to Dashboard button returns to the calendar.
 
         Steps:
-        On the calendar dashboard, click on the "Performance Forecast" button on the upper right corner of the calendar OR Click on the user drop down menu 
+        On the calendar dashboard, click on the "Performance Forecast"
+        button on the upper right corner of the calendar OR
+        Click on the user drop down menu
         Click on the "Performance Forecast" button
 
         Expected Result:
@@ -224,14 +233,17 @@ class TestEpicName(unittest.TestCase):
     # Case C8152 - 005 - Teacher | Periods tabs are shown
     @pytest.mark.skipif(str(8152) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_period_tabs_are_shown(self):
-        """Period tabs are shown
+        """Period tabs are shown.
 
         Steps:
-        On the calendar dashboard, click on the "Performance Forecast" button on the upper right corner of the calendar OR click on the user drop down menu 
+        On the calendar dashboard, click on the "Performance Forecast" button
+        on the upper right corner of the calendar OR
+        click on the user drop down menu
         click on the "Performance Forecast" button
 
         Expected Result:
-        The period tabs are shown to the user (below the "Performance Forecast" header)
+        The period tabs are shown to the user
+        (below the "Performance Forecast" header)
         """
         self.ps.test_updates['name'] = 't1.22.005' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -242,7 +254,7 @@ class TestEpicName(unittest.TestCase):
             '8152'
         ]
         self.ps.test_updates['passed'] = False
-        
+
         # Test steps and verification assertions
         self.teacher.select_course(appearance='physics')
         assert('calendar' in self.teacher.current_url()), \
@@ -263,18 +275,22 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8153 - 006 - Teacher | A period with zero answers does not show section breakdowns
+    # Case C8153 - 006 - Teacher | A period with zero answers does not
+    # show section breakdowns
     @pytest.mark.skipif(str(8153) not in TESTS, reason='Excluded')  # NOQA
-    def test_teacher_a_period_with_zero_answers_does_not_show_section_breakdowns(self):
-        """A period with zero answers does not show section breakdowns
+    def test_teacher_a_period_w_zero_answers_does_not_show_breakdowns(self):
+        """A period with zero answers does not show section breakdowns.
 
         Steps:
-        On the calendar dashboard, click on the "Performance Forecast" button on the upper right corner of the calendar OR click on the user drop down menu
+        On the calendar dashboard, click on the "Performance Forecast"
+        button on the upper right corner of the calendar OR
+        click on the user drop down menu
         click on the "Performance Forecast" button
-        Click on the period with zero answers        
+        Click on the period with zero answers
 
         Expected Result:
-        The user should see no section breakdowns as well as the words "There have been no questions worked for this period."
+        The user should see no section breakdowns as well as the words
+        "There have been no questions worked for this period."
         """
         self.ps.test_updates['name'] = 't1.22.006' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -287,7 +303,8 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get("https://tutor-qa.openstax.org/courses/2/t/calendar/")
+        self.teacher.driver.get(
+            "https://tutor-qa.openstax.org/courses/2/t/calendar/")
         assert('calendar' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
@@ -307,13 +324,16 @@ class TestEpicName(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8154 - 007 - Teacher | Weaker areas shows up to four problematic sections
+    # Case C8154 - 007 - Teacher | Weaker areas shows up to
+    # four problematic sections
     @pytest.mark.skipif(str(8154) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_weaker_areas_shows_up_to_four_problematic_sections(self):
-        """Weaker areas shows up to four problematic sections
+        """Weaker areas shows up to four problematic sections.
 
         Steps:
-        On the calendar dashboard, click on the "Performance Forecast" button on the upper right corner of the calendar OR click on the user drop down menu
+        On the calendar dashboard, click on the "Performance Forecast"
+        button on the upper right corner of the calendar OR
+        click on the user drop down menu
         click on the "Performance Forecast" button
         Click on the desired period
 
@@ -331,7 +351,8 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get("https://tutor-qa.openstax.org/courses/2/t/calendar/")
+        self.teacher.driver.get(
+            "https://tutor-qa.openstax.org/courses/2/t/calendar/")
         assert('calendar' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
@@ -339,7 +360,8 @@ class TestEpicName(unittest.TestCase):
         assert('guide' in self.teacher.current_url()), \
             'Not viewing performance forecast'
 
-        self.teacher.driver.get("https://tutor-qa.openstax.org/courses/1/t/guide")
+        self.teacher.driver.get(
+            "https://tutor-qa.openstax.org/courses/1/t/guide")
         self.teacher.page.wait_for_page_load()
         self.teacher.wait.until(
             expect.visibility_of_element_located((
@@ -349,32 +371,36 @@ class TestEpicName(unittest.TestCase):
 
         self.teacher.sleep(5)
 
-        self.teacher.driver.get("https://tutor-qa.openstax.org/courses/2/t/guide")
+        self.teacher.driver.get(
+            "https://tutor-qa.openstax.org/courses/2/t/guide")
         self.teacher.page.wait_for_page_load()
         self.teacher.wait.until(
             expect.visibility_of_element_located((
                 By.LINK_TEXT, '2nd'))).click()
 
-        self.teacher.find(By.XPATH, "/html/body/div[@id='react-root-container']/div[@class='tutor-app openstax-wrapper']/div[@class='openstax-debug-content']/div[@class='performance-forecast teacher panel panel-default']/div[@class='panel-body']/div[@class='guide-container']/div[@class='guide-group']/div[@class='chapter-panel weaker']/div[@class='sections']/div[@class='section'][2]")
-        
+        self.teacher.find(By.XPATH, "/html/body/div[@id='react-root-container']/div[@class='tutor-app openstax-wrapper']/div[@class='openstax-debug-content']/div[@class='performance-forecast teacher panel panel-default']/div[@class='panel-body']/div[@class='guide-container']/div[@class='guide-group']/div[@class='chapter-panel weaker']/div[@class='sections']/div[@class='section'][2]")  # NOQA
+
         self.teacher.sleep(5)
 
         self.teacher.wait.until(
             expect.visibility_of_element_located((
                 By.LINK_TEXT, '4th'))).click()
 
-        self.teacher.find(By.XPATH, "/html/body/div[@id='react-root-container']/div[@class='tutor-app openstax-wrapper']/div[@class='openstax-debug-content']/div[@class='performance-forecast teacher panel panel-default']/div[@class='panel-body']/div[@class='guide-container']/div[@class='guide-group']/div[@class='chapter-panel weaker']/div[@class='sections']/div[@class='section'][3]")
+        self.teacher.find(By.XPATH, "/html/body/div[@id='react-root-container']/div[@class='tutor-app openstax-wrapper']/div[@class='openstax-debug-content']/div[@class='performance-forecast teacher panel panel-default']/div[@class='panel-body']/div[@class='guide-container']/div[@class='guide-group']/div[@class='chapter-panel weaker']/div[@class='sections']/div[@class='section'][3]")  # NOQA
         self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8155 - 008 - Teacher | Chapters are listed on the left with their sections to the right
+    # Case C8155 - 008 - Teacher | Chapters are listed on the left with
+    # their sections to the right
     @pytest.mark.skipif(str(8155) not in TESTS, reason='Excluded')  # NOQA
-    def test_teacher_chapters_are_listed_on_the_left_with_their_sections_to_the_right(self):
-        """Chapters are listed on the left with their sections to the right
+    def test_teacher_chapters_listed_on_left_w_sections_on_right(self):  # NOQA
+        """Chapters are listed on the left with their sections to the right.
 
         Steps:
-        On the calendar dashboard, click on the "Performance Forecast" button on the upper right corner of the calendar OR click on the user drop down menu
+        On the calendar dashboard, click on the "Performance Forecast"
+        button on the upper right corner of the calendar OR
+        click on the user drop down menu
         click on the "Performance Forecast" button
         Click on the desired period
         Scroll to the "Individual Chapters" section
@@ -403,11 +429,11 @@ class TestEpicName(unittest.TestCase):
 
         self.teacher.page.wait_for_page_load()
 
-        panels = self.teacher.driver.find_elements_by_class_name('chapter-panel')
+        panels = self.teacher.driver.find_elements_by_class_name(
+            'chapter-panel')
         for panel in panels:
             panel.find_elements_by_class_name('chapter')
             panel.find_elements_by_class_name('sections')
         self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
-
