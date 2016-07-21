@@ -7,10 +7,8 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
-# from staxing.assignment import Assignment
 from staxing.helper import Admin, Student, Teacher, ContentQA
 
 basic_test_env = json.dumps([
@@ -37,25 +35,20 @@ class TestUserLogin(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        #self.teacher = Teacher(
-        #    use_env_vars=True,
-        #    pasta_user=self.ps,
-        #    capabilities=self.desired_capabilities
-        #)
 
     def tearDown(self):
         """Test destructor."""
-        #self.ps.update_job(job_id=str(self.teacher.driver.session_id),
+        # self.ps.update_job(job_id=str(self.teacher.driver.session_id),
         #                   **self.ps.test_updates)
-        #try:
+        # try:
         #    self.teacher.delete()
-        #except:
+        # except:
         #    pass
 
 
     # Case C8238 - 001 - Admin | Log into Tutuor
     @pytest.mark.skipif(str(8238) not in TESTS, reason='Excluded')
-    def test_admin_view_the_calendar_dashboard(self):
+    def test_admin_view_the_calendar_dashboard_8238(self):
         """View the calendar dashboard.
 
         Steps:
@@ -72,9 +65,9 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         admin = Admin(
-            use_env_vars=True#,
-            #pasta_user=self.ps,
-            #capabilities=self.desired_capabilities
+            use_env_vars=True,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         admin.driver.get('https://tutor-qa.openstax.org')
         admin.page.wait_for_page_load()
@@ -108,7 +101,7 @@ class TestUserLogin(unittest.TestCase):
 
     # Case C8239 - 002 - Admin | Access the Admin Console
     @pytest.mark.skipif(str(8239) not in TESTS, reason='Excluded')
-    def test_admin_access_the_admin_console(self):
+    def test_admin_access_the_admin_console_8239(self):
         """Access the Admin Console
 
         Steps:
@@ -127,9 +120,9 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         admin = Admin(
-            use_env_vars=True#,
-            #pasta_user=self.ps,
-            #capabilities=self.desired_capabilities
+            use_env_vars=True,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         admin.login()
         admin.open_user_menu()
@@ -139,14 +132,15 @@ class TestUserLogin(unittest.TestCase):
             )
         ).click()
         admin.page.wait_for_page_load()
-        admin.driver.find_element(By.XPATH,'//h1[contains(text(),"Admin Console")]')
+        admin.driver.find_element(
+            By.XPATH, '//h1[contains(text(),"Admin Console")]')
         admin.delete()
 
         self.ps.test_updates['passed'] = True
 
     # Case C8240 - 003 - Admin | Log out
     @pytest.mark.skipif(str(8240) not in TESTS, reason='Excluded')
-    def test_admin_log_out(self):
+    def test_admin_log_out_8240(self):
         """Log out
 
         Steps:
@@ -165,9 +159,9 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         admin = Admin(
-            use_env_vars=True#,
-            #pasta_user=self.ps,
-            #capabilities=self.desired_capabilities
+            use_env_vars=True,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         admin.login()
         admin.open_user_menu()
@@ -177,18 +171,19 @@ class TestUserLogin(unittest.TestCase):
             )
         ).click()
         admin.page.wait_for_page_load()
-        admin.driver.find_element(By.XPATH,'//div[contains(@class,"tutor-home")]')
+        admin.driver.find_element(
+            By.XPATH, '//div[contains(@class,"tutor-home")]')
         admin.delete()
         self.ps.test_updates['passed'] = True
 
     # Case C8241 - 004 - Content Annalyst | Log into Tutor
     @pytest.mark.skipif(str(8241) not in TESTS, reason='Excluded')
-    def test_content_annalyst_log_into_tutor(self):
+    def test_content_annalyst_log_into_tutor_8241(self):
         """Log into Tutor
 
         Steps:
         Click on the 'Login' button
-        Enter the content annalyst account in the username and password text boxes
+        Enter the content annalyst account in the username and password boxes
         Click on the 'Sign in' button
 
         Expected Result:
@@ -200,14 +195,15 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         content = ContentQA(
-            use_env_vars=True#,
-            #pasta_user=self.ps,
-            #capabilities=self.desired_capabilities
+            use_env_vars=True,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         content.driver.get('https://tutor-qa.openstax.org')
         content.page.wait_for_page_load()
         # check to see if the screen width is normal or condensed
-        if content.driver.get_window_size()['width'] <= content.CONDENSED_WIDTH:
+        if content.driver.get_window_size()['width'] <= \
+           content.CONDENSED_WIDTH:
             # get small-window menu toggle
             is_collapsed = content.driver.find_element(
                 By.XPATH,
@@ -222,9 +218,12 @@ class TestUserLogin(unittest.TestCase):
             )
         ).click()
         content.page.wait_for_page_load()
-        # not getting account info, can manually put in account info and it works
-        content.driver.find_element(By.ID, 'auth_key').send_keys(content.username)
-        content.driver.find_element(By.ID, 'password').send_keys(content.password)
+        # not getting account info,
+        # can manually put in account info as strings and it works
+        content.driver.find_element(
+            By.ID, 'auth_key').send_keys(content.username)
+        content.driver.find_element(
+            By.ID, 'password').send_keys(content.password)
         # click on the sign in button
         content.driver.find_element(
             By.XPATH, '//button[text()="Sign in"]'
@@ -238,12 +237,12 @@ class TestUserLogin(unittest.TestCase):
     # having an issue with the account info, does the enviroment have account?
     # Case C8242 - 005 - Content Analyst | Access the QA Viewer
     @pytest.mark.skipif(str(8242) not in TESTS, reason='Excluded')
-    def test_content_annalyst_access_the_qa_viewer(self):
+    def test_content_annalyst_access_the_qa_viewer_8242(self):
         """Access the QA Viewer
 
         Steps:
         Click on the 'Login' button
-        Enter the content analyst account in the username and password text boxes
+        Enter the content analyst account in the username and password boxes
         Click on the 'Sign in' button
         Click on the user menu
         Click on the QA Content option
@@ -257,9 +256,9 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         content = ContentQA(
-            use_env_vars=True#,
-            #pasta_user=self.ps,
-            #capabilities=self.desired_capabilities
+            use_env_vars=True,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         print(content)
         content.login()
@@ -271,7 +270,7 @@ class TestUserLogin(unittest.TestCase):
         ).click()
         content.page.wait_for_page_load()
         content.driver.find_element(
-            By.XPATH,'//h1[contains(text(),"Content Analyst Console")]')
+            By.XPATH, '//h1[contains(text(),"Content Analyst Console")]')
         content.delete()
 
         self.ps.test_updates['passed'] = True
@@ -279,12 +278,12 @@ class TestUserLogin(unittest.TestCase):
     # having an issue with the account info, does the enviroment have account?
     # Case C8243 - 006 - Content Analyst | Access the Content Analyst Console
     @pytest.mark.skipif(str(8243) not in TESTS, reason='Excluded')
-    def test_content_annalyst_access_the_content_annalyst_console(self):
+    def test_content_annalyst_access_the_content_annalyst_console_8243(self):
         """ Access the Content Annalyst Console
 
         Steps:
         Click on the 'Login' button
-        Enter the content analyst account in the username and password text boxes
+        Enter the content analyst account in the username and password boxes
         Click on the 'Sign in' button
         Click on the user menu
         Click on the Content Analyst option
@@ -298,9 +297,9 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         content = ContentQA(
-            use_env_vars=True#,
-            #pasta_user=self.ps,
-            #capabilities=self.desired_capabilities
+            use_env_vars=True,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         print(content)
         content.login()
@@ -312,7 +311,7 @@ class TestUserLogin(unittest.TestCase):
         ).click()
         content.page.wait_for_page_load()
         content.driver.find_element(
-            By.XPATH,'//h1[contains(text(),"Content Analyst Console")]')
+            By.XPATH, '//h1[contains(text(),"Content Analyst Console")]')
         content.delete()
 
         self.ps.test_updates['passed'] = True
@@ -320,12 +319,12 @@ class TestUserLogin(unittest.TestCase):
     # having an issue with the account info, does the enviroment have account?
     # Case C8244 - 007 - Content Analyst | Log out
     @pytest.mark.skipif(str(8244) not in TESTS, reason='Excluded')
-    def test_content_analyst_log_out(self):
+    def test_content_analyst_log_out_8244(self):
         """ Log out
 
         Steps:
         Click on the 'Login' button
-        Enter the content analyst account in the username and password text boxes
+        Enter the content analyst account in the username and password boxes
         Click on the 'Sign in' button
         Click on the user menu
         Click on the Log out option
@@ -339,27 +338,27 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         content = ContentQA(
-            use_env_vars=True#,
-            #pasta_user=self.ps,
-            #capabilities=self.desired_capabilities
+            use_env_vars=True,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         print(content)
         content.login()
         content.open_user_menu()
-        admin.wait.until(
+        content.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//input[contains(@value,"Log Out")]')
             )
         ).click()
         content.page.wait_for_page_load()
-        content.driver.find_element(By.XPATH,'//div[contains(@class,"tutor-home")]')
+        content.driver.find_element(
+            By.XPATH, '//div[contains(@class,"tutor-home")]')
         content.delete()
-
         self.ps.test_updates['passed'] = True
 
     # Case C8245 - 008 - Student | Log into Tutor
     @pytest.mark.skipif(str(8245) not in TESTS, reason='Excluded')
-    def test_student_log_into_tutor(self):
+    def test_student_log_into_tutor_8245(self):
         """ Log into Tutor
 
         Steps:
@@ -376,14 +375,15 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         student = Student(
-            use_env_vars=True#,
-            #pasta_user=self.ps,
-            #capabilities=self.desired_capabilities
+            use_env_vars=True,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         student.driver.get('https://tutor-qa.openstax.org')
         student.page.wait_for_page_load()
         # check to see if the screen width is normal or condensed
-        if student.driver.get_window_size()['width'] <= student.CONDENSED_WIDTH:
+        if student.driver.get_window_size()['width'] <= \
+           student.CONDENSED_WIDTH:
             # get small-window menu toggle
             is_collapsed = student.driver.find_element(
                 By.XPATH,
@@ -398,8 +398,10 @@ class TestUserLogin(unittest.TestCase):
             )
         ).click()
         student.page.wait_for_page_load()
-        student.driver.find_element(By.ID, 'auth_key').send_keys(student.username)
-        student.driver.find_element(By.ID, 'password').send_keys(student.password)
+        student.driver.find_element(
+            By.ID, 'auth_key').send_keys(student.username)
+        student.driver.find_element(
+            By.ID, 'password').send_keys(student.password)
         # click on the sign in button
         student.driver.find_element(
             By.XPATH, '//button[text()="Sign in"]'
@@ -412,7 +414,7 @@ class TestUserLogin(unittest.TestCase):
 
     # Case C8246 - 009 - Teacher | Log into Tutor
     @pytest.mark.skipif(str(8246) not in TESTS, reason='Excluded')
-    def test_teacher_log_into_tutoe(self):
+    def test_teacher_log_into_tutoe_8246(self):
         """ Log into Tutor
 
         Steps:
@@ -429,14 +431,15 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         teacher = Teacher(
-            use_env_vars=True#,
-            #pasta_user=self.ps,
-            #capabilities=self.desired_capabilities
+            use_env_vars=True,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         teacher.driver.get('https://tutor-qa.openstax.org')
         teacher.page.wait_for_page_load()
         # check to see if the screen width is normal or condensed
-        if teacher.driver.get_window_size()['width'] <= teacher.CONDENSED_WIDTH:
+        if teacher.driver.get_window_size()['width'] <= \
+           teacher.CONDENSED_WIDTH:
             # get small-window menu toggle
             is_collapsed = teacher.driver.find_element(
                 By.XPATH,
@@ -451,8 +454,10 @@ class TestUserLogin(unittest.TestCase):
             )
         ).click()
         teacher.page.wait_for_page_load()
-        teacher.driver.find_element(By.ID, 'auth_key').send_keys(teacher.username)
-        teacher.driver.find_element(By.ID, 'password').send_keys(teacher.password)
+        teacher.driver.find_element(
+            By.ID, 'auth_key').send_keys(teacher.username)
+        teacher.driver.find_element(
+            By.ID, 'password').send_keys(teacher.password)
         # click on the sign in button
         teacher.driver.find_element(
             By.XPATH, '//button[text()="Sign in"]'
@@ -460,5 +465,4 @@ class TestUserLogin(unittest.TestCase):
         teacher.page.wait_for_page_load()
         assert('dashboard' in teacher.current_url()),\
             'not at dashboard'
-
         self.ps.test_updates['passed'] = True
