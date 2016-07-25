@@ -28,13 +28,15 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8085, 8086, 8087, 8088, 8089,
-         8090, 8091, 8092, 8093, 8094,
-         8095, 8096, 8097, 8098, 8099,
-         8100, 8101, 8102, 8103, 8104,
-         8105, 8106, 8107, 8108, 8109,
-         8110, 8111, 8112, 8113, 8114,
-         8115, 8116])
+    # str([8085, 8086, 8087, 8088, 8089,
+    #      8090, 8091, 8092, 8093, 8094,
+    #      8095, 8096, 8097, 8098, 8099,
+    #      8100, 8101, 8102, 8103, 8104,
+    #      8105, 8106, 8107, 8108, 8109,
+    #      8110, 8111, 8112, 8113, 8114,
+    #      8115, 8116])
+    str([8105, 8106, 8107, 8108, 8109, ])
+    # str([8091, 8096, 8097, 8098, 8099, 8102, 8103, 8104, ])
     )
 
 
@@ -166,8 +168,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # set date
         self.teacher.driver.find_element(By.ID, 'hide-periods-radio').click()
         today = datetime.date.today()
-        opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        opens_on = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.driver.find_element(
             By.XPATH, '//div[contains(@class,"-due-date")]' +
             '//div[contains(@class,"datepicker__input")]').click()
@@ -185,7 +187,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"datepicker__day")' +
-            'and contains(text(),"' + (closes_on[3:5]) + '")]').click()
+            'and contains(text(),"' + (closes_on[3:5]).lstrip('0') + '")]'
+        ).click()
         time.sleep(0.5)
         self.teacher.driver.find_element(
             By.CLASS_NAME, 'assign-to-label').click()
@@ -207,7 +210,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"datepicker__day")' +
-            'and contains(text(),"' + (opens_on[3:5]) + '")]').click()
+            'and contains(text(),"' + (opens_on[3:5]).lstrip('0') + '")]'
+        ).click()
         time.sleep(0.5)
         self.teacher.driver.find_element(
             By.CLASS_NAME, 'assign-to-label').click()
@@ -282,7 +286,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             opens_on = (
                 today + datetime.timedelta(days=x + 1)).strftime('%m/%d/%Y')
             closes_on = (
-                today + datetime.timedelta(days=len(periods) + 2)
+                today + datetime.timedelta(days=len(periods) + 5)
             ).strftime('%m/%d/%Y')
             element = self.teacher.driver.find_element(
                 By.XPATH, '//div[contains(@class,"tasking-plan")' +
@@ -394,8 +398,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             '[contains(@class,"form-control")]'). \
             send_keys('external assignemnt description')
         today = datetime.date.today()
-        opens_on = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
         self.teacher.driver.find_element(
@@ -460,7 +464,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             send_keys('external assignemnt description')
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
         self.teacher.driver.find_element(
@@ -506,7 +510,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_name = "ext007"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='external',
                                     args={
                                         'title': assignment_name,
@@ -754,7 +758,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_name = "ext012"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='external',
                                     args={
                                         'title': assignment_name,
@@ -816,7 +820,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_name = "ext013"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='external',
                                     args={
                                         'title': assignment_name,
@@ -888,7 +892,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_name = "ext014"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='external',
                                     args={
                                         'title': assignment_name,
@@ -948,7 +952,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_name = "ext015"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='external',
                                     args={
                                         'title': assignment_name,
@@ -1099,7 +1103,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_name = "ext018"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         externals_old = self.teacher.driver.find_elements(
             By.XPATH,
             '//label[contains(@data-title,"' + assignment_name + '")]')
@@ -1170,7 +1174,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_name = "ext019"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         externals_old = self.teacher.driver.find_elements(
             By.XPATH,
             '//label[contains(@data-title,"' + assignment_name + '")]')
@@ -1239,7 +1243,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_name = "ext020"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         externals_old = self.teacher.driver.find_elements(
             By.XPATH,
             '//label[contains(@data-title,"' + assignment_name + '")]')
