@@ -30,7 +30,7 @@ TESTS = os.getenv(
 
 @PastaDecorator.on_platforms(BROWSERS)
 class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
-    """T2.11 - Create New Question and Assignment Types."""
+    """T2.12 - Create New Question and Assignment Types."""
 
     def setUp(self):
         """Pretest settings."""
