@@ -10,7 +10,6 @@ from pastasauce import PastaSauce, PastaDecorator
 from random import randint  # NOQA
 from selenium.webdriver.common.by import By  # NOQA
 from selenium.webdriver.support import expected_conditions as expect  # NOQA
-
 from staxing.helper import Student  # NOQA
 
 
