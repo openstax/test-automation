@@ -10,9 +10,7 @@ from pastasauce import PastaSauce, PastaDecorator
 from random import randint  # NOQA
 from selenium.webdriver.common.by import By  # NOQA
 from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
 
-# select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Admin  # NOQA
 
 basic_test_env = json.dumps([{
@@ -37,9 +35,9 @@ class TestGenerateReports(unittest.TestCase):
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.admin = Admin(
-            use_env_vars=True#,
-            #pasta_user=self.ps,
-            #capabilities=self.desired_capabilities
+            use_env_vars=True,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         self.admin.login()
 
@@ -68,7 +66,7 @@ class TestGenerateReports(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.68.001' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1','t1.68','t1.68.001','8361']
+        self.ps.test_updates['tags'] = ['t1', 't1.68', 't1.68.001', '8361']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -80,10 +78,10 @@ class TestGenerateReports(unittest.TestCase):
         ).click()
         self.admin.page.wait_for_page_load()
         self.admin.driver.find_element(
-            By.XPATH,'//a[contains(text(),"Research Data")]').click()
+            By.XPATH, '//a[contains(text(),"Research Data")]').click()
         self.admin.driver.find_element(
-            By.XPATH,'//input[@value="Export Data"]').click()
+            By.XPATH, '//input[@value="Export Data"]').click()
         self.admin.driver.find_element(
-            By.XPATH,'//div[contains(@class,"alert-info")]')
+            By.XPATH, '//div[contains(@class,"alert-info")]')
 
         self.ps.test_updates['passed'] = True
