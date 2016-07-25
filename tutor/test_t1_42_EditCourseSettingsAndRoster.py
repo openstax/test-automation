@@ -24,8 +24,9 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8258, 8259, 8260, 8261, 8262,
-         8263, 8264, 8265, 8266, 8267])  # NOQA
+    # str([8258, 8259, 8260, 8261, 8262,
+    #      8263, 8264, 8265, 8266, 8267])  # NOQA
+    str([8259])
 )
 
 
@@ -38,7 +39,10 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
-            use_env_vars=True  # ,
+            username='teacher01',
+            password='password',
+            site='https://tutor-qa.openstax.org',
+            #use_env_vars=True  # ,
             # pasta_user=self.ps,
             # capabilities=self.desired_capabilities
         )
@@ -109,7 +113,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(@class,"edit-course")]' +
             '//span[contains(text(),"Rename Course")]').click()
-        for i in range(len('_EDIT')):
+        for _ in range(len('_EDIT')):
             self.teacher.wait.until(
                 expect.element_to_be_clickable(
                     (By.XPATH, '//input[contains(@class,"form-control")]')
@@ -168,9 +172,9 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
             By.LINK_TEXT, 'Main Dashboard').click()
         admin.page.wait_for_page_load()
         admin.logout()
-        # redo set-up
+        # redo set-up, but make sure to go to course 1
         self.teacher.login()
-        self.teacher.select_course(appearance='physics')
+        self.teacher.driver.get('https://tutor-qa.openstax.org/courses/1')
         self.teacher.open_user_menu()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -181,7 +185,6 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         # delete teacher
         teachers_list = self.teacher.driver.find_elements(
             By.XPATH, '//div[@class="teachers-table"]//tbody//tr')
-        print(len(teachers_list))
         for x in range(len(teachers_list)):
             temp_first = self.teacher.driver.find_element(
                 By.XPATH,
@@ -196,8 +199,12 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
                 ).click()
                 self.teacher.sleep(1)
                 self.teacher.driver.find_element(
-                    By.XPATH, '//div[@class="popover-content"]//button').click()
+                    By.XPATH, '//div[@class="popover-content"]//button'
+                ).click()
                 break
+            if x == len(teachers_list) - 1:
+                print('added teacher was not found, and not deleted')
+                raise Exception
         deleted_teacher = self.teacher.driver.find_elements(
             By.XPATH, '//td[contains(text(),"'+teacher_name+'")]')
         assert(len(deleted_teacher) == 0), 'teacher not deleted'
@@ -294,7 +301,8 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
             )
         ).click()
         self.teacher.driver.find_element(
-            By.XPATH, '//span[contains(@class,"rename-period")]/button').click()
+            By.XPATH, '//span[contains(@class,"rename-period")]/button'
+        ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//input[contains(@class,"form-control")]')
