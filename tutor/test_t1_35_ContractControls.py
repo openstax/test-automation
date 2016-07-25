@@ -13,7 +13,6 @@ from selenium.webdriver.support import expected_conditions as expect  # NOQA
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support import expected_conditions
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
 from staxing.helper import Admin  # NOQA
@@ -30,6 +29,7 @@ TESTS = os.getenv(
     str([8228, 8229, 8230, 8231,
          8232, 8233, 8234, 8235,
          8236, 8237, 8389])  # NOQA
+    # str([8231,])
 )
 
 
@@ -48,6 +48,17 @@ class TestContractControls(unittest.TestCase):
             # capabilities=self.desired_capabilities
         )
         self.admin.login()
+        # make sure there are no new terms to accept
+        try:
+            self.admin.driver.find_element(
+                By.ID, 'i_agree'
+            ).click()
+            self.admin.driver.find_element(
+                By.ID, 'agreement_submit'
+            ).click()
+        except NoSuchElementException:
+            pass
+        # go to admin console
         self.wait = WebDriverWait(self.admin.driver, 15)
         self.admin.open_user_menu()
         self.admin.wait.until(
@@ -224,7 +235,7 @@ class TestContractControls(unittest.TestCase):
             By.XPATH, '//a[contains(text(),"Publish")]').click()
         try:
             WebDriverWait(self.admin.driver, 3). \
-                until(EC.alert_is_present(), 'Timed out waiting for alert.')
+                until(expect.alert_is_present(), 'Timed out waiting for alert.')
             alert = self.admin.driver.switch_to_alert()
             alert.accept()
             print('alert accepted')
@@ -257,6 +268,9 @@ class TestContractControls(unittest.TestCase):
                 (By.XPATH, '//a[contains(text(),"Terms")]')
             )
         ).click()
+        contracts_original = self.admin.driver.find_elements(
+            By.XPATH, '//a[contains(text(),"test_contract_title_004")]')
+
         self.admin.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"links")]/a[text()="New Contract"]').click()
@@ -281,13 +295,26 @@ class TestContractControls(unittest.TestCase):
         self.admin.driver.find_element(
             By.XPATH,
             '//li//a[contains(text(),"test_contract_title_004")]').click()
+        self.admin.page.wait_for_page_load()
+        self.admin.sleep(2)
         self.admin.driver.find_element(
-            By.XPATH, '//a[contains(text(),"Delete")]')
+            By.XPATH, '//a[contains(text(),"Delete")]').click()
+        self.admin.sleep(2)
         try:
-            self.admin.driver.find_element(
-                By.XPATH, '//a[contains(text(),"test_contract_title_004")]')
-        except NoSuchElementException:
-            self.ps.test_updates['passed'] = True
+            WebDriverWait(self.admin.driver, 3). \
+                until(expect.alert_is_present(), 'Timed out waiting for alert.')
+            alert = self.admin.driver.switch_to_alert()
+            alert.accept()
+            print('alert accepted')
+        except TimeoutException:
+            print('no alert')
+        self.admin.page.wait_for_page_load()
+        contracts = self.admin.driver.find_elements(
+            By.XPATH, '//a[contains(text(),"test_contract_title_004")]')
+        self.admin.page.wait_for_page_load()
+        assert(len(contracts) == len(contracts_original)), \
+            'contract not deleted'
+        self.ps.test_updates['passed'] = True
 
     # Case C8232 - 005 - Admin | View a current contract
     @pytest.mark.skipif(str(8232) not in TESTS, reason='Excluded')  # NOQA
@@ -366,9 +393,6 @@ class TestContractControls(unittest.TestCase):
                 (By.XPATH, '//a[contains(text(),"Terms")]')
             )
         ).click()
-        self.admin.driver.find_element(
-            By.XPATH,
-            '//div[contains(@class,"links")]/a[text()="New Contract"]').click()
         self.admin.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//a[text()="New Version"]')
@@ -456,7 +480,7 @@ class TestContractControls(unittest.TestCase):
         ).click()
         try:
             WebDriverWait(self.admin.driver, 3). \
-                until(EC.alert_is_present(),
+                until(expect.alert_is_present(),
                       'Timed out waiting for PA creation ' +
                       'confirmation popup to appear.')
             alert = self.admin.driver.switch_to_alert()
@@ -539,6 +563,15 @@ class TestContractControls(unittest.TestCase):
         deletes = self.admin.driver.find_elements(
             By.XPATH, '//a[contains(text(),"delete")]')
         deletes[-1].click()
+        try:
+            WebDriverWait(self.admin.driver, 3). \
+                until(expect.alert_is_present(), 'Timed out waiting for alert.')
+            alert = self.admin.driver.switch_to_alert()
+            alert.accept()
+            print('alert accepted')
+        except TimeoutException:
+            print('no alert')
+
         end_contracts = self.admin.driver.find_elements(By.XPATH, '//tr')
         assert(len(orig_contracts) == len(end_contracts)), \
             'targeted contract not added'
