@@ -495,7 +495,7 @@ class TestAccountManagement(unittest.TestCase):
             'last name not changed'
         # change back
         name.click()
-        for i in range(len('_NEW')):
+        for _ in range(len('_NEW')):
             self.student.driver.find_element(
                 By.XPATH, '//input[@name="first_name"]'
             ).send_keys(Keys.BACKSPACE)
@@ -592,7 +592,7 @@ class TestAccountManagement(unittest.TestCase):
             'username not changed'
         # change back
         username_edit.click()
-        for i in range(len('_NEW')):
+        for _ in range(len('_NEW')):
             self.student.driver.find_element(
                 By.XPATH, '//input[@type="text"]').send_keys(Keys.BACKSPACE)
         self.student.driver.find_element(
