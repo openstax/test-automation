@@ -10,8 +10,7 @@ from pastasauce import PastaSauce, PastaDecorator
 from random import randint  # NOQA
 from selenium.webdriver.common.by import By  # NOQA
 from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher  # NOQA
@@ -49,6 +48,14 @@ class TestViewClassScores(unittest.TestCase):
             # capabilities=self.desired_capabilities
         )
         self.teacher.login()
+        # get rid of any notifications
+        notifications = self.teacher.driver.find_elements(
+            By.XPATH,
+            '//div[contains(@class,"notification")]'
+            '//a[contains(text(),"Dismiss")]')
+        for x in notifications:
+            x.click()
+        # go to student scores
         self.teacher.select_course(appearance='physics')
         self.teacher.driver.find_element(
             By.LINK_TEXT, 'Student Scores').click()
@@ -102,8 +109,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
@@ -129,8 +135,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//div[contains(@class,"export-button-buttons")]//button')
@@ -159,8 +164,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//div[contains(@class,"export-button-buttons")]//button')
@@ -188,8 +192,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//a[contains(@class,"student-name")]')
@@ -197,7 +200,7 @@ class TestViewClassScores(unittest.TestCase):
         ).click()
         self.teacher.driver.find_element(
             By.XPATH,
-            '//*[contains(text(), "Performance Forecast for")]')
+            '//span[contains(text(), "Performance Forecast for")]')
         self.ps.test_updates['passed'] = True
 
     # Case C8161 - 006 - Teacher | Select a student from the individual
@@ -222,8 +225,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//a[contains(@class,"student-name")]')
             )
@@ -233,7 +235,7 @@ class TestViewClassScores(unittest.TestCase):
             By.XPATH,
             '//a[contains(@role, "menuitem")]//span[contains(@class,"-name")]'
         ).text
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//a[contains(@role, "menuitem")]' +
@@ -263,8 +265,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//a[contains(@class,"student-name")]')
             )
@@ -296,8 +297,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//a[contains(@class,"student-name")]')
             )
@@ -331,8 +331,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"student-header")]')
             )
@@ -367,8 +366,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//div[contains(@class,"scores-cell")]' +
@@ -410,8 +408,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
@@ -439,8 +436,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
@@ -474,8 +470,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
@@ -511,8 +506,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
@@ -560,8 +554,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
@@ -570,7 +563,7 @@ class TestViewClassScores(unittest.TestCase):
             By.XPATH,
             '//span[contains(@class,"review-link wide")]' +
             '//a[contains(text(),"Review")]').click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//span[contains(@class,"breadcrumbs")]')
             )
@@ -609,8 +602,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
@@ -620,7 +612,7 @@ class TestViewClassScores(unittest.TestCase):
             '//span[contains(@class,"review-link")]' +
             '//a[contains(text(),"Review")]'
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//span[contains(@class,"breadcrumbs")]')
             )
@@ -656,8 +648,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
@@ -667,7 +658,7 @@ class TestViewClassScores(unittest.TestCase):
             '//span[contains(@class,"review-link")]' +
             '//a[contains(text(),"Review")]'
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//ul[contains(@role,"tablist")]' +
@@ -698,8 +689,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
@@ -709,7 +699,7 @@ class TestViewClassScores(unittest.TestCase):
             '//span[contains(@class,"review-link")]' +
             '//a[contains(text(),"Review")]'
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//ul[contains(@role,"tablist")]' +
@@ -717,13 +707,13 @@ class TestViewClassScores(unittest.TestCase):
             )
         )
         self.teacher.driver.find_element(
-            By.XPATH, '//div[contains(@class,"reading-stats-complete")]' +
+            By.XPATH, '//div[contains(@class,"stat complete")]' +
             '//label[contains(text(),"Complete")]')
         self.teacher.driver.find_element(
-            By.XPATH, '//div[contains(@class,"reading-stats-in-progress")]' +
+            By.XPATH, '//div[contains(@class,"stat in-progress")]' +
             '//label[contains(text(),"In Progress")]')
         self.teacher.driver.find_element(
-            By.XPATH, '//div[contains(@class,"reading-stats-not-started")]' +
+            By.XPATH, '//div[contains(@class,"stat not-started")]' +
             '//label[contains(text(),"Not Started")]')
         self.ps.test_updates['passed'] = True
 
@@ -749,8 +739,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
@@ -760,7 +749,7 @@ class TestViewClassScores(unittest.TestCase):
             '//span[contains(@class,"review-link")]' +
             '//a[contains(text(),"Review")]'
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//ul[contains(@role,"tablist")]' +
@@ -802,8 +791,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
@@ -813,7 +801,7 @@ class TestViewClassScores(unittest.TestCase):
             '//span[contains(@class,"review-link")]' +
             '//a[contains(text(),"Review")]'
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//ul[contains(@role,"tablist")]' +
@@ -850,8 +838,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
@@ -861,13 +848,13 @@ class TestViewClassScores(unittest.TestCase):
             '//span[contains(@class,"review-link")]' +
             '//a[contains(text(),"Review")]'
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//a[contains(text(),"View student text responses")]')
             )
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//div[contains(@class,"teacher-review-answers")]' +
@@ -876,28 +863,38 @@ class TestViewClassScores(unittest.TestCase):
         )
         self.ps.test_updates['passed'] = True
 
-    # # don't know what interleaved class stats are
-    # # Case C8178 - 023 - Teacher | Assessment pane shows interleaved class
-    # # stats
-    # @pytest.mark.skipif(str(8178) not in TESTS, reason='Excluded')  # NOQA
-    # def test_teacher_assesment_pane_shows_interleaved_class_stats(self):
-    #     """Assessment pane shows interleaved class stats
+    # Case C8178 - 023 - Teacher | Assessment pane shows interleaved class
+    # stats
+    @pytest.mark.skipif(str(8178) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_assesment_pane_shows_interleaved_class_stats(self):
+        """Assessment pane shows interleaved class stats
 
-    #     Steps:
-    #     Click on the "Student Scores" button
-    #     Click on the review button for a selected assignment
+        Steps:
+        Click on the "Student Scores" button
+        Click on the review button for a selected assignment
 
-    #     Expected Result:
-    #     Assessment pane shows interleaved class stats
-    #     """
-    #     self.ps.test_updates['name'] = 't1.23.023' \
-    #         + inspect.currentframe().f_code.co_name[4:]
-    #     self.ps.test_updates['tags'] = ['t1','t1.23','t1.23.023','8178']
-    #     self.ps.test_updates['passed'] = False
+        Expected Result:
+        Assessment pane shows interleaved class stats
+        """
+        self.ps.test_updates['name'] = 't1.23.023' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1','t1.23','t1.23.023','8178']
+        self.ps.test_updates['passed'] = False
 
-    #     # Test steps and verification assertions
+        # Test steps and verification assertions
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
+            )
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//span[contains(@class,"review-link")]' +
+            '//a[contains(text(),"Review")]'
+        ).click()
+        # not sure what interleaved class stats are
 
-    #     self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True
 
     # Case C8179 - 024 - Teacher | Teacher can see a student's work for a
     # reading assignment
@@ -916,7 +913,22 @@ class TestViewClassScores(unittest.TestCase):
         "Continue" button, or breadcrumbs.
         Only sections student has gone through are shown.
         """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        actions = ActionChains(self.teacher.driver)
+        element = self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"score") and ' +
+            'contains(@data-reactid,"reading")]' +
+            '//span[contains(@class,"trigger-wrap")]'
+        )
+        actions.move_to_element(element)
+        actions.perform()
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"popover-content")]' +
+            '//a[contains(text(),"Review")]'
+        ).click()
+
+
 
     # Case C8180 - 025 - Teacher | Teacher can view a student's work for a
     # homework assignment
@@ -942,8 +954,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//span[contains(@class, "tab-item-period-name")' +
@@ -984,8 +995,7 @@ class TestViewClassScores(unittest.TestCase):
 
         # Test steps and verification assertions
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//span[contains(@class, "tab-item-period-name")' +
