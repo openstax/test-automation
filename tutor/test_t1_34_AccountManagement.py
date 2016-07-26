@@ -47,6 +47,12 @@ class TestAccountManagement(unittest.TestCase):
             # pasta_user=self.ps,
             # capabilities=self.desired_capabilities
         )
+        self.google_account = os.getenv('GOOGLE_USER')
+        self.google_password = os.getenv('GOOGLE_PASSWORD')
+        self.facebook_account = os.getenv('FACEBOOK_USER')
+        self.facebook_password = os.getenv('FACEBOOK_PASSWORD')
+        self.twitter_account = os.getenv('TWITTER_USER')
+        self.twitter_password = os.getenv('TWITTER_PASSWORD')
         self.student.driver.get("http://accounts-qa.openstax.org")
 
     def tearDown(self):
@@ -85,6 +91,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        num = str(randint(0, 999))
         self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
         self.student.driver.find_element(
             By.ID, 'identity-login-button').click()
@@ -95,7 +102,7 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.ID, 'signup_email_address').send_keys('email_001@test.com')
         self.student.driver.find_element(
-            By.ID, 'signup_username').send_keys('automated_34_001')
+            By.ID, 'signup_username').send_keys('automated_34_'+num)
         self.student.driver.find_element(
             By.ID, 'signup_password').send_keys('password')
         self.student.driver.find_element(
@@ -106,7 +113,7 @@ class TestAccountManagement(unittest.TestCase):
         self.student.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
-                 '//div[@id="session-info"]//a[text()="automated_34_001"]')
+                 '//div[@id="session-info"]//a[text()="automated_34_'+num+'"]')
             )
         )
         self.ps.test_updates['passed'] = True
@@ -142,9 +149,9 @@ class TestAccountManagement(unittest.TestCase):
             By.ID, 'facebook-login-button').click()
         self.student.page.wait_for_page_load()
         self.student.driver.find_element(
-            By.ID, 'email').send_keys('kp23@rice.edu')
+            By.ID, 'email').send_keys(self.facebook_account)
         self.student.driver.find_element(
-            By.ID, 'pass').send_keys('alphabeta123'+Keys.RETURN)
+            By.ID, 'pass').send_keys(self.facebook_password+Keys.RETURN)
         self.student.page.wait_for_page_load()
         username = self.student.driver.find_element(
             By.ID, 'signup_username').get_attribute('value')
@@ -219,10 +226,10 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(By.ID, 'google-login-button').click()
         self.student.page.wait_for_page_load()
         self.student.driver.find_element(
-            By.ID, 'Email').send_keys('osconceptcoach@gmail.com')
+            By.ID, 'Email').send_keys(self.google_account)
         self.student.driver.find_element(By.ID, 'next').click()
         self.student.driver.find_element(
-            By.ID, 'Passwd').send_keys('kajalparekh')
+            By.ID, 'Passwd').send_keys(self.google_password)
         self.student.driver.find_element(By.ID, 'signIn').click()
         self.student.page.wait_for_page_load()
         username = self.student.driver.find_element(
@@ -292,9 +299,9 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(By.ID, 'twitter-login-button').click()
         self.student.page.wait_for_page_load()
         self.student.driver.find_element(
-            By.ID, 'username_or_email').send_keys('osconceptcoach@gmail.com')
+            By.ID, 'username_or_email').send_keys(self.twitter_account)
         self.student.driver.find_element(
-            By.ID, 'password').send_keys('openstax')
+            By.ID, 'password').send_keys(self.twitter_password)
         self.student.driver.find_element(By.ID, 'allow').click()
         self.student.page.wait_for_page_load()
         self.student.driver.find_element(
@@ -358,6 +365,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        num = str(randint(1000, 1999))
         self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
         self.student.driver.find_element(
             By.ID, 'identity-login-button').click()
@@ -368,7 +376,7 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.ID, 'signup_email_address').send_keys('email_005@test.com')
         self.student.driver.find_element(
-            By.ID, 'signup_username').send_keys('automated_34_005')
+            By.ID, 'signup_username').send_keys('automated_34_'+num)
         self.student.driver.find_element(
             By.ID, 'signup_password').send_keys('password')
         self.student.driver.find_element(
@@ -395,6 +403,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        num = str(randint(2000, 2999))
         self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
         self.student.driver.find_element(
             By.ID, 'identity-login-button').click()
@@ -405,7 +414,7 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.ID, 'signup_email_address').send_keys('email_006@test.com')
         self.student.driver.find_element(
-            By.ID, 'signup_username').send_keys('automated_34_006')
+            By.ID, 'signup_username').send_keys('automated_34_'+num)
         self.student.driver.find_element(
             By.ID, 'signup_password').send_keys('password')
         self.student.driver.find_element(
@@ -728,12 +737,13 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
-        email = self.student.driver.find_element(
-            By.XPATH, '//span[contains(text(),"email_2@test.com")]')
-        email.click()
         self.student.driver.find_element(
+            By.XPATH, '//span[contains(text(),"email_2@test.com")]').click()
+        self.student.sleep(1)
+        boxes = self.student.driver.find_elements(
             By.XPATH, '//input[@type="checkbox" and @class="searchable"]'
-        ).click()
+        )
+        boxes[-1].click()
         # delete the new email
         self.student.sleep(1)
         self.student.driver.find_element(
@@ -892,10 +902,10 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(By.ID, 'google-login-button').click()
         self.student.page.wait_for_page_load()
         self.student.driver.find_element(
-            By.ID, 'Email').send_keys('osconceptcoach@gmail.com')
+            By.ID, 'Email').send_keys(self.google_account)
         self.student.driver.find_element(By.ID, 'next').click()
         self.student.driver.find_element(
-            By.ID, 'Passwd').send_keys('kajalparekh')
+            By.ID, 'Passwd').send_keys(self.google_password)
         self.student.driver.find_element(By.ID, 'signIn').click()
         self.student.page.wait_for_page_load()
         username = self.student.driver.find_element(
@@ -973,9 +983,9 @@ class TestAccountManagement(unittest.TestCase):
         ).click()
         self.student.page.wait_for_page_load()
         self.student.driver.find_element(
-            By.ID, 'email').send_keys('kp23@rice.edu')
+            By.ID, 'email').send_keys(self.facebook_account)
         self.student.driver.find_element(
-            By.ID, 'pass').send_keys('alphabeta123'+Keys.RETURN)
+            By.ID, 'pass').send_keys(self.facebook_password+Keys.RETURN)
         # self.student.driver.find_element(
         #    By.XPATH, '//button[@name="login"]').click()
         self.student.page.wait_for_page_load()
@@ -1026,10 +1036,10 @@ class TestAccountManagement(unittest.TestCase):
             'span[contains(@class,"add mod")]').click()
         self.student.page.wait_for_page_load()
         self.student.driver.find_element(
-            By.ID, 'Email').send_keys('osconceptcoach@gmail.com')
+            By.ID, 'Email').send_keys(self.google_account)
         self.student.driver.find_element(By.ID, 'next').click()
         self.student.driver.find_element(
-            By.ID, 'Passwd').send_keys('kajalparekh')
+            By.ID, 'Passwd').send_keys(self.google_password)
         self.student.driver.find_element(By.ID, 'signIn').click()
         self.student.page.wait_for_page_load()
         # check that it was added
@@ -1081,9 +1091,9 @@ class TestAccountManagement(unittest.TestCase):
             'span[contains(@class,"add mod")]').click()
         self.student.page.wait_for_page_load()
         self.student.driver.find_element(
-            By.ID, 'username_or_email').send_keys('osconceptcoach@gmail.com')
+            By.ID, 'username_or_email').send_keys(self.twitter_account)
         self.student.driver.find_element(
-            By.ID, 'password').send_keys('openstax')
+            By.ID, 'password').send_keys(self.twitter_password)
         self.student.driver.find_element(By.ID, 'allow').click()
         self.student.page.wait_for_page_load()
         # check that it was added
@@ -1102,7 +1112,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8387 - 022 - User | Delete login option
-    @pytest.mark.skipif(str(8287) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8387) not in TESTS, reason='Excluded')  # NOQA
     def test_user_delete_login_option_8387(self):
         """ Delete login option
 
@@ -1129,9 +1139,9 @@ class TestAccountManagement(unittest.TestCase):
             'span[contains(@class,"add mod")]').click()
         self.student.page.wait_for_page_load()
         self.student.driver.find_element(
-            By.ID, 'username_or_email').send_keys('osconceptcoach@gmail.com')
+            By.ID, 'username_or_email').send_keys(self.twitter_account)
         self.student.driver.find_element(
-            By.ID, 'password').send_keys('openstax')
+            By.ID, 'password').send_keys(self.twitter_password)
         self.student.driver.find_element(By.ID, 'allow').click()
         self.student.page.wait_for_page_load()
         # check that it was added
