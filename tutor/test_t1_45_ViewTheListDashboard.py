@@ -11,7 +11,7 @@ from random import randint  # NOQA
 from selenium.webdriver.common.by import By  # NOQA
 from selenium.webdriver.support import expected_conditions as expect  # NOQA
 from staxing.helper import Student  # NOQA
-
+from selenium.common.exceptions import TimeoutException
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -180,11 +180,15 @@ class TestViewTheListDashboard(unittest.TestCase):
 
         # Test steps and verification assertions
         self.student.select_course(appearance='physics')
-        self.student.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//div[contains(@class,"-upcoming")]')
+        try:
+            self.student.wait.until(
+                expect.visibility_of_element_located(
+                    (By.XPATH, '//div[contains(@class,"-upcoming")]')
+                )
             )
-        )
+        except TimeoutException:
+            self.student.driver.find_element(
+                By.XPATH, '//div[contains(text(),"No upcoming events")]')
         self.ps.test_updates['passed'] = True
 
     # Case C8273 - 006 - Student| View past work
