@@ -24,6 +24,8 @@ TESTS = os.getenv(
     'CASELIST',
     str([8238, 8239, 8240, 8241, 8242,
          8243, 8244, 8245, 8246])
+    # str([8242, 8243])
+
 )
 
 
@@ -44,7 +46,6 @@ class TestUserLogin(unittest.TestCase):
         #    self.teacher.delete()
         # except:
         #    pass
-
 
     # Case C8238 - 001 - Admin | Log into Tutuor
     @pytest.mark.skipif(str(8238) not in TESTS, reason='Excluded')
@@ -234,7 +235,6 @@ class TestUserLogin(unittest.TestCase):
         content.delete()
         self.ps.test_updates['passed'] = True
 
-    # having an issue with the account info, does the enviroment have account?
     # Case C8242 - 005 - Content Analyst | Access the QA Viewer
     @pytest.mark.skipif(str(8242) not in TESTS, reason='Excluded')
     def test_content_annalyst_access_the_qa_viewer_8242(self):
@@ -260,22 +260,22 @@ class TestUserLogin(unittest.TestCase):
             # pasta_user=self.ps,
             # capabilities=self.desired_capabilities
         )
-        print(content)
         content.login()
         content.open_user_menu()
         content.wait.until(
             expect.element_to_be_clickable(
-                (By.LINK_TEXT, 'QA Content')
+                (By.XPATH,
+                 '//a[contains(text(),"QA Content") and ' +
+                 '@role="menuitem"]')
             )
         ).click()
         content.page.wait_for_page_load()
-        content.driver.find_element(
-            By.XPATH, '//h1[contains(text(),"Content Analyst Console")]')
+        assert('/qa' in content.current_url()), \
+            'not at qa viewer'
         content.delete()
 
         self.ps.test_updates['passed'] = True
 
-    # having an issue with the account info, does the enviroment have account?
     # Case C8243 - 006 - Content Analyst | Access the Content Analyst Console
     @pytest.mark.skipif(str(8243) not in TESTS, reason='Excluded')
     def test_content_annalyst_access_the_content_annalyst_console_8243(self):
@@ -301,12 +301,13 @@ class TestUserLogin(unittest.TestCase):
             # pasta_user=self.ps,
             # capabilities=self.desired_capabilities
         )
-        print(content)
         content.login()
         content.open_user_menu()
         content.wait.until(
             expect.element_to_be_clickable(
-                (By.LINK_TEXT, 'Content Analyst')
+                (By.XPATH,
+                 '//a[contains(text(),"Content Analyst") and ' +
+                 '@role="menuitem"]')
             )
         ).click()
         content.page.wait_for_page_load()
@@ -316,7 +317,6 @@ class TestUserLogin(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # having an issue with the account info, does the enviroment have account?
     # Case C8244 - 007 - Content Analyst | Log out
     @pytest.mark.skipif(str(8244) not in TESTS, reason='Excluded')
     def test_content_analyst_log_out_8244(self):
@@ -342,7 +342,6 @@ class TestUserLogin(unittest.TestCase):
             # pasta_user=self.ps,
             # capabilities=self.desired_capabilities
         )
-        print(content)
         content.login()
         content.open_user_menu()
         content.wait.until(
