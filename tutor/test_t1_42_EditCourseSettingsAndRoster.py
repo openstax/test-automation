@@ -39,10 +39,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
-            username='teacher01',
-            password='password',
-            site='https://tutor-qa.openstax.org',
-            #use_env_vars=True  # ,
+            use_env_vars=True  # ,
             # pasta_user=self.ps,
             # capabilities=self.desired_capabilities
         )
@@ -143,12 +140,16 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         Expected Result:
         The instructor is removed from the Instructors list.
         """
+        self.ps.test_updates['name'] = 't1.42.002' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.42', 't1.42.002', '8259']
+        self.ps.test_updates['passed'] = False
 
         self.teacher.logout()
         # add extra instructor through admin first
         admin = Admin(
-            username='admin',
-            password='password',
+            username=os.getenv('ADMIN_USER'),
+            password=os.getenv('ADMIN_PASSWORD'),
             site='https://tutor-qa.openstax.org',
             existing_driver=self.teacher.driver
             # pasta_user=self.ps,
@@ -157,7 +158,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         admin.login()
         admin.driver.get('https://tutor-qa.openstax.org/admin/courses/1/edit')
         admin.page.wait_for_page_load()
-        teacher_name = 'Jennifer'
+        teacher_name = 'Trent'
         admin.driver.find_element(
             By.XPATH, '//a[contains(text(),"Teachers")]').click()
         admin.driver.find_element(
@@ -216,6 +217,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         """Remove the last instructor from the course.
 
         Steps:
+        (Assuming last means last added to the course)
         Click on the user menu in the upper right corner of the page
         Click "Course Roster"
         Click "Remove" for an instructor under the Instructors section
@@ -224,7 +226,76 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         Expected Result:
         The instructor is removed from the Instructors list.
         """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.ps.test_updates['name'] = 't1.42.003' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.42', 't1.42.003', '8260']
+        self.ps.test_updates['passed'] = False
+
+        self.teacher.logout()
+        # add extra instructor through admin first
+        admin = Admin(
+            username=os.getenv('ADMIN_USER'),
+            password=os.getenv('ADMIN_PASSWORD'),
+            site='https://tutor-qa.openstax.org',
+            existing_driver=self.teacher.driver
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
+        )
+        admin.login()
+        admin.driver.get('https://tutor-qa.openstax.org/admin/courses/1/edit')
+        admin.page.wait_for_page_load()
+        teacher_name = 'Trent'
+        admin.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Teachers")]').click()
+        admin.driver.find_element(
+            By.ID, 'course_teacher').send_keys(teacher_name)
+        admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//li[contains(text(),"'+teacher_name+'")]')
+            )
+        ).click()
+        admin.sleep(1)
+        admin.driver.find_element(
+            By.LINK_TEXT, 'Main Dashboard').click()
+        admin.page.wait_for_page_load()
+        admin.logout()
+        # redo set-up, but make sure to go to course 1
+        self.teacher.login()
+        self.teacher.driver.get('https://tutor-qa.openstax.org/courses/1')
+        self.teacher.open_user_menu()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Course Settings and Roster')
+            )
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        # delete teacher
+        teachers_list = self.teacher.driver.find_elements(
+            By.XPATH, '//div[@class="teachers-table"]//tbody//tr')
+        for x in range(len(teachers_list)):
+            temp_first = self.teacher.driver.find_element(
+                By.XPATH,
+                '//div[@class="teachers-table"]//tbody//tr[' +
+                str(x + 1) + ']/td'
+            ).text
+            if temp_first == teacher_name:
+                self.teacher.driver.find_element(
+                    By.XPATH,
+                    '//div[@class="teachers-table"]//tbody//tr[' +
+                    str(x + 1) + ']//td//span[contains(text(),"Remove")]'
+                ).click()
+                self.teacher.sleep(1)
+                self.teacher.driver.find_element(
+                    By.XPATH, '//div[@class="popover-content"]//button'
+                ).click()
+                break
+            if x == len(teachers_list) - 1:
+                print('added teacher was not found, and not deleted')
+                raise Exception
+        deleted_teacher = self.teacher.driver.find_elements(
+            By.XPATH, '//td[contains(text(),"'+teacher_name+'")]')
+        assert(len(deleted_teacher) == 0), 'teacher not deleted'
+        self.ps.test_updates['passed'] = True
 
     # Case C8261 - 004 - Teacher | Add a period
     @pytest.mark.skipif(str(8261) not in TESTS, reason='Excluded')  # NOQA
