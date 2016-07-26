@@ -13,6 +13,7 @@ from selenium.webdriver.support import expected_conditions as expect  # NOQA
 from staxing.assignment import Assignment  # NOQA
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
 
 from staxing.helper import Student  # NOQA
 
@@ -29,6 +30,7 @@ TESTS = os.getenv(
          8301, 8302, 8303, 8304,
          8305, 8306, 8307, 8308,
          8309, 8310])  # NOQA
+    # str([8309, 8310])
 )
 
 
@@ -46,7 +48,7 @@ class TestPractice(unittest.TestCase):
             # capabilities=self.desired_capabilities
         )
         self.student.login()
-        self.student.select_course(appearance='physics')
+        self.student.select_course(appearance='biology')
         self.wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
         self.wait.until(
             expect.visibility_of_element_located(
@@ -136,16 +138,16 @@ class TestPractice(unittest.TestCase):
 
         # answer free response first
         # so that mc questions appear and there is enough text to scroll
-        self.wait.until(
-            expect.visibility_of_element_located(
-                (By.TAG_NAME, 'textarea')
-            )
-        ).send_keys("hello")
-        self.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//button/span[contains(text(),"Answer")]')
-            )
-        ).click()
+        try:
+            self.student.driver.find_element(
+                By.TAG_NAME, 'textarea').send_keys("hello")
+            self.wait.until(
+                expect.visibility_of_element_located(
+                    (By.XPATH, '//button/span[contains(text(),"Answer")]')
+                )
+            ).click()
+        except NoSuchElementException:
+            pass
         # scroll page
         self.student.driver.execute_script("window.scrollTo(0, 100);")
         self.student.driver.execute_script("window.scrollTo(0, 0);")
@@ -174,14 +176,10 @@ class TestPractice(unittest.TestCase):
         # Test steps and verification assertions
         sections = self.student.driver.find_elements(
             By.XPATH, '//span[contains(@class,"breadcrumbs")]')
-        count = 0
-        while True:
+        for x in range(len(sections)):
             try:
-                element = self.wait.until(
-                    expect.visibility_of_element_located(
-                        (By.TAG_NAME, 'textarea')
-                    )
-                )
+                element = self.student.driver.find_element(
+                    By.TAG_NAME, 'textarea')
                 for i in 'hello':
                     element.send_keys(i)
                 self.wait.until(
@@ -191,12 +189,13 @@ class TestPractice(unittest.TestCase):
                 )
                 break
             except NoSuchElementException:
-                count += 1
-                if count >= len(sections):
+                if x >= len(sections)-1:
                     print('no questions in this practice with free respnse')
                     raise Exception
+                sections_new = self.student.driver.find_elements(
+                    By.XPATH, '//span[contains(@class,"breadcrumbs")]')
+                sections_new[x].click()
 
-                sections[count].click()
         self.ps.test_updates['passed'] = True
 
     # Case C8301 - 005 - Student | Answer a free reponse question
@@ -219,15 +218,11 @@ class TestPractice(unittest.TestCase):
         # Test steps and verification assertions
         sections = self.student.driver.find_elements(
             By.XPATH, '//span[contains(@class,"breadcrumbs")]')
-        count = 0
         answer_text = "hello"
-        while True:
+        for x in range(len(sections)):
             try:
-                element = self.wait.until(
-                    expect.visibility_of_element_located(
-                        (By.TAG_NAME, 'textarea')
-                    )
-                )
+                element = self.student.driver.find_element(
+                    By.TAG_NAME, 'textarea')
                 for i in answer_text:
                     element.send_keys(i)
                 self.wait.until(
@@ -237,11 +232,13 @@ class TestPractice(unittest.TestCase):
                 ).click()
                 break
             except NoSuchElementException:
-                count += 1
-                if count >= len(sections):
+                if x >= len(sections) - 1:
                     print('no questions in this homework with free respnse')
                     raise Exception
-                sections[count].click()
+                sections_new = self.student.driver.find_elements(
+                    By.XPATH, '//span[contains(@class,"breadcrumbs")]')
+                sections_new[x].click()
+
         self.student.driver.find_element(
             By.XPATH,
             '//div[@class="free-response" and contains(text(),"' +
@@ -272,11 +269,8 @@ class TestPractice(unittest.TestCase):
         # Test steps and verification assertions
         try:
             # if the question is two part must answer free response first
-            element = self.wait.until(
-                expect.visibility_of_element_located(
-                    (By.TAG_NAME, 'textarea')
-                )
-            )
+            element = self.student.driver.find_element(
+                By.TAG_NAME, 'textarea')
             answer_text = "hello"
             for i in answer_text:
                 element.send_keys(i)
@@ -327,11 +321,7 @@ class TestPractice(unittest.TestCase):
         # Test steps and verification assertions
         try:
             # if the question is two part must answer free response first
-            element = self.wait.until(
-                expect.visibility_of_element_located(
-                    (By.TAG_NAME, 'textarea')
-                )
-            )
+            element = self.student.driver.find_element(By.TAG_NAME, 'textarea')
             answer_text = "hello"
             for i in answer_text:
                 element.send_keys(i)
@@ -388,11 +378,7 @@ class TestPractice(unittest.TestCase):
         # Test steps and verification assertions
         try:
             # if the question is two part must answer free response first
-            element = self.wait.until(
-                expect.visibility_of_element_located(
-                    (By.TAG_NAME, 'textarea')
-                )
-            )
+            element = self.student.driver.find_element(By.TAG_NAME, 'textarea')
             answer_text = "hello"
             for i in answer_text:
                 element.send_keys(i)
@@ -452,11 +438,7 @@ class TestPractice(unittest.TestCase):
         # Test steps and verification assertions
         try:
             # if the question is two part must answer free response first
-            element = self.wait.until(
-                expect.visibility_of_element_located(
-                    (By.TAG_NAME, 'textarea')
-                )
-            )
+            element = self.student.driver.find_element(By.TAG_NAME, 'textarea')
             answer_text = "hello"
             for i in answer_text:
                 element.send_keys(i)
@@ -513,7 +495,8 @@ class TestPractice(unittest.TestCase):
                 (By.XPATH, '//span[contains(text(),"ID#")]')
             )
         )
-        self.student.find_element(By.XPATH, '//span[contains(text(),"@")]')
+        self.student.driver.find_element(
+            By.XPATH, '//span[contains(text(),"@")]')
         self.ps.test_updates['passed'] = True
 
     # Case C8307 - 011 - Student | Clicking on Report an error renders the
@@ -534,7 +517,7 @@ class TestPractice(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        id_num = self.student.find_element(
+        id_num = self.student.driver.find_element(
             By.XPATH,
             '//span[contains(@class,"exercise-identifier-link")]//span[2]'
         ).text
@@ -543,11 +526,14 @@ class TestPractice(unittest.TestCase):
                 (By.LINK_TEXT, 'Report an error')
             )
         ).click()
-        self.student.find_element(
-            By.XPATH, '//h1[contains(text(),"Assessment Errata Form")]')
-        text_box = self.student.find_element(
-            By.XPATH, '//label[contains(@aria-label,"Example: 3020@1")]')
-        assert(text_box.get_attribute('vale') == id_num), \
+        window_with_form = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_form)
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.XPATH, '//h1[contains(text(),"Errata Form")]')
+        text_box = self.student.driver.find_element(
+            By.XPATH, '//input[contains(@aria-label,"Example:")]')
+        assert(text_box.get_attribute('value') == id_num), \
             'form not prefilled correctly'
         self.ps.test_updates['passed'] = True
 
@@ -575,24 +561,27 @@ class TestPractice(unittest.TestCase):
                 (By.LINK_TEXT, 'Report an error')
             )
         ).click()
-        self.student.find_element(
+        window_with_form = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_form)
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
             By.XPATH, '//h1[contains(text(),"Assessment Errata Form")]')
         # fill out form
-        self.student.find_element(
+        self.student.driver.find_element(
             By.TAG_NAME, 'textarea').send_keys('qa test')
-        self.student.find_element(
+        self.student.driver.find_element(
             By.XPATH, '//input[contains(@value,"Minor")]').click()
-        self.student.find_element(
+        self.student.driver.find_element(
             By.XPATH, '//input[contains(@value,"other")]').click()
-        self.student.find_element(
+        self.student.driver.find_element(
             By.XPATH, '//input[contains(@value,"Biology with Courseware")]'
         ).click()
-        self.student.find_element(
+        self.student.driver.find_element(
             By.XPATH, '//input[contains(@value,"Safari")]').click()
-        self.student.find_element(
+        self.student.driver.find_element(
             By.XPATH, '//input[contains(@value,"Submit")]').click()
         # find submitted message
-        self.student.find_element(
+        self.student.driver.find_element(
             By.XPATH,
             '//div[contains(text(),"Your response has been recorded")]')
         self.ps.test_updates['passed'] = True
@@ -623,11 +612,8 @@ class TestPractice(unittest.TestCase):
         for _ in range(stop_point):
             try:
                 # if the question is two part must answer free response first
-                element = self.wait.until(
-                    expect.visibility_of_element_located(
-                        (By.TAG_NAME, 'textarea')
-                    )
-                )
+                element = self.student.driver.find_element(
+                    By.TAG_NAME, 'textarea')
                 answer_text = "hello"
                 for i in answer_text:
                     element.send_keys(i)
@@ -707,11 +693,8 @@ class TestPractice(unittest.TestCase):
         for _ in range(len(sections) - 1):
             try:
                 # if the question is two part must answer free response first
-                element = self.wait.until(
-                    expect.visibility_of_element_located(
-                        (By.TAG_NAME, 'textarea')
-                    )
-                )
+                element = self.student.driver.find_element(
+                    By.TAG_NAME, 'textarea')
                 answer_text = "hello"
                 for i in answer_text:
                     element.send_keys(i)
