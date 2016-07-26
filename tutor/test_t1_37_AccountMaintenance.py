@@ -82,11 +82,11 @@ class TestAccountMaintenance(unittest.TestCase):
 
         # Test steps and verification assertions
         self.admin.driver.find_element(
-            By.ID, 'query').send_keys('Dr Aticus Finch III')
+            By.ID, 'query').send_keys('Atticus')
         self.admin.driver.find_element(
             By.XPATH, '//input[@value="Search"]').click()
         self.admin.driver.find_element(
-            By.XPATH, '//td[text()="Dr Aticus Finch III"]')
+            By.XPATH, '//td[contains(text(),"Atticus")]')
         self.ps.test_updates['passed'] = True
 
     # Case C8248 - 002 - Admin | Search for a user's name
@@ -141,7 +141,7 @@ class TestAccountMaintenance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        num = randint(0, 999)
+        num = str(randint(0, 999))
         self.admin.driver.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);")
         self.admin.driver.find_element(
@@ -192,7 +192,7 @@ class TestAccountMaintenance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # create a user
-        num = randint(1000, 1999)
+        num = str(randint(1000, 1999))
         self.admin.driver.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);")
         self.admin.driver.find_element(
@@ -233,7 +233,7 @@ class TestAccountMaintenance(unittest.TestCase):
         self.admin.driver.find_element(
             By.XPATH, '//input[@value="Search"]').click()
         self.admin.driver.find_element(
-            By.XPATH, '//td[contains(text()="first_name_' + num + '_EDITED")]')
+            By.XPATH, '//td[contains(text(),"first_name_' + num + '_EDITED")]')
         self.ps.test_updates['passed'] = True
 
     # Case C8251 - 005 - Admin | Assign elevated permissions
@@ -259,7 +259,7 @@ class TestAccountMaintenance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # create a user
-        num = randint(2000, 2999)
+        num = str(randint(2000, 2999))
         self.admin.driver.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);")
         self.admin.driver.find_element(
@@ -327,7 +327,7 @@ class TestAccountMaintenance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # create a user
-        num = randint(3000, 3999)
+        num = str(randint(3000, 3999))
         self.admin.driver.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);")
         self.admin.driver.find_element(
@@ -406,7 +406,7 @@ class TestAccountMaintenance(unittest.TestCase):
         ).click()
         self.admin.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//span[contains(text(),"Dr Aticus Finch III")]')
+                (By.XPATH, '//span[contains(text(),"Atticus Finch")]')
             )
         )
         self.ps.test_updates['passed'] = True
