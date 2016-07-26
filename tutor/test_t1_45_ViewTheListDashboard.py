@@ -434,18 +434,21 @@ class TestViewTheListDashboard(unittest.TestCase):
         # Test steps and verification assertions
         self.student.logout()
         student2 = Student(
-            username='student_one_course',
-            password='password',
+            username=os.getenv('STUDENT_USER_ONE_COURSE'),
+            password=os.getenv('STUDENT_PASSWORD'),
             existing_driver=self.student.driver,
             site='https://tutor-qa.openstax.org'  # ,
             # pasta_user=self.ps,
             # capabilities=self.desired_capabilities
         )
         student2.login()
-        self.student.wait.until(
+        student2.page.wait_for_page_load()
+        student2.open_user_menu()
+        student2.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
-                 '//button[contains(@class,"view-performance-forecast")]')
+                 '//a[contains(text(),"Performance Forecast") ' +
+                 'and @role="menuitem"]')
             )
         ).click()
         self.student.driver.find_element(
