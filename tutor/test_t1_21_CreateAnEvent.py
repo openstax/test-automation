@@ -27,15 +27,15 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    # str([8117, 8118, 8119, 8120,
-    #     8121, 8122, 8123, 8124,
-    #     8125, 8126, 8127, 8128,
-    #     8129, 8130, 8131, 8132,
-    #     8133, 8134, 8135, 8136,
-    #     8137, 8138, 8139, 8140,
-    #     8141, 8142, 8143, 8144,
-    #     8145, 8146, 8147])  # NOQA
-    str([8133, 8134, 8135, 8136])
+    str([8117, 8118, 8119, 8120,
+        8121, 8122, 8123, 8124,
+        8125, 8126, 8127, 8128,
+        8129, 8130, 8131, 8132,
+        8133, 8134, 8135, 8136,
+        8137, 8138, 8139, 8140,
+        8141, 8142, 8143, 8144,
+        8145, 8146, 8147])  # NOQA
+    # str([8145, 8146, 8147])
 )
 
 
@@ -113,11 +113,9 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
         wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '//span[text()="Publish"]')
+                (By.XPATH, '//button[contains(@class,"-publish")]')
             )
-        )
-        self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
+        ).click()
         try:
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
@@ -156,7 +154,6 @@ class TestCreateAnEvent(unittest.TestCase):
             'not at Add Event Assignemnt page'
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C8119 - 003 - Teacher | Add an event using the calendar date
     @pytest.mark.skipif(str(8119) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_add_event_using_the_calendar_date_8119(self):
@@ -477,11 +474,9 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
         wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '//span[text()="Publish"]')
+                (By.XPATH, '//button[contains(@class," -save")]')
             )
-        )
-        self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class," -save")]').click()
+        ).click()
         try:
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
@@ -541,11 +536,9 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
         wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '//span[text()="Publish"]')
+                (By.XPATH, '//button[contains(@class," -publish")]')
             )
-        )
-        self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class," -publish")]').click()
+        ).click()
         try:
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
@@ -795,7 +788,6 @@ class TestCreateAnEvent(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C8129 - 013 - Teacher | Cancel a draft event before making changes
     # using the Cancel button
     @pytest.mark.skipif(str(8129) not in TESTS, reason='Excluded')  # NOQA
@@ -852,7 +844,6 @@ class TestCreateAnEvent(unittest.TestCase):
             'not back at calendar dashboard after canceling draft'
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C8130 - 014 - Teacher | Cancel a draft event after making changes
     # using the Cancel button
     @pytest.mark.skipif(str(8130) not in TESTS, reason='Excluded')  # NOQA
@@ -920,7 +911,6 @@ class TestCreateAnEvent(unittest.TestCase):
             'not back at calendar dashboard after canceling assignment'
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C8131 - 015 - Teacher | Cancel a draft event before making any
     # changes using the X
     @pytest.mark.skipif(str(8131) not in TESTS, reason='Excluded')  # NOQA
@@ -982,7 +972,6 @@ class TestCreateAnEvent(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C8132 - 016 - Teacher | Cancel a draft event after making changes
     # using the X
     @pytest.mark.skipif(str(8132) not in TESTS, reason='Excluded')  # NOQA
@@ -1006,7 +995,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = "event014"
+        assignment_name = "event016"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -1135,7 +1124,6 @@ class TestCreateAnEvent(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C8135 - 019 - Teacher | Delete an unopened event
     @pytest.mark.skipif(str(8135) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_delete_an_unopened_event(self):
@@ -1158,6 +1146,8 @@ class TestCreateAnEvent(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_name = "event019"
+        events = self.teacher.driver.find_elements(
+            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -1169,8 +1159,6 @@ class TestCreateAnEvent(unittest.TestCase):
                                         'status': 'publish'
                                     })
         # click on the assignment
-        events = self.teacher.driver.find_elements(
-            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
@@ -1203,11 +1191,10 @@ class TestCreateAnEvent(unittest.TestCase):
         self.teacher.page.wait_for_page_load()
         events_new = self.teacher.driver.find_elements(
             By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
-        assert(len(events) == len(events_new) + 1),\
+        assert(len(events) == len(events_new)),\
             'unopen event not deleted'
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C8136 - 020 - Teacher | Delete an open event
     @pytest.mark.skipif(str(8136) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_delete_an_open_event_8136(self):
@@ -1230,6 +1217,8 @@ class TestCreateAnEvent(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_name = "event020"
+        events = self.teacher.driver.find_elements(
+            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -1241,8 +1230,6 @@ class TestCreateAnEvent(unittest.TestCase):
                                         'status': 'publish'
                                     })
         # click on the assignment
-        events = self.teacher.driver.find_elements(
-            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
@@ -1275,11 +1262,10 @@ class TestCreateAnEvent(unittest.TestCase):
         self.teacher.page.wait_for_page_load()
         events_new = self.teacher.driver.find_elements(
             By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
-        assert(len(events) == len(events_new) + 1),\
+        assert(len(events) == len(events_new)),\
             'unopen event not deleted'
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C8137 - 021 - Teacher | Delete a draft event
     @pytest.mark.skipif(str(8137) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_delete_a_draft_event_8137(self):
@@ -1300,7 +1286,9 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = "event020"
+        assignment_name = "event021"
+        events = self.teacher.driver.find_elements(
+            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -1312,8 +1300,6 @@ class TestCreateAnEvent(unittest.TestCase):
                                         'status': 'draft'
                                     })
         # click on the assignment
-        events = self.teacher.driver.find_elements(
-            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
@@ -1341,7 +1327,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.teacher.page.wait_for_page_load()
         events_new = self.teacher.driver.find_elements(
             By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
-        assert(len(events) == len(events_new) + 1),\
+        assert(len(events) == len(events_new)),\
             'draft event not deleted'
 
         self.ps.test_updates['passed'] = True
@@ -1394,11 +1380,9 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
         wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '//span[text()="Publish"]')
+                (By.XPATH, '//button[contains(@class,"-publish")]')
             )
-        )
-        self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
+        ).click()
         try:
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
@@ -1409,7 +1393,6 @@ class TestCreateAnEvent(unittest.TestCase):
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C8139 - 023 - Teacher | Change a description for a draft event
     @pytest.mark.skipif(str(8139) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_change_a_description_for_a_draft_event_8139(self):
@@ -1430,7 +1413,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = "event020"
+        assignment_name = "event023"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -1469,11 +1452,11 @@ class TestCreateAnEvent(unittest.TestCase):
         # option for save as draft not here, change if brough back
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(@class,"-publish")]').click()
+        self.teacher.sleep(3)
         assert('calendar' in self.teacher.current_url()),\
             'not taken back to calendar after updating description'
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C8140 - 024 - Teacher | Change a description for an open event
     @pytest.mark.skipif(str(8140) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_change_a_description_for_an_open_event_8140(self):
@@ -1495,7 +1478,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = "event020"
+        assignment_name = "event024"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -1538,6 +1521,7 @@ class TestCreateAnEvent(unittest.TestCase):
             send_keys('New description')
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(@class,"-publish")]').click()
+        self.teacher.sleep(3)
         assert('calendar' in self.teacher.current_url()),\
             'not taken back to calendar after updating description'
         self.ps.test_updates['passed'] = True
@@ -1591,11 +1575,9 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
         wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '//span[text()="Publish"]')
+                (By.XPATH, '//button[contains(@class,"-publish")]')
             )
-        )
-        self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
+        ).click()
         try:
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
@@ -1606,7 +1588,6 @@ class TestCreateAnEvent(unittest.TestCase):
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C8142 - 026 - Teacher | Change a name for a draft event
     @pytest.mark.skipif(str(8142) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_change_a_name_for_a_draft_event_8142(self):
@@ -1663,13 +1644,13 @@ class TestCreateAnEvent(unittest.TestCase):
             By.ID, 'reading-title').send_keys('NEW'+assignment_name)
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(@class,"-publish")]').click()
+        self.teacher.sleep(2)
         assert('calendar' in self.teacher.current_url()),\
             'not taken back to calendar after updating description'
         self.teacher.driver.find_element(
             By.XPATH, '//label[contains(text(),"NEW'+assignment_name+'")]')
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C8143 - 027 - Teacher | Change a name for an open event
     @pytest.mark.skipif(str(8143) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_change_a_name_for_an_open_event_8143(self):
@@ -1731,6 +1712,7 @@ class TestCreateAnEvent(unittest.TestCase):
             By.ID, 'reading-title').send_keys('NEW'+assignment_name)
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(@class,"-publish")]').click()
+        self.teacher.sleep(2)
         assert('calendar' in self.teacher.current_url()),\
             'not taken back to calendar after updating description'
         self.teacher.driver.find_element(
@@ -1770,7 +1752,6 @@ class TestCreateAnEvent(unittest.TestCase):
         self.teacher.driver.find_element(By.ID, 'plan-footer-popover')
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C8145 - 029 - Teacher | Change all fields in an unopened,
     # published event
     @pytest.mark.skipif(str(8145) not in TESTS, reason='Excluded')  # NOQA
@@ -1827,7 +1808,7 @@ class TestCreateAnEvent(unittest.TestCase):
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"edit-assignment")]')
             )
-        )
+        ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
@@ -1846,11 +1827,9 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
         self.teacher.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '//span[text()="Publish"]')
+                (By.XPATH, '//button[contains(@class,"-publish")]')
             )
-        )
-        self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
+        ).click()
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
@@ -1863,7 +1842,6 @@ class TestCreateAnEvent(unittest.TestCase):
                 "//label[contains(text(), 'NEW"+assignment_name+"')]")
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C8146 - 030 - Teacher | Change all fields in a draft event
     @pytest.mark.skipif(str(8146) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_change_all_feilds_in_a_draft_event_8146(self):
@@ -1926,16 +1904,14 @@ class TestCreateAnEvent(unittest.TestCase):
             '[contains(@class,"form-control")]'). \
             send_keys('NEWdescription')
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        begin = (today + datetime.timedelta(days=7)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=8)).strftime('%m/%d/%Y')
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
         self.teacher.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '//span[text()="Publish"]')
+                (By.XPATH, '//button[contains(@class,"-publish")]')
             )
-        )
-        self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
+        ).click()
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
@@ -1948,7 +1924,6 @@ class TestCreateAnEvent(unittest.TestCase):
                 "//label[contains(text(), 'NEW"+assignment_name+"')]")
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C8147 - 031 - Teacher | Change the name, description, and due dates
     # in an opened event
     @pytest.mark.skipif(str(8147) not in TESTS, reason='Excluded')  # NOQA
@@ -1973,7 +1948,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = "event030"
+        assignment_name = "event031"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -2002,7 +1977,7 @@ class TestCreateAnEvent(unittest.TestCase):
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"edit-assignment")]')
             )
-        )
+        ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
@@ -2017,7 +1992,7 @@ class TestCreateAnEvent(unittest.TestCase):
             send_keys('NEWdescription')
         # set new due date
         today = datetime.date.today()
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=7)).strftime('%m/%d/%Y')
         self.teacher.driver.find_element(
             By.XPATH, '//div[contains(@class,"-due-date")]' +
             '//div[contains(@class,"datepicker__input")]').click()
