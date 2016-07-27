@@ -7,13 +7,13 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from random import randint  # NOQA
+# from selenium.webdriver.common.by import By  # NOQA
+# from selenium.webdriver.support import expected_conditions as expect  # NOQA
+# from staxing.assignment import Assignment  # NOQA
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher, Student, User, System  # NOQA
+from staxing.helper import Teacher  # , Student, User, System  # NOQA
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -242,9 +242,7 @@ class TestDeliveringAssignments(unittest.TestCase):
 
         Steps:
 
-
         Expected Result:
-
 
         """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
