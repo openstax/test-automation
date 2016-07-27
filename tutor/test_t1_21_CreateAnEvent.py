@@ -35,7 +35,7 @@ TESTS = os.getenv(
     #     8137, 8138, 8139, 8140,
     #     8141, 8142, 8143, 8144,
     #     8145, 8146, 8147])  # NOQA
-    str([8131])
+    str([8133, 8134, 8135, 8136])
 )
 
 
@@ -74,7 +74,7 @@ class TestCreateAnEvent(unittest.TestCase):
         Click on the 'Add Assignment' drop down menu
         Click on the 'Add Event' option
         Enter an event name into the Event name text box [user decision]
-        Enter an assignment description into the Assignment description text box
+        Enter an assignment description into the Assignment description box
         Enter into Open Date text field date as MM/DD/YYYY
         Enter into Due Date text field date as MM/DD/YYYY
         Click on the Publish' button
@@ -109,7 +109,7 @@ class TestCreateAnEvent(unittest.TestCase):
             send_keys('description')
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
         wait.until(
             expect.visibility_of_element_located(
@@ -123,7 +123,7 @@ class TestCreateAnEvent(unittest.TestCase):
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
-                By.XPATH, '//a[@class="calendar-header-control-next"]').click()
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
                 "//label[contains(text(), '" + assignment_name + "')]")
@@ -148,10 +148,12 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.find_element(By.ID, 'add-assignment').click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
+        self.teacher.driver.find_element(
+            By.ID, 'add-assignment').click()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Add Event').click()
         assert('events/new' in self.teacher.current_url()),\
-            'not at Add Event page'
+            'not at Add Event Assignemnt page'
         self.ps.test_updates['passed'] = True
 
     # NOT DONE
@@ -202,7 +204,7 @@ class TestCreateAnEvent(unittest.TestCase):
         Click on the 'Add Assignment' drop down menu
         Click on the 'Add Event' option
         Enter an event name into the Event name text box [user decision]
-        Enter an assignment description into the Assignment description text box
+        Enter an assignment description into the Assignment description box
         [the All Periods radio button should be selected by default]
         Enter into Open Date text field date as MM/DD/YYYY
         Enter into Due Date text field date as MM/DD/YYYY
@@ -245,7 +247,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.teacher.driver.find_element(By.ID, 'hide-periods-radio').click()
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"-due-date")]' +
@@ -263,7 +265,8 @@ class TestCreateAnEvent(unittest.TestCase):
                 year += 1
         self.teacher.driver.find_element(
             By.XPATH, '//div[contains(@class,"datepicker__day")' +
-            'and contains(text(),"' + (closes_on[3:5]) + '")]').click()
+            'and contains(text(),"' + (closes_on[3:5]).lstrip('0') + '")]'
+        ).click()
         time.sleep(0.5)
         self.teacher.driver.find_element(
             By.CLASS_NAME, 'assign-to-label').click()
@@ -283,7 +286,8 @@ class TestCreateAnEvent(unittest.TestCase):
                 year += 1
         self.teacher.driver.find_element(
             By.XPATH, '//div[contains(@class,"datepicker__day")' +
-            'and contains(text(),"' + (opens_on[3:5]) + '")]').click()
+            'and contains(text(),"' + (opens_on[3:5]).lstrip('0') + '")]'
+        ).click()
         time.sleep(0.5)
         self.teacher.driver.find_element(
             By.CLASS_NAME, 'assign-to-label').click()
@@ -295,7 +299,7 @@ class TestCreateAnEvent(unittest.TestCase):
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
-                By.XPATH, '//a[@class="calendar-header-control-next"]').click()
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
                 "//label[contains(text(), '" + assignment_name + "')]")
@@ -361,7 +365,7 @@ class TestCreateAnEvent(unittest.TestCase):
             opens_on = (
                 today + datetime.timedelta(days=x)).strftime('%m/%d/%Y')
             closes_on = (
-                today + datetime.timedelta(days=(len(periods)+2))
+                today + datetime.timedelta(days=(len(periods)+5))
             ).strftime('%m/%d/%Y')
             element = self.teacher.driver.find_element(
                 By.XPATH, '//div[contains(@class,"tasking-plan")' +
@@ -386,7 +390,8 @@ class TestCreateAnEvent(unittest.TestCase):
                     year += 1
             self.teacher.driver.find_element(
                 By.XPATH, '//div[contains(@class,"datepicker__day")' +
-                'and contains(text(),"' + (closes_on[3:5]) + '")]').click()
+                'and contains(text(),"' + (closes_on[3:5]).lstrip('0') + '")]'
+            ).click()
             time.sleep(0.5)
             self.teacher.driver.find_element(
                 By.XPATH, '//div[contains(@class,"tasking-plan") and' +
@@ -407,7 +412,8 @@ class TestCreateAnEvent(unittest.TestCase):
                     year += 1
             self.teacher.driver.find_element(
                 By.XPATH, '//div[contains(@class,"datepicker__day")' +
-                'and contains(text(),"' + (opens_on[3:5]) + '")]').click()
+                'and contains(text(),"' + (opens_on[3:5]).lstrip('0') + '")]'
+            ).click()
             time.sleep(0.5)
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(@class,"-publish")]').click()
@@ -416,7 +422,7 @@ class TestCreateAnEvent(unittest.TestCase):
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
-                By.XPATH, '//a[@class="calendar-header-control-next"]').click()
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
                 "//label[contains(text(), '" + assignment_name + "')]")
@@ -467,7 +473,7 @@ class TestCreateAnEvent(unittest.TestCase):
             send_keys('description')
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
         wait.until(
             expect.visibility_of_element_located(
@@ -481,7 +487,7 @@ class TestCreateAnEvent(unittest.TestCase):
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
-                By.XPATH, '//a[@class="calendar-header-control-next"]').click()
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
                 "//label[contains(text(), '" + assignment_name + "')]")
@@ -531,7 +537,7 @@ class TestCreateAnEvent(unittest.TestCase):
             send_keys('description')
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
         wait.until(
             expect.visibility_of_element_located(
@@ -545,7 +551,7 @@ class TestCreateAnEvent(unittest.TestCase):
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
-                By.XPATH, '//a[@class="calendar-header-control-next"]').click()
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
                 "//label[contains(text(), '" + assignment_name + "')]")
@@ -574,7 +580,7 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment_name = "event008"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='event',
                                     args={
                                         'title': assignment_name,
@@ -583,9 +589,20 @@ class TestCreateAnEvent(unittest.TestCase):
                                         'status': 'draft'
                                     })
         # click on the assignment
-        self.teacher.driver.find_element(
-            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]'
-        ).click()
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//button[contains(@class,"-publish")]')
@@ -596,7 +613,7 @@ class TestCreateAnEvent(unittest.TestCase):
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
-                By.XPATH, '//a[@class="calendar-header-control-next"]').click()
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
                 "//label[contains(text(), '" + assignment_name + "')]")
@@ -802,7 +819,7 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment_name = 'event013'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='event',
                                     args={
                                         'title': assignment_name,
@@ -811,9 +828,20 @@ class TestCreateAnEvent(unittest.TestCase):
                                         'status': 'draft'
                                     })
         # click on the assignment
-        self.teacher.driver.find_element(
-            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]'
-        ).click()
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH,
@@ -849,7 +877,7 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment_name = 'event014'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='event',
                                     args={
                                         'title': assignment_name,
@@ -858,9 +886,20 @@ class TestCreateAnEvent(unittest.TestCase):
                                         'status': 'draft'
                                     })
         # click on the assignment
-        self.teacher.driver.find_element(
-            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]'
-        ).click()
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
@@ -905,7 +944,7 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment_name = "event015"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='event',
                                     args={
                                         'title': assignment_name,
@@ -914,9 +953,20 @@ class TestCreateAnEvent(unittest.TestCase):
                                         'status': 'draft'
                                     })
         # click on the assignment
-        self.teacher.driver.find_element(
-            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]'
-        ).click()
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
@@ -924,7 +974,7 @@ class TestCreateAnEvent(unittest.TestCase):
         )
         self.teacher.driver.find_element(
             By.XPATH,
-            '//button[contains(@aria-role,"close") and' +
+            '//button[contains(@aria-role,"close") and ' +
             'contains(@class,"close-x")]'
         ).click()
         assert('calendar' in self.teacher.current_url()),\
@@ -959,7 +1009,7 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment_name = "event014"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='event',
                                     args={
                                         'title': assignment_name,
@@ -968,9 +1018,20 @@ class TestCreateAnEvent(unittest.TestCase):
                                         'status': 'draft'
                                     })
         # click on the assignment
-        self.teacher.driver.find_element(
-            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]'
-        ).click()
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
@@ -1099,7 +1160,7 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment_name = "event019"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='event',
                                     args={
                                         'title': assignment_name,
@@ -1110,9 +1171,20 @@ class TestCreateAnEvent(unittest.TestCase):
         # click on the assignment
         events = self.teacher.driver.find_elements(
             By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
-        self.teacher.driver.find_element(
-            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]'
-        ).click()
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"edit-assignment")]')
@@ -1120,13 +1192,15 @@ class TestCreateAnEvent(unittest.TestCase):
         ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"delete-link")]')
+                (By.XPATH, '//button[contains(@class,"delete-link")]')
             )
         ).click()
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(text(),"Yes")]').click()
         assert('calendar' in self.teacher.current_url()),\
             'not back at calendar after deleting an event'
+        self.teacher.driver.get(self.teacher.current_url())
+        self.teacher.page.wait_for_page_load()
         events_new = self.teacher.driver.find_elements(
             By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
         assert(len(events) == len(events_new) + 1),\
@@ -1158,7 +1232,7 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment_name = "event020"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='event',
                                     args={
                                         'title': assignment_name,
@@ -1169,9 +1243,20 @@ class TestCreateAnEvent(unittest.TestCase):
         # click on the assignment
         events = self.teacher.driver.find_elements(
             By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
-        self.teacher.driver.find_element(
-            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]'
-        ).click()
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"edit-assignment")]')
@@ -1179,13 +1264,15 @@ class TestCreateAnEvent(unittest.TestCase):
         ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"delete-link")]')
+                (By.XPATH, '//button[contains(@class,"delete-link")]')
             )
         ).click()
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(text(),"Yes")]').click()
         assert('calendar' in self.teacher.current_url()),\
             'not back at calendar after deleting an event'
+        self.teacher.driver.get(self.teacher.current_url())
+        self.teacher.page.wait_for_page_load()
         events_new = self.teacher.driver.find_elements(
             By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
         assert(len(events) == len(events_new) + 1),\
@@ -1216,7 +1303,7 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment_name = "event020"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='event',
                                     args={
                                         'title': assignment_name,
@@ -1227,18 +1314,31 @@ class TestCreateAnEvent(unittest.TestCase):
         # click on the assignment
         events = self.teacher.driver.find_elements(
             By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
-        self.teacher.driver.find_element(
-            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]'
-        ).click()
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"delete-link")]')
+                (By.XPATH, '//button[contains(@class,"delete-link")]')
             )
         ).click()
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(text(),"Yes")]').click()
         assert('calendar' in self.teacher.current_url()),\
             'not back at calendar after deleting an event'
+        self.teacher.driver.get(self.teacher.current_url())
+        self.teacher.page.wait_for_page_load()
         events_new = self.teacher.driver.find_elements(
             By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
         assert(len(events) == len(events_new) + 1),\
@@ -1290,7 +1390,7 @@ class TestCreateAnEvent(unittest.TestCase):
             send_keys('description')
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
         wait.until(
             expect.visibility_of_element_located(
@@ -1304,7 +1404,7 @@ class TestCreateAnEvent(unittest.TestCase):
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
-                By.XPATH, '//a[@class="calendar-header-control-next"]').click()
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
         self.ps.test_updates['passed'] = True
@@ -1333,7 +1433,7 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment_name = "event020"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='event',
                                     args={
                                         'title': assignment_name,
@@ -1342,9 +1442,20 @@ class TestCreateAnEvent(unittest.TestCase):
                                         'status': 'draft'
                                     })
         # click on the assignment
-        self.teacher.driver.find_element(
-            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]'
-        ).click()
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
@@ -1387,7 +1498,7 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment_name = "event020"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='event',
                                     args={
                                         'title': assignment_name,
@@ -1396,15 +1507,26 @@ class TestCreateAnEvent(unittest.TestCase):
                                         'status': 'publish'
                                     })
         # click on the assignment
-        self.teacher.driver.find_element(
-            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]'
-        ).click()
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"edit-assignment")]')
             )
         ).click()
-        self.tacher.wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -1465,7 +1587,7 @@ class TestCreateAnEvent(unittest.TestCase):
             send_keys('description')
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
         wait.until(
             expect.visibility_of_element_located(
@@ -1479,7 +1601,7 @@ class TestCreateAnEvent(unittest.TestCase):
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
-                By.XPATH, '//a[@class="calendar-header-control-next"]').click()
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
         self.ps.test_updates['passed'] = True
@@ -1509,7 +1631,7 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment_name = "event026"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='event',
                                     args={
                                         'title': assignment_name,
@@ -1518,10 +1640,20 @@ class TestCreateAnEvent(unittest.TestCase):
                                         'status': 'draft'
                                     })
         # click on the assignment
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//label[contains(@data-title,"' + assignment_name + '")]'
-        ).click()
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
@@ -1562,7 +1694,7 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment_name = "event027"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='event',
                                     args={
                                         'title': assignment_name,
@@ -1571,9 +1703,20 @@ class TestCreateAnEvent(unittest.TestCase):
                                         'status': 'publish'
                                     })
         # click on the assignment
-        self.teacher.driver.find_element(
-            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]'
-        ).click()
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"edit-assignment")]')
@@ -1658,7 +1801,7 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment_name = "event029"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='event',
                                     args={
                                         'title': assignment_name,
@@ -1666,10 +1809,20 @@ class TestCreateAnEvent(unittest.TestCase):
                                         'periods': {'all': (begin, end)},
                                         'status': 'publish'
                                     })
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//label[contains(@data-title,"'+assignment_name+'")]'
-        ).click()
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"edit-assignment")]')
@@ -1689,7 +1842,7 @@ class TestCreateAnEvent(unittest.TestCase):
             send_keys('NEWdescription')
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -1700,12 +1853,14 @@ class TestCreateAnEvent(unittest.TestCase):
             By.XPATH, '//button[contains(@class,"-publish")]').click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), 'NEW"+assignment_name+"')]")
+                By.XPATH,
+                "//label[contains(text(), 'NEW"+assignment_name+"')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
-                By.XPATH, '//a[@class="calendar-header-control-next"]').click()
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), 'NEW"+assignment_name+"')]")
+                By.XPATH,
+                "//label[contains(text(), 'NEW"+assignment_name+"')]")
         self.ps.test_updates['passed'] = True
 
     # NOT DONE
@@ -1736,7 +1891,7 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment_name = "event030"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='event',
                                     args={
                                         'title': assignment_name,
@@ -1744,15 +1899,20 @@ class TestCreateAnEvent(unittest.TestCase):
                                         'periods': {'all': (begin, end)},
                                         'status': 'draft'
                                     })
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//label[contains(@data-title,"'+assignment_name+'")]'
-        ).click()
-        self.teacher.wait.until(
-            expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"edit-assignment")]')
-            )
-        )
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
@@ -1767,7 +1927,7 @@ class TestCreateAnEvent(unittest.TestCase):
             send_keys('NEWdescription')
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -1778,12 +1938,14 @@ class TestCreateAnEvent(unittest.TestCase):
             By.XPATH, '//button[contains(@class,"-publish")]').click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), 'NEW"+assignment_name+"')]")
+                By.XPATH,
+                "//label[contains(text(), 'NEW"+assignment_name+"')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
-                By.XPATH, '//a[@class="calendar-header-control-next"]').click()
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), 'NEW"+assignment_name+"')]")
+                By.XPATH,
+                "//label[contains(text(), 'NEW"+assignment_name+"')]")
         self.ps.test_updates['passed'] = True
 
     # NOT DONE
@@ -1814,7 +1976,7 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment_name = "event030"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='event',
                                     args={
                                         'title': assignment_name,
@@ -1822,10 +1984,20 @@ class TestCreateAnEvent(unittest.TestCase):
                                         'periods': {'all': (begin, end)},
                                         'status': 'publish'
                                     })
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//label[contains(@data-title,"'+assignment_name+'")]'
-        ).click()
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"edit-assignment")]')
@@ -1845,7 +2017,7 @@ class TestCreateAnEvent(unittest.TestCase):
             send_keys('NEWdescription')
         # set new due date
         today = datetime.date.today()
-        closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.driver.find_element(
             By.XPATH, '//div[contains(@class,"-due-date")]' +
             '//div[contains(@class,"datepicker__input")]').click()
@@ -1862,7 +2034,8 @@ class TestCreateAnEvent(unittest.TestCase):
                 year += 1
         self.teacher.driver.find_element(
             By.XPATH, '//div[contains(@class,"datepicker__day")' +
-            'and contains(text(),"' + (closes_on[3:5]) + '")]').click()
+            'and contains(text(),"' + (closes_on[3:5]).lstrip('0') + '")]'
+        ).click()
         time.sleep(0.5)
         self.teacher.driver.find_element(
             By.CLASS_NAME, 'assign-to-label').click()
@@ -1875,7 +2048,7 @@ class TestCreateAnEvent(unittest.TestCase):
                 assignment_name + "')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
-                By.XPATH, '//a[@class="calendar-header-control-next"]').click()
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), 'NEW" +
                 assignment_name + "')]")
