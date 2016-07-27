@@ -878,7 +878,7 @@ class TestViewClassScores(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.23.023' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1','t1.23','t1.23.023','8178']
+        self.ps.test_updates['tags'] = ['t1', 't1.23', 't1.23.023', '8178']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -927,8 +927,6 @@ class TestViewClassScores(unittest.TestCase):
             '//div[contains(@class,"popover-content")]' +
             '//a[contains(text(),"Review")]'
         ).click()
-
-
 
     # Case C8180 - 025 - Teacher | Teacher can view a student's work for a
     # homework assignment
