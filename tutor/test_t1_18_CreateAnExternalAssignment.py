@@ -1156,7 +1156,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
         ).click()
         self.teacher.driver.get(self.teacher.current_url())
-        self.teacher.wait_for_page_load()
+        self.teacher.page.wait_for_page_load()
         externals = self.teacher.driver.find_elements(
             By.XPATH,
             '//label[contains(@data-title,"' + assignment_name + '")]')
@@ -1227,7 +1227,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
         ).click()
         self.teacher.driver.get(self.teacher.current_url())
-        self.teacher.wait_for_page_load()
+        self.teacher.page.wait_for_page_load()
         externals = self.teacher.driver.find_elements(
             By.XPATH,
             '//label[contains(@data-title,"' + assignment_name + '")]')
