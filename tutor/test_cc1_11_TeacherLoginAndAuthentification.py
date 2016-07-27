@@ -24,8 +24,10 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7688, 7689, 7690])  # NOQA
+    str([7690])  # NOQA
 )
+
+# 7688, 7689, 7690
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -36,11 +38,13 @@ class TestTeacherLoginAndAuthentification(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        # self.Teacher = Teacher(
+        #    use_env_vars=True,
+        #    pasta_user=self.ps,
+        #    capabilities=self.desired_capabilities
+        # )
+        self.teacher = Teacher(use_env_vars=True)
+        self.teacher.login()
 
     def tearDown(self):
         """Test destructor."""
@@ -81,6 +85,11 @@ class TestTeacherLoginAndAuthentification(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.select_course(appearance='macro_economics')
+        self.teacher.sleep(5)
+
+        assert('cc-dashboard' in self.teacher.current_url()), \
+            'Not viewing the cc dashboard'
 
         self.ps.test_updates['passed'] = True
 
@@ -111,6 +120,20 @@ class TestTeacherLoginAndAuthentification(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.select_course(appearance='macro_economics')
+        self.teacher.sleep(5)
+
+        assert('dashboard' in self.teacher.current_url()), \
+            'Not viewing the cc dashboard'
+
+        self.teacher.open_user_menu()
+        self.teacher.sleep(1)
+        self.teacher.find(By.XPATH, "//a/form[@class='-logout-form']").click()
+
+        assert('cc.openstax.org' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -144,5 +167,10 @@ class TestTeacherLoginAndAuthentification(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.select_course(appearance='macro_economics')
+        self.teacher.sleep(5)
+
+        assert('cc-dashboard' in self.teacher.current_url()), \
+            'Not viewing the cc dashboard'
 
         self.ps.test_updates['passed'] = True
