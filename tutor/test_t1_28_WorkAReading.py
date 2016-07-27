@@ -9,13 +9,13 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint  # NOQA
-from selenium.webdriver import ActionChains  # NOQA
+# from selenium.webdriver import ActionChains  # NOQA
 from selenium.webdriver.common.by import By  # NOQA
 from selenium.webdriver.support import expected_conditions as expect  # NOQA
 from staxing.assignment import Assignment  # NOQA
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher  # NOQA
+# from staxing.helper import Teacher  # NOQA
 from staxing.helper import Student
 
 # for template command line testing only
@@ -34,21 +34,15 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8206])  # NOQA
-)
-'''
-8184, 8185, 8186, 8187, 8188, 8189,
+    str([
+        8184, 8185, 8186, 8187, 8188, 8189,
         8190, 8191, 8192, 8193, 8194, 8195,
         8196, 8197, 8198, 8199, 8200, 8201,
-        8202, 8203, 8204, 8205, 8206
-'''
-
+        8202, 8203, 8204, 8205, 8206])  # NOQA
+)
 # Use the long reading for 8189, 8190, 8191, 8192, and 8206
 # May need to make the long reading shorter, five chapters still causes hanging
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/master
 
 @PastaDecorator.on_platforms(BROWSERS)
 class TestEpicName(unittest.TestCase):
@@ -77,7 +71,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8184 - 001 - Student | Start a reading assignment
     @pytest.mark.skipif(str(8184) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_start_a_reading_assignment(self):
+    def test_student_start_a_reading_assignment_8184(self):
         """Start a reading assignment.
 
         Steps:
@@ -118,7 +112,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8185 - 002 - Student | Due date is listed in the footer
     @pytest.mark.skipif(str(8185) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_due_date_is_listed_in_the_footer(self):
+    def test_student_due_date_is_listed_in_the_footer_8185(self):
         r"""Due date is listed in the footer.
 
         Steps:
@@ -144,7 +138,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8186 - 003 - Student | Reading sections are listed in the footer
     @pytest.mark.skipif(str(8186) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_reading_sections_are_listed_in_the_footer(self):
+    def test_student_reading_sections_are_listed_in_the_footer_8186(self):
         r"""Reading sections are listed in the footer.
 
         Steps:
@@ -170,7 +164,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8187 - 004 - Student | Reading sections in the
     # footer link to the respective section in the reference book
     @pytest.mark.skipif(str(8187) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_reading_sections_in_footer_link_to_section_in_book(self):
+    def test_student_reading_sections_in_footer_link_to_book_8187(self):
         r"""Reading sections in footer link respective section in the book.
 
         Steps:
@@ -197,7 +191,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8188 - 005 - Student | Click the forward arrow
     # to go to the next reading section
     @pytest.mark.skipif(str(8188) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_click_forward_arrow_to_go_to_next_section(self):
+    def test_student_click_forward_arrow_to_go_to_next_section_8188(self):
         """Click the forward arrow to go to next reading section.
 
         Steps:
@@ -227,7 +221,6 @@ class TestEpicName(unittest.TestCase):
             if (assignment.text == 'Dec 31, 8:54am'):
                 assignment.click()
                 break
-<<<<<<< HEAD
 
         name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
 
@@ -239,35 +232,17 @@ class TestEpicName(unittest.TestCase):
 
         self.student.find(By.XPATH, "//a[contains(@class,'arrow') and " +
                           "contains(@class,'right')]").click()
-=======
-
-        name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
-
-        assert('December Reading' in name.text), \
-            'Not viewing the reading'
-
-        assert('/steps/1/' in self.student.current_url()), \
-            'Not on the first page of the reading'
-
-        self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()
->>>>>>> origin/master
 
         assert('/steps/2/' in self.student.current_url()), \
             'Not on the first page of the reading'
 
         self.student.sleep(2)
         self.ps.test_updates['passed'] = True
-<<<<<<< HEAD
-=======
-        
-
-        #raise NotImplementedError(inspect.currentframe().f_code.co_name)
->>>>>>> origin/master
 
     # Case C8189 - 006 - Student | If a card has a assessment free response
     # textbox, inputting a free response activates the Answer button
     @pytest.mark.skipif(str(8189) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_inputting_free_repsponse_activates_answer_button(self):
+    def test_student_inputting_free_repsponse_activates_answer_btn_8189(self):
         """If a card has free response, inputting text activates Answer.
 
         Steps:
@@ -357,7 +332,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8190 - 007 - Student | Submit a free response answer
     @pytest.mark.skipif(str(8190) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_submit_a_free_response_answer(self):
+    def test_student_submit_a_free_response_answer_8190(self):
         """Submit a free response answer.
 
         Steps:
@@ -457,7 +432,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8191 - 008 - Student | Selecting a multiple choice answer
     # activates the Submit button
     @pytest.mark.skipif(str(8191) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_selecting_multiple_choice_activates_the_submit(self):
+    def test_student_selecting_multiple_choice_activates_the_submit_8191(self):
         """Selecting a multiple choice answer activates the Submit button.
 
         Steps:
@@ -553,7 +528,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8192 - 009 - Student | Submit a multiple choice answer
     @pytest.mark.skipif(str(8192) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_submit_a_multiple_choice_answer(self):
+    def test_student_submit_a_multiple_choice_answer_8192(self):
         """Submit a multiple choice answer.
 
         Steps:
@@ -654,7 +629,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8193 - 010 - Student | Answer feedback is presented
     @pytest.mark.skipif(str(8193) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_answer_feedback_is_presented(self):
+    def test_student_answer_feedback_is_presented_8193(self):
         """Answer feedback is presented.
 
         Steps:
@@ -756,7 +731,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8194 - 011 - Student | Correctness for a completed
     # assessment is displayed in the breadcrumbs
     @pytest.mark.skipif(str(8194) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_correctness_displayed_in_breadcrumb(self):
+    def test_student_correctness_displayed_in_breadcrumb_8194(self):
         r"""Correctness for a completed assessment is displayed in breadcrumbs.
 
         Steps:
@@ -787,7 +762,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8195 - 012 - Student | If an assessment follows a Grasp Check,
     # answering correctly activates the Continue button
     @pytest.mark.skipif(str(8195) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_correct_grasp_check_activates_continue_button(self):
+    def test_student_correct_grasp_check_activates_continue_button_8195(self):
         r"""If assessment follows Grasp Check, correct answer shows Continue.
 
         Steps:
@@ -819,7 +794,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8196 - 013 - Student | If an assessment follows a Grasp Check,
     # answering incorrectly activates the Try Another and Move On buttons
     @pytest.mark.skipif(str(8196) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_incorrect_grasp_check_activates_try_another_move_on(self):
+    def test_student_incorrect_grasp_check_try_another_move_on_8196(self):
         r"""If assessment follows Grasp Check, wrong answer shows try/move on.
 
         Steps:
@@ -851,7 +826,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8197 - 014 - Student | Select Try Another to receive a new
     # assessment
     @pytest.mark.skipif(str(8197) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_select_try_another_to_receive_new_assessment(self):
+    def test_student_select_try_another_to_receive_new_assessment_8197(self):
         r"""Select Try Another to receive a new assessment.
 
         Steps:
@@ -883,7 +858,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8198 - 015 - Student | Select Move On
     @pytest.mark.skipif(str(8198) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_select_move_on(self):
+    def test_student_select_move_on_8198(self):
         r"""Select Move On.
 
         Steps:
@@ -915,7 +890,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8199 - 016 - Student | If a card has a video, play the video
     @pytest.mark.skipif(str(8199) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_if_a_card_has_a_video_play_the_videio(self):
+    def test_student_if_a_card_has_a_video_play_the_videio_8199(self):
         """If a card has a video, play the video.
 
         Steps:
@@ -953,8 +928,13 @@ class TestEpicName(unittest.TestCase):
             'Not viewing the reading'
 
         while(1):
-            while ('arrow right' in self.student.driver.page_source and'video-step' not in self.student.driver.page_source):  # NOQA
-                self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()  # NOQA
+            while ('arrow right' in self.student.driver.page_source and
+                    'video-step' not in self.student.driver.page_source):
+                self.student.find(
+                    By.XPATH,
+                    "//a[contains(@class,'arrow') and " +
+                    "contains(@class,'right')]"
+                ).click()
 
             # multiple choice case
             if('exercise-multiple-choice' in self.student.driver.page_source):
@@ -1015,7 +995,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8200 - 017 - Student | A Concept Coach card preceeds the question
     # review
     @pytest.mark.skipif(str(8200) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_concept_coach_precedes_question_review(self):
+    def test_student_concept_coach_precedes_question_review_8200(self):
         """A Concept Coach card preceeds the question review.
 
         Steps:
@@ -1053,10 +1033,13 @@ class TestEpicName(unittest.TestCase):
             'Not viewing the reading'
 
         while(1):
-            while ('arrow right' in self.student.driver.page_source and 'Concept Coach' not in self.student.driver.page_source):  # NOQA
+            while ('arrow right' in self.student.driver.page_source and
+                    'Concept Coach' not in self.student.driver.page_source):
                 self.student.find(
-                    By.XPATH, "//a[contains(@class,'arrow')" +
-                    "and contains(@class,'right')]").click()
+                    By.XPATH,
+                    "//a[contains(@class,'arrow')" +
+                    "and contains(@class,'right')]"
+                ).click()
 
             # multiple choice case
             if('exercise-multiple-choice' in self.student.driver.page_source):
@@ -1108,7 +1091,8 @@ class TestEpicName(unittest.TestCase):
                 self.student.sleep(2)
 
             # Reached Concept Coach card
-            elif('Concept Coach' in self.student.driver.page_source and 'spacer-step' in self.student.driver.page_source):   # NOQA
+            elif('Concept Coach' in self.student.driver.page_source and
+                    'spacer-step' in self.student.driver.page_source):
                 self.student.sleep(5)
                 break
 
@@ -1116,7 +1100,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8201 - 018 - Student | A reading may have a Review assessment
     @pytest.mark.skipif(str(8201) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_reading_may_have_review_assessment(self):
+    def test_student_reading_may_have_review_assessment_8201(self):
         """A reading may have a Review assessment.
 
         Steps:
@@ -1159,7 +1143,9 @@ class TestEpicName(unittest.TestCase):
             while ('arrow right' in self.student.driver.page_source):
                 page = self.student.driver.page_source
                 if 'openstax-step-group-label' in page:
-                    if self.student.find(By.CLASS_NAME, 'openstax-step-group-label').text == 'Review':  # NOQA
+                    if self.student.find(
+                            By.CLASS_NAME,
+                            'openstax-step-group-label').text == 'Review':
                         flag = True
                         break
                 self.student.find(By.XPATH, "//a[contains(@class,'arrow') " +
@@ -1172,7 +1158,9 @@ class TestEpicName(unittest.TestCase):
             if('exercise-multiple-choice' in self.student.driver.page_source):
                 page = self.student.driver.page_source
                 if 'openstax-step-group-label' in page:
-                    if self.student.find(By.CLASS_NAME, 'openstax-step-group-label').text == 'Review':  # NOQA
+                    if self.student.find(
+                            By.CLASS_NAME,
+                            'openstax-step-group-label').text == 'Review':
                         break
 
                 answers = self.student.driver.find_elements(
@@ -1204,7 +1192,9 @@ class TestEpicName(unittest.TestCase):
             elif('textarea' in self.student.driver.page_source):
                 page = self.student.driver.page_source
                 if 'openstax-step-group-label' in page:
-                    if self.student.find(By.CLASS_NAME, 'openstax-step-group-label').text == 'Review':  # NOQA
+                    if self.student.find(
+                            By.CLASS_NAME,
+                            'openstax-step-group-label').text == 'Review':
                         break
 
                 self.student.find(By.TAG_NAME, 'textarea').send_keys(
@@ -1230,7 +1220,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8202 - 019 - Student | A reading may have a Personalized assessment
     @pytest.mark.skipif(str(8202) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_reading_may_have_personalized_assessment(self):
+    def test_student_reading_may_have_personalized_assessment_8202(self):
         """A reading may have a Personalized assessment.
 
         Steps:
@@ -1273,7 +1263,10 @@ class TestEpicName(unittest.TestCase):
             while ('arrow right' in self.student.driver.page_source):
                 page = self.student.driver.page_source
                 if 'openstax-step-group-label' in page:
-                    if self.student.find(By.CLASS_NAME, 'openstax-step-group-label').text == 'Personalized':  # NOQA
+                    if self.student.find(
+                            By.CLASS_NAME,
+                            'openstax-step-group-label').text == \
+                            'Personalized':
                         flag = True
                         break
                 self.student.find(By.XPATH, "//a[contains(@class,'arrow') " +
@@ -1286,7 +1279,10 @@ class TestEpicName(unittest.TestCase):
             if('exercise-multiple-choice' in self.student.driver.page_source):
                 page = self.student.driver.page_source
                 if 'openstax-step-group-label' in page:
-                    if self.student.find(By.CLASS_NAME, 'openstax-step-group-label').text == 'Personalized':  # NOQA
+                    if self.student.find(
+                            By.CLASS_NAME,
+                            'openstax-step-group-label').text == \
+                            'Personalized':
                         break
 
                 answers = self.student.driver.find_elements(
@@ -1318,7 +1314,10 @@ class TestEpicName(unittest.TestCase):
             elif('textarea' in self.student.driver.page_source):
                 page = self.student.driver.page_source
                 if 'openstax-step-group-label' in page:
-                    if self.student.find(By.CLASS_NAME, 'openstax-step-group-label').text == 'Personalized':  # NOQA
+                    if self.student.find(
+                            By.CLASS_NAME,
+                            'openstax-step-group-label').text == \
+                            'Personalized':
                         break
 
                 self.student.find(
@@ -1327,7 +1326,9 @@ class TestEpicName(unittest.TestCase):
                 self.student.sleep(2)
                 self.student.wait.until(
                     expect.element_to_be_clickable(
-                        (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')  # NOQA
+                        (By.XPATH,
+                         '//button[contains(@class,"async-button") and ' +
+                         'contains(@class,"continue")]')
                     )
                 ).click()
 
@@ -1344,8 +1345,8 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8203 - 020 - Student | View the completion report and click the
     # Back To Dashboard button to return to the dashboard
-    @pytest.mark.skipif(str(8203) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_view_completion_report(self):
+    @pytest.mark.skipif(str(8203) not in TESTS, reason='Excluded')
+    def test_student_view_completion_report_8203(self):
         """View completion report, click the Back To Dashboard to return.
 
         Steps:
@@ -1454,7 +1455,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8204 - 021 - Student | A completed reading should show
     # You are done. in the completion report
     @pytest.mark.skipif(str(8204) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_completed_reading_shows_you_are_done(self):
+    def test_student_completed_reading_shows_you_are_done_8204(self):
         """A completed reading should show You are done. in completion report.
 
         Steps:
@@ -1567,7 +1568,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8205 - 022 - Student | A completed reading should show Complete
     # in the dashboard progress column
     @pytest.mark.skipif(str(8205) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_completed_reading_shows_complete_in_dashboard(self):
+    def test_student_completed_reading_shows_complete_in_dashboard_8205(self):
         """A completed reading shows Complete in dashboard progress column.
 
         Steps:
@@ -1593,22 +1594,21 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-<<<<<<< HEAD
-        assignments = self.student.driver.find_elements_by_xpath("//div[@class='-upcoming panel panel-default']/div[@class='panel-body']/div[@class='task row reading workable']")  # NOQA
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='-upcoming panel panel-default']" +
+            "/div[@class='panel-body']/div[@class='task row reading workable']"
+        )
         for assignment in assignments:
-            if (assignment.text.find('Dec 31, 8:54am') >= 0 and assignment.text.find('December Reading') >= 0 and assignment.text.find("Complete") >= 0):  # NOQA
-=======
-        assignments = self.student.driver.find_elements_by_xpath("//div[@class='-upcoming panel panel-default']/div[@class='panel-body']/div[@class='task row reading workable']")
-        for assignment in assignments:
-            if (assignment.text.find('Dec 31, 8:54am') >= 0 and assignment.text.find('December Reading') >= 0 and assignment.text.find("Complete") >= 0):
->>>>>>> origin/master
+            if (assignment.text.find('Dec 31, 8:54am') >= 0 and
+                    assignment.text.find('December Reading') >= 0 and
+                    assignment.text.find("Complete") >= 0):
                 self.ps.test_updates['passed'] = True
                 break
 
     # Case C8206 - 023 - Student | Answer an assessment, return to the
     # dashboard and verify the assignment progress is In progress
     @pytest.mark.skipif(str(8206) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_started_assignment_shows_in_progress_on_dashboard(self):
+    def test_student_started_assignment_shows_progress_on_dashboard_8206(self):
         """Answer assessment, go to dashboard, verify progress is In progress.
 
         Steps:
@@ -1644,37 +1644,28 @@ class TestEpicName(unittest.TestCase):
 
         home = self.student.current_url()
 
-<<<<<<< HEAD
         assignments = self.student.driver.find_elements_by_xpath(
             "//div[@class='-upcoming panel panel-default']/div[@class" +
             "='panel-body']/div[@class='task row reading workable']")
         for assignment in assignments:
-            if (assignment.text.find('Dec 29, 8:42am') >= 0 and assignment.text.find('Long Automation Reading') >= 0 and assignment.text.find("In progress") >= 0):  # NOQA
+            if (assignment.text.find('Dec 29, 8:42am') >= 0 and
+                    assignment.text.find('Long Automation Reading') >= 0 and
+                    assignment.text.find("In progress") >= 0):
                 self.ps.test_updates['passed'] = True
                 break
 
-            elif (assignment.text.find('Dec 29, 8:42am') >= 0 and assignment.text.find('Long Automation Reading') >= 0 and assignment.text.find("Not started") >= 0):  # NOQA
+            elif (assignment.text.find('Dec 29, 8:42am') >= 0 and
+                    assignment.text.find('Long Automation Reading') >= 0 and
+                    assignment.text.find("Not started") >= 0):
                 assignment.click()
                 name = self.student.find(
                     By.CLASS_NAME, 'center-control-assignment')
-=======
-        assignments = self.student.driver.find_elements_by_xpath("//div[@class='-upcoming panel panel-default']/div[@class='panel-body']/div[@class='task row reading workable']")
-        for assignment in assignments:
-            if (assignment.text.find('Dec 29, 8:42am') >= 0 and assignment.text.find('Long Automation Reading') >= 0 and assignment.text.find("In progress") >= 0):
-                self.ps.test_updates['passed'] = True
-                break
-
-            elif (assignment.text.find('Dec 29, 8:42am') >= 0 and assignment.text.find('Long Automation Reading') >= 0 and assignment.text.find("Not started") >= 0):
-                assignment.click()
-                name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
->>>>>>> origin/master
 
                 assert('Long Automation Reading' in name.text), \
                     'Not viewing the reading'
 
                 while(1):
                     while ('arrow right' in self.student.driver.page_source):
-<<<<<<< HEAD
                         self.student.find(
                             By.XPATH, "//a[contains(@class,'arrow') " +
                             "and contains(@class,'right')]").click()
@@ -1707,42 +1698,11 @@ class TestEpicName(unittest.TestCase):
                         self.student.sleep(5)
                         page = self.student.driver.page_source
                         assert('question-feedback bottom' in page), \
-=======
-                        self.student.find(By.XPATH, "//a[contains(@class,'arrow') and contains(@class,'right')]").click()
-
-                    # multiple choice case
-                    if('exercise-multiple-choice' in self.student.driver.page_source):
-                        
-
-                        answers = self.student.driver.find_elements(By.CLASS_NAME, 'answer-letter')
-                        self.student.sleep(0.8)
-                        rand = randint(0, len(answers) - 1)
-                        answer = chr(ord('a') + rand)
-                        #print('Selecting %s' % answer)
-                        Assignment.scroll_to(self.student.driver, answers[0])
-                        if answer == 'a':
-                            self.student.driver.execute_script('window.scrollBy(0, -160);')
-                        elif answer == 'd':
-                            self.student.driver.execute_script('window.scrollBy(0, 160);')
-                        answers[rand].click()
-
-
-                        self.student.wait.until(
-                            expect.element_to_be_clickable(
-                                (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
-                            )
-                        ).click()
-                        self.student.sleep(5)
-
-                        assert('question-feedback bottom' in self.student.driver.page_source), \
->>>>>>> origin/master
                             'Did not submit MC'
-
                         break
 
                     # free response case
                     elif('textarea' in self.student.driver.page_source):
-<<<<<<< HEAD
                         self.student.find(
                             By.TAG_NAME, 'textarea').send_keys(
                             'An answer for this textarea')
@@ -1752,13 +1712,6 @@ class TestEpicName(unittest.TestCase):
                                 (By.XPATH,
                                     '//button[contains(@class,"async-b' +
                                     'utton") and contains(@class,"continue")]')
-=======
-                        self.student.find(By.TAG_NAME, 'textarea').send_keys('An answer for this textarea')
-                        self.student.sleep(2)
-                        self.student.wait.until(
-                            expect.element_to_be_clickable(
-                                (By.XPATH, '//button[contains(@class,"async-button") and contains(@class,"continue")]')
->>>>>>> origin/master
                             )
                         ).click()
 
@@ -1773,16 +1726,13 @@ class TestEpicName(unittest.TestCase):
                 self.student.sleep(20)
                 self.student.driver.get(home)
 
-<<<<<<< HEAD
                 assignments = self.student.driver.find_elements_by_xpath(
                     "//div[@class='-upcoming panel panel-default']/div[@clas" +
                     "s='panel-body']/div[@class='task row reading workable']")
                 for assignment in assignments:
-                    if (assignment.text.find('Dec 29, 8:42am') >= 0 and assignment.text.find('Long Automation Reading') >= 0 and assignment.text.find("In progress") >= 0):  # NOQA
-=======
-                assignments = self.student.driver.find_elements_by_xpath("//div[@class='-upcoming panel panel-default']/div[@class='panel-body']/div[@class='task row reading workable']")
-                for assignment in assignments:
-                    if (assignment.text.find('Dec 29, 8:42am') >= 0 and assignment.text.find('Long Automation Reading') >= 0 and assignment.text.find("In progress") >= 0):
->>>>>>> origin/master
+                    if (assignment.text.find('Dec 29, 8:42am') >= 0 and
+                            assignment.text.find(
+                                'Long Automation Reading') >= 0 and
+                            assignment.text.find("In progress") >= 0):
                         self.ps.test_updates['passed'] = True
                         break
