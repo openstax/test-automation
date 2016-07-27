@@ -29,24 +29,13 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    # str([8085, 8086, 8087, 8088, 8089,
-    #      8090, 8091, 8092, 8093, 8094,
-    #      8095, 8096, 8097, 8098, 8099,
-    #      8100, 8101, 8102, 8103, 8104,
-    #      8105, 8106, 8107, 8108, 8109,
-    #      8110, 8111, 8112, 8113, 8114,
-    #      8115, 8116])
-    # cases that use add assignemnt
-    # str([8091, 8096, 8097, 8098, 8099,
-    #      8102, 8103, 8104, 8106, 8107,
-    #      8109, 8110, 8112, 8114, 8115,
-    #      8116])
-    # cases that don't use add assignment
-    # str([8085, 8086, 8087, 8088, 8089,
-    #      8090, 8092, 8093, 8094, 8095,
-    #      8100, 8101, 8105, 8108, 8111,
-    #      8113])
-    str([8086])
+    str([8085, 8086, 8087, 8088, 8089,
+         8090, 8091, 8092, 8093, 8094,
+         8095, 8096, 8097, 8098, 8099,
+         8100, 8101, 8102, 8103, 8104,
+         8105, 8106, 8107, 8108, 8109,
+         8110, 8111, 8112, 8113, 8114,
+         8115, 8116])
     )
 
 
@@ -1166,7 +1155,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                  '//div[@class="popover-content"]//button[text()="Yes"]')
             )
         ).click()
-        self.teacher.sleep(2)
+        self.teacher.driver.get(self.teacher.current_url())
+        self.teacher.wait_for_page_load()
         externals = self.teacher.driver.find_elements(
             By.XPATH,
             '//label[contains(@data-title,"' + assignment_name + '")]')
@@ -1236,7 +1226,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                  '//div[@class="popover-content"]//button[text()="Yes"]')
             )
         ).click()
-        self.teacher.sleep(2)
+        self.teacher.driver.get(self.teacher.current_url())
+        self.teacher.wait_for_page_load()
         externals = self.teacher.driver.find_elements(
             By.XPATH,
             '//label[contains(@data-title,"' + assignment_name + '")]')
