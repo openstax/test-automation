@@ -38,7 +38,7 @@ Finished?|Verified?|Epic|Epic Name|Started|Total Cases|Notes
  ||T1.28|Work a reading|12|21|In progress
  ||T1.34|Account management|0|23|
 &#x2611;||T1.35|Contract controls|11|11|
-&#x2611;||T1.36|User login|9|9|
+&#x2611;|&#x2611;|T1.36|User login|11|11|
 &#x2611;||T1.37|Account maintenance|7|7|
 &#x2611;||T1.38|Choose course|4|4|
 &#x2611;||T1.42|Edit course settings and roster|10|10|
@@ -69,4 +69,4 @@ Finished?|Verified?|Epic|Epic Name|Started|Total Cases|Notes
 &#x2611;|&#x2611;|T2.17|Involve Users in Building Tutor|0|0|No user cases
  ||T2.18|Guide, Monitor, Support &amp; Train Users|0|5|
 &#x2611;|&#x2611;|T2.19|Create Tutor Business Model|0|0|No user cases
-                                    |||**Total Cases:**|**304**|**638**|*47.65% Done*
+                                    |||**Total Cases:**|**306**|**640**|*47.81% Done*
