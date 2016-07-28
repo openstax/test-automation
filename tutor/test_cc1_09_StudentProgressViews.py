@@ -24,12 +24,8 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7733])  # NOQA
+    str([7732, 7733, 7735, 7736, 7737])  # NOQA
 )
-
-"""
-7732, 7733, 7735, 7736, 7737
-"""
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -40,15 +36,11 @@ class TestStudentProgressViews(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        # self.student = Student(
-        #    use_env_vars=True,
-        #    pasta_user=self.ps,
-        #    capabilities=self.desired_capabilities
-        # )
-        # self.student = Student(username='student02', password='password',
-        #                  site='https://tutor-staging.openstax.org/')
-        self.student = Student(use_env_vars=True)
-        self.student.login()
+        self.student = Student(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
 
     def tearDown(self):
         """Test destructor."""
