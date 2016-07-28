@@ -38,7 +38,7 @@ Finished?|Verified?|Epic|Epic Name|Started|Total Cases|Notes
  ||T1.28|Work a reading|12|21|In progress
  ||T1.34|Account management|0|23|
 &#x2611;||T1.35|Contract controls|11|11|
-&#x2611;||T1.36|User login|11|11|
+&#x2611;|&#x2611;|T1.36|User login|11|11|
 &#x2611;||T1.37|Account maintenance|7|7|
 &#x2611;||T1.38|Choose course|4|4|
 &#x2611;||T1.42|Edit course settings and roster|10|10|
