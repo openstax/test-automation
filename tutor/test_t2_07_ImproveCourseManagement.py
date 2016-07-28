@@ -24,10 +24,14 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([14651, 14652, 14653, 14655,
-         14656, 14657, 14850, 14658,
-         14660, 14661])  # NOQA
+    str([14653])  # NOQA
 )
+
+"""
+14651, 14652, 14653, 14655,
+         14656, 14657, 14850, 14658,
+         14660, 14661
+"""
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -38,18 +42,23 @@ class TestImproveCourseManagement(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        # self.Teacher = Teacher(
+        #    use_env_vars=True,
+        #    pasta_user=self.ps,
+        #    capabilities=self.desired_capabilities
+        # )
+        self.teacher = Teacher(use_env_vars=True)
+        self.admin = Admin(use_env_vars=True)
 
     def tearDown(self):
         """Test destructor."""
         self.ps.update_job(job_id=str(self.teacher.driver.session_id),
                            **self.ps.test_updates)
+        self.ps.update_job(job_id=str(self.admin.driver.session_id),
+                           **self.ps.test_updates)
         try:
             self.teacher.delete()
+            self.admin.delete()
         except:
             pass
 
@@ -88,6 +97,24 @@ class TestImproveCourseManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
+        self.admin.goto_admin_control()
+        self.admin.sleep(5)
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Stats')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Concept Coach')
+            )
+        ).click()
+
+        assert('/stats/concept_coach' in self.admin.current_url()), \
+            'Not viewing Concept Coach stats'
+
+        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -137,6 +164,18 @@ class TestImproveCourseManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.PARTIAL_LINK_TEXT, "Course Settings and Roster").click()
+        self.teacher.sleep(5)
+
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "Change Period").click()
+        self.teacher.sleep(5)
+
+        first = self.teacher.find(By.XPATH, "//div[@class='period']/table[@class='roster table table-striped table-bordered table-condensed table-hover']/tbody/tr[1]/td[1]")
+        last = self.teacher.find(By.XPATH, "//div[@class='period']/table[@class='roster table table-striped table-bordered table-condensed table-hover']/tbody/tr[1]/td[2]")
 
         self.ps.test_updates['passed'] = True
 
