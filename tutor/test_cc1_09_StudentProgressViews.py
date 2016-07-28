@@ -41,6 +41,7 @@ class TestStudentProgressViews(unittest.TestCase):
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
+        self.student.login()
 
     def tearDown(self):
         """Test destructor."""
