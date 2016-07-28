@@ -2,54 +2,70 @@ Tutor Automation Project
 ========================
 Status:
 -------
-Finished?|Epic|Epic Name|Notes
-:-------:|----|---------|-----
- |CC1.05|CNX Navigation|
- |CC1.06|Concept Coach Widget Mechanics and Infrastructure|
- |CC1.07|Student Registration, Enrollment, Login and Authentication|
- |CC1.08|Students Work Assignments|
- |CC1.09|Student Progress Views|
- |CC1.10|Admin and Teacher Course Setup|
- |CC1.11|Teacher Login and Authentication|
- |CC1.12|Delivering Assignments|
- |CC1.13|Teacher Views|
- |CC1.14|Training and Supporting Teachers and Students|
- |CC1.15|OpenStax Metrics|
- |CC2.08|Improves Scores Reporting|
- |CC2.09|Improve Login, Registration, Enrollment|
- |CC2.11|Improve Question Management|
- |CC2.18|Guide, Monitor, Support &amp; Train Users|
- |T1.13|View the calendar dashboard|In progress
- |T1.14|Create a reading|In progress
- |T1.16|Create a homework|In progress
- |T1.18|Create an external assignment|In progress
- |T1.21|Create an event|In progress
-&#x2611;|T1.22|View class performance|
-&#x2611;|T1.23|View class scores|
- |T1.27|Tutor works with CNX|
- |T1.28|Work a reading|In progress
- |T1.34|Account management|
- |T1.35|Contract controls|In progress
- |T1.36|User login|
-&#x2611;|T1.37|Account maintenance|
-&#x2611;|T1.38|Choose course|
- |T1.42|Edit course settings and roster|In progress
-&#x2611;|T1.45|View the list dashboard|
- |T1.48|Work an external assignment|In progress
-&#x2611;|T1.50|View student performance|
-&#x2611;|T1.55|Practice|
- |T1.57|Course maintenance|
-&#x2611;|T1.58|Manage ecosystems|
- |T1.59|Manage districts, schools, and courses|
-&#x2611;|T1.68|Generate reports|
- |T1.71|Work a homework|In progress
- |T2.05|Analyze College Workflow|
- |T2.07|Improve Course Management|
- |T2.08|Improve Scores Reporting|
- |T2.09|Improve Login, Registration, Enrollment|
- |T2.10|Improve Assignment Management|
- |T2.11|Question Work: Faculty Reviews, Excludes, Edits, Creates Assignments|
- |T2.12|Create New Question &amp; Assignment Types|
- |T2.13|Simplify &amp; Improve Readings|
- |T2.14|Improve Practice and Forecast|
- |T2.18|Guide, Monitor, Support &amp; Train Users|
+Finished?|Epic|Epic Name|Started|Total Cases|Notes
+:-------:|----|---------|------:|----------:|-----
+ |CC1.01|Recruiting Teachers|0|21|
+&#x2611;|CC1.02|Wise Wire and OpenStax Content Generation|0|0|No automation required
+ |CC1.03|Content Preparation and Import|0|10|
+ |CC1.04|Exercise Editing and QA|0|30|
+ |CC1.05|CNX Navigation|0|6|
+ |CC1.06|Concept Coach Widget Mechanics and Infrastructure|0|3|
+ |CC1.07|Student Registration, Enrollment, Login and Authentication|0|19|
+ |CC1.08|Students Work Assignments|0|13|
+ |CC1.09|Student Progress Views|0|5|
+ |CC1.10|Admin and Teacher Course Setup|0|17|
+ |CC1.11|Teacher Login and Authentication|0|3|
+ |CC1.12|Delivering Assignments|0|6|
+ |CC1.13|Teacher Views|0|14|
+ |CC1.14|Training and Supporting Teachers and Students|0|11|
+ |CC1.15|OpenStax Metrics|0|1|
+&#x2611;|CC1.16|Concept Coach Pilots|0|0|No automation required
+&#x2611;|CC1.17|Hot Fixes|0|0|No automation required
+&#x2611;|CC2.03|Gain Accessibility Compliance|0|0|No automation required
+ |CC2.08|Improves Scores Reporting|0|13|
+ |CC2.09|Improve Login, Registration, Enrollment|0|7|
+ |CC2.11|Improve Question Management|0|6|
+ |CC2.18|Guide, Monitor, Support &amp; Train Users|0|3|
+ |T1.13|View the calendar dashboard|0|14|In progress
+ |T1.14|Create a reading|0|36|In progress
+ |T1.16|Create a homework|0|57|In progress
+ |T1.18|Create an external assignment|0|32|In progress
+ |T1.21|Create an event|0|21|In progress
+ |T1.22|View class performance|0|8|
+ |T1.23|View class scores|0|23|
+ |T1.27|Tutor works with CNX|0|2|
+ |T1.28|Work a reading|0|21|In progress
+ |T1.34|Account management|0|23|
+ |T1.35|Contract controls|0|11|In progress
+ |T1.36|User login|0|9|
+ |T1.37|Account maintenance|0|7|
+ |T1.38|Choose course|0|4|
+ |T1.42|Edit course settings and roster|0|10|In progress
+ |T1.45|View the list dashboard|0|13|
+ |T1.48|Work an external assignment|0|6|In progress
+ |T1.50|View student performance|0|10|
+ |T1.55|Practice|0|14|
+ |T1.57|Course maintenance|0|5|
+ |T1.58|Manage ecosystems|0|25|
+ |T1.59|Manage districts, schools, and courses|0|20|
+ |T1.68|Generate reports|0|1|
+ |T1.71|Work a homework|0|24|In progress
+&#x2611;|T2.01|Generate &amp; Import Content for College Physics, Bio, Sociology|0|0|No automation required
+&#x2611;|T2.02|Research: Analyzing Data, Emerging Insights|0|0|No automation required
+&#x2611;|T2.03|Research: Electronic Consent|0|0|No automation required
+&#x2611;|T2.04|Gain Accessibility Compliance|0|0|No automation required
+ |T2.05|Analyze College Workflow|0|4|
+ |T2.07|Improve Course Management|0|9|
+ |T2.08|Improve Scores Reporting|0|12|
+ |T2.09|Improve Login, Registration, Enrollment|0|29|
+ |T2.10|Improve Assignment Management|0|19|
+ |T2.11|Question Work: Faculty Reviews, Excludes, Edits, Creates Assignments|0|46|
+ |T2.12|Create New Question &amp; Assignment Types|0|5|
+ |T2.13|Simplify &amp; Improve Readings|0|2|
+ |T2.14|Improve Practice and Forecast|0|3|
+&#x2611;|T2.15|Faculty Recruitment|0|0|No automation required
+&#x2611;|T2.16|Conduct Spring 2016 College Research Pilots|0|0|No automation required
+&#x2611;|T2.17|Involve Users in Building Tutor|0|0|No automation required
+ |T2.18|Guide, Monitor, Support &amp; Train Users|0|5|
+&#x2611;|T2.19|Create Tutor Business Model|0|0|No automation required
+ | |Total Cases:|0|638| 
