@@ -56,15 +56,17 @@ class TestWorkAHomework(unittest.TestCase):
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
-        self.teacher.driver = self.student.driver
         self.wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
         self.teacher.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.student.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.student.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
+            self.teacher = None
             self.student.delete()
         except:
             pass
@@ -80,7 +82,6 @@ class TestWorkAHomework(unittest.TestCase):
         Expected Result:
         The user is presented with the first question of the homework
         assignment
-
         """
         self.ps.test_updates['name'] = 't1.71.001' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -121,6 +122,7 @@ class TestWorkAHomework(unittest.TestCase):
                 (By.XPATH, '//div[contains(@class,"question-stem")]')
             )
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8363 - 002 - Student | Hover over the information icon to view the
@@ -179,6 +181,7 @@ class TestWorkAHomework(unittest.TestCase):
         ActionChains(self.student.driver).move_to_element(icon).perform()
         self.student.driver.find_element(
             By.XPATH, '//div[contains(@id,"task-details-popover")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8364 - 003 - Student | Navigate between questions using the
@@ -236,6 +239,7 @@ class TestWorkAHomework(unittest.TestCase):
         ).click()
         self.student.driver.find_element(
             By.XPATH, '//div[@data-question-number="2"]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8365 - 004 - Student | Inputting a free response activates the
@@ -387,6 +391,7 @@ class TestWorkAHomework(unittest.TestCase):
         )
         self.student.driver.find_element(
             By.XPATH, '//div[@class="answer-letter"]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8367 - 006 - Student | Selecting a multiple choice answer activates
@@ -472,6 +477,7 @@ class TestWorkAHomework(unittest.TestCase):
                 (By.XPATH, '//button/span[contains(text(),"Submit")]')
             )
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8368 - 007 - Student | Submit a multiple choice answer
@@ -567,6 +573,7 @@ class TestWorkAHomework(unittest.TestCase):
         # non immediate freedback goes straigt to the next question
         self.student.driver.find_element(
             By.XPATH, '//div[@data-question-number="2"]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8369 - 008 - Student | Verify the free response saved
@@ -579,7 +586,6 @@ class TestWorkAHomework(unittest.TestCase):
         enter a free response into the free response text box
         Click on the next breadcrumb to get to the next assessment
         Click back to the original assessment
-
 
         Expected Result:
         The free response on the original assessment is saved
@@ -735,6 +741,7 @@ class TestWorkAHomework(unittest.TestCase):
             By.XPATH, '//div[contains(@data-reactid,"option-0")]' +
             '//div[contains(@class,"answer-checked")]'
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8371 - 010 - Student | Verify the assignment progress changed
@@ -744,7 +751,7 @@ class TestWorkAHomework(unittest.TestCase):
 
         Steps:
         If the assessment has a free response text box,
-        enter a free response into the free response text box
+            enter a free response into the free response text box
         Click "Answer"
         If the assessment has multiple choices, select a multiple choice answer
         Click "Submit"
@@ -752,7 +759,7 @@ class TestWorkAHomework(unittest.TestCase):
 
         Expected Result:
         The user returns to dashboard
-        assignment progress shows the number of questions answered
+        Assignment progress shows the number of questions answered
         """
         self.ps.test_updates['name'] = 't1.71.010' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -841,6 +848,7 @@ class TestWorkAHomework(unittest.TestCase):
             '//span[contains(text(),"%s/%s answered")]' %
             (stop_point, len(sections - 1))
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8372 - 011 - Student | Answer all assessments in an assignment and
@@ -933,6 +941,7 @@ class TestWorkAHomework(unittest.TestCase):
             By.XPATH, '//div[contains(@class,"completed-message")]')
         self.student.driver.find_element(
             By.XPATH, '//h1[contains(text(),"You are done")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8373 - 012 - Student | Before the due date, change a mutliple
@@ -1080,7 +1089,7 @@ class TestWorkAHomework(unittest.TestCase):
         Steps:
         Click on a homework assignment on the list dashboard
         If the assessment has a free response text box
-        enter a free response into the free response text box
+            enter a free response into the free response text box
         Click "Answer"
         If the assessment has multiple choices, select a multiple choice answer
         Click "Submit"
@@ -1178,6 +1187,7 @@ class TestWorkAHomework(unittest.TestCase):
             By.XPATH, "//a[contains(text(),'Back to Dashboard')]").click()
         assert('list' in self.student.current_url()), \
             'Not back at dashboard'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8375 - 014 - Student | A completed homework shows "You are done" in
@@ -1189,7 +1199,7 @@ class TestWorkAHomework(unittest.TestCase):
         Steps:
         Click on a homework assignment on the list dashboard
         If the assessment has a free response text box,
-        enter a free response into the free response text box
+            enter a free response into the free response text box
         Click "Answer"
         If the assessment has multiple choices, select a multiple choice answer
         Click "Submit"
@@ -1205,8 +1215,9 @@ class TestWorkAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
-        # self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True
 
     # Case C8376 - 015 - Student | A completed homework should show X/X
     # answered in the dashboard
@@ -1327,8 +1338,9 @@ class TestWorkAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
-        # self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True
 
     # Case C8378 - 017 - Student | A homework may have a Personalized
     # assessment
@@ -1354,8 +1366,9 @@ class TestWorkAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
-        # self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True
 
     # Case C8379 - 018 - Student | Start a late homework assignment
     @pytest.mark.skipif(str(8379) not in TESTS, reason='Excluded')
@@ -1575,6 +1588,7 @@ class TestWorkAHomework(unittest.TestCase):
         ).click()
         self.student.driver.find_element(
             By.XPATH, '//div[contains(@class,"question-feedback-content")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8382 - 021 - Student | Correctness is displayed in the breadcrumbs
@@ -1664,6 +1678,7 @@ class TestWorkAHomework(unittest.TestCase):
             '//span[contains(@class,"breadcrumb")]' +
             '//i[contains(@class,"correct") or contains(@class,"incorrect")]'
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8383 - 022 - Student | Start an open homework assignment with
@@ -1811,6 +1826,7 @@ class TestWorkAHomework(unittest.TestCase):
         ).click()
         self.student.driver.find_element(
             By.XPATH, '//button/span[contains(text(),"Next Question")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8385 - 024 - Student | Answer feedback is presented for a homework
@@ -1906,6 +1922,7 @@ class TestWorkAHomework(unittest.TestCase):
         ).click()
         self.student.driver.find_element(
             By.XPATH, '//div[contains(@class,"question-feedback-content")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8386 - 025 - Student | Correctness displayed in the breadcrumbs for
@@ -2004,4 +2021,5 @@ class TestWorkAHomework(unittest.TestCase):
             '//span[contains(@class,"breadcrumb")]' +
             '//i[contains(@class,"correct") or contains(@class,"incorrect")]'
         )
+
         self.ps.test_updates['passed'] = True
