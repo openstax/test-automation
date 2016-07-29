@@ -12,6 +12,7 @@ from random import randint  # NOQA
 from selenium.webdriver.common.by import By  # NOQA
 from selenium.webdriver.support import expected_conditions as expect  # NOQA
 from staxing.assignment import Assignment  # NOQA
+from selenium.common.exceptions import NoSuchElementException
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher, Student  # NOQA
@@ -29,7 +30,7 @@ TESTS = os.getenv(
     #      14680, 14681, 14682, 14683, 14801,
     #      14802, 14803, 14804, 14805, 14685,
     #      14686, 14687, 14688, 14689])  # NOQA
-    str([14800])
+    str([14683])
 )
 
 
@@ -43,6 +44,14 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
+        )
+        self.student = Student(
+            username='student01',
+            password='password',
+            site='https://tutor-qa.openstax.org',
+            existing_driver=self.teacher.driver,
             # pasta_user=self.ps,
             # capabilities=self.desired_capabilities
         )
@@ -378,21 +387,57 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.009', '14683']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
+        # create an open event
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
         assignment_name = "event_to_delete"
+        events = self.teacher.driver.find_elements(
+            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='reading',
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='event',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
                                         'periods': {'all': (begin, end)},
-                                        'reading_list': ['ch1'],
-                                        'status': 'draft'
-                                     })
-
-
+                                        'status': 'publish'
+                                    })
+        # click on the assignment
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(@class,"edit-assignment")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button[contains(@class,"delete-link")]')
+            )
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(text(),"Yes")]').click()
+        assert('calendar' in self.teacher.current_url()),\
+            'not back at calendar after deleting an event'
+        self.teacher.driver.get(self.teacher.current_url())
+        self.teacher.page.wait_for_page_load()
+        events_new = self.teacher.driver.find_elements(
+            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
+        assert(len(events) == len(events_new)),\
+            'unopen event not deleted'
         self.ps.test_updates['passed'] = True
 
     # 14801 - 010 - Student | A deleted open assignment that the student has
@@ -486,6 +531,63 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        assignment_name = "event_to_delete"
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=10)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='event',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'status': 'publish'
+                                    })
+        # click on the assignment
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(@class,"edit-assignment")]')
+            )
+        ).click()
+        # change date
+        today = datetime.date.today()
+        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(@class,"-due-date")]' +
+            '//div[contains(@class,"datepicker__input")]').click()
+        # get calendar to correct month
+        month = today.month
+        year = today.year
+        while month != int(closes_on[:2]) or year != int(closes_on[6:]):
+            self.teacher.driver.find_element(
+                By.XPATH, '//a[contains(@class,"navigation--next")]').click()
+            if month != 12:
+                month += 1
+            else:
+                month = 1
+                year += 1
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(@class,"datepicker__day")' +
+            'and contains(text(),"' + (closes_on[3:5]).lstrip('0') + '")]'
+        ).click()
+        time.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.CLASS_NAME, 'assign-to-label').click()
 
         self.ps.test_updates['passed'] = True
 
