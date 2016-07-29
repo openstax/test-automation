@@ -7,21 +7,21 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
-from selenium.webdriver.common.keys import Keys  # NOQA
+from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+# from staxing.assignment import Assignment
+from selenium.webdriver.common.keys import Keys
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Admin  # NOQA
+from staxing.helper import Admin
 
 # for template command line testing only
 # - replace list_of_cases on line 31 with all test case IDs in this file
 # - replace CaseID on line 52 with the actual cass ID
 # - delete lines 17 - 22
 list_of_cases = 0
-CaseID = 0
+CaseID = 'skip'
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -32,14 +32,14 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8316, 8317, 8318, 8319, 8320,
+    str([
+        8316, 8317, 8318, 8319, 8320,
         8321, 8322, 8323, 8324, 8325,
         8326, 8327, 8328, 8329, 8330,
         8331, 8332, 8333, 8334, 8335,
-        8336, 8337, 8338, 8339, 8340])  # NOQA
+        8336, 8337, 8338, 8339, 8340
+    ])
 )
-
-# 8332, 8333, deletes time out
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -50,26 +50,26 @@ class TestEpicName(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        # self.Teacher = Teacher(
-        #    use_env_vars=True,
-        #    pasta_user=self.ps,
-        #    capabilities=self.desired_capabilities
-        # )
-
-        self.admin = Admin(use_env_vars=True)
+        self.admin = Admin(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
         self.admin.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.admin.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.admin.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.admin.delete()
         except:
             pass
 
     # Case C8316 - 001 - Admin | Add a new course offering
-    @pytest.mark.skipif(str(8316) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8316) not in TESTS, reason='Excluded')
     def test_admin_add_a_new_course_offering(self):
         """Add a new course offering.
 
@@ -90,7 +90,6 @@ class TestEpicName(unittest.TestCase):
         Enter text into the 'Webview url' text box
         Enter text into the 'Default course name' text box
         Click the 'Save' button
-
 
         Expected Result:
         The user is returned to the Catalog Offerings page and the text
@@ -152,12 +151,10 @@ class TestEpicName(unittest.TestCase):
         assert('catalog_offerings' in self.admin.current_url()), \
             'Not in catalog offerings'
 
-        self.admin.sleep(10)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8317 - 002 - Admin | Edit the course offering book information
-    @pytest.mark.skipif(str(8317) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8317) not in TESTS, reason='Excluded')
     def test_admin_edit_the_course_offering_book_info(self):
         """Edit the course offering book information.
 
@@ -219,12 +216,10 @@ class TestEpicName(unittest.TestCase):
             'Automation' + change)
         self.admin.find(By.NAME, 'commit').click()
 
-        self.admin.sleep(5)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8318 - 003 - Admin | Edit the course offering ecosystem
-    @pytest.mark.skipif(str(8318) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8318) not in TESTS, reason='Excluded')
     def test_admin_edit_the_course_offering_ecosystem(self):
         """Edit the course offering ecosystem.
 
@@ -298,7 +293,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8319 - 004 - Admin | Edit the course offering course type
-    @pytest.mark.skipif(str(8319) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8319) not in TESTS, reason='Excluded')
     def test_admin_edit_the_course_offering_course_type(self):
         """Edit the course offering course type.
 
@@ -353,12 +348,10 @@ class TestEpicName(unittest.TestCase):
         self.admin.find(By.ID, 'offering_is_concept_coach').click()
         self.admin.find(By.NAME, 'commit').click()
 
-        self.admin.sleep(5)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8320 - 005 - Admin | Edit the course offering CNX links
-    @pytest.mark.skipif(str(8320) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8320) not in TESTS, reason='Excluded')
     def test_admin_edit_the_course_offering_cnx_links(self):
         """Edit the course offering CNX links.
 
@@ -418,12 +411,10 @@ class TestEpicName(unittest.TestCase):
             'Automation' + change + '.com')
         self.admin.find(By.NAME, 'commit').click()
 
-        self.admin.sleep(5)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8321 - 006 - Admin | Edit the course offering's default course name
-    @pytest.mark.skipif(str(8321) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8321) not in TESTS, reason='Excluded')
     def test_admin_edit_the_course_offering_default_name(self):
         """Edit the course offering's default course name.
 
@@ -479,12 +470,10 @@ class TestEpicName(unittest.TestCase):
             'Automation' + change)
         self.admin.find(By.NAME, 'commit').click()
 
-        self.admin.sleep(5)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8322 - 007 - Admin | Import an ecosystem
-    @pytest.mark.skipif(str(8322) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8322) not in TESTS, reason='Excluded')
     def test_admin_import_an_ecosystem(self):
         """Import an ecosystem.
 
@@ -534,9 +523,20 @@ class TestEpicName(unittest.TestCase):
         assert('new' in self.admin.current_url()), \
             'Not creating new ecosystem'
 
-        self.admin.find(By.ID, 'ecosystem_manifest').send_keys('/Users/openstaxii/downloads/Biology_For_AP_Courses_d52e93f4-8653-4273-86da-3850001c0786_3.14_-_2015-09-29_13_37_55_UTC.yml')  # NOQA
-        self.admin.find(By.ID, 'ecosystem_comments').send_keys(
-            'Automated test upload')
+        self.admin.find(
+            By.ID,
+            'ecosystem_manifest'
+        ).send_keys(
+            '/Users/openstaxii/downloads/Biology_For_AP_Courses_' +
+            'd52e93f4-8653-4273-86da-3850001c0786_3.14_-_' +
+            '2015-09-29_13_37_55_UTC.yml'
+        )
+        self.admin.find(
+            By.ID,
+            'ecosystem_comments'
+        ).send_keys(
+            'Automated test upload'
+        )
         self.admin.find(By.NAME, 'commit').click()
 
         self.admin.sleep(10)
@@ -550,7 +550,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8323 - 008 - Content Analyst | Import an ecosystem
-    @pytest.mark.skipif(str(8323) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8323) not in TESTS, reason='Excluded')
     def test_content_import_an_ecosystem(self):
         """Import an ecosystem.
 
@@ -613,7 +613,14 @@ class TestEpicName(unittest.TestCase):
         assert('new' in self.admin.current_url()), \
             'Not creating new ecosystem'
 
-        self.admin.find(By.ID, 'ecosystem_manifest').send_keys('/Users/openstaxii/downloads/Biology_For_AP_Courses_d52e93f4-8653-4273-86da-3850001c0786_3.14_-_2015-09-29_13_37_55_UTC.yml')  # NOQA
+        self.admin.find(
+            By.ID,
+            'ecosystem_manifest'
+        ).send_keys(
+            '/Users/openstaxii/downloads/Biology_For_AP_Courses_' +
+            'd52e93f4-8653-4273-86da-3850001c0786_3.14_-_' +
+            '2015-09-29_13_37_55_UTC.yml'
+        )
         self.admin.find(By.ID, 'ecosystem_comments').send_keys(
             'Automated test upload')
         self.admin.find(By.NAME, 'commit').click()
@@ -629,7 +636,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8324 - 009 - Admin | Edit an ecosystem comment
-    @pytest.mark.skipif(str(8324) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8324) not in TESTS, reason='Excluded')
     def test_admin_edit_an_ecosystem_comment(self):
         """Edit an ecosystem comment.
 
@@ -674,12 +681,11 @@ class TestEpicName(unittest.TestCase):
 
         self.admin.find(By.NAME, 'ecosystem[comments]').send_keys('|auto test')
         self.admin.find(By.NAME, 'commit').click()
-        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
     # Case C8325 - 010 - Content Analyst | Edit an ecosystem comment
-    @pytest.mark.skipif(str(8325) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8325) not in TESTS, reason='Excluded')
     def test_content_edit_an_ecosystem_comment(self):
         """Edit an ecosystem comment.
 
@@ -736,12 +742,11 @@ class TestEpicName(unittest.TestCase):
 
         self.admin.find(By.NAME, 'ecosystem[comments]').send_keys('|auto test')
         self.admin.find(By.NAME, 'commit').click()
-        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
     # Case C8326 - 011 - Admin | Access the book content archive
-    @pytest.mark.skipif(str(8326) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8326) not in TESTS, reason='Excluded')
     def test_admin_access_the_book_content_archive(self):
         """Access the book content archive.
 
@@ -793,7 +798,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8327 - 012 - Content Analyst | Access the book content archive
-    @pytest.mark.skipif(str(8327) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8327) not in TESTS, reason='Excluded')
     def test_content_access_the_book_content_archive(self):
         """Access the book content archive.
 
@@ -857,15 +862,10 @@ class TestEpicName(unittest.TestCase):
 
         self.admin.sleep(10)
 
-        '''
-        Opens the archive in a new tab, window is focused on new tab,
-        but selenium thinks that its still in the original tab
-        '''
-
         self.ps.test_updates['passed'] = True
 
     # Case C8328 - 013 - Admin | Display the book UUID
-    @pytest.mark.skipif(str(8328) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8328) not in TESTS, reason='Excluded')
     def test_admin_display_the_book_uuid(self):
         """Display the book UUID.
 
@@ -909,12 +909,11 @@ class TestEpicName(unittest.TestCase):
         self.admin.find(By.LINK_TEXT, 'Show UUID').click()
 
         self.admin.find(By.CLASS_NAME, 'popover-content')
-        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
     # Case C8329 - 014 - Content Analyst | Display the book UUID
-    @pytest.mark.skipif(str(8329) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8329) not in TESTS, reason='Excluded')
     def test_content_display_the_book_uuid(self):
         """Display the book UUID.
 
@@ -971,12 +970,11 @@ class TestEpicName(unittest.TestCase):
         self.admin.find(By.LINK_TEXT, 'Show UUID').click()
 
         self.admin.find(By.CLASS_NAME, 'popover-content')
-        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
     # Case C8330 - 015 - Admin | Download an ecosystem manifest
-    @pytest.mark.skipif(str(8330) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8330) not in TESTS, reason='Excluded')
     def test_admin_download_an_ecosystem_manifest(self):
         """Download an ecosystem manifest.
 
@@ -1019,15 +1017,19 @@ class TestEpicName(unittest.TestCase):
 
         self.admin.find(By.LINK_TEXT, 'Download Manifest').click()
         self.admin.sleep(5)
-        pf = os.path.isfile(os.path.expanduser("~/Downloads/College_Physics_031da8d3-b525-429c-80cf-6c8ed997733a.yml"))  # NOQA
+        pf = os.path.isfile(
+            os.path.expanduser(
+                "~/Downloads/College_Physics_031da8d3-b525-" +
+                "429c-80cf-6c8ed997733a.yml"
+            )
+        )
 
-        assert(pf is True), \
-            "Can't find downloaded manifest"
+        assert(pf), "Can't find downloaded manifest"
 
         self.ps.test_updates['passed'] = True
 
     # Case C8331 - 016 - Content Analyst | Download an ecosystem manifest
-    @pytest.mark.skipif(str(8331) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8331) not in TESTS, reason='Excluded')
     def test_content_download_an_ecosystem_manifest(self):
         """Download an ecosystem manifest.
 
@@ -1083,17 +1085,21 @@ class TestEpicName(unittest.TestCase):
 
         self.admin.find(By.LINK_TEXT, 'Download Manifest').click()
         self.admin.sleep(5)
-        pf = os.path.isfile(os.path.expanduser("~/Downloads/College_Physics_031da8d3-b525-429c-80cf-6c8ed997733a.yml"))  # NOQA
+        pf = os.path.isfile(
+            os.path.expanduser(
+                "~/Downloads/College_Physics_031da8d3-b525-429c-80cf-" +
+                "6c8ed997733a.yml"
+            )
+        )
 
-        assert(pf is True), \
-            "Can't find downloaded manifest"
+        assert(pf), "Can't find downloaded manifest"
 
         self.ps.test_updates['passed'] = True
 
     # Case C8332 - 017 - Admin | Delete an unused ecosystem
-    @pytest.mark.skipif(str(8332) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8332) not in TESTS, reason='Excluded')
     def test_admin_delete_an_unused_ecosystem(self):
-        r"""Delete an unused ecosystem.
+        """Delete an unused ecosystem.
 
         Steps:
         Open the drop down menu by clicking on the user menu link
@@ -1106,7 +1112,7 @@ class TestEpicName(unittest.TestCase):
 
         Expected Result:
         Ecosystem is successfully deleted.
-
+        """
         self.ps.test_updates['name'] = 't1.58.017' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -1118,6 +1124,8 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1137,9 +1145,9 @@ class TestEpicName(unittest.TestCase):
         lst = self.admin.driver.find_elements_by_link_text('Delete')
         for link in lst:
             if '334' in link.get_attribute("href"):
-                #link.click()
+                # link.click()
                 delete = link
-        #self.admin.find(By.LINK_TEXT, 'Delete').click()
+        # self.admin.find(By.LINK_TEXT, 'Delete').click()
 
         delete.click()
         self.admin.sleep(3)
@@ -1151,13 +1159,11 @@ class TestEpicName(unittest.TestCase):
         '''
 
         self.ps.test_updates['passed'] = True
-        """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
     # Case C8333 - 018 - Content Analyst | Delete an unused ecosystem
-    @pytest.mark.skipif(str(8333) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8333) not in TESTS, reason='Excluded')
     def test_content_delete_an_unused_ecosystem_(self):
-        r"""Delete an unused ecosystem.
+        """Delete an unused ecosystem.
 
         Steps:
         Open the drop down menu by clicking on the user menu link containing
@@ -1169,7 +1175,7 @@ class TestEpicName(unittest.TestCase):
 
         Expected Result:
         Ecosystem is successfully deleted.
-
+        """
         self.ps.test_updates['name'] = 't1.58.018' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -1181,6 +1187,8 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.admin.wait.until(
             expect.visibility_of_element_located(
                 (
@@ -1219,11 +1227,9 @@ class TestEpicName(unittest.TestCase):
         '''
 
         self.ps.test_updates['passed'] = True
-        """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
     # Case C8334 - 019 - Admin | Search for a tag
-    @pytest.mark.skipif(str(8334) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8334) not in TESTS, reason='Excluded')
     def test_admin_search_for_a_tag(self):
         """Search for a tag.
 
@@ -1270,12 +1276,11 @@ class TestEpicName(unittest.TestCase):
 
         assert('&query=bio&commit=Search' in self.admin.current_url()), \
             'Not viewing search results'
-        self.admin.sleep(10)
 
         self.ps.test_updates['passed'] = True
 
     # Case C8335 - 020 - Admin | Edit a tag
-    @pytest.mark.skipif(str(8335) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8335) not in TESTS, reason='Excluded')
     def test_admin_edit_a_tag(self):
         """Edit a tag.
 
@@ -1347,12 +1352,10 @@ class TestEpicName(unittest.TestCase):
         assert('tags' in self.admin.current_url()), \
             'Not at the tags page'
 
-        self.admin.sleep(10)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8336 - 021 - Admin | Search for a job by ID
-    @pytest.mark.skipif(str(8336) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8336) not in TESTS, reason='Excluded')
     def test_admin_search_for_a_job_by_id(self):
         """Search for a job by ID.
 
@@ -1393,12 +1396,10 @@ class TestEpicName(unittest.TestCase):
         assert('004eefa9-6d0e-4d7d-b708-9e4106a6bd30' in page), \
             'Thing not in results'
 
-        self.admin.sleep(5)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8337 - 022 - Admin | Search for a job by status
-    @pytest.mark.skipif(str(8337) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8337) not in TESTS, reason='Excluded')
     def test_admin_search_for_a_job_by_status(self):
         """Search for a job by status.
 
@@ -1444,12 +1445,11 @@ class TestEpicName(unittest.TestCase):
         self.admin.sleep(5)
         self.admin.find(By.ID, 'filter_id').clear()
         self.admin.find(By.ID, 'filter_id').send_keys('started')
-        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
     # Case C8338 - 023 - Admin | Search for a job by progress percentage
-    @pytest.mark.skipif(str(8338) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8338) not in TESTS, reason='Excluded')
     def test_admin_search_for_a_job_by_progress_percentage(self):
         """Search for a job by progress percentage.
 
@@ -1509,7 +1509,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8339 - 024 - Admin | Filter jobs by status
-    @pytest.mark.skipif(str(8339) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8339) not in TESTS, reason='Excluded')
     def test_admin_filter_jobs_by_status(self):
         """Filter jobs by status.
 
@@ -1582,12 +1582,11 @@ class TestEpicName(unittest.TestCase):
         self.admin.find(By.LINK_TEXT, 'unknown').click()
         assert('unknown' in self.admin.current_url()), \
             'Not viewing unknown jobs'
-        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
     # Case C8340 - 025 - Admin | View a job report
-    @pytest.mark.skipif(str(8340) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8340) not in TESTS, reason='Excluded')
     def test_admin_view_a_job_report(self):
         """View a job report.
 
@@ -1631,6 +1630,5 @@ class TestEpicName(unittest.TestCase):
         url = self.admin.current_url()
         assert('jobs/008e4642-85a0-4fff-86ed-4f1e7be02233' in url), \
             'Not at the jobs page'
-        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True

@@ -7,13 +7,13 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+# from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Admin  # NOQA
+from staxing.helper import Admin
 
 
 basic_test_env = json.dumps([{
@@ -25,11 +25,10 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8315])  # NOQA
+    str([
+        8311, 8312, 8313, 8314, 8315
+    ])
 )
-"""
-8311, 8312, 8313, 8314, 8315
-"""
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -40,12 +39,11 @@ class TestCourseMaintenance(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        # self.admin = Admin(
-        #    use_env_vars=True,
-        #    pasta_user=self.ps,
-        #    capabilities=self.desired_capabilities
-        # )
-        self.admin = Admin(use_env_vars=True)
+        self.admin = Admin(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
         self.admin.login()
         self.admin.goto_admin_control()
         self.admin.sleep(5)
@@ -60,7 +58,7 @@ class TestCourseMaintenance(unittest.TestCase):
             pass
 
     # Case C8311 - 001 - Admin | Import courses from Salesforece
-    @pytest.mark.skipif(str(8311) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8311) not in TESTS, reason='Excluded')
     def test_admin_import_courses_from_salesforce(self):
         """Import courses from Salesforce.
 
@@ -76,7 +74,7 @@ class TestCourseMaintenance(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
     # Case C8312 - 002 - Admin | Update Salesforce Staistics
-    @pytest.mark.skipif(str(8312) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8312) not in TESTS, reason='Excluded')
     def test_admin_update_salesforce_statistice(self):
         """Update Salesforce statistics.
 
@@ -92,7 +90,7 @@ class TestCourseMaintenance(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
     # Case C8313 - 003 - Admin | Exclude assesments from all courses
-    @pytest.mark.skipif(str(8313) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8313) not in TESTS, reason='Excluded')
     def test_admin_exclude_assesments_from_all_courses(self):
         """Exclude assesments from all courses.
 
@@ -103,7 +101,7 @@ class TestCourseMaintenance(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
     # Case C8314 - 004 - Admin | Add a system notification
-    @pytest.mark.skipif(str(8314) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8314) not in TESTS, reason='Excluded')
     def test_admin_add_a_system_notification(self):
         """Add a system notification.
 
@@ -146,19 +144,16 @@ class TestCourseMaintenance(unittest.TestCase):
         notif = self.admin.driver.find_elements_by_xpath(
             "//div[@class='col-xs-12']")
 
-        index = 0
-
-        for n in notif:
+        for index, n in enumerate(notif):
             if n.text.find('automated test') >= 0:
                 self.admin.driver.find_elements_by_xpath(
                     "//a[@class='btn btn-warning']")[index].click()
                 self.admin.driver.switch_to_alert().accept()
                 self.ps.test_updates['passed'] = True
                 break
-            index += 1
 
     # Case C8315 - 005 - Admin | Delete a system notification
-    @pytest.mark.skipif(str(8315) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8315) not in TESTS, reason='Excluded')
     def test_admin_delete_a_system_notification(self):
         """Delete a system notification.
 
@@ -201,15 +196,12 @@ class TestCourseMaintenance(unittest.TestCase):
         notif = self.admin.driver.find_elements_by_xpath(
             "//div[@class='col-xs-12']")
 
-        index = 0
-
-        for n in notif:
+        for index, n in enumerate(notif):
             if n.text.find('automated test') >= 0:
                 self.admin.driver.find_elements_by_xpath(
                     "//a[@class='btn btn-warning']")[index].click()
                 self.admin.driver.switch_to_alert().accept()
                 break
-            index += 1
 
         deleted = True
 

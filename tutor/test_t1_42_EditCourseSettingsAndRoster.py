@@ -7,13 +7,13 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
+# from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.common.keys import Keys
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher, Admin  # NOQA
+from staxing.helper import Teacher, Admin
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -24,8 +24,10 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8258, 8259, 8260, 8261, 8262,
-         8263, 8264, 8265, 8266, 8267])  # NOQA
+    str([
+        8258, 8259, 8260, 8261, 8262,
+        8263, 8264, 8265, 8266, 8267
+    ])
 )
 
 
@@ -38,9 +40,9 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
-            use_env_vars=True  # ,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.teacher.login()
         self.teacher.select_course(appearance='physics')
@@ -54,15 +56,17 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
         except:
             pass
 
     # Case C8258 - 001 - Teacher | Edit the course name
-    @pytest.mark.skipif(str(8258) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8258) not in TESTS, reason='Excluded')
     def test_teacher_edit_the_course_name_8258(self):
         """Edit the course name.
 
@@ -83,11 +87,14 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
 
         # Test steps and verification assertions
         course_name = self.teacher.driver.find_element(
-            By.XPATH, '//div[@class="course-settings-title"]/span').text
+            By.XPATH,
+            '//div[@class="course-settings-title"]/span'
+        ).text
         print(course_name)
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(@class,"edit-course")]' +
-            '//span[contains(text(),"Rename Course")]').click()
+            '//span[contains(text(),"Rename Course")]'
+        ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//input[contains(@class,"form-control")]')
@@ -101,14 +108,16 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[@class="course-settings-title"]' +
-                 '/span[contains(text(),"'+course_name+'_EDIT")]')
+                 '/span[contains(text(),"%s_EDIT")]' % course_name)
             )
         )
         # set it back
         self.teacher.sleep(1)
         self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"edit-course")]' +
-            '//span[contains(text(),"Rename Course")]').click()
+            By.XPATH,
+            '//button[contains(@class,"edit-course")]' +
+            '//span[contains(text(),"Rename Course")]'
+        ).click()
         for _ in range(len('_EDIT')):
             self.teacher.wait.until(
                 expect.element_to_be_clickable(
@@ -122,13 +131,14 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[@class="course-settings-title"]' +
-                 '/span[text()="'+course_name+'"]')
+                 '/span[text()="%s"]' % course_name)
             )
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8259 - 002 - Teacher | Remove an instructor from the course
-    @pytest.mark.skipif(str(8259) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8259) not in TESTS, reason='Excluded')
     def test_teacher_remove_an_instructor_from_a_course_8259(self):
         """Remove an instructor from the course.
 
@@ -147,12 +157,8 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.teacher.logout()
         # add extra instructor through admin first
         admin = Admin(
-            username=os.getenv('ADMIN_USER'),
-            password=os.getenv('ADMIN_PASSWORD'),
-            site='https://tutor-qa.openstax.org',
+            use_env_vars=True,
             existing_driver=self.teacher.driver
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
         )
         admin.login()
         admin.driver.get('https://tutor-qa.openstax.org/admin/courses/1/edit')
@@ -164,7 +170,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
             By.ID, 'course_teacher').send_keys(teacher_name)
         admin.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '//li[contains(text(),"'+teacher_name+'")]')
+                (By.XPATH, '//li[contains(text(),"%s")]' % teacher_name)
             )
         ).click()
         admin.sleep(1)
@@ -206,12 +212,13 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
                 print('added teacher was not found, and not deleted')
                 raise Exception
         deleted_teacher = self.teacher.driver.find_elements(
-            By.XPATH, '//td[contains(text(),"'+teacher_name+'")]')
+            By.XPATH, '//td[contains(text(),"%s")]' % teacher_name)
         assert(len(deleted_teacher) == 0), 'teacher not deleted'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8260 - 003 - Teacher | Remove the last instructor from the course
-    @pytest.mark.skipif(str(8260) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8260) not in TESTS, reason='Excluded')
     def test_teacher_remove_the_last_instructor_from_the_course_8260(self):
         """Remove the last instructor from the course.
 
@@ -233,12 +240,8 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.teacher.logout()
         # add extra instructor through admin first
         admin = Admin(
-            username=os.getenv('ADMIN_USER'),
-            password=os.getenv('ADMIN_PASSWORD'),
-            site='https://tutor-qa.openstax.org',
+            use_env_vars=True,
             existing_driver=self.teacher.driver
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
         )
         admin.login()
         admin.driver.get('https://tutor-qa.openstax.org/admin/courses/1/edit')
@@ -250,7 +253,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
             By.ID, 'course_teacher').send_keys(teacher_name)
         admin.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '//li[contains(text(),"'+teacher_name+'")]')
+                (By.XPATH, '//li[contains(text(),"%s")]' % teacher_name)
             )
         ).click()
         admin.sleep(1)
@@ -292,12 +295,13 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
                 print('added teacher was not found, and not deleted')
                 raise Exception
         deleted_teacher = self.teacher.driver.find_elements(
-            By.XPATH, '//td[contains(text(),"'+teacher_name+'")]')
+            By.XPATH, '//td[contains(text(),"%s")]' % teacher_name)
         assert(len(deleted_teacher) == 0), 'teacher not deleted'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8261 - 004 - Teacher | Add a period
-    @pytest.mark.skipif(str(8261) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8261) not in TESTS, reason='Excluded')
     def test_teacher_add_a_period_8261(self):
         """Add a period.
 
@@ -330,10 +334,11 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.teacher.sleep(1)
         self.teacher.driver.find_element(
             By.XPATH, '//a[contains(text(),"'+period_name+'")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8262 - 005 - Teacher | Rename a period
-    @pytest.mark.skipif(str(8262) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8262) not in TESTS, reason='Excluded')
     def test_teacher_rename_a_period_8262(self):
         """Rename a period.
 
@@ -385,10 +390,11 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.teacher.sleep(1)
         self.teacher.driver.find_element(
             By.XPATH, '//a[contains(text(),"'+period_name+'_EDIT")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8263 - 006 - Teacher | Archive an empty period
-    @pytest.mark.skipif(str(8263) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8263) not in TESTS, reason='Excluded')
     def test_teacher_archive_an_empt_period_8263(self):
         """Archive an empty period.
 
@@ -438,7 +444,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8264 - 007 - Teacher | Archive a non-empty period
-    @pytest.mark.skipif(str(8264) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8264) not in TESTS, reason='Excluded')
     def test_teacher_archive_a_non_empty_period_8264(self):
         """Archive a non-empty period.
 
@@ -487,10 +493,11 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
                     str(x+1) + ']//button//span[contains(text(),"Unarchive")]'
                 ).click()
                 break
+
         self.ps.test_updates['passed'] = True
 
     # Case C8265 - 008 - Teacher | Move a student to another period
-    @pytest.mark.skipif(str(8265) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8265) not in TESTS, reason='Excluded')
     def test_teacher_mover_a_student_to_another_period_8265(self):
         """Move a student to another period.
 
@@ -521,11 +528,12 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.teacher.driver.find_element(
             By.XPATH, '//li/a[contains(text(),"'+period_name+'")]').click()
         self.teacher.driver.find_element(
-            By.XPATH, '//td[contains(text(),"'+student_name+'")]')
+            By.XPATH, '//td[contains(text(),"%s")]' % student_name)
+
         self.ps.test_updates['passed'] = True
 
     # Case C8266 - 009 - Teacher | Drop a student
-    @pytest.mark.skipif(str(8266) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8266) not in TESTS, reason='Excluded')
     def test_teacher_drop_a_student_8266(self):
         """Drop a student.
 
@@ -556,12 +564,13 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         print(student_name)
         self.teacher.driver.find_element(
             By.XPATH, '//div[contains(@class,"dropped-students")]' +
-            '//td[contains(text(),"'+student_name+'")]'
+            '//td[contains(text(),"%s")]' % student_name
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8267 - 010 - Teacher | Readd a dropped student
-    @pytest.mark.skipif(str(8267) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8267) not in TESTS, reason='Excluded')
     def test_teacher_readd_a_dropped_student_8267(self):
         """Readd a dropped student.
 
@@ -599,5 +608,6 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         # check that student was added back
         self.teacher.driver.find_element(
             By.XPATH,
-            '//div[@class="roster"]//td[contains(text(),"'+student_name+'")]')
+            '//div[@class="roster"]//td[contains(text(),"%s")]' % student_name)
+
         self.ps.test_updates['passed'] = True
