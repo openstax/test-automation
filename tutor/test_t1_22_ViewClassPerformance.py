@@ -7,13 +7,13 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+# from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher  # NOQA
+from staxing.helper import Teacher
 
 # for template command line testing only
 # - replace list_of_cases on line 31 with all test case IDs in this file
@@ -31,7 +31,10 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8148, 8149, 8150, 8151, 8152, 8153, 8154, 8155])  # NOQA
+    str([
+        8148, 8149, 8150, 8151, 8152,
+        8153, 8154, 8155
+    ])
 )
 
 
@@ -43,25 +46,26 @@ class TestEpicName(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        # self.Teacher = Teacher(
-        #    use_env_vars=True,
-        #    pasta_user=self.ps,
-        #    capabilities=self.desired_capabilities
-        # )
-        self.teacher = Teacher(use_env_vars=True)
+        self.Teacher = Teacher(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
         self.teacher.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
         except:
             pass
 
     # Case C8148 - 001 - Teacher | View the period Performance Forecast
-    @pytest.mark.skipif(str(8148) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8148) not in TESTS, reason='Excluded')
     def test_teacher_view_the_period_performance_forecast(self):
         """View the period Performance Forecast.
 
@@ -94,13 +98,10 @@ class TestEpicName(unittest.TestCase):
         assert('guide' in self.teacher.current_url()), \
             'Not viewing performance forecast'
 
-        self.teacher.page.wait_for_page_load()
-        self.teacher.sleep(10)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8149 - 002 - Teacher | Info icon shows an explanation of the data
-    @pytest.mark.skipif(str(8149) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8149) not in TESTS, reason='Excluded')
     def test_teacher_info_icon_shows_an_explanation_of_the_data(self):
         """Info icon shows an explanation of the data.
 
@@ -139,11 +140,11 @@ class TestEpicName(unittest.TestCase):
                 (By.CLASS_NAME, 'info-link')
             )
         ).click()
-        self.teacher.sleep(10)
+
         self.ps.test_updates['passed'] = True
 
     # Case C8150 - 003 - Teacher | View the performance color key
-    @pytest.mark.skipif(str(8150) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8150) not in TESTS, reason='Excluded')
     def test_teacher_view_the_performance_color_key(self):
         """View the performance color key.
 
@@ -186,7 +187,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8151 - 004 - Teacher | Return to Dashboard button returns to
     # the calendar
-    @pytest.mark.skipif(str(8151) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8151) not in TESTS, reason='Excluded')
     def test_teacher_return_to_dashboard_button_returns_to_the_calendar(self):
         """Return to Dashboard button returns to the calendar.
 
@@ -231,7 +232,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8152 - 005 - Teacher | Periods tabs are shown
-    @pytest.mark.skipif(str(8152) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8152) not in TESTS, reason='Excluded')
     def test_teacher_period_tabs_are_shown(self):
         """Period tabs are shown.
 
@@ -264,20 +265,13 @@ class TestEpicName(unittest.TestCase):
         assert('guide' in self.teacher.current_url()), \
             'Not viewing performance forecast'
 
-        '''
-        self.teacher.wait.until(
-            expect.visibility_of_element_located((
-                By.CLASS_NAME, 'collapse in')))
-        '''
-
         self.teacher.find(By.CLASS_NAME, 'active')
-        self.teacher.sleep(10)
 
         self.ps.test_updates['passed'] = True
 
     # Case C8153 - 006 - Teacher | A period with zero answers does not
     # show section breakdowns
-    @pytest.mark.skipif(str(8153) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8153) not in TESTS, reason='Excluded')
     def test_teacher_a_period_w_zero_answers_does_not_show_breakdowns(self):
         """A period with zero answers does not show section breakdowns.
 
@@ -320,13 +314,11 @@ class TestEpicName(unittest.TestCase):
             expect.visibility_of_element_located((
                 By.CLASS_NAME, 'no-data-message')))
 
-        self.teacher.sleep(5)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8154 - 007 - Teacher | Weaker areas shows up to
     # four problematic sections
-    @pytest.mark.skipif(str(8154) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8154) not in TESTS, reason='Excluded')
     def test_teacher_weaker_areas_shows_up_to_four_problematic_sections(self):
         """Weaker areas shows up to four problematic sections.
 
@@ -378,7 +370,19 @@ class TestEpicName(unittest.TestCase):
             expect.visibility_of_element_located((
                 By.LINK_TEXT, '2nd'))).click()
 
-        self.teacher.find(By.XPATH, "/html/body/div[@id='react-root-container']/div[@class='tutor-app openstax-wrapper']/div[@class='openstax-debug-content']/div[@class='performance-forecast teacher panel panel-default']/div[@class='panel-body']/div[@class='guide-container']/div[@class='guide-group']/div[@class='chapter-panel weaker']/div[@class='sections']/div[@class='section'][2]")  # NOQA
+        self.teacher.find(
+            By.XPATH,
+            "/html/body/div[@id='react-root-container']" +
+            "/div[@class='tutor-app openstax-wrapper']" +
+            "/div[@class='openstax-debug-content']" +
+            "/div[@class='performance-forecast teacher panel panel-default']" +
+            "/div[@class='panel-body']" +
+            "/div[@class='guide-container']" +
+            "/div[@class='guide-group']" +
+            "/div[@class='chapter-panel weaker']" +
+            "/div[@class='sections']" +
+            "/div[@class='section'][2]"
+        )
 
         self.teacher.sleep(5)
 
@@ -386,15 +390,26 @@ class TestEpicName(unittest.TestCase):
             expect.visibility_of_element_located((
                 By.LINK_TEXT, '4th'))).click()
 
-        self.teacher.find(By.XPATH, "/html/body/div[@id='react-root-container']/div[@class='tutor-app openstax-wrapper']/div[@class='openstax-debug-content']/div[@class='performance-forecast teacher panel panel-default']/div[@class='panel-body']/div[@class='guide-container']/div[@class='guide-group']/div[@class='chapter-panel weaker']/div[@class='sections']/div[@class='section'][3]")  # NOQA
-        self.teacher.sleep(5)
+        self.teacher.find(
+            By.XPATH,
+            "/html/body/div[@id='react-root-container']" +
+            "/div[@class='tutor-app openstax-wrapper']" +
+            "/div[@class='openstax-debug-content']" +
+            "/div[@class='performance-forecast teacher panel panel-default']" +
+            "/div[@class='panel-body']" +
+            "/div[@class='guide-container']" +
+            "/div[@class='guide-group']" +
+            "/div[@class='chapter-panel weaker']" +
+            "/div[@class='sections']" +
+            "/div[@class='section'][3]"
+        )
 
         self.ps.test_updates['passed'] = True
 
     # Case C8155 - 008 - Teacher | Chapters are listed on the left with
     # their sections to the right
-    @pytest.mark.skipif(str(8155) not in TESTS, reason='Excluded')  # NOQA
-    def test_teacher_chapters_listed_on_left_w_sections_on_right(self):  # NOQA
+    @pytest.mark.skipif(str(8155) not in TESTS, reason='Excluded')
+    def test_teacher_chapters_listed_on_left_w_sections_on_right(self):
         """Chapters are listed on the left with their sections to the right.
 
         Steps:

@@ -7,13 +7,13 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from random import randint
+from selenium.webdriver.common.by import By
+# from selenium.webdriver.support import expected_conditions as expect
+# from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Student  # NOQA
+from staxing.helper import Student
 
 # for template command line testing only
 # - replace list_of_cases on line 31 with all test case IDs in this file
@@ -31,11 +31,11 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8286])  # NOQA
+    str([
+        8281, 8282, 8283, 8284, 8285,
+        8286
+    ])
 )
-
-# 8281, 8282, 8283, 8284, 8285, 8286
-# 8286
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -46,25 +46,26 @@ class TestEpicName(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        # self.Teacher = Teacher(
-        #    use_env_vars=True,
-        #    pasta_user=self.ps,
-        #    capabilities=self.desired_capabilities 
-        # )
-        self.student = Student(use_env_vars=True)
+        self.student = Student(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
         self.student.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.student.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.student.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.student.delete()
         except:
             pass
 
     # Case C8281 - 001 - Student | Click on an external assignment
-    @pytest.mark.skipif(str(8281) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8281) not in TESTS, reason='Excluded')
     def test_student_click_on_a_external_assignment(self):
         """Click on an external assignment.
 
@@ -102,13 +103,11 @@ class TestEpicName(unittest.TestCase):
         assert('steps' in self.student.current_url()), \
             'Not viewing assignment page'
 
-        self.student.sleep(5)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8282 - 002 - Student | Read the directions below the assignment
     # link or hover over the info icon in the footer
-    @pytest.mark.skipif(str(8282) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8282) not in TESTS, reason='Excluded')
     def test_student_read_directions_below_or_hover_over_info_icon(self):
         """Read directions below assignment link or hover over the info icon.
 
@@ -157,12 +156,10 @@ class TestEpicName(unittest.TestCase):
         assert(flag), \
             'Did not read instructions'
 
-        self.student.sleep(5)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8283 - 003 - Student | Click the assignment link
-    @pytest.mark.skipif(str(8283) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8283) not in TESTS, reason='Excluded')
     def test_student_click_the_assignment_link(self):
         """Click the assignment link.
 
@@ -221,7 +218,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8284 - 004 - Student | Close the assignment tab or window
-    @pytest.mark.skipif(str(8284) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8284) not in TESTS, reason='Excluded')
     def test_student_close_the_assignment(self):
         """Close the assignment tab or window.
 
@@ -283,7 +280,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8285 - 005 - Student | Click the Back To Dashboard button to
     # finish the assignment
-    @pytest.mark.skipif(str(8285) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8285) not in TESTS, reason='Excluded')
     def test_student_click_back_to_dashboard_button(self):
         """Click the Back To Dashboard button to finish the assignment.
 
@@ -351,7 +348,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8286 - 006 - Student | Verify the assignment status as Clicked
-    @pytest.mark.skipif(str(8286) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8286) not in TESTS, reason='Excluded')
     def test_student_verify_assignment_status_as_clicked(self):
         """Verify the assignment status as Clicked.
 
@@ -417,12 +414,9 @@ class TestEpicName(unittest.TestCase):
 
         externals = self.student.driver.find_elements_by_xpath(
             "//div[@class = 'task row external workable']")
-        flag = False
 
         for assignment in externals:
-            if assignment.text.find("Clicked") >= 0 and assignment.text.find("Jun 05, 2:34am") >= 0:  # NOQA
-                flag = True
+            if assignment.text.find("Clicked") >= 0 \
+                    and assignment.text.find("Jun 05, 2:34am") >= 0:
+                self.ps.test_updates['passed'] = True
                 break
-
-        if flag:
-            self.ps.test_updates['passed'] = True

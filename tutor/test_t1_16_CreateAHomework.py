@@ -25,7 +25,20 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8069])
+    str([
+        8028, 8029, 8030, 8031, 8032,
+        8033, 8034, 8035, 8036, 8037,
+        8038, 8039, 8040, 8041, 8042,
+        8043, 8044, 8045, 8046, 8047,
+        8048, 8049, 8050, 8051, 8052,
+        8053, 8054, 8055, 8056, 8057,
+        8058, 8059, 8060, 8061, 8062,
+        8063, 8064, 8065, 8066, 8067,
+        8068, 8069, 8070, 8071, 8072,
+        8073, 8074, 8075, 8076, 8077,
+        8078, 8079, 8080, 8081, 8082,
+        8083, 8084
+    ])
 )
 # 8029, 8030-8034, 8039-8042
 
@@ -40,20 +53,6 @@ TESTS = os.getenv(
 # Good - 8081 is a repeat of 8079
 # Good - For collective setting (almost all the cases), click the all periods
 # radio in case the radio defaults to individual
-'''
-8028, 8029, 8030, 8031, 8032,
-        8033, 8034, 8035, 8036, 8037,
-        8038, 8039, 8040, 8041, 8042,
-        8043, 8044, 8045, 8046, 8047,
-        8048, 8049, 8050, 8051, 8052,
-        8053, 8054, 8055, 8056, 8057,
-        8058, 8059, 8060, 8061, 8062,
-        8063, 8064, 8065, 8066, 8067,
-        8068, 8069, 8070, 8071, 8072,
-        8073, 8074, 8075, 8076, 8077,
-        8078, 8079, 8080, 8081, 8082,
-        8083, 8084
-'''
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -64,18 +63,19 @@ class TestCreateAHomework(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        # self.teacher = Teacher(
-        #    use_env_vars=True,
-        #    pasta_user=self.ps,
-        #    capabilities=self.desired_capabilities
-        # )
-        self.teacher = Teacher(use_env_vars=True)
+        self.teacher = Teacher(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
         self.teacher.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
         except:

@@ -7,11 +7,11 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
+# from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 
-from staxing.helper import Admin  # NOQA
+from staxing.helper import Admin
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -22,7 +22,7 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8361])  # NOQA
+    str([8361])
 )
 
 
@@ -36,8 +36,8 @@ class TestGenerateReports(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.admin = Admin(
             use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.admin.login()
 
@@ -51,7 +51,7 @@ class TestGenerateReports(unittest.TestCase):
             pass
 
     # Case C8361 - 001 - Admin | Export research data to OwnCloud Research
-    @pytest.mark.skipif(str(8361) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8361) not in TESTS, reason='Excluded')
     def test_admin_export_research_data_to_own_cloud_research(self):
         """Export research data to OwnCloud Research.
 

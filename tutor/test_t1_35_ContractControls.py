@@ -7,15 +7,14 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
+# from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.support import expected_conditions
 from selenium.common.exceptions import TimeoutException
 
-from staxing.helper import Admin  # NOQA
+from staxing.helper import Admin
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -26,10 +25,11 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8228, 8229, 8230, 8231,
-         8232, 8233, 8234, 8235,
-         8236, 8237, 8389])  # NOQA
-    # str([8231,])
+    str([
+        8228, 8229, 8230, 8231, 8232,
+        8233, 8234, 8235, 8236, 8237,
+        8389
+    ])
 )
 
 
@@ -43,9 +43,9 @@ class TestContractControls(unittest.TestCase):
         self.desired_capabilities = {}
         self.desired_capabilities['name'] = self.id()
         self.admin = Admin(
-            use_env_vars=True  # ,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.admin.login()
         # make sure there are no new terms to accept
@@ -72,15 +72,17 @@ class TestContractControls(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.admin.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.admin.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.admin.delete()
         except:
             pass
 
     # Case C8228 - 001 - Admin | Add a new contract
-    @pytest.mark.skipif(str(8228) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8228) not in TESTS, reason='Excluded')
     def test_admin_add_a_new_contract_8228(self):
         """Add a new contract.
 
@@ -124,10 +126,11 @@ class TestContractControls(unittest.TestCase):
             By.XPATH, '//input[@value="Create contract"]').click()
         self.admin.driver.find_element(
             By.XPATH, '//h1[contains(text(),"Details")]').click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8229 - 002 - Admin | Cancel adding a new contract
-    @pytest.mark.skipif(str(8229) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8229) not in TESTS, reason='Excluded')
     def test_admin_cancel_adding_a_new_contract_8229(self):
         """Cancel adding a new contract.
 
@@ -182,7 +185,7 @@ class TestContractControls(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8230 - 003 - Admin | Publish a draft contract
-    @pytest.mark.skipif(str(8230) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8230) not in TESTS, reason='Excluded')
     def test_admin_publish_a_draft_contract_8230(self):
         """Publish a draft contract.
 
@@ -235,16 +238,20 @@ class TestContractControls(unittest.TestCase):
             By.XPATH, '//a[contains(text(),"Publish")]').click()
         try:
             WebDriverWait(self.admin.driver, 3). \
-                until(expect.alert_is_present(), 'Timed out waiting for alert.')
+                until(
+                    expect.alert_is_present(),
+                    'Timed out waiting for alert.'
+                )
             alert = self.admin.driver.switch_to_alert()
             alert.accept()
             print('alert accepted')
         except TimeoutException:
             print('no alert')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8231 - 004 - Admin | Delete a draft contract
-    @pytest.mark.skipif(str(8231) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8231) not in TESTS, reason='Excluded')
     def test_admin_delete_a_draft_contract_8231(self):
         """Delete a draft contract.
 
@@ -302,7 +309,10 @@ class TestContractControls(unittest.TestCase):
         self.admin.sleep(2)
         try:
             WebDriverWait(self.admin.driver, 3). \
-                until(expect.alert_is_present(), 'Timed out waiting for alert.')
+                until(
+                    expect.alert_is_present(),
+                    'Timed out waiting for alert.'
+                )
             alert = self.admin.driver.switch_to_alert()
             alert.accept()
             print('alert accepted')
@@ -314,10 +324,11 @@ class TestContractControls(unittest.TestCase):
         self.admin.page.wait_for_page_load()
         assert(len(contracts) == len(contracts_original)), \
             'contract not deleted'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8232 - 005 - Admin | View a current contract
-    @pytest.mark.skipif(str(8232) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8232) not in TESTS, reason='Excluded')
     def test_admin_view_a_current_contract_8232(self):
         """View a current contract.
 
@@ -366,10 +377,11 @@ class TestContractControls(unittest.TestCase):
             '//li//a[contains(text(),"test_contract_title_005")]').click()
         self.admin.driver.find_element(
             By.XPATH, '//h2[contains(text(),"test_contract_title_005")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8233 - 006 - Admin | Add a new version of a current contract
-    @pytest.mark.skipif(str(8233) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8233) not in TESTS, reason='Excluded')
     def test_admin_add_a_new_version_of_a_current_contract_8233(self):
         """Add a new version of a current contract.
 
@@ -412,7 +424,7 @@ class TestContractControls(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8234 - 007 - Admin | View a contract's signatories
-    @pytest.mark.skipif(str(8234) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8234) not in TESTS, reason='Excluded')
     def test_admin_view_a_contracts_signatures_8234(self):
         """View a contract's signatories.
 
@@ -442,10 +454,11 @@ class TestContractControls(unittest.TestCase):
                 (By.XPATH, '//div[contains(@class,"signature_index")]')
             )
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8235 - 008 - Admin | Terminate a signatory's contract
-    @pytest.mark.skipif(str(8235) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8235) not in TESTS, reason='Excluded')
     def test_admin_terminate_a_signnatorys_contract_8235(self):
         """Terminate a signatory's contract.
 
@@ -488,10 +501,11 @@ class TestContractControls(unittest.TestCase):
             print('alert accepted')
         except TimeoutException:
             print('no alert')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8236 - 009 - Admin | Add a targeted contract
-    @pytest.mark.skipif(str(8236) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8236) not in TESTS, reason='Excluded')
     def test_admin_add_a_targeted_contract_8236(self):
         """Add a targeted contract.
 
@@ -523,10 +537,11 @@ class TestContractControls(unittest.TestCase):
         end_contracts = self.admin.driver.find_elements(By.XPATH, '//tr')
         assert(len(orig_contracts) == len(end_contracts)-1), \
             'targeted contract not added'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8237 - 010 - Admin | Delete a targeted contract
-    @pytest.mark.skipif(str(8237) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8237) not in TESTS, reason='Excluded')
     def test_admin_delete_a_targeted_contract_8237(self):
         """Delete a targetd contract.
 
@@ -564,8 +579,10 @@ class TestContractControls(unittest.TestCase):
             By.XPATH, '//a[contains(text(),"delete")]')
         deletes[-1].click()
         try:
-            WebDriverWait(self.admin.driver, 3). \
-                until(expect.alert_is_present(), 'Timed out waiting for alert.')
+            WebDriverWait(self.admin.driver, 3).until(
+                expect.alert_is_present(),
+                'Timed out waiting for alert.'
+            )
             alert = self.admin.driver.switch_to_alert()
             alert.accept()
             print('alert accepted')
@@ -575,10 +592,11 @@ class TestContractControls(unittest.TestCase):
         end_contracts = self.admin.driver.find_elements(By.XPATH, '//tr')
         assert(len(orig_contracts) == len(end_contracts)), \
             'targeted contract not added'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8389 - 011 - Admin | Edit a draft contract
-    @pytest.mark.skipif(str(8389) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8389) not in TESTS, reason='Excluded')
     def test_admin_edit_a_draft_contract_8389(self):
         """Edit a draft contract.
 
@@ -652,4 +670,5 @@ class TestContractControls(unittest.TestCase):
                  '//h2[contains(text(),"test_contract_title_011_New")]')
             )
         )
+
         self.ps.test_updates['passed'] = True

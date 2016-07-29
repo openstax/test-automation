@@ -8,14 +8,13 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-# from selenium.webdriver import ActionChains  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+from random import randint
+# from selenium.webdriver import ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-# from staxing.helper import Teacher  # NOQA
 from staxing.helper import Student
 
 # for template command line testing only
@@ -23,7 +22,7 @@ from staxing.helper import Student
 # - replace CaseID on line 52 with the actual cass ID
 # - delete lines 17 - 22
 list_of_cases = 0
-CaseID = 0
+CaseID = 'skip'
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -35,13 +34,13 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8184, 8185, 8186, 8187, 8188, 8189,
-        8190, 8191, 8192, 8193, 8194, 8195,
-        8196, 8197, 8198, 8199, 8200, 8201,
-        8202, 8203, 8204, 8205, 8206])  # NOQA
+        8184, 8185, 8186, 8187, 8188,
+        8189, 8190, 8191, 8192, 8193,
+        8194, 8195, 8196, 8197, 8198,
+        8199, 8200, 8201, 8202, 8203,
+        8204, 8205, 8206
+    ])
 )
-# Use the long reading for 8189, 8190, 8191, 8192, and 8206
-# May need to make the long reading shorter, five chapters still causes hanging
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -52,31 +51,33 @@ class TestEpicName(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        # self.Student = Student(
-        #    use_env_vars=True,
-        #    pasta_user=self.ps,
-        #    capabilities=self.desired_capabilities
-        # )
-        self.student = Student(use_env_vars=True)
+        self.student = Student(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
         self.student.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.student.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.student.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.student.delete()
         except:
             pass
 
     # Case C8184 - 001 - Student | Start a reading assignment
-    @pytest.mark.skipif(str(8184) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8184) not in TESTS, reason='Excluded')
     def test_student_start_a_reading_assignment_8184(self):
         """Start a reading assignment.
 
         Steps:
         Click on a reading assignment under the tab "This Week"
         on the dashboard
+
         Expected Result:
         The user is presented with the first page of the reading assignment
         """
@@ -106,22 +107,21 @@ class TestEpicName(unittest.TestCase):
         assert('December Reading' in name.text), \
             'Not viewing the reading'
 
-        self.student.sleep(5)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8185 - 002 - Student | Due date is listed in the footer
-    @pytest.mark.skipif(str(8185) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8185) not in TESTS, reason='Excluded')
     def test_student_due_date_is_listed_in_the_footer_8185(self):
-        r"""Due date is listed in the footer.
+        """Due date is listed in the footer.
 
         Steps:
         Click on a reading assignment under the tab
         "This Week" on the dashboard
+
         Expected Result:
         The user is presented with the due date in the right
         corner of the footer.
-
+        """
         self.ps.test_updates['name'] = 't1.28.002' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -131,22 +131,24 @@ class TestEpicName(unittest.TestCase):
             '8185'
         ]
         self.ps.test_updates['passed'] = False
+
         # Test steps and verification assertions
-        self.ps.test_updates['passed'] = True
-        """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
+        self.ps.test_updates['passed'] = True
+
     # Case C8186 - 003 - Student | Reading sections are listed in the footer
-    @pytest.mark.skipif(str(8186) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8186) not in TESTS, reason='Excluded')
     def test_student_reading_sections_are_listed_in_the_footer_8186(self):
-        r"""Reading sections are listed in the footer.
+        """Reading sections are listed in the footer.
 
         Steps:
         Click on a reading assignment under the tab "This Week"
         on the dashboard
+
         Expected Result:
         The user is presented with the reading sections in the footer.
-
+        """
         self.ps.test_updates['name'] = 't1.28.003' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -156,14 +158,15 @@ class TestEpicName(unittest.TestCase):
             '8186'
         ]
         self.ps.test_updates['passed'] = False
+
         # Test steps and verification assertions
-        self.ps.test_updates['passed'] = True
-        """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # Case C8187 - 004 - Student | Reading sections in the
     # footer link to the respective section in the reference book
-    @pytest.mark.skipif(str(8187) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8187) not in TESTS, reason='Excluded')
     def test_student_reading_sections_in_footer_link_to_book_8187(self):
         r"""Reading sections in footer link respective section in the book.
 
@@ -171,9 +174,10 @@ class TestEpicName(unittest.TestCase):
         Click on a reading assignment under the tab "This Week"
         on the dashboard
         Click on one of the reading sections in the footer
+
         Expected Result:
         The user is presented with that reading section in the reference book
-
+        """
         self.ps.test_updates['name'] = 't1.28.004' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -183,14 +187,15 @@ class TestEpicName(unittest.TestCase):
             '8187'
         ]
         self.ps.test_updates['passed'] = False
+
         # Test steps and verification assertions
-        self.ps.test_updates['passed'] = True
-        """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # Case C8188 - 005 - Student | Click the forward arrow
     # to go to the next reading section
-    @pytest.mark.skipif(str(8188) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8188) not in TESTS, reason='Excluded')
     def test_student_click_forward_arrow_to_go_to_next_section_8188(self):
         """Click the forward arrow to go to next reading section.
 
@@ -198,6 +203,7 @@ class TestEpicName(unittest.TestCase):
         Click on a reading assignment under the tab
         "This Week" on the dashboard
         Click on the forward arrow
+
         Expected Result:
         The user is presented with the next reading section
         """
@@ -236,12 +242,11 @@ class TestEpicName(unittest.TestCase):
         assert('/steps/2/' in self.student.current_url()), \
             'Not on the first page of the reading'
 
-        self.student.sleep(2)
         self.ps.test_updates['passed'] = True
 
     # Case C8189 - 006 - Student | If a card has a assessment free response
     # textbox, inputting a free response activates the Answer button
-    @pytest.mark.skipif(str(8189) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8189) not in TESTS, reason='Excluded')
     def test_student_inputting_free_repsponse_activates_answer_btn_8189(self):
         """If a card has free response, inputting text activates Answer.
 
@@ -251,6 +256,7 @@ class TestEpicName(unittest.TestCase):
         Click the "Continue" button
         On a card with a free response assessment,
         enter a free response into the free response assessment text box
+
         Expected Result:
         The "Continue" button is activated
         """
@@ -331,7 +337,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8190 - 007 - Student | Submit a free response answer
-    @pytest.mark.skipif(str(8190) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8190) not in TESTS, reason='Excluded')
     def test_student_submit_a_free_response_answer_8190(self):
         """Submit a free response answer.
 
@@ -342,6 +348,7 @@ class TestEpicName(unittest.TestCase):
         On a card with a free response assessment, enter a free response into
         the free response assessment text box
         Click the "Continue" button
+
         Expected Result:
         A free response answer is submitted and the multiple choice is
         presented to the user
@@ -431,7 +438,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8191 - 008 - Student | Selecting a multiple choice answer
     # activates the Submit button
-    @pytest.mark.skipif(str(8191) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8191) not in TESTS, reason='Excluded')
     def test_student_selecting_multiple_choice_activates_the_submit_8191(self):
         """Selecting a multiple choice answer activates the Submit button.
 
@@ -443,6 +450,7 @@ class TestEpicName(unittest.TestCase):
         into the free response assessment text box
         Click the "Continue" button
         Select a multiple choice answer
+
         Expected Result:
         The "Continue" button is activated
         """
@@ -527,7 +535,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8192 - 009 - Student | Submit a multiple choice answer
-    @pytest.mark.skipif(str(8192) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8192) not in TESTS, reason='Excluded')
     def test_student_submit_a_multiple_choice_answer_8192(self):
         """Submit a multiple choice answer.
 
@@ -540,6 +548,7 @@ class TestEpicName(unittest.TestCase):
         Click the "Continue" button
         Select a multiple choice answer
         Click the "Continue" button in the left corner of the footer
+
         Expected Result:
         A multiple choice answer is submitted
         """
@@ -628,7 +637,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8193 - 010 - Student | Answer feedback is presented
-    @pytest.mark.skipif(str(8193) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8193) not in TESTS, reason='Excluded')
     def test_student_answer_feedback_is_presented_8193(self):
         """Answer feedback is presented.
 
@@ -641,6 +650,7 @@ class TestEpicName(unittest.TestCase):
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button in the left corner of the footer
+
         Expected Result:
         Answer feedback is presented to the user
         """
@@ -730,9 +740,9 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8194 - 011 - Student | Correctness for a completed
     # assessment is displayed in the breadcrumbs
-    @pytest.mark.skipif(str(8194) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8194) not in TESTS, reason='Excluded')
     def test_student_correctness_displayed_in_breadcrumb_8194(self):
-        r"""Correctness for a completed assessment is displayed in breadcrumbs.
+        """Correctness for a completed assessment is displayed in breadcrumbs.
 
         Steps:
         Click on a reading assignment under the tab
@@ -743,8 +753,10 @@ class TestEpicName(unittest.TestCase):
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button
+
         Expected Result:
 
+        """
         self.ps.test_updates['name'] = 't1.28.011' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -754,16 +766,17 @@ class TestEpicName(unittest.TestCase):
             '8194'
         ]
         self.ps.test_updates['passed'] = False
+
         # Test steps and verification assertions
-        self.ps.test_updates['passed'] = True
-        """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # Case C8195 - 012 - Student | If an assessment follows a Grasp Check,
     # answering correctly activates the Continue button
-    @pytest.mark.skipif(str(8195) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8195) not in TESTS, reason='Excluded')
     def test_student_correct_grasp_check_activates_continue_button_8195(self):
-        r"""If assessment follows Grasp Check, correct answer shows Continue.
+        """If assessment follows Grasp Check, correct answer shows Continue.
 
         Steps:
         Click on a reading assignment under the tab
@@ -774,9 +787,10 @@ class TestEpicName(unittest.TestCase):
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button
+
         Expected Result:
         Correct answer activates the "Continue" button
-
+        """
         self.ps.test_updates['name'] = 't1.28.012' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -786,16 +800,17 @@ class TestEpicName(unittest.TestCase):
             '8195'
         ]
         self.ps.test_updates['passed'] = False
+
         # Test steps and verification assertions
-        self.ps.test_updates['passed'] = True
-        """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # Case C8196 - 013 - Student | If an assessment follows a Grasp Check,
     # answering incorrectly activates the Try Another and Move On buttons
-    @pytest.mark.skipif(str(8196) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8196) not in TESTS, reason='Excluded')
     def test_student_incorrect_grasp_check_try_another_move_on_8196(self):
-        r"""If assessment follows Grasp Check, wrong answer shows try/move on.
+        """If assessment follows Grasp Check, wrong answer shows try/move on.
 
         Steps:
         Click on a reading assignment under the tab
@@ -806,9 +821,10 @@ class TestEpicName(unittest.TestCase):
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button
+
         Expected Result:
         Incorrect answer activates the Try Another and Move On buttons
-
+        """
         self.ps.test_updates['name'] = 't1.28.013' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -818,16 +834,17 @@ class TestEpicName(unittest.TestCase):
             '8196'
         ]
         self.ps.test_updates['passed'] = False
+
         # Test steps and verification assertions
-        self.ps.test_updates['passed'] = True
-        """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # Case C8197 - 014 - Student | Select Try Another to receive a new
     # assessment
-    @pytest.mark.skipif(str(8197) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8197) not in TESTS, reason='Excluded')
     def test_student_select_try_another_to_receive_new_assessment_8197(self):
-        r"""Select Try Another to receive a new assessment.
+        """Select Try Another to receive a new assessment.
 
         Steps:
         Click on a reading assignment under the tab
@@ -839,9 +856,10 @@ class TestEpicName(unittest.TestCase):
         Select a multiple choice answer
         Click the "Submit" button
         After selecting an incorrect answer, click the "Try Another" button
+
         Expected Result:
         The user receives a new assessment
-
+        """
         self.ps.test_updates['name'] = 't1.28.014' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -851,15 +869,16 @@ class TestEpicName(unittest.TestCase):
             '8197'
         ]
         self.ps.test_updates['passed'] = False
+
         # Test steps and verification assertions
-        self.ps.test_updates['passed'] = True
-        """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
+        self.ps.test_updates['passed'] = True
+
     # Case C8198 - 015 - Student | Select Move On
-    @pytest.mark.skipif(str(8198) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8198) not in TESTS, reason='Excluded')
     def test_student_select_move_on_8198(self):
-        r"""Select Move On.
+        """Select Move On.
 
         Steps:
         Click on a reading assignment under the tab
@@ -871,9 +890,10 @@ class TestEpicName(unittest.TestCase):
         Select a multiple choice answer
         Click the "Submit" button
         After selecting an incorrect answer, click the "Move On" button
+
         Expected Result:
         The user is presented with the next part in the reading section
-
+        """
         self.ps.test_updates['name'] = 't1.28.015' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -883,13 +903,14 @@ class TestEpicName(unittest.TestCase):
             '8198'
         ]
         self.ps.test_updates['passed'] = False
+
         # Test steps and verification assertions
-        self.ps.test_updates['passed'] = True
-        """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
+        self.ps.test_updates['passed'] = True
+
     # Case C8199 - 016 - Student | If a card has a video, play the video
-    @pytest.mark.skipif(str(8199) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8199) not in TESTS, reason='Excluded')
     def test_student_if_a_card_has_a_video_play_the_videio_8199(self):
         """If a card has a video, play the video.
 
@@ -898,6 +919,7 @@ class TestEpicName(unittest.TestCase):
         "This Week" on the dashboard
         Click the forward arrow
         On a card with a video, click the play button
+
         Expected Result:
         The video plays
         """
@@ -994,7 +1016,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8200 - 017 - Student | A Concept Coach card preceeds the question
     # review
-    @pytest.mark.skipif(str(8200) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8200) not in TESTS, reason='Excluded')
     def test_student_concept_coach_precedes_question_review_8200(self):
         """A Concept Coach card preceeds the question review.
 
@@ -1002,6 +1024,7 @@ class TestEpicName(unittest.TestCase):
         Click on a reading assignment under the tab "This Week"
         on the dashboard
         Click the forward arrow
+
         Expected Result:
         At the end of the reading, the user is presented with a Concept Coach
         card that precedes the question review.
@@ -1099,7 +1122,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8201 - 018 - Student | A reading may have a Review assessment
-    @pytest.mark.skipif(str(8201) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8201) not in TESTS, reason='Excluded')
     def test_student_reading_may_have_review_assessment_8201(self):
         """A reading may have a Review assessment.
 
@@ -1107,6 +1130,7 @@ class TestEpicName(unittest.TestCase):
         Click on a reading assignment under the tab
         "This Week" on the dashboard
         Click the forward arrow
+
         Expected Result:
         The user may be presented with a Review assessment at the
         end of the reading assignment
@@ -1215,11 +1239,10 @@ class TestEpicName(unittest.TestCase):
 
                 self.student.sleep(2)
 
-        self.student.sleep(5)
         self.ps.test_updates['passed'] = True
 
     # Case C8202 - 019 - Student | A reading may have a Personalized assessment
-    @pytest.mark.skipif(str(8202) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8202) not in TESTS, reason='Excluded')
     def test_student_reading_may_have_personalized_assessment_8202(self):
         """A reading may have a Personalized assessment.
 
@@ -1227,6 +1250,7 @@ class TestEpicName(unittest.TestCase):
         Click on a homework assignment under the tab
         "This Week" on the dashboard
         Click the "Continue" button
+
         Expected Result:
         A user may be presented with a personalized assessment at the end of
         the reading assignment
@@ -1340,7 +1364,6 @@ class TestEpicName(unittest.TestCase):
 
                 self.student.sleep(2)
 
-        self.student.sleep(2)
         self.ps.test_updates['passed'] = True
 
     # Case C8203 - 020 - Student | View the completion report and click the
@@ -1354,6 +1377,7 @@ class TestEpicName(unittest.TestCase):
         on the dashboard
         Click the forward arrow
         At the end of the reading, click the "Back to Dashboard" button
+
         Expected Result:
         The user views the completion report and return to the dashboard
         """
@@ -1454,7 +1478,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8204 - 021 - Student | A completed reading should show
     # You are done. in the completion report
-    @pytest.mark.skipif(str(8204) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8204) not in TESTS, reason='Excluded')
     def test_student_completed_reading_shows_you_are_done_8204(self):
         """A completed reading should show You are done. in completion report.
 
@@ -1463,6 +1487,7 @@ class TestEpicName(unittest.TestCase):
         on the dashboard
         Click the forward arrow
         Keep clicking the "Continue" button until the reading is over
+
         Expected Result:
         Once finished with the reading, the user is presented with the
         completion report that shows "You are done"
@@ -1567,7 +1592,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8205 - 022 - Student | A completed reading should show Complete
     # in the dashboard progress column
-    @pytest.mark.skipif(str(8205) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8205) not in TESTS, reason='Excluded')
     def test_student_completed_reading_shows_complete_in_dashboard_8205(self):
         """A completed reading shows Complete in dashboard progress column.
 
@@ -1576,6 +1601,7 @@ class TestEpicName(unittest.TestCase):
         on the dashboard
         Click the forward arrow
         At the end of the reading, click the "Back to Dashboard" button
+
         Expected Result:
         The reading is marked "Complete" in the dashboard progress column
         """
@@ -1607,7 +1633,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8206 - 023 - Student | Answer an assessment, return to the
     # dashboard and verify the assignment progress is In progress
-    @pytest.mark.skipif(str(8206) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8206) not in TESTS, reason='Excluded')
     def test_student_started_assignment_shows_progress_on_dashboard_8206(self):
         """Answer assessment, go to dashboard, verify progress is In progress.
 
@@ -1623,6 +1649,7 @@ class TestEpicName(unittest.TestCase):
         Click on the course name in the upper left corner of the page OR
         Click the user menu
         Click the "Dashboard" button
+
         Expected Result:
         The user returns to dashboard and the reading is marked "In Progress"
         in the dashboard progress column

@@ -7,13 +7,13 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+from random import randint
+from selenium.webdriver.common.by import By
+# from selenium.webdriver.support import expected_conditions as expect
+from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Student  # NOQA
+from staxing.helper import Student
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -24,7 +24,9 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7732, 7733, 7735, 7736, 7737])  # NOQA
+    str([
+        7732, 7733, 7735, 7736, 7737
+    ])
 )
 
 
@@ -45,26 +47,26 @@ class TestStudentProgressViews(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.student.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.student.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.student.delete()
         except:
             pass
 
     # Case C7732 - 001 - Student | View section completion report
-    @pytest.mark.skipif(str(7732) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7732) not in TESTS, reason='Excluded')
     def test_student_view_section_completion_report_7732(self):
         """View section completion report.
 
         Steps:
-
         Go to https://tutor-qa.openstax.org/
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
         Click on the 'Sign in' button
         If the user has more than one course, click on a CC course name
-
         Click on "Contents"
         Select a section
         Scroll to bottom of the section
@@ -76,12 +78,9 @@ class TestStudentProgressViews(unittest.TestCase):
         Click "Next question"
         Continue answering questions
 
-
         Expected Result:
-
         The user is presented with section completion report
         that shows "You're done"
-
         """
         self.ps.test_updates['name'] = 'cc1.09.001' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -94,7 +93,6 @@ class TestStudentProgressViews(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
         self.student.find(
             By.PARTIAL_LINK_TEXT, "Macro Econ").click()
         self.student.sleep(5)
@@ -116,17 +114,17 @@ class TestStudentProgressViews(unittest.TestCase):
 
         # Work through Concept Coach
         while 'or review your work below.' not in page:
-
             action = False
 
             # Free response
             if self.student.find(
-                By.XPATH,
-                "//button[@class='async-button continue btn btn-primary']"
-            ).text == 'Answer':
+                    By.XPATH,
+                    "//button[@class='async-button continue btn btn-primary']"
+                    ).text == 'Answer':
                 self.student.find(
                     By.XPATH,
-                    "//textarea").send_keys('An answer for this textarea')
+                    "//textarea"
+                ).send_keys('An answer for this textarea')
                 self.student.find(
                     By.XPATH,
                     "//button[@class='async-button continue btn btn-primary']"
@@ -136,11 +134,13 @@ class TestStudentProgressViews(unittest.TestCase):
 
             # Multiple Choice
             elif self.student.find(
-                By.XPATH,
-                "//button[@class='async-button continue btn btn-primary']"
-            ).text == 'Submit':
+                    By.XPATH,
+                    "//button[@class='async-button continue btn btn-primary']"
+                    ).text == 'Submit':
                 answers = self.student.driver.find_elements(
-                    By.CLASS_NAME, 'answer-letter')
+                    By.CLASS_NAME,
+                    'answer-letter'
+                )
                 self.student.sleep(0.8)
                 rand = randint(0, len(answers) - 1)
                 answer = chr(ord('a') + rand)
@@ -180,12 +180,11 @@ class TestStudentProgressViews(unittest.TestCase):
 
     # Case C7733 - 002 - Student | Completion report shows the section status
     # of started and completed modules
-    @pytest.mark.skipif(str(7733) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7733) not in TESTS, reason='Excluded')
     def test_student_completion_report_shows_the_section_status_of_7733(self):
-        """Completion report shows the section status of started and completed modules.
+        """Completion report shows the section status.
 
         Steps:
-
         Click on "Contents"
         Select a section
         Scroll to bottom of the section
@@ -197,13 +196,9 @@ class TestStudentProgressViews(unittest.TestCase):
         Click "Next question"
         Continue answering questions
 
-
-
         Expected Result:
-
         The user is presented with the completion report, which shows the
         section status of completed modules
-
         """
         self.ps.test_updates['name'] = 'cc1.09.002' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -224,15 +219,20 @@ class TestStudentProgressViews(unittest.TestCase):
         self.student.find(
             By.XPATH,
             "//div/ul/li[2]/ul/li[2]/div/span[@class='name-wrapper']" +
-            "/a/span[@class='title']").click()
+            "/a/span[@class='title']"
+        ).click()
         self.student.sleep(1)
         self.student.find(
-            By.XPATH, "//div[@class='jump-to-cc']/a[@class='btn']").click()
+            By.XPATH,
+            "//div[@class='jump-to-cc']/a[@class='btn']"
+        ).click()
         self.student.sleep(1)
         self.student.find(
-            By.XPATH, "//button[@class='btn btn-lg btn-primary']").click()
-
+            By.XPATH,
+            "//button[@class='btn btn-lg btn-primary']"
+        ).click()
         self.student.sleep(5)
+
         page = self.student.driver.page_source
 
         # Work through Concept Coach
@@ -242,12 +242,13 @@ class TestStudentProgressViews(unittest.TestCase):
 
             # Free response
             if self.student.find(
-                By.XPATH,
-                "//button[@class='async-button continue btn btn-primary']"
-            ).text == 'Answer':
+                    By.XPATH,
+                    "//button[@class='async-button continue btn btn-primary']"
+                    ).text == 'Answer':
                 self.student.find(
                     By.XPATH,
-                    "//textarea").send_keys('An answer for this textarea')
+                    "//textarea"
+                ).send_keys('An answer for this textarea')
                 self.student.find(
                     By.XPATH,
                     "//button[@class='async-button continue btn btn-primary']"
@@ -257,21 +258,25 @@ class TestStudentProgressViews(unittest.TestCase):
 
             # Multiple choice
             elif self.student.find(
-                By.XPATH,
-                "//button[@class='async-button continue btn btn-primary']"
-            ).text == 'Submit':
+                    By.XPATH,
+                    "//button[@class='async-button continue btn btn-primary']"
+                    ).text == 'Submit':
                 answers = self.student.driver.find_elements(
-                    By.CLASS_NAME, 'answer-letter')
+                    By.CLASS_NAME,
+                    'answer-letter'
+                )
                 self.student.sleep(0.8)
                 rand = randint(0, len(answers) - 1)
                 answer = chr(ord('a') + rand)
                 Assignment.scroll_to(self.student.driver, answers[0])
                 if answer == 'a':
                     self.student.driver.execute_script(
-                        'window.scrollBy(0, -160);')
+                        'window.scrollBy(0, -160);'
+                    )
                 elif answer == 'd':
                     self.student.driver.execute_script(
-                        'window.scrollBy(0, 160);')
+                        'window.scrollBy(0, 160);'
+                    )
                 answers[rand].click()
 
                 self.student.find(
@@ -317,23 +322,19 @@ class TestStudentProgressViews(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C7735 - 003 - Student | Access the progress views at any point
-    @pytest.mark.skipif(str(7735) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7735) not in TESTS, reason='Excluded')
     def test_student_access_the_progress_views_at_any_point_7735(self):
         """Able to access the progress views at any point.
 
         Steps:
-
         Click on "Contents"
         Select a section
         Scroll to bottom of the section
         Click "Launch Concept Coach"
         Click "My Progress" in the header
 
-
         Expected Result:
-
         The user is presented with the progress view
-
         """
         self.ps.test_updates['name'] = 'cc1.09.003' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -369,17 +370,14 @@ class TestStudentProgressViews(unittest.TestCase):
         assert('progress' in self.student.current_url()), \
             'Not viewing the My Progress page'
 
-        self.student.sleep(5)
-
         self.ps.test_updates['passed'] = True
 
     # Case C7736 - 004 - Student | Return to current position in an assignment
-    @pytest.mark.skipif(str(7736) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7736) not in TESTS, reason='Excluded')
     def test_student_return_to_current_position_in_an_assignment_7736(self):
         """Return to current position in an assignment.
 
         Steps:
-
         Click on "Contents"
         Select a section
         Scroll to bottom of the section
@@ -389,25 +387,33 @@ class TestStudentProgressViews(unittest.TestCase):
         Select a multiple choice answer
         Click "Submit"
         Click "Next question"
-
         Click "Close" in the right corner of the header
         Click "Launch Concept Coach"
 
-
         Expected Result:
-
         The user is presented with their current position in the assignment
-
         """
+        self.ps.test_updates['name'] = 'cc1.09.004' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.09',
+            'cc1.09.004',
+            '7736'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
+        self.ps.test_updates['passed'] = True
+
     # Case C7737 - 005 - Student | Able to review previous modules
-    @pytest.mark.skipif(str(7737) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7737) not in TESTS, reason='Excluded')
     def test_student_able_to_review_previous_modules_7737(self):
         """Able to review previous modules.
 
         Steps:
-
         Click on "Contents"
         Select a section
         Scroll to bottom of the section
@@ -415,11 +421,8 @@ class TestStudentProgressViews(unittest.TestCase):
         Click "My Progress" in the header
         Click on the desired module under the "Previous" section
 
-
         Expected Result:
-
         The user is presented with a previous module
-
         """
         self.ps.test_updates['name'] = 'cc1.09.005' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -467,7 +470,5 @@ class TestStudentProgressViews(unittest.TestCase):
 
         assert(first != second), \
             'Not at new section'
-
-        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True

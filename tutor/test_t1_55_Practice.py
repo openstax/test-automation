@@ -7,15 +7,15 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+from staxing.assignment import Assignment
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import TimeoutException
+# from selenium.common.exceptions import TimeoutException
 
-from staxing.helper import Student  # NOQA
+from staxing.helper import Student
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -26,11 +26,11 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8297, 8298, 8299, 8300,
-         8301, 8302, 8303, 8304,
-         8305, 8306, 8307, 8308,
-         8309, 8310])  # NOQA
-    # str([8309, 8310])
+    str([
+        8297, 8298, 8299, 8300, 8301,
+        8302, 8303, 8304, 8305, 8306,
+        8307, 8308, 8309, 8310
+    ])
 )
 
 
@@ -43,25 +43,26 @@ class TestPractice(unittest.TestCase):
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.student = Student(
-            use_env_vars=True  # ,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.student.login()
         self.student.select_course(appearance='biology')
         self.wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
         self.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH,
-                 '//button[contains(@aria-describedby,"progress-bar-tooltip")]'
-                 )
-            )
+            expect.visibility_of_element_located((
+                By.XPATH,
+                '//button[contains(@aria-describedby,"progress-bar-tooltip")]'
+            ))
         ).click()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.student.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.student.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.student.delete()
         except:
@@ -69,7 +70,7 @@ class TestPractice(unittest.TestCase):
 
     # Case C8297 - 001 - Student | Click on a section performance forecast bar
     # to start practice session
-    @pytest.mark.skipif(str(8297) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8297) not in TESTS, reason='Excluded')
     def test_student_click_on_a_section__bar_to_start_practice_8297(self):
         """Click on a section performance forecast bar to start a practice
 
@@ -91,7 +92,7 @@ class TestPractice(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8298 - 002 - Student | Navigate between questions using breadcrumbs
-    @pytest.mark.skipif(str(8298) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8298) not in TESTS, reason='Excluded')
     def test_student_navigate_between_questions_using_breadcrumbs_8298(self):
         """Navigate between questions using the breadcrumbs.
 
@@ -114,12 +115,14 @@ class TestPractice(unittest.TestCase):
         section.click()
         self.student.driver.find_element(
             By.XPATH,
-            '//div[contains(@data-question-number,"' +
-            str(int(chapter[-1]) + 1) + '")]')
+            '//div[contains(@data-question-number,"%s")]' %
+            (int(chapter[-1]) + 1)
+        )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8299 - 003 - Student | Scrolling the window up reveals the header
-    @pytest.mark.skipif(str(8299) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8299) not in TESTS, reason='Excluded')
     def test_student_scrolling_the_window_up_reveals_the_header_bar_8299(self):
         """Scrolling the window up reveals the header bar.
 
@@ -157,7 +160,7 @@ class TestPractice(unittest.TestCase):
 
     # Case C8300 - 004 - Student | Inputting a free response activates the
     # Answer button
-    @pytest.mark.skipif(str(8300) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8300) not in TESTS, reason='Excluded')
     def test_student_inputting_a_free_response_activates_the_button_8300(self):
         """Inputting a free response into activates the Answer button.
 
@@ -199,7 +202,7 @@ class TestPractice(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8301 - 005 - Student | Answer a free reponse question
-    @pytest.mark.skipif(str(8301) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8301) not in TESTS, reason='Excluded')
     def test_student_answer_a_free_response_question(self):
         """Answer a free reponse question.
 
@@ -245,11 +248,12 @@ class TestPractice(unittest.TestCase):
             answer_text + '")]')
         self.student.driver.find_element(
             By.XPATH, '//div[@class="answer-letter"]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8302 - 006 - Student | Selecting a multiple choice answer activates
     # the Submit button
-    @pytest.mark.skipif(str(8302) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8302) not in TESTS, reason='Excluded')
     def test_student_selecting_a_mc_answer_activates_submit_button_8302(self):
         """Selecting a multiple choice answer activates the Submit button.
 
@@ -297,10 +301,11 @@ class TestPractice(unittest.TestCase):
                 (By.XPATH, '//button/span[contains(text(),"Submit")]')
             )
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8303 - 007 - Student | Submit the assessment
-    @pytest.mark.skipif(str(8303) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8303) not in TESTS, reason='Excluded')
     def test_student_submit_the_assesment_8303(self):
         """Submit the assessment.
 
@@ -353,10 +358,11 @@ class TestPractice(unittest.TestCase):
                 (By.XPATH, '//button/span[contains(text(),"Next Question")]')
             )
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8304 - 008 - Student | Answer feedback is presented
-    @pytest.mark.skipif(str(8304) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8304) not in TESTS, reason='Excluded')
     def test_student_answer_feedback_is_presented_8304(self):
         """Answer feedback is presented.
 
@@ -413,11 +419,12 @@ class TestPractice(unittest.TestCase):
                  'contains(@class,"incorrect")]')
             )
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8305 - 009 - Student | Correctness for a completed assesment is
     # displayed in the breadcrumbs
-    @pytest.mark.skipif(str(8305) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8305) not in TESTS, reason='Excluded')
     def test_student_correctness_is_displayed_in_the_breadcrumbs_8305(self):
         """Correctness for a completed assessment is displayed in breadcrumbs
 
@@ -470,11 +477,12 @@ class TestPractice(unittest.TestCase):
                 (By.XPATH, '//div[contains(@class,"question-feedback")]')
             )
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8306 - 010 - Student | The assessment identification number and
     # version are visible
-    @pytest.mark.skipif(str(8306) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8306) not in TESTS, reason='Excluded')
     def test_student_assesment_id_number_and_version_are_visible_8306(self):
         """The assessment id number and version are visible for each assessment
 
@@ -497,11 +505,12 @@ class TestPractice(unittest.TestCase):
         )
         self.student.driver.find_element(
             By.XPATH, '//span[contains(text(),"@")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8307 - 011 - Student | Clicking on Report an error renders the
     # Assessment Errata Form and prefills the assessment
-    @pytest.mark.skipif(str(8307) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8307) not in TESTS, reason='Excluded')
     def test_student_clicking_on_report_an_error_renders_form_8307(self):
         """Clicking on Report an error renders the Assessment Errata Form
 
@@ -538,7 +547,7 @@ class TestPractice(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8308 - 012 - Student | Submit the Assessment Errata Form
-    @pytest.mark.skipif(str(8308) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8308) not in TESTS, reason='Excluded')
     def test_student_submit_the_assesment_errata_form_8308(self):
         """Submit the Assessment Errata Form.
 
@@ -584,11 +593,12 @@ class TestPractice(unittest.TestCase):
         self.student.driver.find_element(
             By.XPATH,
             '//div[contains(text(),"Your response has been recorded")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8309 - 013 - Student | End of practice shows the number of
     # assessments answered
-    @pytest.mark.skipif(str(8309) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8309) not in TESTS, reason='Excluded')
     def test_student_end_of_practice_shows_the_number_answered_8309(self):
         """End of practice shows the number of assessments answered.
 
@@ -667,11 +677,12 @@ class TestPractice(unittest.TestCase):
             '//div[contains(@class,"completed-message")]' +
             '//span[contains(@data-reactid,"0.3") and contains(text(),"' +
             str(len(sections) - 1) + '")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8310 - 014 - Student | Back To Dashboard button returns the user
     # to the dashboard
-    @pytest.mark.skipif(str(8310) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8310) not in TESTS, reason='Excluded')
     def test_student_back_to_dashboard_button_returns_to_dashboard_8310(self):
         """Clicking the Back To Dashboard button returns user to the dashboard.
 
@@ -735,4 +746,5 @@ class TestPractice(unittest.TestCase):
         ).click()
         assert('list' in self.student.current_url()), \
             'Not returned to list dashboard'
+
         self.ps.test_updates['passed'] = True
