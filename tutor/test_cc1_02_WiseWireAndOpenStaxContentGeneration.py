@@ -43,7 +43,7 @@ class TestWiseWireAndOpenStaxContentGeneration(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
+        self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
@@ -51,14 +51,16 @@ class TestWiseWireAndOpenStaxContentGeneration(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
         except:
             pass
 
-    # Case CaseID - Story# - UserType
+    # Case CaseID - Story# - UserType | StoryText
     @pytest.mark.skipif(str(CaseID) not in TESTS, reason='Excluded')
     def test_usertype_storytext_CaseID(self):
         """Story Text.
