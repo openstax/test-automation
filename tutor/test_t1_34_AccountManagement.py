@@ -43,9 +43,9 @@ class TestAccountManagement(unittest.TestCase):
         self.desired_capabilities = {}
         self.desired_capabilities['name'] = self.id()
         self.student = Student(
-            use_env_vars=True  # ,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.google_account = os.getenv('GOOGLE_USER')
         self.google_password = os.getenv('GOOGLE_PASSWORD')
