@@ -69,11 +69,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     @pytest.mark.skipif(str(8085) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_add_external_assignment_using_drop_down_menu_8085(self):
         """Add an external assignment using the Add Assignment menu
-
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
-
         Expected Result:
         User taken to Add External Assignemnt Page
         """
@@ -103,7 +101,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Steps:
         Click on a calendar date
         Click on the Add External Assignemnt option
-
         Expected Result:
         User taken to Add External Assignment page with due date filled in
         """
@@ -132,7 +129,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
-
         Expected Result:
         External assignment appears on the calendar dashboard on its due date
         """
@@ -183,13 +179,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 month = 1
                 year += 1
         self.teacher.driver.find_element(
-            By.XPATH, '//div[contains(@class,"datepicker__day")' +
+            By.XPATH,
+            '//div[contains(@class,"datepicker__day")' +
             'and contains(text(),"' + (closes_on[3:5]) + '")]').click()
         time.sleep(0.5)
         self.teacher.driver.find_element(
             By.CLASS_NAME, 'assign-to-label').click()
         self.teacher.driver.find_element(
-            By.XPATH, '//div[contains(@class,"-open-date")]' +
+            By.XPATH,
+            '//div[contains(@class,"-open-date")]' +
             '//div[contains(@class,"datepicker__input")]').click()
         # get calendar to correct month
         month = today.month
@@ -203,7 +201,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 month = 1
                 year += 1
         self.teacher.driver.find_element(
-            By.XPATH, '//div[contains(@class,"datepicker__day")' +
+            By.XPATH,
+            '//div[contains(@class,"datepicker__day")' +
             'and contains(text(),"' + (opens_on[3:5]) + '")]').click()
         time.sleep(0.5)
         self.teacher.driver.find_element(
@@ -211,7 +210,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.driver.find_element(
             By.ID, 'external-url').send_keys('website.com')
         self.teacher.driver.find_element(
-                By.XPATH, '//button[contains(@class,"-publish")]').click()
+            By.XPATH, '//button[contains(@class,"-publish")]').click()
         try:
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), 'ext003')]")
@@ -237,7 +236,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         -Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
-
         Expected Result:
         New external assignment appears on the calendar dashboard
         appears across its due dates
@@ -277,17 +275,17 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         today = datetime.date.today()
         for x in range(len(periods)):
             opens_on = (
-                today + datetime.timedelta(days=x+1)).strftime('%m/%d/%Y')
+                today + datetime.timedelta(days=x + 1)).strftime('%m/%d/%Y')
             closes_on = (
-                today + datetime.timedelta(days=len(periods)+2)
+                today + datetime.timedelta(days=len(periods) + 2)
             ).strftime('%m/%d/%Y')
             element = self.teacher.driver.find_element(
                 By.XPATH, '//div[contains(@class,"tasking-plan")' +
-                'and contains(@data-reactid,":'+str(x+1)+'")]' +
+                'and contains(@data-reactid,":' + str(x + 1) + '")]' +
                 '//div[contains(@class,"-due-date")]' +
                 '//div[contains(@class,"datepicker__input")]')
             self.teacher.driver.execute_script(
-                'window.scrollBy(0,'+str(element.size['height']+50)+');')
+                'window.scrollBy(0,' + str(element.size['height'] + 50) + ');')
             time.sleep(0.5)
             element.click()
             # get calendar to correct month
@@ -310,7 +308,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             time.sleep(0.5)
             self.teacher.driver.find_element(
                 By.XPATH, '//div[contains(@class,"tasking-plan") and' +
-                ' contains(@data-reactid,":'+str(x+1)+'")]' +
+                ' contains(@data-reactid,":' + str(x + 1) + '")]' +
                 '//div[contains(@class,"-open-date")]' +
                 '//div[contains(@class,"datepicker__input")]').click()
             # get calendar to correct month
@@ -355,7 +353,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Save As Draft button
-
         Expected Result:
         Draft external assignment appears on the calendar dashboard
         on its due date with the word draft before te title
@@ -398,7 +395,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.driver.find_element(
             By.ID, 'external-url').send_keys('website.com')
         self.teacher.driver.find_element(
-                By.XPATH, '//button[contains(@class,"-save")]').click()
+            By.XPATH, '//button[contains(@class,"-save")]').click()
         try:
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), 'ext005')]")
@@ -420,7 +417,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
-
         Expected Result:
         External assignment appears on the calendar dashboard on its due date
         """
@@ -463,15 +459,17 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.driver.find_element(
             By.ID, 'external-url').send_keys('website.com')
         self.teacher.driver.find_element(
-                By.XPATH, '//button[contains(@class,"-publish")]').click()
+            By.XPATH, '//button[contains(@class,"-publish")]').click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH,
+                "//label[contains(text(), '" + assignment_name + "')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH,
+                "//label[contains(text(), '" + assignment_name + "')]")
         self.ps.test_updates['passed'] = True
 
     # Case C8091 - 007 - Teacher | Publish a draft external assignemnt
@@ -487,7 +485,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the Save As Draft button
         Click on the draft on the calendar dashboard
         Chick on the Publish button
-
         Expected Result:
         Draft external assignment appears on the calendar dashboard on
         its due date with the word draft before the title
@@ -512,18 +509,22 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                                     })
         try:
             self.teacher.driver.find_element(
-                By.XPATH, '//a[contains(@href,"externals")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                By.XPATH,
+                '//a[contains(@href,"externals")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
-                By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                By.XPATH,
+                '//a[contains(@href,"external")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
 
         self.teacher.page.wait_for_page_load()
         self.teacher.driver.find_element(
-             By.XPATH, '//button[contains(@class,"-publish")]').click()
+            By.XPATH, '//button[contains(@class,"-publish")]').click()
         self.teacher.sleep(3)
         assert('plans' in self.teacher.current_url()), \
             'assignment did not publish'
@@ -532,13 +533,12 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     # Case C8092 - 008 - Teacher | Cancel a new external assignemnt before
     # making changes using Cancel button
     @pytest.mark.skipif(str(8092) not in TESTS, reason='Excluded')  # NOQA
-    def test_teacher_cancel_new_external_before_changes_using_cancel_8092(self):
+    def test_teacher_cancel_new_external_before_change_using_cancel_8092(self):
         """ Cancel a new external assignemnt before changes using Cancel button
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
         Click on the Cancel button
-
         Expected Result:
         No changes to calendar dashboard
         """
@@ -582,7 +582,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter an assignemnt name into the Assignemnt Name text box
         Click on the Cancel button
         Click on the OK button
-
         Expected Result:
         No changes to calendar dashboard
         """
@@ -636,7 +635,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
         Click on the X
-
         Expected Result:
         No changes to calendar dashboard
         """
@@ -679,7 +677,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter an assignemnt name into the Assignemnt Name text box
         Click on the X
         Click on the OK button
-
         Expected Result:
         No changes to calendar dashboard
         """
@@ -725,13 +722,12 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     # Case C8096 - 012 - Teacher | Cancel a draft external assignemnt before
     # making changes using Cancel button
     @pytest.mark.skipif(str(8096) not in TESTS, reason='Excluded')  # NOQA
-    def test_teacher_cancel_draft_external_before_changes_use_cancel_8096(self):
+    def test_teacher_cancel_draft_external_before_change_use_cancel_8096(self):
         """ Cancel a draft external assignemnt before changes using Cancel button
         Steps:
         create a draft external assignemnt
         Click on the draft external assignment
         Click on the Cancel button
-
         Expected Result:
         No changes to calendar dashboard
         """
@@ -753,25 +749,29 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                                         'periods': {'all': (begin, end)},
                                         'url': 'website.com',
                                         'status': 'draft'
-                                     })
+                                    })
         # click on draft
         try:
             self.teacher.driver.find_element(
-                By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                By.XPATH,
+                '//a[contains(@href, "external")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control-next"]').click()
             self.teacher.driver.find_element(
-                By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                By.XPATH,
+                '//a[contains(@href,"external")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         # cancel editing the draft
         time.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//button[contains(@aria-role,"close") ' +
-                 'and @type="button"]')
+                (By.XPATH,
+                 '//button[contains(@aria-role,"close") and @type="button"]')
             )
         ).click()
         assert('calendar' in self.teacher.current_url()), \
@@ -789,7 +789,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter an assignemnt name into the Assignment Name text box
         Click on the Cancel button
         Click on the OK button
-
         Expected Result:
         No changes to calendar dashboard
         """
@@ -815,14 +814,18 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # click on draft
         try:
             self.teacher.driver.find_element(
-                By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                By.XPATH,
+                '//a[contains(@href,"external")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control-next"]').click()
             self.teacher.driver.find_element(
-                By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                By.XPATH,
+                '//a[contains(@href,"external")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         # edit draft then cancel
         time.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
@@ -844,7 +847,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
         ).click()
         assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard, after canceling assignment 013'
+            'Not viewing the calendar dashboard, after canceling assignment 13'
 
         self.ps.test_updates['passed'] = True
 
@@ -858,7 +861,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the draft external assignment
         Click on the X button
         Click on the OK button
-
         Expected Result:
         No changes to calendar dashboard
         """
@@ -879,18 +881,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                                         'periods': {'all': (begin, end)},
                                         'url': 'website.com',
                                         'status': 'draft'
-                                     })
+                                    })
         # click on draft
         try:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
-                By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                By.XPATH,
+                '//a[contains(@href,"external")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         # cancel editing the draft
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -900,7 +905,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
         ).click()
         assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard, after canceling assignment 014'
+            'Not viewing the calendar dashboard, after canceling assignment 14'
 
         self.ps.test_updates['passed'] = True
 
@@ -915,7 +920,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter an assignemnt name into the Assignment Name text box
         Click on the Cancel button
         Click on the OK button
-
         Expected Result:
         No changes to calendar dashboard
         """
@@ -940,14 +944,18 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # click on draft
         try:
             self.teacher.driver.find_element(
-                By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                By.XPATH,
+                '//a[contains(@href,"external")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
-                By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                By.XPATH,
+                '//a[contains(@href,"external")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         # make change and cancel editing
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -967,8 +975,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
         ).click()
         assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard, after canceling assignment 015'
-
+            'Not viewing the calendar dashboard, after canceling assignment 15'
         self.ps.test_updates['passed'] = True
 
     # Case C8100 - 016 - Teacher | Attempt to publish an external assignment
@@ -980,7 +987,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
         Click on the Publish button
-
         Expected Result:
         Blank required feilds are highlighted in red
         assignemnt is not published
@@ -1007,7 +1013,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
         )
         self.teacher.driver.find_element(
-                By.XPATH, '//button[contains(@class,"-publish")]').click()
+            By.XPATH, '//button[contains(@class,"-publish")]').click()
         assert('externals/new' in self.teacher.current_url()), \
             'Not stopped from publishing an external with empty reqired feilds'
         self.ps.test_updates['passed'] = True
@@ -1021,7 +1027,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the Add Assignment drop down menu
         Click on the Add External Assignemnt option
         Click on the Save As Draft button
-
         Expected Result:
         Blank required feilds are highlighted in red, assignemnt is not saved
         """
@@ -1047,7 +1052,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
         )
         self.teacher.driver.find_element(
-                By.XPATH, '//button[contains(@class,"-save")]').click()
+            By.XPATH, '//button[contains(@class,"-save")]').click()
         assert('externals/new' in self.teacher.current_url()), \
             'Not stopped from saving an external with empty reqired feilds'
         self.ps.test_updates['passed'] = True
@@ -1062,7 +1067,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the Edit Assignemnt button
         Click on the Delete Assignemnt
         Click on OK on the dialouge box
-
         Expected Result:
         Assignment has been removed from the calendar view
         """
@@ -1079,7 +1083,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         externals_old = self.teacher.driver.find_elements(
             By.XPATH,
-            '//label[contains(@data-title,"'+assignment_name+'")]')
+            '//label[contains(@data-title,"' + assignment_name + '")]')
         self.teacher.add_assignment(assignment='external',
                                     args={
                                         'title': assignment_name,
@@ -1092,13 +1096,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         # edit the assignemnt
         self.teacher.driver.find_element(
             By.XPATH, '//a[contains(@class,"edit-assignment")]').click()
@@ -1116,7 +1122,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.sleep(2)
         externals = self.teacher.driver.find_elements(
             By.XPATH,
-            '//label[contains(@data-title,"'+assignment_name+'")]')
+            '//label[contains(@data-title,"' + assignment_name + '")]')
         assert(len(externals) == len(externals_old)), \
             'closed external not deleted'
         self.ps.test_updates['passed'] = True
@@ -1131,7 +1137,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the Edit Assignemnt button
         Click on the Delete Assignemnt
         Click on OK on the dialouge box
-
         Expected Result:
         Assignment has been removed from the calendar view
         """
@@ -1148,7 +1153,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         externals_old = self.teacher.driver.find_elements(
             By.XPATH,
-            '//label[contains(@data-title,"'+assignment_name+'")]')
+            '//label[contains(@data-title,"' + assignment_name + '")]')
         self.teacher.add_assignment(assignment='external',
                                     args={
                                         'title': assignment_name,
@@ -1156,18 +1161,20 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                                         'periods': {'all': (begin, end)},
                                         'url': 'website.com',
                                         'status': 'publish'
-                                     })
+                                    })
         # click in the open assignment
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         self.teacher.driver.find_element(
             By.XPATH, '//a[contains(@class,"edit-assignment")]').click()
         self.teacher.wait.until(
@@ -1184,7 +1191,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.sleep(2)
         externals = self.teacher.driver.find_elements(
             By.XPATH,
-            '//label[contains(@data-title,"'+assignment_name+'")]')
+            '//label[contains(@data-title,"' + assignment_name + '")]')
         assert(len(externals) == len(externals_old)), \
             'open external not deleted'
         self.ps.test_updates['passed'] = True
@@ -1198,7 +1205,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the draft
         Click on the Delete Assignment buttom
         Click OK in the dialouge box
-
         Expected Result:
         Draft assignment is removed from calendar dasboard
         """
@@ -1215,7 +1221,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         externals_old = self.teacher.driver.find_elements(
             By.XPATH,
-            '//label[contains(@data-title,"'+assignment_name+'")]')
+            '//label[contains(@data-title,"' + assignment_name + '")]')
         self.teacher.add_assignment(assignment='external',
                                     args={
                                         'title': assignment_name,
@@ -1228,13 +1234,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"delete-link")]')
@@ -1249,7 +1257,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.sleep(2)
         externals = self.teacher.driver.find_elements(
             By.XPATH,
-            '//label[contains(@data-title,"'+assignment_name+'")]')
+            '//label[contains(@data-title,"' + assignment_name + '")]')
         assert(len(externals) == len(externals_old)), \
             'draft external not deleted'
         self.ps.test_updates['passed'] = True
@@ -1266,7 +1274,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter date into the Due Dte text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
-
         Expected Result:
         Assignment is on calendar dashboard
         """
@@ -1309,15 +1316,17 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.driver.find_element(
             By.ID, 'external-url').send_keys('website.com')
         self.teacher.driver.find_element(
-                By.XPATH, '//button[contains(@class,"-publish")]').click()
+            By.XPATH, '//button[contains(@class,"-publish")]').click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH,
+                "//label[contains(text(), '" + assignment_name + "')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH,
+                "//label[contains(text(), '" + assignment_name + "')]")
         self.ps.test_updates['passed'] = True
 
     # Case C8106 - 022 - Teacher | Change a description for a draft external
@@ -1351,19 +1360,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                                         'periods': {'all': (begin, end)},
                                         'url': 'website.com',
                                         'status': 'draft'
-                                     })
+                                    })
 
         # click in the open assignment
         try:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
@@ -1413,18 +1424,20 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                                         'periods': {'all': (begin, end)},
                                         'url': 'website.com',
                                         'status': 'publish'
-                                     })
+                                    })
         # click in the open assignment
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         self.teacher.driver.find_element(
             By.XPATH, '//a[contains(@class,"edit-assignment")]').click()
         self.teacher.wait.until(
@@ -1497,15 +1510,17 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.driver.find_element(
             By.ID, 'external-url').send_keys('website.com')
         self.teacher.driver.find_element(
-                By.XPATH, '//button[contains(@class,"-publish")]').click()
+            By.XPATH, '//button[contains(@class,"-publish")]').click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH,
+                "//label[contains(text(), '" + assignment_name + "')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control-next"]').click()
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH,
+                "//label[contains(text(), '" + assignment_name + "')]")
         self.ps.test_updates['passed'] = True
 
     # Case C8109 - 025 - Teacher | Change name for a draft external assignment
@@ -1542,13 +1557,13 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[@data-title="'+assignment_name+'"]').click()
+                '//label[@data-title="' + assignment_name + '"]').click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[@data-title="'+assignment_name+'"]').click()
+                '//label[@data-title="' + assignment_name + '"]').click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
@@ -1564,7 +1579,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.sleep(2)
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[text()= '"+assignment_name+"NEW']")
+                By.XPATH, "//label[text()= '" + assignment_name + "NEW']")
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
@@ -1602,18 +1617,20 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                                         'periods': {'all': (begin, end)},
                                         'url': 'website.com',
                                         'status': 'publish'
-                                     })
+                                    })
         # click in the open assignment
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         self.teacher.driver.find_element(
             By.XPATH, '//a[contains(@class,"edit-assignment")]').click()
         self.teacher.wait.until(
@@ -1631,7 +1648,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.sleep(3)
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"NEW')]")
+                By.XPATH,
+                "//label[contains(text(), '" + assignment_name + "NEW')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
@@ -1696,12 +1714,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH, '//button[contains(@class,"-publish")]').click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH,
+                "//label[contains(text(), '" + assignment_name + "')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH,
+                "//label[contains(text(), '" + assignment_name + "')]")
         self.ps.test_updates['passed'] = True
 
     # Case C8112 - 028 - Teacher | Change the assignemnt URL for a draft
@@ -1714,7 +1734,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the draft assignment
         Enter a new URL into the Assignemtn URL text box
         Click on the Save As Draft button
-
         Expected Result:
         Updated external assignment appears on the calendar dashboard
         """
@@ -1740,13 +1759,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
@@ -1814,7 +1835,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
-
         Expected Result:
         Updated assignment is displayed on the calendar
         """
@@ -1841,13 +1861,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         # edit draft
         self.teacher.driver.find_element(
             By.XPATH, '//a[contains(@class,"edit-assignment")]').click()
@@ -1870,12 +1892,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         closes_on = (today + datetime.timedelta(days=7)).strftime('%m/%d/%Y')
         assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
-        self.teacher.driver.find_element(By.ID, 'external-url').send_keys('new')
         self.teacher.driver.find_element(
-                By.XPATH, '//button[contains(@class,"-publish")]').click()
+            By.ID, 'external-url').send_keys('new')
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"-publish")]').click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"NEW')]")
+                By.XPATH,
+                "//label[contains(text(), '" + assignment_name + "NEW')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
@@ -1899,7 +1923,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Save As Draft button
-
         Expected Result:
         Updated assignment is displayed on the calendar
         """
@@ -1926,13 +1949,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         # edit draft
         assignment = Assignment()
         self.teacher.sleep(1)
@@ -1953,17 +1978,20 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         closes_on = (today + datetime.timedelta(days=5)).strftime('%m/%d/%Y')
         assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
-        self.teacher.driver.find_element(By.ID, 'external-url').send_keys('new')
         self.teacher.driver.find_element(
-                By.XPATH, '//button[contains(@class,"-save")]').click()
+            By.ID, 'external-url').send_keys('new')
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"-save")]').click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"NEW')]")
+                By.XPATH,
+                "//label[contains(text(), '" + assignment_name + "NEW')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"NEW')]")
+                By.XPATH,
+                "//label[contains(text(), '" + assignment_name + "NEW')]")
         self.ps.test_updates['passed'] = True
 
     # Case C8116 - 032 - Teacher | Change all possible feilds in an open
@@ -2004,13 +2032,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]').click()
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
         # edit draft
         self.teacher.driver.find_element(
             By.XPATH, '//a[contains(@class,"edit-assignment")]').click()
@@ -2034,15 +2064,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
         self.teacher.driver.find_element(
-                By.XPATH, '//button[contains(@class,"-publish")]').click()
+            By.XPATH, '//button[contains(@class,"-publish")]').click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"NEW')]")
+                By.XPATH,
+                "//label[contains(text(), '" + assignment_name + "NEW')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//label[contains(text(), '" + assignmant_name + "NEW')]")
+                "//label[contains(text(), '" + assignment_name + "NEW')]")
 
         self.ps.test_updates['passed'] = True
