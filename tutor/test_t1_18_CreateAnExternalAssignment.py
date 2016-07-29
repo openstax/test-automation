@@ -9,16 +9,15 @@ import time
 import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+from staxing.assignment import Assignment
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher  # NOQA
+from staxing.helper import Teacher
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -67,7 +66,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8085 - 001 - Teacher | Add an external assignment using the
     # Add Assignment menu drop down menu
-    @pytest.mark.skipif(str(8085) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8085) not in TESTS, reason='Excluded')
     def test_teacher_add_external_assignment_using_drop_down_menu_8085(self):
         """Add an external assignment using the Add Assignment menu
 
@@ -98,7 +97,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     # NOT DONE
     # Case C8086 - 002 - Teacher | Add an external assignment using the
     # calendar date
-    @pytest.mark.skipif(str(8086) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8086) not in TESTS, reason='Excluded')
     def test_teacher_add_external_assignment_using_calendar_date_8086(self):
         """Add an external assignment using the calendar date
         Steps:
@@ -137,7 +136,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8087 - 003 - Teacher | Set open and due dates for all periods
     # collectively
-    @pytest.mark.skipif(str(8087) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8087) not in TESTS, reason='Excluded')
     def test_teacher_dates_for_all_periods_collectively_8087(self):
         """Set open and due dates for all periods collectively
         Steps:
@@ -245,7 +244,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8088 - 004 - Teacher | Set open and due dates for  periods
     # individually
-    @pytest.mark.skipif(str(8088) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8088) not in TESTS, reason='Excluded')
     def test_teacher_dates_for_periods_individually_8088(self):
         """Set open and due dates for periods individually
         Steps:
@@ -366,7 +365,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8089 - 005 - Teacher | Save a draft external assignemnt
-    @pytest.mark.skipif(str(8089) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8089) not in TESTS, reason='Excluded')
     def test_teacher_save_a_draft_external_assignment_8089(self):
         """ Save a draft external assignemnt
         Steps:
@@ -431,7 +430,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8090 - 006 - Teacher | Publish a new external assignemnt
-    @pytest.mark.skipif(str(8090) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8090) not in TESTS, reason='Excluded')
     def test_teacher_publish_a_new_external_assignment_8090(self):
         """ Publish a new external assignemnt
         Steps:
@@ -498,7 +497,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8091 - 007 - Teacher | Publish a draft external assignemnt
-    @pytest.mark.skipif(str(8091) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8091) not in TESTS, reason='Excluded')
     def test_teacher_publish_a_draft_external_assignment_8091(self):
         """ Publish a draft external assignemnt
         Steps:
@@ -558,7 +557,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8092 - 008 - Teacher | Cancel a new external assignemnt before
     # making changes using Cancel button
-    @pytest.mark.skipif(str(8092) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8092) not in TESTS, reason='Excluded')
     def test_teacher_cancel_new_external_before_change_using_cancel_8092(self):
         """ Cancel a new external assignemnt before changes using Cancel button
         Steps:
@@ -600,7 +599,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8093 - 009 - Teacher | Cancel a new external assignemnt after
     # making changes using Cancel button
-    @pytest.mark.skipif(str(8093) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8093) not in TESTS, reason='Excluded')
     def test_teacher_cancel_new_external_after_changes_using_cancel_8093(self):
         """ Cancel a new external assignemnt after changes using Cancel button
         Steps:
@@ -656,7 +655,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8094 - 010 - Teacher | Cancel a new external assignemnt before
     # making changes using the X
-    @pytest.mark.skipif(str(8094) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8094) not in TESTS, reason='Excluded')
     def test_teacher_cancel_new_external_before_changes_using_the_x_8094(self):
         """ Cancel a new external assignemnt before changes using the X
         Steps:
@@ -697,7 +696,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8095 - 011 - Teacher | Cancel a new external assignemnt after
     # making changes using the X
-    @pytest.mark.skipif(str(8095) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8095) not in TESTS, reason='Excluded')
     def test_teacher_cancel_new_external_after_changes_using_the_x_8095(self):
         """ Cancel a new external assignemnt after changes using the X
         Steps:
@@ -751,7 +750,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8096 - 012 - Teacher | Cancel a draft external assignemnt before
     # making changes using Cancel button
-    @pytest.mark.skipif(str(8096) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8096) not in TESTS, reason='Excluded')
     def test_teacher_cancel_draft_external_before_change_use_cancel_8096(self):
         """ Cancel a draft external assignemnt before changes using Cancel button
         Steps:
@@ -811,7 +810,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8097 - 013 - Teacher | Cancel a draft external assignment after
     # making changes using Cancel button
-    @pytest.mark.skipif(str(8097) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8097) not in TESTS, reason='Excluded')
     def test_teacher_cancel_draft_external_after_changes_use_cancel_8097(self):
         """ Cancel draft external assignment after changes using Cancel button
         Steps:
@@ -885,7 +884,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8098 - 014 - Teacher | Cancel a draft external assignment before
     # making changes using the X
-    @pytest.mark.skipif(str(8098) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8098) not in TESTS, reason='Excluded')
     def test_teacher_cancel_draft_external_before_changes_use_the_x_8098(self):
         """ Cancel a draft external assignemnt before changes using the X
         Steps:
@@ -944,7 +943,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8099 - 015 - Teacher | Cancel a draft external assignemnt after
     # making changes using the X
-    @pytest.mark.skipif(str(8099) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8099) not in TESTS, reason='Excluded')
     def test_teacher_cancel_draft_external_after_changes_use_the_x_8099(self):
         """ Cancel a draft external assignemnt after changes using the X
         Steps:
@@ -1014,7 +1013,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8100 - 016 - Teacher | Attempt to publish an external assignment
     # with blank required feilds
-    @pytest.mark.skipif(str(8100) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8100) not in TESTS, reason='Excluded')
     def test_teacher_attempt_to_publish_external_with_blank_reqired_8100(self):
         """ Attempt to publish an external with blank required feilds
         Steps:
@@ -1055,7 +1054,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8101 - 017 - Teacher | Attempt to save a draft external assignment
     # with blank required feilds
-    @pytest.mark.skipif(str(8101) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8101) not in TESTS, reason='Excluded')
     def test_teacher_attempt_to_save_external_with_blank_reqired_8101(self):
         """ Attempt to save external assignment with blank required feilds
         Steps:
@@ -1094,7 +1093,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8102 - 018 - Teacher | Delete an unopened external assignment
-    @pytest.mark.skipif(str(8102) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8102) not in TESTS, reason='Excluded')
     def test_teacher_delete_an_unopened_external_assignment_8102(self):
         """ Delete an unopened external assignemnt
         Steps:
@@ -1166,7 +1165,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8103 - 019 - Teacher | Delete an opened external assignment
-    @pytest.mark.skipif(str(8103) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8103) not in TESTS, reason='Excluded')
     def test_teacher_delete_an_opened_external_assignment_8103(self):
         """ Delete an opened external assignemnt
         Steps:
@@ -1237,7 +1236,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8104 - 020 - Teacher | Delete a draft external assignment
-    @pytest.mark.skipif(str(8104) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8104) not in TESTS, reason='Excluded')
     def test_teacher_delete_a_draft_external_assignment_8104(self):
         """ Delete a draft external assignemnt
         Steps:
@@ -1304,7 +1303,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8105 - 021 - Teacher | Add a description to an external assignment
-    @pytest.mark.skipif(str(8105) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8105) not in TESTS, reason='Excluded')
     def test_teacher_add_a_destcription_to_an_external_assignemnt_8105(self):
         """ Add a description to an external assignemnt
         Steps:
@@ -1373,7 +1372,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8106 - 022 - Teacher | Change a description for a draft external
     # assignment
-    @pytest.mark.skipif(str(8106) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8106) not in TESTS, reason='Excluded')
     def test_teacher_change_a_description_for_a_draft_external_8106(self):
         """ Change a description for a draft external assignment
         Steps:
@@ -1436,7 +1435,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8107 - 023 - Teacher | Change a description for an open external
     # assignment
-    @pytest.mark.skipif(str(8107) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8107) not in TESTS, reason='Excluded')
     def test_teacher_change_a_destcription_for_an_open_external_8107(self):
         """ Change a description for an open external assignment
         Steps:
@@ -1500,7 +1499,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8108 - 024 - Teacher | Add a name to an external assignment
-    @pytest.mark.skipif(str(8108) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8108) not in TESTS, reason='Excluded')
     def test_teacher_add_a_name_to_an_external_assignemnt_8108(self):
         """ Add a name to an external assignment
         Steps:
@@ -1566,7 +1565,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8109 - 025 - Teacher | Change name for a draft external assignment
-    @pytest.mark.skipif(str(8109) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8109) not in TESTS, reason='Excluded')
     def test_teacher_change_a_name_for_a_draft_external_assignment_8109(self):
         """ Change a name for a draft external assignment
         Steps:
@@ -1631,7 +1630,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8110 - 026 - Teacher | Change name for an open external assignment
-    @pytest.mark.skipif(str(8110) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8110) not in TESTS, reason='Excluded')
     def test_teacher_change_a_name_for_an_open_external_assignment_8110(self):
         """ Change a name for an open external assignment
         Steps:
@@ -1701,7 +1700,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8111 - 027 - Teacher | Add an assignemnt URL
-    @pytest.mark.skipif(str(8111) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8111) not in TESTS, reason='Excluded')
     def test_teacher_add_an_assignment_url_8111(self):
         """ Add an assignment URL
         Steps:
@@ -1768,7 +1767,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8112 - 028 - Teacher | Change the assignemnt URL for a draft
     # external assignemnt
-    @pytest.mark.skipif(str(8112) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8112) not in TESTS, reason='Excluded')
     def test_teacher_change_the_assignment_url_for_a_draft_external_8112(self):
         """ Change the assignemnt URL for a draft external assignemnt
         Steps:
@@ -1826,7 +1825,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8113 - 029 - Teacher | Info icon shows definitions for status bar
-    @pytest.mark.skipif(str(8113) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8113) not in TESTS, reason='Excluded')
     def test_teacher_info_icon_shows_definitions_for_the_status_bar_8113(self):
         """ Info icon shows definitions for the status bar
         Steps:
@@ -1866,7 +1865,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8114 - 030 - Teacher | Change all feilds in an unopened
     # External Assignemnt
-    @pytest.mark.skipif(str(8114) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8114) not in TESTS, reason='Excluded')
     def test_teacher_change_all_feilds_in_an_unopened_external_8114(self):
         """ Change all feilds in an unopened External Assignemnt
         Steps:
@@ -1955,7 +1954,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8115 - 031 - Teacher | Change all feilds in a draft External
     # Assignemnt
-    @pytest.mark.skipif(str(8115) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8115) not in TESTS, reason='Excluded')
     def test_teacher_change_all_feilds_in_a_draft_external_8115(self):
         """ Change all feilds in a draft External Assignemnt
         Steps:
@@ -2041,7 +2040,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8116 - 032 - Teacher | Change all possible feilds in an open
     # External Assignemnt
-    @pytest.mark.skipif(str(8116) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8116) not in TESTS, reason='Excluded')
     def test_teacher_change_all_possible_feilds_in_an_open_external_8116(self):
         """ Change all possible feilds in an open External Assignemnt
         Steps:
