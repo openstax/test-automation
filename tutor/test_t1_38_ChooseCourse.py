@@ -7,15 +7,13 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-# from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-# from selenium.webdriver.support import expected_conditions as expect  # NOQA
-# from staxing.assignment import Assignment  # NOQA
+# from random import randint
+from selenium.webdriver.common.by import By
+# from selenium.webdriver.support import expected_conditions as expect
+# from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher  # NOQA
-# from staxing.helper import Student  # NOQA
-from staxing.helper import User  # NOQA
+from staxing.helper import Teacher, User
 
 # for template command line testing only
 # - replace list_of_cases on line 31 with all test case IDs in this file
@@ -33,7 +31,9 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8254, 8255, 8256, 8257])  # NOQA
+    str([
+        8254, 8255, 8256, 8257
+    ])
 )
 
 
@@ -66,7 +66,7 @@ class TestChooseCourse(unittest.TestCase):
             pass
 
     # Case C8254 - 001 - Student | Select a course
-    @pytest.mark.skipif(str(8254) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8254) not in TESTS, reason='Excluded')
     def test_student_select_a_course_8254(self):
         """Select a course.
 
@@ -94,12 +94,10 @@ class TestChooseCourse(unittest.TestCase):
         assert('courses/1/list/' in self.user.current_url()), \
             'Not in a course'
 
-        self.user.sleep(5)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8255 - 002 - Student | Bypass the course picker
-    @pytest.mark.skipif(str(8255) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8255) not in TESTS, reason='Excluded')
     def test_student_bypass_the_course_picker_8255(self):
         """Bypass the course picker.
 
@@ -136,7 +134,7 @@ class TestChooseCourse(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8256 - 003 - Teacher | Select a course
-    @pytest.mark.skipif(str(8256) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8256) not in TESTS, reason='Excluded')
     def test_teacher_select_a_course_8256(self):
         """Select a course.
 
@@ -167,7 +165,7 @@ class TestChooseCourse(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8257 - 004 - Teacher | Bypass the course picker
-    @pytest.mark.skipif(str(8257) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8257) not in TESTS, reason='Excluded')
     def test_teacher_bypass_the_course_picker_8257(self):
         """Bypass the course picker.
 

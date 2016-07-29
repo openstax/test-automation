@@ -1,4 +1,4 @@
-"""Concept Coach v1, Epic 08 - StudentsWorkAssignments."""
+"""Concept Coach v1, Epic 08 - Students Work Assignments."""
 
 import inspect
 import json
@@ -22,9 +22,11 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7691, 7692, 7693, 7694, 7695,
-         7696, 7697, 7698, 7699, 7700,
-         7701, 7702, 7703])
+    str([
+        7691, 7692, 7693, 7694, 7695,
+        7696, 7697, 7698, 7699, 7700,
+        7701, 7702, 7703
+    ])
 )
 
 
@@ -36,7 +38,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         teacher = Teacher(username='teacher100', password='password',
-                          site='https://tutor-qa.openstax.org/')
+                          site='https://tutor-qa.openstax.org/',
+                          pasta_user=self.ps)
         teacher.login()
         courses = teacher.find_all(By.CLASS_NAME,
                                    'tutor-booksplash-course-item')
@@ -66,7 +69,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.book_url = teacher.find(
             By.XPATH, '//a[span[text()="Online Book "]]'
         ).get_attribute('href')
-        self.student = Student()
+        self.student = Student(existing_driver=self.teacher.driver)
         self.first_name = Assignment.rword(6)
         self.last_name = Assignment.rword(8)
         self.email = self.first_name + '.' + self.last_name + \
@@ -74,12 +77,12 @@ class TestStudentsWorkAssignments(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
-        except:
-            pass
-        try:
-            self.student.delete()
         except:
             pass
 
@@ -87,6 +90,17 @@ class TestStudentsWorkAssignments(unittest.TestCase):
     @pytest.mark.skipif(str(7691) not in TESTS, reason='Excluded')
     def test_student_select_an_exercise_answer_7691(self):
         """Select an exercise answer."""
+        self.ps.test_updates['name'] = 'cc1.08.001' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.08',
+            'cc1.08.001',
+            '7691'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         self.student.get(self.book_url)
         self.student.sleep(2)
         self.student.find_all(By.XPATH, '//a[@class="nav next"]')[0].click()
@@ -214,6 +228,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         ).click()
         self.student.find(By.XPATH, '//button[span[text()="Submit"]]').click()
 
+        self.ps.test_updates['passed'] = True
+
     # Case C7692 - 002 - Student | After answering an exercise feedback
     # is presented
     @pytest.mark.skipif(str(7692) not in TESTS, reason='Excluded')  # NOQA
@@ -221,13 +237,11 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """View section completion report.
 
         Steps:
-
         Go to https://tutor-qa.openstax.org/
         Click on the 'Login' button
         Enter the teacher user account in the username and password text boxes
         Click on the 'Sign in' button
         If the user has more than one course, click on a CC course name
-
         Click the 'Contents' button to open the table of contents
         Click on a chapter
         Click on a non-introductory section
@@ -237,11 +251,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         Click a multiple choice answer
         Click the 'Submit' button
 
-
         Expected Result:
-
         The correct answer is displayed and feedback is given.
-
         """
         self.ps.test_updates['name'] = 'cc1.08.002' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -254,6 +265,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -264,48 +276,59 @@ class TestStudentsWorkAssignments(unittest.TestCase):
 
         Steps:
 
+
+        Expected Result:
         """
+        self.ps.test_updates['name'] = 'cc1.08.003' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.08',
+            'cc1.08.003',
+            '7693'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # Case C7694 - 004 - System | Spaced practice assessments are from
     # previously worked modules
-        @pytest.mark.skipif(str(7694) not in TESTS, reason='Excluded')  # NOQA
-        def test_system_spaced_practice_assessments_are_from_previo_7694(self):
-            """Spaced practice assessments are from previousy worked modules.
+    @pytest.mark.skipif(str(7694) not in TESTS, reason='Excluded')  # NOQA
+    def test_system_spaced_practice_assessments_are_from_previo_7694(self):
+        """Spaced practice assessments are from previousy worked modules.
 
-            Steps:
+        Steps:
+        Go to https://tutor-qa.openstax.org/
+        Click on the 'Login' button
+        Enter the student user account
+        Click on the 'Sign in' button
+        If the user has more than one course, click on a CC course name
+        Click the 'Contents' button to open the table of contents
+        Select a non-introductory section
+        Click Jump to Concept Coach
+        Click Launch Concept Coach
+        Go through the assessments until you get to the Spaced Practice
 
-            Go to https://tutor-qa.openstax.org/
-            Click on the 'Login' button
-            Enter the student user account
-            Click on the 'Sign in' button
-            If the user has more than one course, click on a CC course name
-            Click the 'Contents' button to open the table of contents
-            Select a non-introductory section
-            Click Jump to Concept Coach
-            Click Launch Concept Coach
+        Expected Result:
+        The section number beneath the text box is from a previous section
+        """
+        self.ps.test_updates['name'] = 'cc1.08.004' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.08',
+            'cc1.08.004',
+            '7694'
+        ]
+        self.ps.test_updates['passed'] = False
 
-            Go through the assessments until you get to the Spaced Practice
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
-
-            Expected Result:
-
-            The section number beneath the text box is from a previous section
-
-            """
-            self.ps.test_updates['name'] = 'cc1.08.004' \
-                + inspect.currentframe().f_code.co_name[4:]
-            self.ps.test_updates['tags'] = [
-                'cc1',
-                'cc1.08',
-                'cc1.08.004',
-                '7694'
-            ]
-            self.ps.test_updates['passed'] = False
-
-            # Test steps and verification assertions
-
-            self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True
 
     # Case C7695 - 005 - System | Modules without assessments do not display
     # the Concept Coach widget
@@ -314,7 +337,6 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Module without assessments does not display the CC widget.
 
         Steps:
-
         Go to https://tutor-qa.openstax.org/
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
@@ -323,11 +345,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         Click the 'Contents' button to open the table of contents
         Click on an introductory section
 
-
         Expected Result:
-
         The Concept Coach widget does not appear.
-
         """
         self.ps.test_updates['name'] = 'cc1.08.005' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -340,6 +359,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -349,13 +369,11 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Assignment is assistive technology friendly.
 
         Steps:
-
         Go to tutor-qa
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
         Click on the 'Sign in' button
         If the user has more than one course, click on a CC course name
-
         Click the 'Contents' button to open the table of contents
         Click on a chapter
         Click on a non-introductory section
@@ -364,13 +382,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         Click the 'Answer' button
         Type a, b, c, or d
 
-
-
         Expected Result:
-
         A multiple choice answer matching the letter typed should be selected.
-
-
         """
         self.ps.test_updates['name'] = 'cc1.08.006' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -383,6 +396,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -393,13 +407,11 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Display the assignment summary after completing the assignment.
 
         Steps:
-
         Go to tutor-qa
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
         Click on the 'Sign in' button
         If the user has more than one course, click on a CC course name
-
         Click the 'Contents' button to open the table of contents
         Click on a chapter
         Click on a non-introductory section
@@ -409,13 +421,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         Click the 'Submit' button
         After answering the last question, click the 'Next Question' button
 
-
-
         Expected Result:
-
         The summary is displayed
-
-
         """
         self.ps.test_updates['name'] = 'cc1.08.007' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -428,6 +435,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -438,25 +446,18 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """The exercise ID is visible within the assessment pane.
 
         Steps:
-
         Go to tutor-qa
         Click on the 'Login' button
         Enter the student account in the username and password text boxes
         Click on the 'Sign in' button
         If the user has more than one course, click on a CC course name
-
         Click the 'Contents' button to open the table of contents
         Click on a chapter
         Click on a non-introductory section
         Click the 'Launch Concept Coach' button at the bottom of the page
 
-
-
         Expected Result:
-
         The exercise ID is visivle on the exercise.
-
-
         """
         self.ps.test_updates['name'] = 'cc1.08.008' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -469,6 +470,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -479,20 +481,14 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Able to refer to an assessment to OpenStax via Errata form.
 
         Steps:
-
         Click the 'Contents' button to open the table of contents
         Click on a chapter
         Click on a non-introductory section
         Click the 'Launch Concept Coach' button at the bottom of the page
         Click the 'Report an error' link
 
-
-
         Expected Result:
-
         User is taken to the Errata form with the exercise ID prefilled
-
-
         """
         self.ps.test_updates['name'] = 'cc1.08.009' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -505,6 +501,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -515,7 +512,6 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Able to work an assignment on an Apple tablet device.
 
         Steps:
-
         Click the 'Contents' button to open the table of contents
         Click on a chapter
         Click on a non-introductory section
@@ -524,13 +520,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         Click a multiple choice answer
         Click the 'Submit' button
 
-
-
         Expected Result:
-
         Answer is successfully submitted.
-
-
         """
         self.ps.test_updates['name'] = 'cc1.08.010' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -543,6 +534,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -553,7 +545,6 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Able to work an assignment on an Android tablet device.
 
         Steps:
-
         Click the 'Contents' button to open the table of contents
         Click on a chapter
         Click on a non-introductory section
@@ -562,13 +553,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         Click a multiple choice answer
         Click the 'Submit' button
 
-
-
         Expected Result:
-
         Answer is successfully submitted.
-
-
         """
         self.ps.test_updates['name'] = 'cc1.08.011' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -581,6 +567,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -591,7 +578,6 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Able to work an assignment on a WIndows tablet device.
 
         Steps:
-
         Click the 'Contents' button to open the table of contents
         Click on a chapter
         Click on a non-introductory section
@@ -600,13 +586,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         Click a multiple choice answer
         Click the 'Submit' button
 
-
-
         Expected Result:
-
         Answer is successfully submitted.
-
-
         """
         self.ps.test_updates['name'] = 'cc1.08.012' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -619,6 +600,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -629,5 +611,21 @@ class TestStudentsWorkAssignments(unittest.TestCase):
 
         Steps:
 
+
+        Expected Result:
+
         """
+        self.ps.test_updates['name'] = 'cc1.08.013' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.08',
+            'cc1.08.013',
+            '7703'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
