@@ -108,31 +108,32 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Expected Result:
         User taken to Add External Assignment page with due date filled in
         """
-        self.ps.test_updates['name'] = 't1.18.002' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.002', '8086']
-        self.ps.test_updates['passed'] = False
-
-        # click on calendar date
-        # click on add external assignemnt
-
-        day = self.teacher.wait.until(
-            expect.element_to_be_clickable(
-                (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
-            )
-        )
-        self.teacher.driver.execute_script(
-            'return arguments[0].scrollIntoView();', day)
-        time.sleep(2)
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(day)
-        actions.click(day)
-        actions.move_by_offset(30, 65)
-        actions.click()
-        actions.perform()
-        assert('externals/new' in self.teacher.current_url()),\
-            'not at Add External Assignemnt page'
-        self.ps.test_updates['passed'] = True
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # self.ps.test_updates['name'] = 't1.18.002' \
+        #     + inspect.currentframe().f_code.co_name[4:]
+        # self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.002', '8086']
+        # self.ps.test_updates['passed'] = False
+        #
+        # # click on calendar date
+        # # click on add external assignemnt
+        #
+        # day = self.teacher.wait.until(
+        #     expect.element_to_be_clickable(
+        #         (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
+        #     )
+        # )
+        # self.teacher.driver.execute_script(
+        #     'return arguments[0].scrollIntoView();', day)
+        # time.sleep(2)
+        # actions = ActionChains(self.teacher.driver)
+        # actions.move_to_element(day)
+        # actions.click(day)
+        # actions.move_by_offset(30, 65)
+        # actions.click()
+        # actions.perform()
+        # assert('externals/new' in self.teacher.current_url()),\
+        #     'not at Add External Assignemnt page'
+        # self.ps.test_updates['passed'] = True
 
     # Case C8087 - 003 - Teacher | Set open and due dates for all periods
     # collectively
