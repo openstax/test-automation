@@ -24,14 +24,10 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([14653])  # NOQA
-)
-
-"""
-14651, 14652, 14653, 14655,
+    str([14651, 14652, 14653, 14655,
          14656, 14657, 14850, 14658,
-         14660, 14661
-"""
+         14660, 14661])  # NOQA
+)
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -42,13 +38,17 @@ class TestImproveCourseManagement(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        # self.Teacher = Teacher(
-        #    use_env_vars=True,
-        #    pasta_user=self.ps,
-        #    capabilities=self.desired_capabilities
-        # )
-        self.teacher = Teacher(use_env_vars=True)
-        self.admin = Admin(use_env_vars=True)
+        self.teacher = Teacher(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
+
+        self.admin = Teacher(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
 
     def tearDown(self):
         """Test destructor."""
@@ -171,11 +171,56 @@ class TestImproveCourseManagement(unittest.TestCase):
             By.PARTIAL_LINK_TEXT, "Course Settings and Roster").click()
         self.teacher.sleep(5)
 
+        # Move the student to another period
+        first = self.teacher.find(
+            By.XPATH,
+            "//div[@class='period']/table[@class='roster table table-striped" +
+            " table-bordered table-condensed table-hover']/tbody/tr[1]/td[1]"
+        ).text
+        last = self.teacher.find(
+            By.XPATH,
+            "//div[@class='period']/table[@class='roster table table-striped" +
+            " table-bordered table-condensed table-hover']/tbody/tr[1]/td[2]"
+        ).text
+
         self.teacher.find(By.PARTIAL_LINK_TEXT, "Change Period").click()
+        self.teacher.sleep(1)
+        self.teacher.find(
+            By.XPATH, "//ul[@class='nav nav-pills nav-stacked']/li/a").click()
+
         self.teacher.sleep(5)
 
-        first = self.teacher.find(By.XPATH, "//div[@class='period']/table[@class='roster table table-striped table-bordered table-condensed table-hover']/tbody/tr[1]/td[1]")
-        last = self.teacher.find(By.XPATH, "//div[@class='period']/table[@class='roster table table-striped table-bordered table-condensed table-hover']/tbody/tr[1]/td[2]")
+        # Verify the move, then move the student back to the original period
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='roster']/div[@class='settings-section periods']" +
+            "/ul[@class='nav nav-tabs']/li[2]/a").click()
+        roster = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='period']/table[@class='roster table table-striped" +
+            " table-bordered table-condensed table-hover']/tbody/tr")
+        index = 0
+        for student in roster:
+            if student.text.find(first) >= 0 and student.text.find(last) >= 0:
+                self.teacher.driver.find_elements_by_partial_link_text(
+                    "Change Period")[index].click()
+                self.teacher.sleep(1)
+                self.teacher.find(
+                    By.XPATH,
+                    "//ul[@class='nav nav-pills nav-stacked']/li/a").click()
+                break
+            index += 1
+
+        self.teacher.sleep(2)
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='roster']/div[@class='settings-section periods']" +
+            "/ul[@class='nav nav-tabs']/li[1]/a").click()
+        roster = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='period']/table[@class='roster table table-striped" +
+            " table-bordered table-condensed table-hover']/tbody/tr")
+
+        assert(first in roster[0].text and last in roster[0].text), \
+            'error'
 
         self.ps.test_updates['passed'] = True
 
@@ -208,6 +253,50 @@ class TestImproveCourseManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.PARTIAL_LINK_TEXT, "Course Settings and Roster").click()
+        self.teacher.sleep(5)
+
+        # Drop the student
+        first = self.teacher.find(
+            By.XPATH,
+            "//div[@class='period']/table[@class='roster table table-striped" +
+            " table-bordered table-condensed table-hover']/tbody/tr[1]/td[1]"
+        ).text
+        last = self.teacher.find(
+            By.XPATH,
+            "//div[@class='period']/table[@class='roster table table-striped" +
+            " table-bordered table-condensed table-hover']/tbody/tr[1]/td[2]"
+        ).text
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "Drop").click()
+        self.teacher.sleep(1)
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='-drop-student btn btn-danger']").click()
+
+        self.teacher.sleep(5)
+
+        # Verify the student was dropped and add back to active roster
+        dropped = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='settings-section dropped-students']/table[@class" +
+            "='roster table table-striped table-bordered table-condensed " +
+            "table-hover']/tbody/tr")
+        index = 0
+        for student in dropped:
+            if student.text.find(first) >= 0 and student.text.find(last) >= 0:
+                self.teacher.driver.find_elements_by_partial_link_text(
+                    "Add Back to Active Roster")[index].click()
+                self.teacher.sleep(1)
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='-undrop-student btn btn-success']"
+                ).click()
+                self.teacher.sleep(20)
+                break
+            index += 1
 
         self.ps.test_updates['passed'] = True
 
@@ -261,8 +350,102 @@ class TestImproveCourseManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.PARTIAL_LINK_TEXT, "Course Settings and Roster").click()
+        self.teacher.sleep(5)
 
-        self.ps.test_updates['passed'] = True
+        # Drop the student
+        first = self.teacher.find(
+            By.XPATH,
+            "//div[@class='period']/table[@class='roster table table-striped" +
+            " table-bordered table-condensed table-hover']/tbody/tr[1]/td[1]"
+        ).text
+        last = self.teacher.find(
+            By.XPATH,
+            "//div[@class='period']/table[@class='roster table table-striped" +
+            " table-bordered table-condensed table-hover']/tbody/tr[1]/td[2]"
+        ).text
+
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "Drop").click()
+        self.teacher.sleep(1)
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='-drop-student btn btn-danger']").click()
+
+        self.teacher.sleep(5)
+
+        # Go to student scores, verify the student is not seen
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.PARTIAL_LINK_TEXT, "Student Scores").click()
+        self.teacher.sleep(10)
+
+        odd_scores = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='fixedDataTableRowLayout_main public_fixedData" +
+            "TableRow_main public_fixedDataTableRow_even public_fixedDataTa" +
+            "ble_bodyRow']/div[@class='fixedDataTableRowLayout_body']/div" +
+            "[@class='fixedDataTableCellGroupLayout_cellGroupWrapper'][1]/d" +
+            "iv[@class='fixedDataTableCellGroupLayout_cellGroup']/div[@clas" +
+            "s='fixedDataTableCellLayout_main public_fixedDataTableCell_" +
+            "main'][1]/div[@class='fixedDataTableCellLayout_wrap1 public_fi" +
+            "xedDataTableCell_wrap1']/div[@class='fixedDataTableCellLayout_w" +
+            "rap2 public_fixedDataTableCell_wrap2']/div[@class='fixedDataTab" +
+            "leCellLayout_wrap3 public_fixedDataTableCell_wrap3']/div[@class" +
+            "='name-cell']/a[@class='student-name public_fixedDataTableCell" +
+            "_cellContent']")
+        even_scores = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='fixedDataTableRowLayout_main public_fixedDataTab" +
+            "leRow_main public_fixedDataTableRow_highlighted public_fixedDa" +
+            "taTableRow_odd public_fixedDataTable_bodyRow']/div[@class='fix" +
+            "edDataTableRowLayout_body']/div[@class='fixedDataTableCellGrou" +
+            "pLayout_cellGroupWrapper'][1]/div[@class='fixedDataTableCellGr" +
+            "oupLayout_cellGroup']/div[@class='fixedDataTableCellLayout_mai" +
+            "n public_fixedDataTableCell_main'][1]/div[@class='fixedDataTab" +
+            "leCellLayout_wrap1 public_fixedDataTableCell_wrap1']/div[@clas" +
+            "s='fixedDataTableCellLayout_wrap2 public_fixedDataTableCell_wr" +
+            "ap2']/div[@class='fixedDataTableCellLayout_wrap3 public_fixedD" +
+            "ataTableCell_wrap3']/div[@class='name-cell']/a[@class='student" +
+            "-name public_fixedDataTableCell_cellContent']")
+
+        found = False
+        for student in odd_scores:
+            if student.text.find(first) >= 0 and student.text.find(last) >= 0:
+                found = True
+                break
+
+        if not found:
+            for stud in even_scores:
+                if stud.text.find(first) >= 0 and stud.text.find(last) >= 0:
+                    found = True
+                    break
+
+        # Add back to active roster
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.PARTIAL_LINK_TEXT, "Course Settings and Roster").click()
+        dropped = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='settings-section dropped-students']/table[@class" +
+            "='roster table table-striped table-bordered table-condensed ta" +
+            "ble-hover']/tbody/tr")
+        index = 0
+        for student in dropped:
+            if student.text.find(first) >= 0 and student.text.find(last) >= 0:
+                self.teacher.driver.find_elements_by_partial_link_text(
+                    "Add Back to Active Roster")[index].click()
+                self.teacher.sleep(1)
+                self.teacher.find(
+                    By.XPATH,
+                    "//button[@class='-undrop-student btn btn-success']"
+                ).click()
+                self.teacher.sleep(20)
+                break
+            index += 1
+
+        if not found:
+            self.ps.test_updates['passed'] = True
 
     # 14850 - 007 - Teacher | In Student Scores view moved students
     @pytest.mark.skipif(str(14850) not in TESTS, reason='Excluded')  # NOQA
@@ -297,8 +480,107 @@ class TestImproveCourseManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.PARTIAL_LINK_TEXT, "Course Settings and Roster").click()
+        self.teacher.sleep(5)
 
-        self.ps.test_updates['passed'] = True
+        # Move the student to another period
+        first = self.teacher.find(
+            By.XPATH,
+            "//div[@class='period']/table[@class='roster table table-striped" +
+            " table-bordered table-condensed table-hover']/tbody/tr[1]/td[1]"
+        ).text
+        last = self.teacher.find(
+            By.XPATH,
+            "//div[@class='period']/table[@class='roster table table-striped" +
+            " table-bordered table-condensed table-hover']/tbody/tr[1]/td[2]"
+        ).text
+
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "Change Period").click()
+        self.teacher.sleep(1)
+        self.teacher.find(
+            By.XPATH, "//ul[@class='nav nav-pills nav-stacked']/li/a").click()
+
+        self.teacher.sleep(5)
+
+        # Go to student scores, verify the student is seen
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.PARTIAL_LINK_TEXT, "Student Scores").click()
+        self.teacher.sleep(10)
+        self.teacher.find(
+            By.XPATH,
+            "//nav[@class='collapse in']/ul[@class='nav nav-tabs']/li[2]/a"
+        ).click()
+
+        odd_scores = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='fixedDataTableRowLayout_main public_fixedData" +
+            "TableRow_main public_fixedDataTableRow_even public_fixedDataTa" +
+            "ble_bodyRow']/div[@class='fixedDataTableRowLayout_body']/div" +
+            "[@class='fixedDataTableCellGroupLayout_cellGroupWrapper'][1]/d" +
+            "iv[@class='fixedDataTableCellGroupLayout_cellGroup']/div[@clas" +
+            "s='fixedDataTableCellLayout_main public_fixedDataTableCell_" +
+            "main'][1]/div[@class='fixedDataTableCellLayout_wrap1 public_fi" +
+            "xedDataTableCell_wrap1']/div[@class='fixedDataTableCellLayout_w" +
+            "rap2 public_fixedDataTableCell_wrap2']/div[@class='fixedDataTab" +
+            "leCellLayout_wrap3 public_fixedDataTableCell_wrap3']/div[@class" +
+            "='name-cell']/a[@class='student-name public_fixedDataTableCell" +
+            "_cellContent']")
+        even_scores = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='fixedDataTableRowLayout_main public_fixedDataTab" +
+            "leRow_main public_fixedDataTableRow_highlighted public_fixedDa" +
+            "taTableRow_odd public_fixedDataTable_bodyRow']/div[@class='fix" +
+            "edDataTableRowLayout_body']/div[@class='fixedDataTableCellGrou" +
+            "pLayout_cellGroupWrapper'][1]/div[@class='fixedDataTableCellGr" +
+            "oupLayout_cellGroup']/div[@class='fixedDataTableCellLayout_mai" +
+            "n public_fixedDataTableCell_main'][1]/div[@class='fixedDataTab" +
+            "leCellLayout_wrap1 public_fixedDataTableCell_wrap1']/div[@clas" +
+            "s='fixedDataTableCellLayout_wrap2 public_fixedDataTableCell_wr" +
+            "ap2']/div[@class='fixedDataTableCellLayout_wrap3 public_fixedD" +
+            "ataTableCell_wrap3']/div[@class='name-cell']/a[@class='student" +
+            "-name public_fixedDataTableCell_cellContent']")
+
+        found = False
+        for student in odd_scores:
+            if student.text.find(first) >= 0 and student.text.find(last) >= 0:
+                found = True
+                break
+
+        if found:
+            for stud in even_scores:
+                if stud.text.find(first) >= 0 and stud.text.find(last) >= 0:
+                    found = True
+                    break
+
+        # Add student back to original period
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.PARTIAL_LINK_TEXT, "Course Settings and Roster").click()
+        self.teacher.sleep(10)
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='roster']/div[@class='settings-section periods']" +
+            "/ul[@class='nav nav-tabs']/li[2]/a").click()
+        roster = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='period']/table[@class='roster table table-striped" +
+            " table-bordered table-condensed table-hover']/tbody/tr")
+        index = 0
+        for student in roster:
+            if student.text.find(first) >= 0 and student.text.find(last) >= 0:
+                self.teacher.driver.find_elements_by_partial_link_text(
+                    "Change Period")[index].click()
+                self.teacher.sleep(1)
+                self.teacher.find(
+                    By.XPATH,
+                    "//ul[@class='nav nav-pills nav-stacked']/li/a").click()
+                break
+            index += 1
+
+        if found:
+            self.ps.test_updates['passed'] = True
 
     # 14658 - 008 - Teacher | Require emails for all students for roster import
     @pytest.mark.skipif(str(14658) not in TESTS, reason='Excluded')  # NOQA
@@ -346,6 +628,47 @@ class TestImproveCourseManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.PARTIAL_LINK_TEXT, "Course Settings and Roster").click()
+        self.teacher.sleep(5)
+
+        # Change the timezone
+        self.teacher.driver.find_elements_by_xpath(
+            "//button[@class='edit-course btn btn-link']")[1].click()
+        self.teacher.sleep(2)
+        self.teacher.find(
+            By.XPATH, "//div[@class='tutor-radio']/label").click()
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button -edit-course-" +
+            "confirm btn btn-default']").click()
+        self.teacher.sleep(5)
+
+        # Verify the change and change the time back to Central
+        self.teacher.driver.find_elements_by_xpath(
+            "//button[@class='edit-course btn btn-link']")[1].click()
+
+        assert('Central Time' not in self.teacher.find(
+            By.XPATH, "//div[@class='tutor-radio active']/label").text), \
+            'Not viewing Concept Coach stats'
+
+        self.teacher.sleep(2)
+        options = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='tutor-radio']/label")
+
+        for timezone in options:
+            if timezone.text.find('Central Time') >= 0:
+                timezone.click()
+                break
+
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button -edit-course-" +
+            "confirm btn btn-default']").click()
+        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
