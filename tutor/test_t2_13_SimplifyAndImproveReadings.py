@@ -7,13 +7,13 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from random import randint
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.support import expected_conditions as expect
+# from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Student  # NOQA
+from staxing.helper import Teacher
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -24,7 +24,7 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([14745, 14746])  # NOQA
+    str([14745, 14746])
 )
 
 
@@ -36,7 +36,7 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
+        self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
@@ -53,7 +53,7 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
 
     # 14745 - 001 - Student | Relative size and progress are displayed while
     # working a reading assignment
-    @pytest.mark.skipif(str(14745) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14745) not in TESTS, reason='Excluded')
     def test_student_relative_size_and_progress_are_displayed_whil_14745(self):
         """Relative size and progress are displayed while working a reading assignment.
 
@@ -93,7 +93,7 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
 
     # 14746 - 002 - Student | Access prior milestones in the reading assignment
     # with breadcrumbs
-    @pytest.mark.skipif(str(14746) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14746) not in TESTS, reason='Excluded')
     def test_student_access_prior_milestones_in_the_reading_assign_14746(self):
         """Access prior milestones in the reading assignment with breadcrumbs.
 

@@ -7,14 +7,14 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+# from staxing.assignment import Assignment
 from selenium.webdriver import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher, Student  # NOQA
+from staxing.helper import Teacher, Student
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -25,7 +25,10 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([14645, 14646, 14647, 14648, 14649, 14650])  # NOQA
+    str([
+        14645, 14646, 14647, 14648, 14649,
+        14650
+    ])
 )
 
 
@@ -45,24 +48,25 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
         self.student = Student(
             use_env_vars=True,
             pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            capabilities=self.desired_capabilities,
+            existing_driver=self.teacher.driver
         )
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.student.driver.session_id),
-                           **self.ps.test_updates)
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
-            self.student.delete()
+            self.student = None
             self.teacher.delete()
         except:
             pass
 
     # 14645 - 001 - Student | All work is visible for college students
     # not just "This Week"
-    @pytest.mark.skipif(str(14645) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14645) not in TESTS, reason='Excluded')
     def test_student_all_work_is_visible_for_college_students_14645(self):
         """All work is visible for college students, not just 'This Week'.
 
@@ -103,7 +107,7 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # 14646 - 002 - Teacher | Create a link to the OpenStax Dashboard
-    @pytest.mark.skipif(str(14646) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14646) not in TESTS, reason='Excluded')
     def test_teacher_create_a_link_to_the_openstax_dashboard_14646(self):
         """Create a link to the OpenStax Dashboard.
 
@@ -118,7 +122,7 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
     # 14647 - 003 - Teacher | Create a link to the OpenStax Dashboard
-    @pytest.mark.skipif(str(14647) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14647) not in TESTS, reason='Excluded')
     def test_teacher_create_a_link_to_the_openstax_dashboard_14647(self):
         """Create a link to the OpenStax Dashboard.
 
@@ -133,7 +137,7 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
     # 14648 - 004 - Teacher | Create links to assigned readings in their LMS
-    @pytest.mark.skipif(str(14648) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14648) not in TESTS, reason='Excluded')
     def test_teacher_create_links_to_assigned_readings_in_lms_14648(self):
         """Create links to assigned readings in their LMS.
 
@@ -291,7 +295,7 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
         self.teacher.sleep(5)
 
     # 14649 - 005 - Teacher | Create links to assigned homework in their LMS
-    @pytest.mark.skipif(str(14649) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14649) not in TESTS, reason='Excluded')
     def test_teacher_create_links_to_assigned_homework_in_lms_14649(self):
         """Create links to assigned homework in their LMS.
 
@@ -464,7 +468,7 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
 
     # 14650 - 006 - Teacher | View instructions on how to export summary grade
     # for my student's OpenStax practice to my LMS
-    @pytest.mark.skipif(str(14650) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14650) not in TESTS, reason='Excluded')
     def test_teacher_view_instructions_on_how_to_export_summary_14650(self):
         """View instructions on how to export summary grade into LMS.
 

@@ -7,14 +7,14 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+# from staxing.assignment import Assignment
 from selenium.webdriver.common.keys import Keys
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Admin  # NOQA
+from staxing.helper import Admin
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -25,14 +25,13 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8358])
+    str([
+        8341, 8342, 8343, 8344, 8345,
+        8346, 8347, 8348, 8349, 8350,
+        8351, 8352, 8353, 8354, 8355,
+        8356, 8357, 8358, 8359, 8360
+    ])
 )
-"""
-8341, 8342, 8343, 8344, 8345,
-         8346, 8347, 8348, 8349, 8350,
-         8351, 8352, 8353, 8354, 8355,
-         8356, 8357, 8358, 8359, 8360
-"""
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -44,29 +43,28 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         # login as admin, go to user menu, click admin option
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        # self.Teacher = Teacher(
-        #    use_env_vars=True,
-        #    pasta_user=self.ps,
-        #    capabilities=self.desired_capabilities
-        # )
-        self.admin = Admin(use_env_vars=True)
-        # self.admin = Admin(username='admin', password='password',
-        #                    site='https://tutor-dev.openstax.org/')
+        self.admin = Admin(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
         self.admin.login()
         self.admin.goto_admin_control()
         self.admin.sleep(5)
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.admin.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.admin.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.admin.delete()
         except:
             pass
 
     # Case C8341 - 001 - Admin | Add a new district
-    @pytest.mark.skipif(str(8341) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8341) not in TESTS, reason='Excluded')
     def test_admin_add_a_new_district(self):
         """Add a new district.
 
@@ -104,9 +102,8 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, "//form/input[@class='btn btn-primary']").click()
 
         # Delete the district
-        index = 0
         districts = self.admin.driver.find_elements_by_xpath("//tr")
-        for district in districts:
+        for index, district in enumerate(districts):
             if district.text.find('automated test edit') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_partial_link_text(
@@ -116,10 +113,9 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 self.admin.sleep(2)
                 self.ps.test_updates['passed'] = True
                 break
-            index += 1
 
     # Case C8342 - 002 - Admin | Change a district's name
-    @pytest.mark.skipif(str(8342) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8342) not in TESTS, reason='Excluded')
     def test_admin_change_a_districts_name(self):
         """Change a district's name.
 
@@ -157,9 +153,8 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, "//form/input[@class='btn btn-primary']").click()
 
         # Edit the district name
-        index = 0
         districts = self.admin.driver.find_elements_by_xpath("//tr")
-        for district in districts:
+        for index, district in enumerate(districts):
             if district.text.find('automated test') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_link_text(
@@ -171,12 +166,10 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                     By.XPATH, "//input[@class='btn btn-primary']").click()
                 self.admin.sleep(5)
                 break
-            index += 1
 
         # Delete the district
-        index = 0
         districts = self.admin.driver.find_elements_by_xpath("//tr")
-        for district in districts:
+        for index, district in enumerate(districts):
             if district.text.find('automated test edit') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_partial_link_text(
@@ -186,10 +179,9 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 self.admin.sleep(2)
                 self.ps.test_updates['passed'] = True
                 break
-            index += 1
 
     # Case C8343 - 003 - Admin | Delete an exisiting district
-    @pytest.mark.skipif(str(8343) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8343) not in TESTS, reason='Excluded')
     def test_admin_delete_an_existing_district(self):
         """Delete an existing district.
 
@@ -226,9 +218,8 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, "//form/input[@class='btn btn-primary']").click()
 
         # Delete the district
-        index = 0
         districts = self.admin.driver.find_elements_by_xpath("//tr")
-        for district in districts:
+        for index, district in enumerate(districts):
             if district.text.find('automated test edit') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_partial_link_text(
@@ -238,10 +229,9 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 self.admin.sleep(2)
                 self.ps.test_updates['passed'] = True
                 break
-            index += 1
 
     # Case C8344 - 004 - Admin | Add a new school
-    @pytest.mark.skipif(str(8344) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8344) not in TESTS, reason='Excluded')
     def test_admin_add_a_new_school(self):
         """Add a new school.
 
@@ -279,9 +269,8 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
 
         # Delete the school
-        index = 0
         schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for school in schools:
+        for index, school in enumerate(schools):
             if school.text.find('automated test') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_partial_link_text(
@@ -291,10 +280,9 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 self.admin.sleep(2)
                 self.ps.test_updates['passed'] = True
                 break
-            index += 1
 
     # Case C8345 - 005 - Admin | Change a school's name
-    @pytest.mark.skipif(str(8345) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8345) not in TESTS, reason='Excluded')
     def test_admin_change_a_schools_name(self):
         """Change a school's name.
 
@@ -331,9 +319,8 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
 
         # Edit the school's name
-        index = 0
         schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for school in schools:
+        for index, school in enumerate(schools):
             if school.text.find('automated test') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_link_text(
@@ -345,12 +332,10 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                     By.XPATH, "//input[@class='btn btn-primary']").click()
                 self.admin.sleep(5)
                 break
-            index += 1
 
         # Delete the school
-        index = 0
         schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for school in schools:
+        for index, school in enumerate(schools):
             if school.text.find('automated test edit') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_partial_link_text(
@@ -360,10 +345,9 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 self.admin.sleep(2)
                 self.ps.test_updates['passed'] = True
                 break
-            index += 1
 
     # Case C8346 - 006 - Admin | Change a school's district
-    @pytest.mark.skipif(str(8346) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8346) not in TESTS, reason='Excluded')
     def test_admin_change_a_schools_district(self):
         """Change a school's district.
 
@@ -400,25 +384,25 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
 
         # Edit the school's district
-        index = 0
         schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for school in schools:
+        for index, school in enumerate(schools):
             if school.text.find('automated test') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_link_text(
                     'edit')[index - 1].click()
                 self.admin.sleep(5)
-                self.admin.find(By.XPATH, "//select[@id='school_school_district_district_id']").send_keys("OpenStax")  # NOQA
+                self.admin.find(
+                    By.XPATH,
+                    "//select[@id='school_school_district_district_id']"
+                ).send_keys("OpenStax")
                 self.admin.find(
                     By.XPATH, "//input[@class='btn btn-primary']").click()
                 self.admin.sleep(5)
                 break
-            index += 1
 
         # Delete the school
-        index = 0
         schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for school in schools:
+        for index, school in enumerate(schools):
             if school.text.find('automated test') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_partial_link_text(
@@ -428,10 +412,9 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 self.admin.sleep(2)
                 self.ps.test_updates['passed'] = True
                 break
-            index += 1
 
     # Case C8347 - 007 - Admin | Delete an exisiting school
-    @pytest.mark.skipif(str(8347) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8347) not in TESTS, reason='Excluded')
     def test_admin_delete_an_existing_school(self):
         """Delete an exisitng school.
 
@@ -468,9 +451,8 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
 
         # Delete the school
-        index = 0
         schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for school in schools:
+        for index, school in enumerate(schools):
             if school.text.find('automated test') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_partial_link_text(
@@ -480,10 +462,9 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 self.admin.sleep(2)
                 self.ps.test_updates['passed'] = True
                 break
-            index += 1
 
     # Case C8348 - 008 - Admin | Add a new course
-    @pytest.mark.skipif(str(8348) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8348) not in TESTS, reason='Excluded')
     def test_admin_add_a_new_course(self):
         """Add a new course.
 
@@ -522,7 +503,10 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.admin.find(By.XPATH, "//a[@class='btn btn-primary']").click()
         self.admin.find(By.XPATH, "//input[@id='course_name']").send_keys(
             "automated test")
-        self.admin.find(By.XPATH, "//select[@id='course_school_district_school_id']").send_keys("Denver University")  # NOQA
+        self.admin.find(
+            By.XPATH,
+            "//select[@id='course_school_district_school_id']"
+        ).send_keys("Denver University")
         self.admin.find(
             By.XPATH,
             "//select[@id='course_catalog_offering_id']").send_keys("Calculus")
@@ -547,7 +531,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                     delete += 1
 
     # Case C8349 - 009 - Admin | Edit course settings
-    @pytest.mark.skipif(str(8349) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8349) not in TESTS, reason='Excluded')
     def test_admin_edit_course_settings(self):
         """Edit course settings.
 
@@ -595,9 +579,8 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
 
         # Edit the course
-        index = 0
         schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for school in schools:
+        for index, school in enumerate(schools):
             if school.text.find('automated test') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_link_text(
@@ -605,7 +588,10 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 self.admin.sleep(5)
                 self.admin.find(
                     By.XPATH, "//input[@id='course_name']").send_keys(' edit')
-                self.admin.find(By.XPATH, "//select[@id='course_school_district_school_id']").send_keys("OpenStax Ed")  # NOQA
+                self.admin.find(
+                    By.XPATH,
+                    "//select[@id='course_school_district_school_id']"
+                ).send_keys("OpenStax Ed")
                 self.admin.find(
                     By.XPATH,
                     "//select[@id='course_catalog_offering_id']").send_keys(
@@ -614,7 +600,6 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                     By.XPATH, "//input[@class='btn btn-primary']").click()
                 self.admin.sleep(5)
                 break
-            index += 1
 
         # Delete the course
         delete = 0
@@ -635,7 +620,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                     delete += 1
 
     # Case C8350 - 010 - Admin | Add a teacher to a course
-    @pytest.mark.skipif(str(8350) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8350) not in TESTS, reason='Excluded')
     def test_admin_add_a_teacher_to_a_course(self):
         """Add a teacher to a course.
 
@@ -683,9 +668,8 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
 
         # Edit the course
-        index = 0
         schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for school in schools:
+        for index, school in enumerate(schools):
             if school.text.find('automated test') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_link_text(
@@ -709,7 +693,6 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                     By.XPATH, "//input[@class='btn btn-primary']").click()
                 self.admin.sleep(5)
                 break
-            index += 1
 
         # Delete the course
         delete = 0
@@ -730,7 +713,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                     delete += 1
 
     # Case C8351 - 011 - Admin | Remove a teacher from a course
-    @pytest.mark.skipif(str(8351) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8351) not in TESTS, reason='Excluded')
     def test_admin_remove_a_teacher_from_a_course(self):
         """Remove a teacher from a course.
 
@@ -778,9 +761,8 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
 
         # Edit the course
-        index = 0
         schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for school in schools:
+        for index, school in enumerate(schools):
             if school.text.find('automated test') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_link_text(
@@ -805,7 +787,6 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                     By.XPATH, "//input[@class='btn btn-primary']").click()
                 self.admin.sleep(5)
                 break
-            index += 1
 
         # Delete the course
         delete = 0
@@ -826,7 +807,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                     delete += 1
 
     # Case C8352 - 012 - Admin | Set the course ecosystem
-    @pytest.mark.skipif(str(8352) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8352) not in TESTS, reason='Excluded')
     def test_admin_set_the_course_ecosystem(self):
         """Set the course ecosystem.
 
@@ -892,7 +873,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                     delete += 1
 
     # Case C8353 - 013 - Admin | Update the course ecosystem
-    @pytest.mark.skipif(str(8353) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8353) not in TESTS, reason='Excluded')
     def test_admin_update_the_course_ecosystem(self):
         """Update the course ecosystem.
 
@@ -940,9 +921,8 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
 
         # Edit the course
-        index = 0
         schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for school in schools:
+        for index, school in enumerate(schools):
             if school.text.find('automated test') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_link_text(
@@ -950,7 +930,10 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 self.admin.sleep(5)
                 self.admin.find(
                     By.XPATH, "//input[@id='course_name']").send_keys(' edit')
-                self.admin.find(By.XPATH, "//select[@id='course_school_district_school_id']").send_keys("OpenStax Ed")  # NOQA
+                self.admin.find(
+                    By.XPATH,
+                    "//select[@id='course_school_district_school_id']"
+                ).send_keys("OpenStax Ed")
                 self.admin.find(
                     By.XPATH,
                     "//select[@id='course_catalog_offering_id']").send_keys(
@@ -959,7 +942,6 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                     By.XPATH, "//input[@class='btn btn-primary']").click()
                 self.admin.sleep(5)
                 break
-            index += 1
 
         # Delete the course
         delete = 0
@@ -980,7 +962,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                     delete += 1
 
     # Case C8354 - 014 - Admin | Add a period
-    @pytest.mark.skipif(str(8354) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8354) not in TESTS, reason='Excluded')
     def test_admin_add_a_period(self):
         """Add a period.
 
@@ -1016,9 +998,8 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.admin.sleep(2)
 
         # Add a period
-        index = 0
         schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for school in schools:
+        for index, school in enumerate(schools):
             if school.text.find('automated test period') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_link_text(
@@ -1042,15 +1023,13 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                     By.XPATH, "//input[@class='btn btn-primary']").click()
                 self.admin.sleep(5)
                 break
-            index += 1
 
-        assert('courses' in self.admin.current_url()), \
-            'Not on courses page'
+        assert('courses' in self.admin.current_url()), 'Not on courses page'
 
         self.ps.test_updates['passed'] = True
 
     # Case C8355 - 015 - Admin | Edit a period
-    @pytest.mark.skipif(str(8355) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8355) not in TESTS, reason='Excluded')
     def test_admin_edit_a_period(self):
         """Edit a period.
 
@@ -1086,9 +1065,8 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.admin.sleep(2)
 
         # Add a period
-        index = 0
         schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for school in schools:
+        for index, school in enumerate(schools):
             if school.text.find('automated test period') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_link_text(
@@ -1122,15 +1100,13 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                     By.XPATH, "//input[@class='btn btn-primary']").click()
                 self.admin.sleep(5)
                 break
-            index += 1
 
-        assert('courses' in self.admin.current_url()), \
-            'Not on courses page'
+        assert('courses' in self.admin.current_url()), 'Not on courses page'
 
         self.ps.test_updates['passed'] = True
 
     # Case C8356 - 016 - Admin | Archive a period
-    @pytest.mark.skipif(str(8356) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8356) not in TESTS, reason='Excluded')
     def test_admin_delete_an_empty_period(self):
         """Delete an empty period.
 
@@ -1165,9 +1141,8 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.admin.sleep(2)
 
         # Add a period
-        index = 0
         schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for school in schools:
+        for index, school in enumerate(schools):
             if school.text.find('automated test period') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_link_text(
@@ -1191,17 +1166,15 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                     By.XPATH, "//input[@class='btn btn-primary']").click()
                 self.admin.sleep(5)
                 break
-            index += 1
 
-        assert('courses' in self.admin.current_url()), \
-            'Not on courses page'
+        assert('courses' in self.admin.current_url()), 'Not on courses page'
 
         self.ps.test_updates['passed'] = True
 
     # Case C8357 - 017 - Admin | Delete an non-empty period
-    @pytest.mark.skipif(str(8357) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8357) not in TESTS, reason='Excluded')
     def test_admin_delete_a_non_empty_period(self):
-        r"""Delete a non-empty period.
+        """Delete a non-empty period.
 
         Steps:
         Click Course Organization in the header
@@ -1215,20 +1188,19 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         A red text box that says 'Students must be moved to another
         period before this period can be deleted' pops up, and the
         period cannot be deleted
-
+        """
         self.ps.test_updates['name'] = 't1.59.017' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = ['t1', 't1.59', 't1.59.017', '8357']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
-        self.ps.test_updates['passed'] = True
-        """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
+        self.ps.test_updates['passed'] = True
+
     # Case C8358 - 018 - Admin | Upload a student roster to a period
-    @pytest.mark.skipif(str(8358) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8358) not in TESTS, reason='Excluded')
     def test_admin_upload_a_student_roster_to_a_period(self):
         """Upload a student roster to a period.
 
@@ -1265,9 +1237,8 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.admin.sleep(2)
 
         # Add a period
-        index = 0
         schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for school in schools:
+        for index, school in enumerate(schools):
             if school.text.find('automated test period') >= 0:
                 self.admin.sleep(2)
                 self.admin.driver.find_elements_by_link_text(
@@ -1305,12 +1276,11 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                     By.XPATH, "//input[@class='btn btn-primary']").click()
                 self.admin.sleep(5)
                 break
-            index += 1
 
         self.ps.test_updates['passed'] = True
 
     # Case C8359 - 019 - Admin | Bulk update course ecosystems
-    @pytest.mark.skipif(str(8359) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8359) not in TESTS, reason='Excluded')
     def test_admin_bulk_update_course_ecosystems(self):
         """Bulk update course ecosystems.
 
@@ -1345,7 +1315,10 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
         self.admin.sleep(2)
 
-        if self.admin.find(By.XPATH, "//input[@id='courses_select_all']").is_selected():  # NOQA
+        if self.admin.find(
+                By.XPATH,
+                "//input[@id='courses_select_all']"
+                ).is_selected():
             self.admin.find(
                 By.XPATH, "//input[@id='courses_select_all']").click()
         self.admin.find(By.XPATH, "//input[@id='course_id_135']").click()
@@ -1362,7 +1335,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8360 - 020 - Admin | View the Tutor course counts
-    @pytest.mark.skipif(str(8360) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8360) not in TESTS, reason='Excluded')
     def test_admin_view_the_tutor_course_counts(self):
         """View the Tutor course counts.
 
