@@ -10,9 +10,12 @@ import datetime
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint  # NOQA
 from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
-# from staxing.assignment import Assignment
+from selenium.webdriver.support import expected_conditions as expect  #
+from staxing.assignment import Assignment  #
 from staxing.helper import Teacher
+from selenium.webdriver.support.ui import WebDriverWait  #
+from selenium.webdriver.common.action_chains import ActionChains  #
+
 
 basic_test_env = json.dumps([
     {
@@ -31,10 +34,10 @@ basic_test_env = json.dumps([
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7978, 7879, 7980, 7981, 7982,
-         7983, 7984, 7985, 7986, 7987,
-         7988, 7989, 7990, 7991])
-    # str([7984])
+    # str([7978, 7879, 7980, 7981, 7982,
+    #      7983, 7984, 7985, 7986, 7987,
+    #      7988, 7989, 7990, 7991])
+    str([7984])
 )
 
 
