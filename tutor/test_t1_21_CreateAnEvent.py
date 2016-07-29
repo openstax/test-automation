@@ -49,9 +49,9 @@ class TestCreateAnEvent(unittest.TestCase):
         self.desired_capabilities = {}
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
-            use_env_vars=True  # ,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
@@ -140,19 +140,20 @@ class TestCreateAnEvent(unittest.TestCase):
         Expected Result:
         User is taken to the add event page
         """
-        self.ps.test_updates['name'] = 't1.21.002' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.21', 't1.21.002', '8118']
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-        self.teacher.driver.find_element(
-            By.ID, 'add-assignment').click()
-        self.teacher.driver.find_element(
-            By.LINK_TEXT, 'Add Event').click()
-        assert('events/new' in self.teacher.current_url()),\
-            'not at Add Event Assignemnt page'
-        self.ps.test_updates['passed'] = True
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # self.ps.test_updates['name'] = 't1.21.002' \
+        #     + inspect.currentframe().f_code.co_name[4:]
+        # self.ps.test_updates['tags'] = ['t1', 't1.21', 't1.21.002', '8118']
+        # self.ps.test_updates['passed'] = False
+        #
+        # # Test steps and verification assertions
+        # self.teacher.driver.find_element(
+        #     By.ID, 'add-assignment').click()
+        # self.teacher.driver.find_element(
+        #     By.LINK_TEXT, 'Add Event').click()
+        # assert('events/new' in self.teacher.current_url()),\
+        #     'not at Add Event Assignemnt page'
+        # self.ps.test_updates['passed'] = True
 
     # Case C8119 - 003 - Teacher | Add an event using the calendar date
     @pytest.mark.skipif(str(8119) not in TESTS, reason='Excluded')  # NOQA
