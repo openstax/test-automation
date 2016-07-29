@@ -33,14 +33,12 @@ TESTS = os.getenv(
     #      7996, 7997, 7998, 7999,
     #      8000, 8001, 8002, 8003,
     #      8004, 8005, 8006, 8007,
-    #      8008, 8009, 8010, 8011, --haven't tested: 8009, 8010, 8011
+    #      8008, 8009, 8010, 8011,
     #      8012, 8013, 8014, 8015,
     #      8016, 8017, 8018, 8019,
-    #      8020, 8021, 8022, 8023, --8022 test for a broken feature
-    #      8024, 8025, 8026, 8027])  # NOQA --go in and change readings too
-    # str([8008, 8009, 8010, 8011])
-    # str([8024, 8025, 8026, 8027])
-    str([8009])
+    #      8020, 8021, 8022, 8023,
+    #      8024, 8025, 8026, 8027])  # NOQA
+    str([7995])
 )
 
 
@@ -53,12 +51,9 @@ class TestCreateAReading(unittest.TestCase):
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
-            username='teacher01',
-            password='password',
-            site='https://tutor-qa.openstax.org'
-            # use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
@@ -115,33 +110,34 @@ class TestCreateAReading(unittest.TestCase):
         Expected Result:
         Takes user add reading screen
         """
-        self.ps.test_updates['name'] = 't1.14.002' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.002', '7993']
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        self.teacher.sleep(10)
-        calendar_date = wait.until(
-            expect.element_to_be_clickable(
-                (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
-            )
-        )
-        self.teacher.driver.execute_script(
-            'return arguments[0].scrollIntoView();', calendar_date)
-        self.teacher.driver.execute_script('window.scrollBy(0, -80);')
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(calendar_date)
-        actions.click()
-        actions.perform()
-        # self.teacher.sleep(3)
-        actions.move_by_offset(15, 15)
-        actions.click()
-        actions.perform()
-        assert('readings/new/' in self.teacher.current_url()), \
-            'not at add reading page'
-        self.ps.test_updates['passed'] = True
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # self.ps.test_updates['name'] = 't1.14.002' \
+        #     + inspect.currentframe().f_code.co_name[4:]
+        # self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.002', '7993']
+        # self.ps.test_updates['passed'] = False
+        #
+        # # Test steps and verification assertions
+        # wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        # self.teacher.sleep(10)
+        # calendar_date = wait.until(
+        #     expect.element_to_be_clickable(
+        #         (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
+        #     )
+        # )
+        # self.teacher.driver.execute_script(
+        #     'return arguments[0].scrollIntoView();', calendar_date)
+        # self.teacher.driver.execute_script('window.scrollBy(0, -80);')
+        # actions = ActionChains(self.teacher.driver)
+        # actions.move_to_element(calendar_date)
+        # actions.click()
+        # actions.perform()
+        # # self.teacher.sleep(3)
+        # actions.move_by_offset(15, 15)
+        # actions.click()
+        # actions.perform()
+        # assert('readings/new/' in self.teacher.current_url()), \
+        #     'not at add reading page'
+        # self.ps.test_updates['passed'] = True
 
     # Case C7994 - 003 - Teacher | Set open and due dates for all periods
     # collectively
@@ -401,7 +397,7 @@ class TestCreateAReading(unittest.TestCase):
                 (By.XPATH, '//div[contains(@class,"reading-plan")]')
             )
         )
-        assignment.select_sections(self.teacher.driver, ['1.1'])
+        assignment.select_sections(self.teacher.driver, ['4.1'])
         self.teacher.driver.find_element(
             By.XPATH, '//button[text()="Add Readings"]'
         ).click()
@@ -1198,7 +1194,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-018'
+        assignment_name = 'reading' + str(randint(0, 999))
         original_readings = self.teacher.driver.find_elements(
             By.XPATH, '//label[@data-title="' + assignment_name + '"]')
         today = datetime.date.today()
@@ -1226,18 +1222,19 @@ class TestCreateAReading(unittest.TestCase):
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//a[contians(@class,"-edit-assignment")]')
+                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
             )
         ).click()
         wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//button[contians(@class,"deltete-link")]')
+                (By.XPATH, '//button[contains(@class,"delete-link")]')
             )
         ).click()
         self.teacher.driver.find_element(
-            By.XPATH, '//butto[contains(text(),"Yes")]').click()
+            By.XPATH, '//button[contains(text(),"Yes")]').click()
         assert ('calendar' in self.teacher.current_url()), \
             'not returned to calendar after deleting an assignment'
+        self.teacher.sleep(4)
         self.teacher.driver.get(self.teacher.current_url())
         deleted_reading = self.teacher.driver.find_elements(
             By.XPATH, '//label[@data-title="' + assignment_name + '"]')
@@ -1263,7 +1260,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-019'
+        assignment_name = 'reading' + str(randint(0, 999))
         original_readings = self.teacher.driver.find_elements(
             By.XPATH, '//label[@data-title="'+assignment_name+'"]')
         today = datetime.date.today()
@@ -1291,18 +1288,19 @@ class TestCreateAReading(unittest.TestCase):
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//a[contians(@class,"-edit-assignment")]')
+                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
             )
         ).click()
         wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//button[contians(@class,"deltete-link")]')
+                (By.XPATH, '//button[contains(@class,"delete-link")]')
             )
         ).click()
         self.teacher.driver.find_element(
-            By.XPATH, '//butto[contains(text(),"Yes")]').click()
+            By.XPATH, '//button[contains(text(),"Yes")]').click()
         assert ('calendar' in self.teacher.current_url()), \
             'not returned to calendar after deleting an assignment'
+        self.teacher.sleep(4)
         self.teacher.driver.get(self.teacher.current_url())
         deleted_reading = self.teacher.driver.find_elements(
             By.XPATH, '//label[@data-title="' + assignment_name + '"]')
@@ -1330,7 +1328,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-020'
+        assignment_name = 'reading' + str(randint(0, 999))
         original_readings = self.teacher.driver.find_elements(
             By.XPATH, '//label[@data-title="'+assignment_name+'"]')
         today = datetime.date.today()
@@ -1358,11 +1356,11 @@ class TestCreateAReading(unittest.TestCase):
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//button[contians(@class,"deltete-link")]')
+                (By.XPATH, '//button[contains(@class,"delete-link")]')
             )
         ).click()
         self.teacher.driver.find_element(
-            By.XPATH, '//butto[contains(text(),"Yes")]').click()
+            By.XPATH, '//button[contains(text(),"Yes")]').click()
         assert ('calendar' in self.teacher.current_url()), \
             'not returned to calendar after deleting an assignment'
         self.teacher.driver.get(self.teacher.current_url())
@@ -2094,7 +2092,11 @@ class TestCreateAReading(unittest.TestCase):
             )
         ).click()
         # remove section
-        self.teacher.driver.find_element(By.ID, 'reading-select').click()
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-select')
+            )
+        ).click()
         wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"reading-plan")]')
@@ -2204,7 +2206,11 @@ class TestCreateAReading(unittest.TestCase):
             )
         ).click()
         # remove section
-        self.teacher.driver.find_element(By.ID, 'reading-select').click()
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-select')
+            )
+        ).click()
         wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"reading-plan")]')
@@ -2218,10 +2224,10 @@ class TestCreateAReading(unittest.TestCase):
         )
         time.sleep(0.5)
         chapter.click()
-        #print(chapter.is_selected())
-        #raise Exception
-        #if chapter.is_selected():
-        #    chapter.click()
+        # print(chapter.is_selected())
+        # raise Exception
+        # if chapter.is_selected():
+        #     chapter.click()
         element = self.teacher.driver.find_element(
             By.XPATH, '//button[text()="Add Readings"]')
         self.teacher.driver.execute_script(
@@ -2406,7 +2412,11 @@ class TestCreateAReading(unittest.TestCase):
                 (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
             )
         ).click()
-
+        wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
         sections = self.teacher.driver.find_elements(
             By.XPATH,
             '//li[@class="selected-section"]//span[@class="chapter-section"]')
@@ -2473,7 +2483,7 @@ class TestCreateAReading(unittest.TestCase):
                                         'title': assignment_name,
                                         'description': 'description',
                                         'periods': {'all': (begin, end)},
-                                        'reading_list': ['1.1'],
+                                        'reading_list': ['1.1', '1.2'],
                                         'status': 'publish'
                                      })
         try:
@@ -2567,7 +2577,7 @@ class TestCreateAReading(unittest.TestCase):
                                         'title': assignment_name,
                                         'description': 'description',
                                         'periods': {'all': (begin, end)},
-                                        'reading_list': ['1.1'],
+                                        'reading_list': ['1.1', '1.2'],
                                         'status': 'draft'
                                      })
         try:
@@ -2675,7 +2685,6 @@ class TestCreateAReading(unittest.TestCase):
                 (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
             )
         ).click()
-
         wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
