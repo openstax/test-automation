@@ -17,10 +17,10 @@ from staxing.helper import Teacher
 
 # for template command line testing only
 # - replace list_of_cases on line 31 with all test case IDs in this file
-# - replace CaseID on line 52 with the actual cass ID
+# - replace CaseID on line 52 with the actual case ID
 # - delete lines 17 - 22
 list_of_cases = None
-CaseID = 0
+CaseID = 'skip'
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -51,8 +51,10 @@ class TestGainAccessibilityCompliance(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
         except:
