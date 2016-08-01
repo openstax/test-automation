@@ -66,7 +66,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8281 - 001 - Student | Click on an external assignment
     @pytest.mark.skipif(str(8281) not in TESTS, reason='Excluded')
-    def test_student_click_on_a_external_assignment(self):
+    def test_student_click_on_a_external_assignment_8281(self):
         """Click on an external assignment.
 
         Steps:
@@ -108,7 +108,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8282 - 002 - Student | Read the directions below the assignment
     # link or hover over the info icon in the footer
     @pytest.mark.skipif(str(8282) not in TESTS, reason='Excluded')
-    def test_student_read_directions_below_or_hover_over_info_icon(self):
+    def test_student_read_directions_below_or_hover_over_info_icon_8282(self):
         """Read directions below assignment link or hover over the info icon.
 
         Steps:
@@ -160,7 +160,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8283 - 003 - Student | Click the assignment link
     @pytest.mark.skipif(str(8283) not in TESTS, reason='Excluded')
-    def test_student_click_the_assignment_link(self):
+    def test_student_click_the_assignment_link_8283(self):
         """Click the assignment link.
 
         Steps:
@@ -219,7 +219,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8284 - 004 - Student | Close the assignment tab or window
     @pytest.mark.skipif(str(8284) not in TESTS, reason='Excluded')
-    def test_student_close_the_assignment(self):
+    def test_student_close_the_assignment_8284(self):
         """Close the assignment tab or window.
 
         Steps:
@@ -281,7 +281,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8285 - 005 - Student | Click the Back To Dashboard button to
     # finish the assignment
     @pytest.mark.skipif(str(8285) not in TESTS, reason='Excluded')
-    def test_student_click_back_to_dashboard_button(self):
+    def test_student_click_back_to_dashboard_button_8285(self):
         """Click the Back To Dashboard button to finish the assignment.
 
         Steps:
@@ -349,7 +349,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8286 - 006 - Student | Verify the assignment status as Clicked
     @pytest.mark.skipif(str(8286) not in TESTS, reason='Excluded')
-    def test_student_verify_assignment_status_as_clicked(self):
+    def test_student_verify_assignment_status_as_clicked_8286(self):
         """Verify the assignment status as Clicked.
 
         Steps:

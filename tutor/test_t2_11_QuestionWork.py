@@ -1451,7 +1451,6 @@ class TestQuestionWork(unittest.TestCase):
         Expected Result:
         The user gets a confirmation that says "Exercise [exercise ID] has
         published successfully"
-
         """
         self.ps.test_updates['name'] = 't2.11.045' \
             + inspect.currentframe().f_code.co_name[4:]

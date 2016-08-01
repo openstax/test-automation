@@ -70,7 +70,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8316 - 001 - Admin | Add a new course offering
     @pytest.mark.skipif(str(8316) not in TESTS, reason='Excluded')
-    def test_admin_add_a_new_course_offering(self):
+    def test_admin_add_a_new_course_offering_8316(self):
         """Add a new course offering.
 
         Steps:
@@ -155,7 +155,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8317 - 002 - Admin | Edit the course offering book information
     @pytest.mark.skipif(str(8317) not in TESTS, reason='Excluded')
-    def test_admin_edit_the_course_offering_book_info(self):
+    def test_admin_edit_the_course_offering_book_info_8317(self):
         """Edit the course offering book information.
 
         Steps:
@@ -220,7 +220,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8318 - 003 - Admin | Edit the course offering ecosystem
     @pytest.mark.skipif(str(8318) not in TESTS, reason='Excluded')
-    def test_admin_edit_the_course_offering_ecosystem(self):
+    def test_admin_edit_the_course_offering_ecosystem_8318(self):
         """Edit the course offering ecosystem.
 
         Steps:
@@ -294,7 +294,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8319 - 004 - Admin | Edit the course offering course type
     @pytest.mark.skipif(str(8319) not in TESTS, reason='Excluded')
-    def test_admin_edit_the_course_offering_course_type(self):
+    def test_admin_edit_the_course_offering_course_type_8319(self):
         """Edit the course offering course type.
 
         Steps:
@@ -352,7 +352,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8320 - 005 - Admin | Edit the course offering CNX links
     @pytest.mark.skipif(str(8320) not in TESTS, reason='Excluded')
-    def test_admin_edit_the_course_offering_cnx_links(self):
+    def test_admin_edit_the_course_offering_cnx_links_8320(self):
         """Edit the course offering CNX links.
 
         Steps:
@@ -415,7 +415,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8321 - 006 - Admin | Edit the course offering's default course name
     @pytest.mark.skipif(str(8321) not in TESTS, reason='Excluded')
-    def test_admin_edit_the_course_offering_default_name(self):
+    def test_admin_edit_the_course_offering_default_name_8321(self):
         """Edit the course offering's default course name.
 
         Steps:
@@ -474,7 +474,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8322 - 007 - Admin | Import an ecosystem
     @pytest.mark.skipif(str(8322) not in TESTS, reason='Excluded')
-    def test_admin_import_an_ecosystem(self):
+    def test_admin_import_an_ecosystem_8322(self):
         """Import an ecosystem.
 
         Steps:
@@ -551,7 +551,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8323 - 008 - Content Analyst | Import an ecosystem
     @pytest.mark.skipif(str(8323) not in TESTS, reason='Excluded')
-    def test_content_import_an_ecosystem(self):
+    def test_content_import_an_ecosystem_8323(self):
         """Import an ecosystem.
 
         Steps:
@@ -637,7 +637,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8324 - 009 - Admin | Edit an ecosystem comment
     @pytest.mark.skipif(str(8324) not in TESTS, reason='Excluded')
-    def test_admin_edit_an_ecosystem_comment(self):
+    def test_admin_edit_an_ecosystem_comment_8324(self):
         """Edit an ecosystem comment.
 
         Steps:
@@ -686,7 +686,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8325 - 010 - Content Analyst | Edit an ecosystem comment
     @pytest.mark.skipif(str(8325) not in TESTS, reason='Excluded')
-    def test_content_edit_an_ecosystem_comment(self):
+    def test_content_edit_an_ecosystem_comment_8325(self):
         """Edit an ecosystem comment.
 
         Steps:
@@ -747,7 +747,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8326 - 011 - Admin | Access the book content archive
     @pytest.mark.skipif(str(8326) not in TESTS, reason='Excluded')
-    def test_admin_access_the_book_content_archive(self):
+    def test_admin_access_the_book_content_archive_8326(self):
         """Access the book content archive.
 
         Steps:
@@ -799,7 +799,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8327 - 012 - Content Analyst | Access the book content archive
     @pytest.mark.skipif(str(8327) not in TESTS, reason='Excluded')
-    def test_content_access_the_book_content_archive(self):
+    def test_content_access_the_book_content_archive_8327(self):
         """Access the book content archive.
 
         Steps:
@@ -866,7 +866,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8328 - 013 - Admin | Display the book UUID
     @pytest.mark.skipif(str(8328) not in TESTS, reason='Excluded')
-    def test_admin_display_the_book_uuid(self):
+    def test_admin_display_the_book_uuid_8328(self):
         """Display the book UUID.
 
         Steps:
@@ -914,7 +914,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8329 - 014 - Content Analyst | Display the book UUID
     @pytest.mark.skipif(str(8329) not in TESTS, reason='Excluded')
-    def test_content_display_the_book_uuid(self):
+    def test_content_display_the_book_uuid_8329(self):
         """Display the book UUID.
 
         Steps:
@@ -975,7 +975,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8330 - 015 - Admin | Download an ecosystem manifest
     @pytest.mark.skipif(str(8330) not in TESTS, reason='Excluded')
-    def test_admin_download_an_ecosystem_manifest(self):
+    def test_admin_download_an_ecosystem_manifest_8330(self):
         """Download an ecosystem manifest.
 
         Steps:
@@ -1030,7 +1030,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8331 - 016 - Content Analyst | Download an ecosystem manifest
     @pytest.mark.skipif(str(8331) not in TESTS, reason='Excluded')
-    def test_content_download_an_ecosystem_manifest(self):
+    def test_content_download_an_ecosystem_manifest_8331(self):
         """Download an ecosystem manifest.
 
         Steps:
@@ -1098,7 +1098,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8332 - 017 - Admin | Delete an unused ecosystem
     @pytest.mark.skipif(str(8332) not in TESTS, reason='Excluded')
-    def test_admin_delete_an_unused_ecosystem(self):
+    def test_admin_delete_an_unused_ecosystem_8332(self):
         """Delete an unused ecosystem.
 
         Steps:
@@ -1162,7 +1162,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8333 - 018 - Content Analyst | Delete an unused ecosystem
     @pytest.mark.skipif(str(8333) not in TESTS, reason='Excluded')
-    def test_content_delete_an_unused_ecosystem_(self):
+    def test_content_delete_an_unused_ecosystem_8333(self):
         """Delete an unused ecosystem.
 
         Steps:
@@ -1230,7 +1230,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8334 - 019 - Admin | Search for a tag
     @pytest.mark.skipif(str(8334) not in TESTS, reason='Excluded')
-    def test_admin_search_for_a_tag(self):
+    def test_admin_search_for_a_tag_8334(self):
         """Search for a tag.
 
         Steps:
@@ -1281,7 +1281,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8335 - 020 - Admin | Edit a tag
     @pytest.mark.skipif(str(8335) not in TESTS, reason='Excluded')
-    def test_admin_edit_a_tag(self):
+    def test_admin_edit_a_tag_8335(self):
         """Edit a tag.
 
         Steps:
@@ -1356,7 +1356,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8336 - 021 - Admin | Search for a job by ID
     @pytest.mark.skipif(str(8336) not in TESTS, reason='Excluded')
-    def test_admin_search_for_a_job_by_id(self):
+    def test_admin_search_for_a_job_by_id_8336(self):
         """Search for a job by ID.
 
         Steps:
@@ -1400,7 +1400,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8337 - 022 - Admin | Search for a job by status
     @pytest.mark.skipif(str(8337) not in TESTS, reason='Excluded')
-    def test_admin_search_for_a_job_by_status(self):
+    def test_admin_search_for_a_job_by_status_8337(self):
         """Search for a job by status.
 
         Steps:
@@ -1450,7 +1450,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8338 - 023 - Admin | Search for a job by progress percentage
     @pytest.mark.skipif(str(8338) not in TESTS, reason='Excluded')
-    def test_admin_search_for_a_job_by_progress_percentage(self):
+    def test_admin_search_for_a_job_by_progress_percentage_8338(self):
         """Search for a job by progress percentage.
 
         Steps:
@@ -1510,7 +1510,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8339 - 024 - Admin | Filter jobs by status
     @pytest.mark.skipif(str(8339) not in TESTS, reason='Excluded')
-    def test_admin_filter_jobs_by_status(self):
+    def test_admin_filter_jobs_by_status_8339(self):
         """Filter jobs by status.
 
         Steps:
@@ -1587,7 +1587,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8340 - 025 - Admin | View a job report
     @pytest.mark.skipif(str(8340) not in TESTS, reason='Excluded')
-    def test_admin_view_a_job_report(self):
+    def test_admin_view_a_job_report_8340(self):
         """View a job report.
 
         Steps:

@@ -65,7 +65,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8341 - 001 - Admin | Add a new district
     @pytest.mark.skipif(str(8341) not in TESTS, reason='Excluded')
-    def test_admin_add_a_new_district(self):
+    def test_admin_add_a_new_district_8341(self):
         """Add a new district.
 
         Steps:
@@ -116,7 +116,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8342 - 002 - Admin | Change a district's name
     @pytest.mark.skipif(str(8342) not in TESTS, reason='Excluded')
-    def test_admin_change_a_districts_name(self):
+    def test_admin_change_a_districts_name_8342(self):
         """Change a district's name.
 
         Steps:
@@ -182,7 +182,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8343 - 003 - Admin | Delete an exisiting district
     @pytest.mark.skipif(str(8343) not in TESTS, reason='Excluded')
-    def test_admin_delete_an_existing_district(self):
+    def test_admin_delete_an_existing_district_8343(self):
         """Delete an existing district.
 
         Steps:
@@ -232,7 +232,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8344 - 004 - Admin | Add a new school
     @pytest.mark.skipif(str(8344) not in TESTS, reason='Excluded')
-    def test_admin_add_a_new_school(self):
+    def test_admin_add_a_new_school_8344(self):
         """Add a new school.
 
         Steps:
@@ -283,7 +283,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8345 - 005 - Admin | Change a school's name
     @pytest.mark.skipif(str(8345) not in TESTS, reason='Excluded')
-    def test_admin_change_a_schools_name(self):
+    def test_admin_change_a_schools_name_8345(self):
         """Change a school's name.
 
         Steps:
@@ -348,7 +348,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8346 - 006 - Admin | Change a school's district
     @pytest.mark.skipif(str(8346) not in TESTS, reason='Excluded')
-    def test_admin_change_a_schools_district(self):
+    def test_admin_change_a_schools_district_8346(self):
         """Change a school's district.
 
         Steps:
@@ -415,7 +415,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8347 - 007 - Admin | Delete an exisiting school
     @pytest.mark.skipif(str(8347) not in TESTS, reason='Excluded')
-    def test_admin_delete_an_existing_school(self):
+    def test_admin_delete_an_existing_school_8347(self):
         """Delete an exisitng school.
 
         Steps:
@@ -465,7 +465,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8348 - 008 - Admin | Add a new course
     @pytest.mark.skipif(str(8348) not in TESTS, reason='Excluded')
-    def test_admin_add_a_new_course(self):
+    def test_admin_add_a_new_course_8348(self):
         """Add a new course.
 
         Steps:
@@ -532,7 +532,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8349 - 009 - Admin | Edit course settings
     @pytest.mark.skipif(str(8349) not in TESTS, reason='Excluded')
-    def test_admin_edit_course_settings(self):
+    def test_admin_edit_course_settings_8349(self):
         """Edit course settings.
 
         Steps:
@@ -621,7 +621,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8350 - 010 - Admin | Add a teacher to a course
     @pytest.mark.skipif(str(8350) not in TESTS, reason='Excluded')
-    def test_admin_add_a_teacher_to_a_course(self):
+    def test_admin_add_a_teacher_to_a_course_8350(self):
         """Add a teacher to a course.
 
         Steps:
@@ -714,7 +714,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8351 - 011 - Admin | Remove a teacher from a course
     @pytest.mark.skipif(str(8351) not in TESTS, reason='Excluded')
-    def test_admin_remove_a_teacher_from_a_course(self):
+    def test_admin_remove_a_teacher_from_a_course_8351(self):
         """Remove a teacher from a course.
 
         Steps:
@@ -808,7 +808,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8352 - 012 - Admin | Set the course ecosystem
     @pytest.mark.skipif(str(8352) not in TESTS, reason='Excluded')
-    def test_admin_set_the_course_ecosystem(self):
+    def test_admin_set_the_course_ecosystem_8352(self):
         """Set the course ecosystem.
 
         Steps:
@@ -874,7 +874,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8353 - 013 - Admin | Update the course ecosystem
     @pytest.mark.skipif(str(8353) not in TESTS, reason='Excluded')
-    def test_admin_update_the_course_ecosystem(self):
+    def test_admin_update_the_course_ecosystem_8353(self):
         """Update the course ecosystem.
 
         Steps:
@@ -963,7 +963,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8354 - 014 - Admin | Add a period
     @pytest.mark.skipif(str(8354) not in TESTS, reason='Excluded')
-    def test_admin_add_a_period(self):
+    def test_admin_add_a_period_8354(self):
         """Add a period.
 
         Steps:
@@ -1030,7 +1030,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8355 - 015 - Admin | Edit a period
     @pytest.mark.skipif(str(8355) not in TESTS, reason='Excluded')
-    def test_admin_edit_a_period(self):
+    def test_admin_edit_a_period_8355(self):
         """Edit a period.
 
         Steps:
@@ -1107,7 +1107,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8356 - 016 - Admin | Archive a period
     @pytest.mark.skipif(str(8356) not in TESTS, reason='Excluded')
-    def test_admin_delete_an_empty_period(self):
+    def test_admin_delete_an_empty_period_8356(self):
         """Delete an empty period.
 
         Steps:
@@ -1173,7 +1173,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8357 - 017 - Admin | Delete an non-empty period
     @pytest.mark.skipif(str(8357) not in TESTS, reason='Excluded')
-    def test_admin_delete_a_non_empty_period(self):
+    def test_admin_delete_a_non_empty_period_8357(self):
         """Delete a non-empty period.
 
         Steps:
@@ -1201,7 +1201,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8358 - 018 - Admin | Upload a student roster to a period
     @pytest.mark.skipif(str(8358) not in TESTS, reason='Excluded')
-    def test_admin_upload_a_student_roster_to_a_period(self):
+    def test_admin_upload_a_student_roster_to_a_period_8358(self):
         """Upload a student roster to a period.
 
         Steps:
@@ -1281,7 +1281,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8359 - 019 - Admin | Bulk update course ecosystems
     @pytest.mark.skipif(str(8359) not in TESTS, reason='Excluded')
-    def test_admin_bulk_update_course_ecosystems(self):
+    def test_admin_bulk_update_course_ecosystems_8359(self):
         """Bulk update course ecosystems.
 
         Steps:
@@ -1336,7 +1336,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
     # Case C8360 - 020 - Admin | View the Tutor course counts
     @pytest.mark.skipif(str(8360) not in TESTS, reason='Excluded')
-    def test_admin_view_the_tutor_course_counts(self):
+    def test_admin_view_the_tutor_course_counts_8360(self):
         """View the Tutor course counts.
 
         Steps:

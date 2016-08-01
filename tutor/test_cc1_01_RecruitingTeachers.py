@@ -7,13 +7,13 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from random import randint
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.support import expected_conditions as expect
+# from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Admin, Teacher  # NOQA
+from staxing.helper import Teacher
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -24,11 +24,13 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7751, 7752, 7753, 7754, 7755,
-         7756, 7757, 7758, 7759, 7760,
-         7761, 7762, 7763, 7764, 7765,
-         7770, 7771, 7772, 7773, 7774,
-         7775])  # NOQA
+    str([
+        7751, 7752, 7753, 7754, 7755,
+        7756, 7757, 7758, 7759, 7760,
+        7761, 7762, 7763, 7764, 7765,
+        7770, 7771, 7772, 7773, 7774,
+        7775
+    ])
 )
 
 
@@ -40,7 +42,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
+        self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
@@ -48,15 +50,17 @@ class TestRecruitingTeachers(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
         except:
             pass
 
     # Case C7751 - 001 - Admin | Recruitment and promo website is available
-    @pytest.mark.skipif(str(7751) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7751) not in TESTS, reason='Excluded')
     def test_admin_recruitment_and_promo_website_is_available_7751(self):
         """Recruitment and promo website is available.
 
@@ -85,7 +89,7 @@ class TestRecruitingTeachers(unittest.TestCase):
 
     # Case C7752 - 002 - Teacher | Information about Concept Coach and the
     # pilot are available on the demo site
-    @pytest.mark.skipif(str(7752) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7752) not in TESTS, reason='Excluded')
     def test_teacher_information_about_cc_is_available_on_demo_site_7752(self):
         """Information about CC and pilot are available on the demo site.
 
@@ -114,7 +118,7 @@ class TestRecruitingTeachers(unittest.TestCase):
 
     # Case C7753 - 003 - Teacher | Can interact with a Concept Coach wire frame
     # for each subject
-    @pytest.mark.skipif(str(7753) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7753) not in TESTS, reason='Excluded')
     def test_teacher_can_interact_with_a_cc_wire_frame_for_subjects_7753(self):
         """Can interact with a Concept Coach wire frame for each subject.
 
@@ -146,7 +150,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C7754 - 004 - Teacher | View a Concept Coach demo video
-    @pytest.mark.skipif(str(7754) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7754) not in TESTS, reason='Excluded')
     def test_teacher_view_a_concept_coach_demo_video_7754(self):
         """View a Concept Coach demo video.
 
@@ -169,7 +173,7 @@ class TestRecruitingTeachers(unittest.TestCase):
 
     # Case C7755 - 005 - Teacher | Sample exercise questions are seen in
     # the wire frames
-    @pytest.mark.skipif(str(7755) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7755) not in TESTS, reason='Excluded')
     def test_teacher_sample_exercise_questions_are_in_wire_frames_7755(self):
         """Sample exercise questions are seen in the wire frames.
 
@@ -203,7 +207,7 @@ class TestRecruitingTeachers(unittest.TestCase):
 
     # Case C7756 - 006 - Teacher | Access Concept Coach help and support before
     # the teacher's course is created
-    @pytest.mark.skipif(str(7756) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7756) not in TESTS, reason='Excluded')
     def test_teacher_access_cc_support_before_course_is_created_7756(self):
         """Access CC help and support before the teacher's course is created.
 
@@ -233,8 +237,8 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C7757 - 007 - Teacher | Teacher registers to use a CC course
-    @pytest.mark.skipif(str(7757) not in TESTS, reason='Excluded')  # NOQA
-    def test_teacher_teacher_registers_to_use_a_cc_course(self):
+    @pytest.mark.skipif(str(7757) not in TESTS, reason='Excluded')
+    def test_teacher_teacher_registers_to_use_a_cc_course_7757(self):
         """Teacher registers to use a Concept Coach course.
 
         Steps:
@@ -263,7 +267,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C7758 - 008 - Teacher | Teacher uses a web form to sign up for CC
-    @pytest.mark.skipif(str(7758) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7758) not in TESTS, reason='Excluded')
     def test_teacher_teacher_uses_a_web_form_to_sign_up_for_cc_7758(self):
         """Teacher uses a web form to sign up for Concept Coach.
 
@@ -294,7 +298,7 @@ class TestRecruitingTeachers(unittest.TestCase):
 
     # Case C7759 - 009 - Teacher | Receive error messages if required fields on
     # the sign up form are blank
-    @pytest.mark.skipif(str(7759) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7759) not in TESTS, reason='Excluded')
     def test_teacher_receive_error_messages_if_required_fields_are_7759(self):
         """Receive error messages if required fields on the sign up form are blank.
 
@@ -326,7 +330,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C7760 - 010 - Teacher | Submit a form to supply required course info
-    @pytest.mark.skipif(str(7760) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7760) not in TESTS, reason='Excluded')
     def test_teacher_submit_a_form_to_supply_required_course_info_7760(self):
         """Submit a form to supply required course information.
 
@@ -359,7 +363,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C7761 - 011 - Teacher | Submit co-instructors, classes, names, etc.
-    @pytest.mark.skipif(str(7761) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7761) not in TESTS, reason='Excluded')
     def test_teacher_submit_coinstructors_classes_names_etc_7761(self):
         """Submit co-instructors, classes, names and other data.
 
@@ -394,7 +398,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C7762 - 012 - Teacher | Select the textbook to use in the course
-    @pytest.mark.skipif(str(7762) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7762) not in TESTS, reason='Excluded')
     def test_teacher_select_the_textbook_to_use_in_the_course_7762(self):
         """Select the textbook to use in the course.
 
@@ -426,7 +430,7 @@ class TestRecruitingTeachers(unittest.TestCase):
 
     # Case C7763 - 013 - Teacher | Indicate whether the teacher was recruited
     # by OpenStax
-    @pytest.mark.skipif(str(7763) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7763) not in TESTS, reason='Excluded')
     def test_teacher_indicate_whether_the_teacher_was_recruited_by_7763(self):
         """Indicate if the teacher was or was not recruited by OpenStax.
 
@@ -459,7 +463,7 @@ class TestRecruitingTeachers(unittest.TestCase):
 
     # Case C7764 - 014 - Teacher | Presented a thank you page after registering
     # to use Concept Coach
-    @pytest.mark.skipif(str(7764) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7764) not in TESTS, reason='Excluded')
     def test_teacher_presented_a_thank_you_page_after_registering_7764(self):
         """Presented a thank you page after registering to use Concept Coach.
 
@@ -491,7 +495,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C7765 - 015 - Teacher | Sign up for an OpenStax Accounts username
-    @pytest.mark.skipif(str(7765) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7765) not in TESTS, reason='Excluded')
     def test_teacher_sign_up_for_an_openstax_accounts_username_7765(self):
         """Sign up for an OpenStax Accounts username.
 
@@ -523,7 +527,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C7770 - 020 - Admin | Add co-instructors to a course
-    @pytest.mark.skipif(str(7770) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7770) not in TESTS, reason='Excluded')
     def test_admin_add_coinstructors_to_a_course_7770(self):
         """Add co-instructors to a course.
 
@@ -561,7 +565,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C7771 - 021 - Teacher | Login with an Existing OpenStax Account
-    @pytest.mark.skipif(str(7771) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7771) not in TESTS, reason='Excluded')
     def test_teacher_login_with_an_existing_openstax_account_7771(self):
         """Log in with an Existing OpenStax Accounts username.
 
@@ -583,7 +587,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
     # Case C7772 - 022 - Teacher | Access the Concept Coach course
-    @pytest.mark.skipif(str(7772) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7772) not in TESTS, reason='Excluded')
     def test_teacher_access_the_cc_course_7772(self):
         """Access the Concept Coach course.
 
@@ -601,7 +605,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
     # Case C7773 - 023 - Teacher | Distribute access codes for the course
-    @pytest.mark.skipif(str(7773) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7773) not in TESTS, reason='Excluded')
     def test_teacher_distribute_access_codes_for_the_course_7773(self):
         """Distribute access codes for the teacher's course.
 
@@ -627,7 +631,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
     # Case C7774 - 024 - Teacher | Access CC help and support during the course
-    @pytest.mark.skipif(str(7774) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7774) not in TESTS, reason='Excluded')
     def test_teacher_acccess_cc_help_and_support_during_the_course_7774(self):
         """Access Concept Coach help and support during the course.
 
@@ -660,7 +664,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C7775 - 025 - Teacher | Access CC help and support after course ends
-    @pytest.mark.skipif(str(7775) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7775) not in TESTS, reason='Excluded')
     def test_teacher_access_cc_help_and_support_after_course_ends_7775(self):
         """Access Concept Coach help and support after the end of the course.
 

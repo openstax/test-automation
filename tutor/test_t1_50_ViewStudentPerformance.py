@@ -66,7 +66,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8287 - 001 - Student | View the personal Performance Forecast
     @pytest.mark.skipif(str(8287) not in TESTS, reason='Excluded')
-    def test_student_view_personal_performance_forecast(self):
+    def test_student_view_personal_performance_forecast_8287(self):
         """View the personal Performance Forecast.
 
         Steps:
@@ -100,7 +100,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8288 - 002 - Student | Info icon shows an explanation of the data
     @pytest.mark.skipif(str(8288) not in TESTS, reason='Excluded')
-    def test_student_info_icon_shows_explanation_of_the_data(self):
+    def test_student_info_icon_shows_explanation_of_the_data_8288(self):
         """Info icon shows an explanation of the data.
 
         Steps:
@@ -142,7 +142,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8289 - 003 - Student | View the performance color key
     @pytest.mark.skipif(str(8289) not in TESTS, reason='Excluded')
-    def test_student_view_the_performance_color_key(self):
+    def test_student_view_the_performance_color_key_8289(self):
         """View the performance color key.
 
         Steps:
@@ -184,7 +184,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8290 - 004 - Student | Return To Dashboard button
     # returns to the list dashboard
     @pytest.mark.skipif(str(8290) not in TESTS, reason='Excluded')
-    def test_student_return_to_dashboard_button(self):
+    def test_student_return_to_dashboard_button_8290(self):
         """Return To Dashboard button returns to the list dashboard.
 
         Steps:
@@ -230,7 +230,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8291 - 005 - Student | A student with zero answers does not
     # show section breakdowns
     @pytest.mark.skipif(str(8291) not in TESTS, reason='Excluded')
-    def test_student_no_answers_does_not_show_breakdown(self):
+    def test_student_no_answers_does_not_show_breakdown_8291(self):
         """A student with zero answers does not show section breakdowns.
 
         Steps:
@@ -276,7 +276,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8292 - 006 - Student | My Weaker Areas shows up to four problematic
     # sections
     @pytest.mark.skipif(str(8292) not in TESTS, reason='Excluded')
-    def test_student_weaker_areas_shows_up_to_four_sections(self):
+    def test_student_weaker_areas_shows_up_to_four_sections_8292(self):
         """My Weaker Areas shows up to four problematic sections.
 
         Steps:
@@ -328,7 +328,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8293 - 007 - Student | Chapters are listed on the left with their
     # sections to the right
     @pytest.mark.skipif(str(8293) not in TESTS, reason='Excluded')
-    def test_student_chapter_listed_on_left_with_section_on_right(self):
+    def test_student_chapter_listed_on_left_with_section_on_right_8293(self):
         """Chapters are listed on the left with their sections to the right.
 
         Steps:
@@ -373,7 +373,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8294 - 008 - Student | Clicking on a chapter bar brings up to
     # five practice assessments for that chapter
     @pytest.mark.skipif(str(8294) not in TESTS, reason='Excluded')
-    def test_student_clicking_chapter_brings_up_to_five_assessments(self):
+    def test_student_clicking_chapter_brings_up_to_five_assessments_8294(self):
         """Clicking chapter bar brings up to 5 practice assessments.
 
         Steps:
@@ -429,7 +429,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8295 - 009 - Student | Clicking on a section bar brings up to five
     # practice assessments for that section
     @pytest.mark.skipif(str(8295) not in TESTS, reason='Excluded')
-    def test_student_clicking_section_brings_up_to_five_assessments(self):
+    def test_student_clicking_section_brings_up_to_five_assessments_8295(self):
         """Clicking section bar brings up to 5 practice assessments.
 
         Steps:
@@ -485,7 +485,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8296 - 010 - Student | Bars without enough data show Practice More
     # To Get Forecast instead of a color bar
     @pytest.mark.skipif(str(8296) not in TESTS, reason='Excluded')
-    def test_student_bars_without_data_show_practice_more(self):
+    def test_student_bars_without_data_show_practice_more_8296(self):
         """Bars without enough data show Practice More To Get Forecast.
 
         Steps:

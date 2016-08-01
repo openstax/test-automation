@@ -203,7 +203,7 @@ class TestPractice(unittest.TestCase):
 
     # Case C8301 - 005 - Student | Answer a free reponse question
     @pytest.mark.skipif(str(8301) not in TESTS, reason='Excluded')
-    def test_student_answer_a_free_response_question(self):
+    def test_student_answer_a_free_response_question_8301(self):
         """Answer a free reponse question.
 
         Steps:

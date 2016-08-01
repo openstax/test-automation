@@ -66,7 +66,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8148 - 001 - Teacher | View the period Performance Forecast
     @pytest.mark.skipif(str(8148) not in TESTS, reason='Excluded')
-    def test_teacher_view_the_period_performance_forecast(self):
+    def test_teacher_view_the_period_performance_forecast_8148(self):
         """View the period Performance Forecast.
 
         Steps:
@@ -102,7 +102,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8149 - 002 - Teacher | Info icon shows an explanation of the data
     @pytest.mark.skipif(str(8149) not in TESTS, reason='Excluded')
-    def test_teacher_info_icon_shows_an_explanation_of_the_data(self):
+    def test_teacher_info_icon_shows_an_explanation_of_the_data_8149(self):
         """Info icon shows an explanation of the data.
 
         Steps:
@@ -145,7 +145,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8150 - 003 - Teacher | View the performance color key
     @pytest.mark.skipif(str(8150) not in TESTS, reason='Excluded')
-    def test_teacher_view_the_performance_color_key(self):
+    def test_teacher_view_the_performance_color_key_8150(self):
         """View the performance color key.
 
         Steps:
@@ -188,7 +188,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8151 - 004 - Teacher | Return to Dashboard button returns to
     # the calendar
     @pytest.mark.skipif(str(8151) not in TESTS, reason='Excluded')
-    def test_teacher_return_to_dashboard_button_returns_to_the_calendar(self):
+    def test_teacher_return_to_dashboard_button_returns_to_the_cal_8151(self):
         """Return to Dashboard button returns to the calendar.
 
         Steps:
@@ -233,7 +233,7 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8152 - 005 - Teacher | Periods tabs are shown
     @pytest.mark.skipif(str(8152) not in TESTS, reason='Excluded')
-    def test_teacher_period_tabs_are_shown(self):
+    def test_teacher_period_tabs_are_shown_8152(self):
         """Period tabs are shown.
 
         Steps:
@@ -272,7 +272,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8153 - 006 - Teacher | A period with zero answers does not
     # show section breakdowns
     @pytest.mark.skipif(str(8153) not in TESTS, reason='Excluded')
-    def test_teacher_a_period_w_zero_answers_does_not_show_breakdowns(self):
+    def test_teacher_a_period_w_zero_answers_does_not_show_breaks_8153(self):
         """A period with zero answers does not show section breakdowns.
 
         Steps:
@@ -319,7 +319,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8154 - 007 - Teacher | Weaker areas shows up to
     # four problematic sections
     @pytest.mark.skipif(str(8154) not in TESTS, reason='Excluded')
-    def test_teacher_weaker_areas_shows_up_to_four_problematic_sections(self):
+    def test_teacher_weaker_shows_up_to_four_problematic_sections_8154(self):
         """Weaker areas shows up to four problematic sections.
 
         Steps:
@@ -409,7 +409,7 @@ class TestEpicName(unittest.TestCase):
     # Case C8155 - 008 - Teacher | Chapters are listed on the left with
     # their sections to the right
     @pytest.mark.skipif(str(8155) not in TESTS, reason='Excluded')
-    def test_teacher_chapters_listed_on_left_w_sections_on_right(self):
+    def test_teacher_chapters_listed_on_left_w_sections_on_right_8155(self):
         """Chapters are listed on the left with their sections to the right.
 
         Steps:

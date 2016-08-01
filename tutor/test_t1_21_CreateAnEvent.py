@@ -9,12 +9,12 @@ import datetime
 import time
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+from staxing.assignment import Assignment
 from selenium.webdriver.support.ui import WebDriverWait
-from staxing.helper import Teacher  # NOQA
+from staxing.helper import Teacher
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 
@@ -27,15 +27,15 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8117, 8118, 8119, 8120,
-        8121, 8122, 8123, 8124,
-        8125, 8126, 8127, 8128,
-        8129, 8130, 8131, 8132,
-        8133, 8134, 8135, 8136,
-        8137, 8138, 8139, 8140,
-        8141, 8142, 8143, 8144,
-        8145, 8146, 8147])  # NOQA
-    # str([8145, 8146, 8147])
+    str([
+        8117, 8118, 8119, 8120, 8121,
+        8122, 8123, 8124, 8125, 8126,
+        8127, 8128, 8129, 8130, 8131,
+        8132, 8133, 8134, 8135, 8136,
+        8137, 8138, 8139, 8140, 8141,
+        8142, 8143, 8144, 8145, 8146,
+        8147
+    ])
 )
 
 
@@ -58,15 +58,17 @@ class TestCreateAnEvent(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
-        except:  # noqa
+        except:
             pass
 
     # Case C8117 - 001 - Teacher | Teacher creates an event
-    @pytest.mark.skipif(str(8117) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8117) not in TESTS, reason='Excluded')
     def test_teacher_create_an_event_8177(self):
         """Teacher creates an event.
 
@@ -129,7 +131,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
     # Case C8118 - 002 - Teacher | Add an event using the Add Assignment
     # drop down menu
-    @pytest.mark.skipif(str(8118) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8118) not in TESTS, reason='Excluded')
     def test_teacher_add_an_event_using_the_add_assignment_menu_8188(self):
         """Add an event using the Add Assignment drop down menu.
 
@@ -156,7 +158,7 @@ class TestCreateAnEvent(unittest.TestCase):
         # self.ps.test_updates['passed'] = True
 
     # Case C8119 - 003 - Teacher | Add an event using the calendar date
-    @pytest.mark.skipif(str(8119) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8119) not in TESTS, reason='Excluded')
     def test_teacher_add_event_using_the_calendar_date_8119(self):
         """Add an event using the calendar date.
 
@@ -194,7 +196,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
         # Case C8120 - 004 - Teacher | Set open and due dates for all periods
     # collectively
-    @pytest.mark.skipif(str(8120) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8120) not in TESTS, reason='Excluded')
     def test_teacher_set_dates_for_all_periods_collectively_8120(self):
         """Set open and due dates for all periods collectively.
 
@@ -305,7 +307,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
     # Case C8121 - 005 - Teacher | Set open and due dates for periods
     # individually
-    @pytest.mark.skipif(str(8121) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8121) not in TESTS, reason='Excluded')
     def test_teacher_set_dates_for_periods_individually_8121(self):
         """Set open and due dates for periods individually.
 
@@ -428,7 +430,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8122 - 006 - Teacher | Save a draft event
-    @pytest.mark.skipif(str(8122) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8122) not in TESTS, reason='Excluded')
     def test_teacher_save_a_draft_event_8122(self):
         """Save a draft event.
 
@@ -490,7 +492,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8123 - 007 - Teacher | Publish a new event
-    @pytest.mark.skipif(str(8123) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8123) not in TESTS, reason='Excluded')
     def test_teacher_publish_a_new_event_8123(self):
         """Publish a new event.
 
@@ -553,7 +555,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
     # NOT DONE
     # Case C8124 - 008 - Teacher | Publish a draft event
-    @pytest.mark.skipif(str(8124) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8124) not in TESTS, reason='Excluded')
     def test_teacher_publish_a_draft_event_8124(self):
         """Publish a draft event.
 
@@ -615,7 +617,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
     # Case C8125 - 009 - Teacher | Cancel a new event before making changes
     # using the Cancel button
-    @pytest.mark.skipif(str(8125) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8125) not in TESTS, reason='Excluded')
     def test_teacher_canel_new_event_before_changes_using_cancel_8125(self):
         """Cancel a new event before making any changes using the Cancel button
 
@@ -654,7 +656,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
     # Case C8126 - 010 - Teacher | Cancel a new event after making changes
     # using the Cancel button
-    @pytest.mark.skipif(str(8126) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8126) not in TESTS, reason='Excluded')
     def test_teacher_cancel_new_event_after_changes_using_cancel_8126(self):
         """Cancel a new event after making any changes using the Cancel button
 
@@ -703,7 +705,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
     # Case C8127 - 011 - Teacher | Cancel a new event before making changes
     # using the X
-    @pytest.mark.skipif(str(8127) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8127) not in TESTS, reason='Excluded')
     def test_teacher_cancel_new_event_before_changes_using_the_X_8127(self):
         """Cancel a new event before making any changes using the X.
 
@@ -743,7 +745,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
     # Case C8128 - 012 - Teacher | Cancel a new event after making any changes
     # using the X
-    @pytest.mark.skipif(str(8128) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8128) not in TESTS, reason='Excluded')
     def test_teacher_cancel_new_event_after_changes_using_the_x_8128(self):
         """Cancel a new event after making any changes using the X.
 
@@ -791,7 +793,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
     # Case C8129 - 013 - Teacher | Cancel a draft event before making changes
     # using the Cancel button
-    @pytest.mark.skipif(str(8129) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8129) not in TESTS, reason='Excluded')
     def test_teacher_cancel_draft_event_before_changes_using_cancel_8129(self):
         """Cancel a draft event before changes using the Cancel button.
 
@@ -847,7 +849,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
     # Case C8130 - 014 - Teacher | Cancel a draft event after making changes
     # using the Cancel button
-    @pytest.mark.skipif(str(8130) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8130) not in TESTS, reason='Excluded')
     def test_teacher_cancel_draft_event_after_changes_using_cancel_8130(self):
         """Cancel a draft event after making changes using the Cancel button.
 
@@ -914,7 +916,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
     # Case C8131 - 015 - Teacher | Cancel a draft event before making any
     # changes using the X
-    @pytest.mark.skipif(str(8131) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8131) not in TESTS, reason='Excluded')
     def test_teacher_cancel_draft_event_before_changes_using_the_x_8131(self):
         """Cancel the draft event before making any changes using the X.
 
@@ -975,7 +977,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
     # Case C8132 - 016 - Teacher | Cancel a draft event after making changes
     # using the X
-    @pytest.mark.skipif(str(8132) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8132) not in TESTS, reason='Excluded')
     def test_teacher_cancel_draft_evernt_After_changes_using_the_x_8132(self):
         """Cancel a draft event after making changes using the X.
 
@@ -1046,7 +1048,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
     # Case C8133 - 017 - Teacher | Attempt to publish a event with blank
     # required fields
-    @pytest.mark.skipif(str(8133) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8133) not in TESTS, reason='Excluded')
     def test_teacher_attempt_to_publish_event_blank_reqired_fields_8133(self):
         """Attempt to publish a event with blank required fields.
 
@@ -1086,7 +1088,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
     # Case C8134 - 018 - Teacher | Attempt to save a draft event with blank
     # required fields
-    @pytest.mark.skipif(str(8134) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8134) not in TESTS, reason='Excluded')
     def test_teacher_attempt_to_save_event_blank_required_feilds_8134(self):
         """Attempt to save a draft event with blank required fields
 
@@ -1126,8 +1128,8 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8135 - 019 - Teacher | Delete an unopened event
-    @pytest.mark.skipif(str(8135) not in TESTS, reason='Excluded')  # NOQA
-    def test_teacher_delete_an_unopened_event(self):
+    @pytest.mark.skipif(str(8135) not in TESTS, reason='Excluded')
+    def test_teacher_delete_an_unopened_event_8135(self):
         """Delete an unopened event.
 
         Steps:
@@ -1197,7 +1199,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8136 - 020 - Teacher | Delete an open event
-    @pytest.mark.skipif(str(8136) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8136) not in TESTS, reason='Excluded')
     def test_teacher_delete_an_open_event_8136(self):
         """Delete an open event.
 
@@ -1268,7 +1270,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8137 - 021 - Teacher | Delete a draft event
-    @pytest.mark.skipif(str(8137) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8137) not in TESTS, reason='Excluded')
     def test_teacher_delete_a_draft_event_8137(self):
         """Delete a draft event.
 
@@ -1334,7 +1336,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8138 - 022 - Teacher | Add a description to an event
-    @pytest.mark.skipif(str(8138) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8138) not in TESTS, reason='Excluded')
     def test_teacher_add_a_description_to_an_event_8138(self):
         """Add a description to an event.
 
@@ -1395,7 +1397,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8139 - 023 - Teacher | Change a description for a draft event
-    @pytest.mark.skipif(str(8139) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8139) not in TESTS, reason='Excluded')
     def test_teacher_change_a_description_for_a_draft_event_8139(self):
         """Change a description for a draft event.
 
@@ -1459,7 +1461,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8140 - 024 - Teacher | Change a description for an open event
-    @pytest.mark.skipif(str(8140) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8140) not in TESTS, reason='Excluded')
     def test_teacher_change_a_description_for_an_open_event_8140(self):
         """Change a description for an open event.
 
@@ -1528,7 +1530,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8141 - 025 - Teacher | Add a name to an event
-    @pytest.mark.skipif(str(8141) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8141) not in TESTS, reason='Excluded')
     def test_teacher_add_a_name_to_an_event_8141(self):
         """Add a name to an event.
 
@@ -1590,7 +1592,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8142 - 026 - Teacher | Change a name for a draft event
-    @pytest.mark.skipif(str(8142) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8142) not in TESTS, reason='Excluded')
     def test_teacher_change_a_name_for_a_draft_event_8142(self):
         """Change a name for a draft event.
 
@@ -1653,7 +1655,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8143 - 027 - Teacher | Change a name for an open event
-    @pytest.mark.skipif(str(8143) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8143) not in TESTS, reason='Excluded')
     def test_teacher_change_a_name_for_an_open_event_8143(self):
         """Change a name for an open event.
 
@@ -1722,7 +1724,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
     # Case C8144 - 028 - Teacher | Info icon shows definitions for the status
     # bar buttons
-    @pytest.mark.skipif(str(8144) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8144) not in TESTS, reason='Excluded')
     def test_teacher_info_icon_shows_definitions_for_the_status_bar_8144(self):
         """Info icon shows definitions for the Add Event status bar buttons.
 
@@ -1755,7 +1757,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
     # Case C8145 - 029 - Teacher | Change all fields in an unopened,
     # published event
-    @pytest.mark.skipif(str(8145) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8145) not in TESTS, reason='Excluded')
     def test_teacher_change_all_fields_in_an_unopened_event_8145(self):
         """Change all fields in an unopened, published event.
 
@@ -1844,7 +1846,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8146 - 030 - Teacher | Change all fields in a draft event
-    @pytest.mark.skipif(str(8146) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8146) not in TESTS, reason='Excluded')
     def test_teacher_change_all_feilds_in_a_draft_event_8146(self):
         """Change all fields in a draft event.
 
@@ -1927,7 +1929,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
     # Case C8147 - 031 - Teacher | Change the name, description, and due dates
     # in an opened event
-    @pytest.mark.skipif(str(8147) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8147) not in TESTS, reason='Excluded')
     def test_teacher_change_possible_fields_in_an_open_event_8147(self):
         """Change the name, description, and due dates in an opened event.
 

@@ -13,7 +13,7 @@ from pastasauce import PastaSauce, PastaDecorator
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher
+from staxing.helper import Admin, ContentQA
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -43,18 +43,24 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
+        self.admin = Admin(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
+        self.content = ContentQA(
+            use_env_vars=True,
+            existing_driver=self.admin.driver
+        )
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
-            self.teacher.delete()
+            self.admin.delete()
         except:
             pass
 

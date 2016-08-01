@@ -52,7 +52,7 @@ class TestGenerateReports(unittest.TestCase):
 
     # Case C8361 - 001 - Admin | Export research data to OwnCloud Research
     @pytest.mark.skipif(str(8361) not in TESTS, reason='Excluded')
-    def test_admin_export_research_data_to_own_cloud_research(self):
+    def test_admin_export_research_data_to_own_cloud_research_8361(self):
         """Export research data to OwnCloud Research.
 
         Steps:

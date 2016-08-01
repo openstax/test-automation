@@ -59,7 +59,7 @@ class TestCourseMaintenance(unittest.TestCase):
 
     # Case C8311 - 001 - Admin | Import courses from Salesforece
     @pytest.mark.skipif(str(8311) not in TESTS, reason='Excluded')
-    def test_admin_import_courses_from_salesforce(self):
+    def test_admin_import_courses_from_salesforce_8311(self):
         """Import courses from Salesforce.
 
         Steps:
@@ -75,7 +75,7 @@ class TestCourseMaintenance(unittest.TestCase):
 
     # Case C8312 - 002 - Admin | Update Salesforce Staistics
     @pytest.mark.skipif(str(8312) not in TESTS, reason='Excluded')
-    def test_admin_update_salesforce_statistice(self):
+    def test_admin_update_salesforce_statistice_8312(self):
         """Update Salesforce statistics.
 
         Steps:
@@ -91,7 +91,7 @@ class TestCourseMaintenance(unittest.TestCase):
 
     # Case C8313 - 003 - Admin | Exclude assesments from all courses
     @pytest.mark.skipif(str(8313) not in TESTS, reason='Excluded')
-    def test_admin_exclude_assesments_from_all_courses(self):
+    def test_admin_exclude_assesments_from_all_courses_8313(self):
         """Exclude assesments from all courses.
 
         Steps:
@@ -102,7 +102,7 @@ class TestCourseMaintenance(unittest.TestCase):
 
     # Case C8314 - 004 - Admin | Add a system notification
     @pytest.mark.skipif(str(8314) not in TESTS, reason='Excluded')
-    def test_admin_add_a_system_notification(self):
+    def test_admin_add_a_system_notification_8314(self):
         """Add a system notification.
 
         Steps:
@@ -154,7 +154,7 @@ class TestCourseMaintenance(unittest.TestCase):
 
     # Case C8315 - 005 - Admin | Delete a system notification
     @pytest.mark.skipif(str(8315) not in TESTS, reason='Excluded')
-    def test_admin_delete_a_system_notification(self):
+    def test_admin_delete_a_system_notification_8315(self):
         """Delete a system notification.
 
         Steps:
