@@ -24,7 +24,9 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([14823, 14824, 14825])  # NOQA
+    str([58276, 58277, 58273, 58282, 58350, 58286, 58290, 58291, 58292, 58320,
+         58293, 58295, 58296, 14823, 14825, 58275, 58311, 58274, 58283, 58351,
+         58326, 58327, 58328, 58329, 58330, 58331, 58333, 58334, 58335])  # NOQA
 )
 
 
@@ -51,37 +53,480 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         except:
             pass
 
-    # 14823 - 001 - Teacher | Guided tutorial of Concept Coach
+    # 58276 - 001 - Teacher | Directed to a "No Courses" page when not in any
+    # courses yet
+    @pytest.mark.skipif(str(58276) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_directed_to_a_no_courses_page_when_not_in_any_58276(self):
+        """Directed to a "No Courses" page when not in any courses yet.
+
+        Steps:
+
+        Go to tutor-qa.openstax.org
+        Sign in as demo_teacher; password
+
+
+        Expected Result:
+
+        The message "We cannot find an OpenStax course associated with your
+        account" displays with help links below
+
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.001' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.001',
+            '58276'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58277 - 002 - Teacher | View "Getting Started with Concept Coach" Guide
+    @pytest.mark.skipif(str(58277) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_view_getting_started_with_concept_coach_guide_58277(self):
+        """View "Getting Started with Concept Coach" Guide.
+
+        Steps:
+
+        Click "Concept Coach Faculty. Get help"
+
+
+        Expected Result:
+
+        CC Help Center opens in another tab with the Getting Started guide
+
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.002' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.002',
+            '58277'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58273 - 003 - Teacher | Access CC Help Center after registering for
+    # a course
+    @pytest.mark.skipif(str(58273) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_access_cc_help_center_after_registering_for_58273(self):
+        """Access Concept Coach Help Center after registering for a course.
+
+        Steps:
+
+        Go to tutor-qa
+        Sign in as teacher100
+        Click on a Concept Coach course if the user is in more than one
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+
+
+        Expected Result:
+
+        The user is presented with the CC Help Center
+
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.003' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.003',
+            '58273'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58282 - 004 - Teacher | Submit a question
+    @pytest.mark.skipif(str(58282) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_submit_a_question_58282(self):
+        """Submit a question.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+
+
+        Expected Result:
+
+        The user is presented with search results
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.004' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.004',
+            '58282'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58350 - 005 - Teacher | View "Contact Us" button after submitting a
+    # question
+    @pytest.mark.skipif(str(58350) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_view_contact_us_button_after_submitting_quest_58350(self):
+        """View "Contact Us" button after submitting a question.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+        Scroll to the bottom of the screen
+
+
+        Expected Result:
+
+        "Contact Us" button exists
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.005' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.005',
+            '58350'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58286 - 006 - Teacher | View an article after submitting a question
+    @pytest.mark.skipif(str(58286) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_view_an_article_after_submitting_a_question_58286(self):
+        """View an article after submitting a question.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+        Click on a search result
+
+
+        Expected Result:
+
+        The user is presented with an article containing answer to the question
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.006' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.006',
+            '58286'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58290 - 007 - Teacher | Indicate that the article was helpful
+    @pytest.mark.skipif(str(58290) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_indicate_that_the_article_was_helpful_58290(self):
+        """Indicate that the article was helpful.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+        Click on a search result
+        Scroll to "Feedback"
+        Click "Yes"
+
+        Expected Result:
+
+        A message that says "Thanks for your feedback!" is displayed
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.007' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.007',
+            '58290'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58291 - 008 - Teacher | Negative feedback renders a feedback popup box
+    @pytest.mark.skipif(str(58291) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_negative_feedback_renders_feedback_popup_box_58291(self):
+        """Negative feedback renders a feedback popup box.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+        Click on a search result
+        Scroll to "Feedback"
+        Click "No"
+
+        Expected Result:
+
+        The user is presented with a popup box that allows them to input
+        feedback
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.008' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.008',
+            '58291'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58292 - 009 - Teacher | Submit feedback for an article
+    @pytest.mark.skipif(str(58292) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_submit_feedback_for_an_article_58292(self):
+        """Submit feedback for an article.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+        Click on a search result
+        Scroll to "Feedback"
+        Click "No"
+
+        Enter feedback into the box that pops up
+        Click "Submit"
+
+
+        Expected Result:
+
+        A message that says "Thanks for your feedback!" is displayed in the box
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.009' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.009',
+            '58292'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58320 - 010 - Teacher | Close window after submitting feedback for an
+    # article
+    @pytest.mark.skipif(str(58320) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_close_window_after_submitting_feedback_for_58320(self):
+        """Close window after submitting feedback for an article.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+        Click on a search result
+        Scroll to "Feedback"
+        Click "No"
+
+        Enter feedback into the box that pops up
+        Click "Submit"
+        Click "Close window"
+
+
+        Expected Result:
+
+        The popup box closes and the message "Thanks for your feedback"
+        displays beneath "Feedback"
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.010' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.010',
+            '58320'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58293 - 011 - Teacher | Cancel feedback
+    @pytest.mark.skipif(str(58293) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_cancel_feedback_before_making_changes_58293(self):
+        """Cancel feedback.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+        Click on a search result
+        Scroll to "Feedback"
+        Click "No"
+        [optional] Enter feedback into the text box
+        Click "Cancel"
+
+
+        Expected Result:
+
+        The popup box closes
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.011' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.011',
+            '58293'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58295 - 012 - Teacher | View related articles
+    @pytest.mark.skipif(str(58295) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_view_related_articles_58295(self):
+        """View related articles.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+        Click on a search result
+        Scroll to "Related Articles"
+        Click on one of the articles (if any)
+
+
+        Expected Result:
+
+        The user is presented with the related article
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.012' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.012',
+            '58295'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58296 - 013 - Teacher | Submit a question to Customer Support
+    @pytest.mark.skipif(str(58296) not in TESTS, reason='Excluded')  # NOQA
+    def test_teacher_submit_a_question_to_customer_support_58296(self):
+        """Submit a question to Customer Support.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        CLick "Search" or press enter
+        Click on a search result
+        Scroll to the bottom of the page
+        CLick "Contact Us"
+        Fill out the required fields
+        Enter "Submit"
+
+        Expected Result:
+
+        The message "Thank you for your message! We'll be back to you within
+        one business day" is displayed
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.013' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.013',
+            '58296'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 14823 - 014 - Teacher | View guided tutorials of Concept Coach
     @pytest.mark.skipif(str(14823) not in TESTS, reason='Excluded')  # NOQA
-    def test_teacher_guided_tutorial_of_concept_coach_14823(self):
-        """Guided tutorial of Concept Coach.
+    def test_teacher_view_guided_tutorials_of_concept_coach_14823(self):
+        """View guided tutorials of Concept Coach.
 
         Steps:
 
 
-
         Expected Result:
 
-
         """
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
-    # 14824 - 002 - Student | Guided tutorial of Concept Coach
-    @pytest.mark.skipif(str(14824) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_guided_tutorial_of_concept_coach_14824(self):
-        """Guided tutorial of Concept Coach.
+        self.ps.test_updates['passed'] = True
 
-        Steps:
-
-
-
-        Expected Result:
-
-
-        """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
-    # 14825 - 003 - Teacher | CC assignments have links that can be added to
+    # 14825 - 015 - Teacher | CC assignments have links that can be added to
     # teacher's LMS
     @pytest.mark.skipif(str(14825) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_cc_assignments_have_links_that_can_be_added_14825(self):
@@ -104,16 +549,492 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
 
         """
-        self.ps.test_updates['name'] = 'cc2.18.003' \
+        self.ps.test_updates['name'] = 'cc2.18.015' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc2',
             'cc2.18',
-            'cc2.18.003',
+            'cc2.18.015',
             '14825'
         ]
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58275 - 016 - Student | Directed to a "No Courses" page when not in any
+    # courses yet
+    @pytest.mark.skipif(str(58275) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_directed_to_a_no_courses_page_when_not_in_any_58275(self):
+        """Directed to a "No Courses" page when not in any courses yet.
+
+        Steps:
+
+        Go to tutor-qa.openstax.org
+        Log in as qa_student_37003; password
+
+
+        Expected Result:
+
+        The message "We cannot find an OpenStax course associated with your
+        account" displays with help links
+
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.016' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.016',
+            '58275'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58311 - 017 - Student | View "Getting Started with Concept Coach" Guide
+    @pytest.mark.skipif(str(58275) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_directed_to_a_no_courses_page_when_not_in_any_58275(self):
+        """View "Getting Started with Concept Coach" Guide.
+
+        Steps:
+
+        Click "Concept Coach Students. Get help"
+
+        Expected Result:
+
+        CC Help Center opens in another tab with the Getting Started guide
+
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.017' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.017',
+            '58311'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58274 - 018 - Student | Access CC Help Center after registering for a
+    # course
+    @pytest.mark.skipif(str(58275) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_access_cc_help_center_after_registering_for_58275(self):
+        """Access Concept Coach Help Center after registering for a course.
+
+        Steps:
+
+        Go to tutor-qa
+        Sign in as student01
+        Click on a Concept Coach course if the user is in more than one
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+
+
+        Expected Result:
+
+        The user is presented with the CC Help Center
+
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.018' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.018',
+            '58274'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58283 - 018 - Student | Submit a question
+    @pytest.mark.skipif(str(58283) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_submit_a_question_58283(self):
+        """Submit a question.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+
+
+        Expected Result:
+
+        The user is presented with search results
+
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.019' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.019',
+            '58283'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58351 - 020 - Student | View "Contact Us" button after submitting a
+    # question
+    @pytest.mark.skipif(str(58351) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_view_contact_us_button_after_submitting_quest_58351(self):
+        """View "Contact Us" button after submitting a question.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+        Scroll to the bottom of the page
+
+
+        Expected Result:
+
+        "Contact Us" button exists
+
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.020' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.020',
+            '58351'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58326 - 021 - Student | View an article after submitting a question
+    @pytest.mark.skipif(str(58326) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_view_an_article_after_submitting_a_question_58326(self):
+        """View an article after submitting a question.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+        Click on a search result
+
+
+        Expected Result:
+
+        The user is presented with an article containing answer to the question
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.021' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.021',
+            '58326'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58327 - 022 - Student | Indicate that the article was helpful
+    @pytest.mark.skipif(str(58327) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_indicate_that_the_article_was_helpful_58327(self):
+        """Indicate that the article was helpful.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+        Click on a search result
+        Scroll to "Feedback"
+        Click "Yes"
+
+
+        Expected Result:
+
+        A message that says "Thanks for your feedback!" is displayed
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.022' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.022',
+            '58327'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58328 - 023 - Student | Negative feedback renders a feedback popup box
+    @pytest.mark.skipif(str(58328) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_negative_feedback_renders_feedback_popup_box_58328(self):
+        """Negative feedback renders a feedback popup box.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+        Click on a search result
+        Scroll to "Feedback"
+        Click "No"
+
+
+        Expected Result:
+
+        The user is presented with a popup box that allows them to input
+        feedback
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.023' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.023',
+            '58328'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58329 - 024 - Student | Submit feedback for an article
+    @pytest.mark.skipif(str(58329) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_submit_feedback_for_an_article_58329(self):
+        """Submit feedback for an article.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+        Click on a search result
+        Scroll to "Feedback"
+        Click "No"
+
+        Enter feedback into the box that pops up
+        Click "Submit"
+
+
+        Expected Result:
+
+        A message that says "Thanks for your feedback!" is displayed in the box
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.024' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.024',
+            '58329'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58330 - 025 - Student | Close window after submitting feedback for an
+    # article
+    @pytest.mark.skipif(str(58330) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_close_window_after_submitting_feedback_for_58330(self):
+        """Close window after submitting feedback for an article.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+        Click on a search result
+        Scroll to "Feedback"
+        Click "No"
+
+        Enter feedback into the box that pops up
+        Click "Submit"
+        Click "Close window"
+
+
+        Expected Result:
+
+        The popup box closes and the message "Thanks for your feedback"
+        displays beneath "Feedback"
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.025' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.025',
+            '58330'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58331 - 026 - Student | Cancel feedback
+    @pytest.mark.skipif(str(58331) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_cancel_feedback_58331(self):
+        """Cancel feedback.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+        Click on a search result
+        Scroll to "Feedback"
+        Click "No"
+        [optional] Enter feedback into text box
+        Click "Cancel"
+
+
+        Expected Result:
+
+        The popup box closes
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.026' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.026',
+            '58331'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58333 - 027 - Student | View related articles
+    @pytest.mark.skipif(str(58333) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_view_related_articles_58333(self):
+        """View related articles.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+        Click on a search result
+        Scroll to "Related Articles"
+        Click on one of the articles (if any)
+
+
+        Expected Result:
+
+        The user is presented with the related article
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.027' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.027',
+            '58333'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58334 - 028 - Student | Submit a question to Customer Support
+    @pytest.mark.skipif(str(58334) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_submit_a_question_to_customer_support_58334(self):
+        """Submit a question to Customer Support.
+
+        Steps:
+
+        Click "Get Help" from the user menu in the upper right corner of the
+        screen
+        Enter a question or search words into the search engine
+        Click "Search" or press enter
+        Click on a search result
+        Scroll to the bottom of the page
+        Click "Contact Us"
+        Fill out the required fields
+        Enter "Submit"
+
+        Expected Result:
+
+        The message "Thank you for your message! We'll be back to you within
+        one business day" is displayed
+
+        """
+        self.ps.test_updates['name'] = 'cc2.18.028' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.18',
+            'cc2.18.028',
+            '58334'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+
+        self.ps.test_updates['passed'] = True
+
+    # 58335 - 029 - Student | View guided tutorials of Concept Coach
+    @pytest.mark.skipif(str(58335) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_view_guided_tutorials_of_concept_coach_58335(self):
+        """View guided tutorial of Concept Coach.
+
+        Steps:
+
+
+        Expected Result:
+
+        """
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
