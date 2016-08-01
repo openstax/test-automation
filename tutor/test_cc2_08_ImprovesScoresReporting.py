@@ -10,7 +10,10 @@ from pastasauce import PastaSauce, PastaDecorator
 from random import randint  # NOQA
 from selenium.webdriver.common.by import By  # NOQA
 from selenium.webdriver.support import expected_conditions as expect  # NOQA
+from selenium.common.exceptions import NoSuchElementException
 from staxing.assignment import Assignment  # NOQA
+from selenium.webdriver.common.action_chains import ActionChains
+
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher  # NOQA
@@ -24,10 +27,11 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([14806, 14807, 14808, 14810,
-         14811, 14668, 14670, 14669,
-         14812, 14813, 14814, 14815,
-         14816])  # NOQA
+    # str([14806, 14807, 14808, 14810,
+    #      14811, 14668, 14670, 14669,
+    #      14812, 14813, 14814, 14815,
+    #      14816])  # NOQA
+    str([14670, ])
 )
 
 
@@ -48,17 +52,6 @@ class TestImprovesScoresReporting(unittest.TestCase):
         self.teacher.driver.find_element(
             By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
         ).click()
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//a[contains(text(),"View Detailed Scores")]')
-            )
-        ).click()
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//span[contains(text(),"Student Scores")]')
-            )
-        )
-
 
     def tearDown(self):
         """Test destructor."""
@@ -75,29 +68,34 @@ class TestImprovesScoresReporting(unittest.TestCase):
         """View student scores as percent complete.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
-        If the user has more than one course, click on a CC course name
-        Click "View Detailed Scores"
-        Click on the icon in the progress column
+        Click View Detailed Scores
+        Click on percentage
 
         Expected Result:
         Student Scores are presented as percent complete
         """
         self.ps.test_updates['name'] = 'cc2.08.001' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.08',
-            'cc2.08.001',
-            '14806'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.08', 'cc2.08.001', '14806']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[contains(text(),"View Detailed Scores")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[contains(text(),"Student Scores")]')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(text(),"percentage")]'
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"score")]//a[contains(text(),"%")]')
         self.ps.test_updates['passed'] = True
 
     # 14807 - 002 - Teacher | View student scores as number of total
@@ -106,29 +104,34 @@ class TestImprovesScoresReporting(unittest.TestCase):
         """View student scores as number of total.
 
         Steps:
-
-        If the user has more than one course, click on a CC course name
-
-        Click "View Detailed Scores"
+        Click View Detailed Scores
         Click "Number"
 
-
         Expected Result:
-
         Student Scores are presented as "Number of Total"
-
         """
         self.ps.test_updates['name'] = 'cc2.08.002' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.08',
-            'cc2.08.002',
-            '14807'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.08', 'cc2.08.002', '14807']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[contains(text(),"View Detailed Scores")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[contains(text(),"Student Scores")]')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(text(),"number")]'
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"score")]//a[contains(text()," of ")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -138,29 +141,34 @@ class TestImprovesScoresReporting(unittest.TestCase):
         """View tooltips on hover.
 
         Steps:
-
-        If the user has more than one course, click on a CC course name
-
+        Click View Detailed Scores
         Hover over the info icons
 
-
         Expected Result:
-
         The user is presented with tooltips
-
         """
         self.ps.test_updates['name'] = 'cc2.08.003' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.08',
-            'cc2.08.003',
-            '14808'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.08', 'cc2.08.003', '14808']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[contains(text(),"View Detailed Scores")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[contains(text(),"Student Scores")]')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH, '//i[@type="info-circle"]').click()
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//h3[@class="popover-title" and ' +
+            'contains(text(), "Class and Overall Averages")]')
         self.ps.test_updates['passed'] = True
 
     # 14810 - 004 - Teacher | Sort student scores based on score
@@ -169,30 +177,42 @@ class TestImprovesScoresReporting(unittest.TestCase):
         """Sort student scores based on score.
 
         Steps:
-
-        If the user has more than one course, click on a CC course name
-
-        Click "View Detailed Scores"
+        Click View Detailed Scores
         Click "Score" for the desired assignment
 
-
         Expected Result:
-
         Students are sorted based on score
-
         """
         self.ps.test_updates['name'] = 'cc2.08.004' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.08',
-            'cc2.08.004',
-            '14810'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.08', 'cc2.08.004', '14810']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[contains(text(),"View Detailed Scores")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[contains(text(),"Student Scores")]')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"sortable")]//div[text()="Score"]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"is-descending")]//div[text()="Score"]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"is-ascending")]//div[text()="Score"]'
+        )
         self.ps.test_updates['passed'] = True
 
     # 14811 - 005 - Teacher | Sort student scores based on number complete
@@ -201,30 +221,43 @@ class TestImprovesScoresReporting(unittest.TestCase):
         """Sort student scores based on number complete.
 
         Steps:
-
-        If the user has more than one course, click on a CC course name
-
-        Click "View Detailed Scores"
+        Click View Detailed Scores
         Click "Progress" for the desired assignment
 
-
         Expected Result:
-
         Students are sorted based on number completed
 
         """
         self.ps.test_updates['name'] = 'cc2.08.005' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.08',
-            'cc2.08.005',
-            '14811'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.08', 'cc2.08.005', '14811']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[contains(text(),"View Detailed Scores")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[contains(text(),"Student Scores")]')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"sortable")]//div[text()="Progress"]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"is-descending")]//div[text()="Progress"]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"is-ascending")]//div[text()="Progress"]'
+        )
         self.ps.test_updates['passed'] = True
 
     # 14668 - 006 - Teacher | All popups in the roster have an X button
@@ -233,33 +266,79 @@ class TestImprovesScoresReporting(unittest.TestCase):
         """All popups in the roster have an X button.
 
         Steps:
-
-        If the user has more than one course, click on a CC course name
-
         Click "Course Settings and Roster" from the user menu
         Click "Rename Course," "Change Course Timezone,"
-        "View Archived Period," "Add Period," "Rename," and "Get Student
-        Enrollment Code"
-
-
-
+        "Add Period," "Rename," and "Get Student Enrollment Code"
+        (view archived period has been removed)
         Expected Result:
-
         All pop ups have an X button
-
         """
         self.ps.test_updates['name'] = 'cc2.08.006' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.08',
-            'cc2.08.006',
-            '14668'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.08', 'cc2.08.006', '14668']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[text()="Course Settings and Roster"]'
+        ).click()
+        self.teacher.sleep(1)
+        # rename couse
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//button//span[contains(text(),"Rename Course")]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button[@class="close"]'
+        ).click()
+        self.teacher.sleep(0.5)
+        # course timezone
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//button//span[contains(text(),"Change Course Timezone")]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button[@class="close"]'
+        ).click()
+        self.teacher.sleep(0.5)
+        # add period/section
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//li//button//span[contains(text(),"Add")]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button[@class="close"]'
+        ).click()
+        self.teacher.sleep(0.5)
+        # rename period
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//span[contains(@class,"rename-period")]//button'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button[@class="close"]'
+        ).click()
+        self.teacher.sleep(0.5)
+        # student enrollemnt code
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//button//span[contains(text(),"Your student enrollment code")]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button[@class="close"]'
+        ).click()
+        self.teacher.sleep(0.5)
         self.ps.test_updates['passed'] = True
 
     # 14670 - 007 - Teacher | Close popup with X button
@@ -268,38 +347,98 @@ class TestImprovesScoresReporting(unittest.TestCase):
         """Close popup with X button.
 
         Steps:
-
-        If the user has more than one course, click on a CC course name
-
         Click "Course Settings and Roster" from the user menu
-        Click one of the following:
+        Click each of the following then click X on the pop up:
         - Rename Course
         - Change Course Timezone
-        - View Archived Period
         - Add Period
         - Rename
         - Get Student Enrollment Code
 
-        Click X on the pop up
-
-
         Expected Result:
-
         Popup is closed
-
         """
         self.ps.test_updates['name'] = 'cc2.08.007' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.08',
-            'cc2.08.007',
-            '14670'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.08', 'cc2.08.007', '14670']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[text()="Course Settings and Roster"]'
+        ).click()
+        self.teacher.sleep(1)
+        # rename couse
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//button//span[contains(text(),"Rename Course")]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button[@class="close"]'
+        ).click()
+        self.teacher.sleep(1)
+        with self.assertRaises(NoSuchElementException):
+            self.teacher.driver.find_element(
+                By.XPATH, '//div[@class="modal-content"]')
+        # course timezone
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//button//span[contains(text(),"Change Course Timezone")]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button[@class="close"]'
+        ).click()
+        self.teacher.sleep(1)
+        with self.assertRaises(NoSuchElementException):
+            self.teacher.driver.find_element(
+                By.XPATH, '//div[@class="modal-content"]')
+        # add period/section
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//li//button//span[contains(text(),"Add")]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button[@class="close"]'
+        ).click()
+        self.teacher.sleep(1)
+        with self.assertRaises(NoSuchElementException):
+            self.teacher.driver.find_element(
+                By.XPATH, '//div[@class="modal-content"]')
+        # rename period
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//span[contains(@class,"rename-period")]//button'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button[@class="close"]'
+        ).click()
+        self.teacher.sleep(1)
+        with self.assertRaises(NoSuchElementException):
+            self.teacher.driver.find_element(
+                By.XPATH, '//div[@class="modal-content"]')
+        # student enrollemnt code
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//button//span[contains(text(),"Your student enrollment code")]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button[@class="close"]'
+        ).click()
+        self.teacher.sleep(1)
+        with self.assertRaises(NoSuchElementException):
+            self.teacher.driver.find_element(
+                By.XPATH, '//div[@class="modal-content"]')
         self.ps.test_updates['passed'] = True
 
     # 14669 - 008 - Teacher | The icon in the progress column shows info on
@@ -310,30 +449,21 @@ class TestImprovesScoresReporting(unittest.TestCase):
         """The icon in the progress column shows info.
 
         Steps:
-
-        If the user has more than one course, click on a CC course name
-
         Click "View Detailed Scores"
         Click on the icon in the progress column for a completed assignment
 
-
         Expected Result:
-
         shows information on percentage complete, attempted out of total
         possible questions as well as the date last worked
-
         """
         self.ps.test_updates['name'] = 'cc2.08.008' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.08',
-            'cc2.08.008',
-            '14669'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.08', 'cc2.08.008', '14669']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        # no longer a feature?
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -344,12 +474,14 @@ class TestImprovesScoresReporting(unittest.TestCase):
 
         Steps:
 
-
         Expected Result:
-
-
         """
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # 14813 - 010 - Teacher | View zeros in exported scores instead of blank
     # cells for incomplete assignments
@@ -372,17 +504,13 @@ class TestImprovesScoresReporting(unittest.TestCase):
         there are zeros instead of blank cells
 
         """
-        self.ps.test_updates['name'] = 'cc2.08.010' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.08',
-            'cc2.08.010',
-            '14813'
-        ]
+        # self.ps.test_updates['name'] = 'cc2.08.010' \
+        #     + inspect.currentframe().f_code.co_name[4:]
+        # self.ps.test_updates['tags'] = ['cc2', 'cc2.08', 'cc2.08.010', '14813']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -393,25 +521,15 @@ class TestImprovesScoresReporting(unittest.TestCase):
         """Green check icon is displayed for completed assignments.
 
         Steps:
-
         If the user has more than one course, click on a CC course name
-
         Click "View Detailed Scores
 
-
         Expected Result:
-
         Green check icon is displayed for completed assignments
-
         """
         self.ps.test_updates['name'] = 'cc2.08.011' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.08',
-            'cc2.08.011',
-            '14814'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.08', 'cc2.08.011', '14814']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -425,15 +543,10 @@ class TestImprovesScoresReporting(unittest.TestCase):
         """The class average info icon displays a definition.
 
         Steps:
-
-        If the user has more than one course, click on a CC course name
-
         Click "View Detailed Scores
         Click on the info icon next to "Class Average"
 
-
         Expected Result:
-
         The class average info icon displays a definition about scores from
         completed assignments
 
