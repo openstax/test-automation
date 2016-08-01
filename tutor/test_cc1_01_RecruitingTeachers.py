@@ -65,13 +65,10 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Recruitment and promo website is available.
 
         Steps:
-
         Go to the recruitment website ( http://cc.openstax.org/ )
 
         Expected Result:
-
         Recruitment website loads and renders
-
         """
         self.ps.test_updates['name'] = 'cc1.01.001' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -84,6 +81,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -94,13 +92,10 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Information about CC and pilot are available on the demo site.
 
         Steps:
-
         Go to the recruitment website ( http://cc.openstax.org/ )
 
         Expected Result:
-
         Page loads several sections describing Concept Coach
-
         """
         self.ps.test_updates['name'] = 'cc1.01.002' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -113,6 +108,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -123,17 +119,14 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Can interact with a Concept Coach wire frame for each subject.
 
         Steps:
-
         Go to the recruitment website ( http://cc.openstax.org/)
         Hover over "demos" in the header
         Click "Interactice Demo"
         CLick on a Concept Coach book title
 
         Expected Result:
-
         A new tab or window opens rendering the demo content for the selected
         book
-
         """
         self.ps.test_updates['name'] = 'cc1.01.003' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -146,6 +139,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -155,7 +149,6 @@ class TestRecruitingTeachers(unittest.TestCase):
         """View a Concept Coach demo video.
 
         Steps:
-
         Open recruitment website ( http://cc.openstax.org/ )
         Hover over "demos" in the header
         Click "Interactive Demo"
@@ -163,13 +156,23 @@ class TestRecruitingTeachers(unittest.TestCase):
         Scroll down until an embedded video pane is displayed
         Click on the right-pointing arrow to play the video
 
-
         Expected Result:
-
         The video loads and plays
-
         """
+        self.ps.test_updates['name'] = 'cc1.01.004' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.01',
+            'cc1.01.004',
+            '7754'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # Case C7755 - 005 - Teacher | Sample exercise questions are seen in
     # the wire frames
@@ -178,7 +181,6 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Sample exercise questions are seen in the wire frames.
 
         Steps:
-
         Open recruitment website ( http://cc.openstax.org/ )
         Hover over "demos" in the header
         Click "Interactive Demo"
@@ -186,10 +188,8 @@ class TestRecruitingTeachers(unittest.TestCase):
         Scroll down until the 'CONCEPT COACH' pane is displayed
 
         Expected Result:
-
         Demo exercises are rendered and can be answered along with showing
         feedback
-
         """
         self.ps.test_updates['name'] = 'cc1.01.005' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -202,6 +202,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -212,15 +213,11 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Access CC help and support before the teacher's course is created.
 
         Steps:
-
         Open the recruitment website ( http://cc.openstax.org/ )
         Click "Support" in the header
 
-
         Expected Result:
-
         A new tab opens with the CC Help Center
-
         """
         self.ps.test_updates['name'] = 'cc1.01.006' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -233,6 +230,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -242,15 +240,11 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Teacher registers to use a Concept Coach course.
 
         Steps:
-
         Go to the recruitment website ( http://cc.openstax.org )
         Click on the 'sign up now' button
 
-
         Expected Result:
-
         Web form renders
-
         """
         self.ps.test_updates['name'] = 'cc1.01.007' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -263,6 +257,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -272,15 +267,11 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Teacher uses a web form to sign up for Concept Coach.
 
         Steps:
-
         Teacher fills out the form
 
-
         Expected Result:
-
         Preconditions pass.
         User is presented with a confirmation message
-
         """
         self.ps.test_updates['name'] = 'cc1.01.008' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -293,6 +284,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -303,17 +295,13 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Receive error messages if required fields on the sign up form are blank.
 
         Steps:
-
         Go to the recruitment website ( http://cc.openstax.org/ )
         Click on the 'sign up now' button
         Submit the form without changing any of the text fields
 
-
         Expected Result:
-
         Receive 'Please fill out this field' error messages in red for
         each blank required field
-
         """
         self.ps.test_updates['name'] = 'cc1.01.009' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -326,6 +314,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -335,18 +324,14 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Submit a form to supply required course information.
 
         Steps:
-
         Go to the recruitment website ( http://cc.openstax.org )
         Click on the 'sign up now' button
         Fill out the intent to participate form
         Submit the form
 
-
         Expected Result:
-
         Web form submits
         Displays a Thank you message panel
-
         """
         self.ps.test_updates['name'] = 'cc1.01.010' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -359,6 +344,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -368,20 +354,16 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Submit co-instructors, classes, names and other data.
 
         Steps:
-
         Go to the recruitment and promo website ( http://cc.openstax.org/ )
         Click on the 'sign up now' button
         Click on the 'Co-Teaching class with a colleague?' circle button
         Enter the co-instructor's (or co-instructors') information
         Enter text into other fields concerning classe, names, etc.
 
-
         Expected Result:
-
         Input box exists for instructor information, class details and
         other data.
         The user is able to input information.
-
         """
         self.ps.test_updates['name'] = 'cc1.01.011' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -394,6 +376,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -403,16 +386,12 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Select the textbook to use in the course.
 
         Steps:
-
         Go to the recruitment website ( http://cc.openstax.org )
         Click on the 'sign up now' button
         Select the course textbook from the 'Book' dropdown options
 
-
         Expected Result:
-
         Able to select any Concept Coach textbook
-
         """
         self.ps.test_updates['name'] = 'cc1.01.012' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -425,6 +404,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -435,17 +415,13 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Indicate if the teacher was or was not recruited by OpenStax.
 
         Steps:
-
         Go to the recruitment and promo website ( http://cc.openstax.org/ )
         Click on the 'sign up now' button ( http://cc.openstax.org/sign-up )
         Enter recruitment information into the 'Anything else we need to know?'
         text box
 
-
         Expected Result:
-
         Able to input recruitment information
-
         """
         self.ps.test_updates['name'] = 'cc1.01.013' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -458,6 +434,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -468,17 +445,13 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Presented a thank you page after registering to use Concept Coach.
 
         Steps:
-
         Go to the recruitment website ( http://cc.openstax.org )
         Click on the 'sign up now' button
         Fill out the intent to participate form
         Submit the form
 
-
         Expected Result:
-
         Displays a Thank you message panel
-
         """
         self.ps.test_updates['name'] = 'cc1.01.014' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -491,6 +464,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -500,17 +474,13 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Sign up for an OpenStax Accounts username.
 
         Steps:
-
         Go to the recruitment website ( http://cc.openstax.org )
         Click on the 'sign up now' button
         Fill out the intent to participate form
         Submit the form
 
-
         Expected Result:
-
         Displays a Thank you message panel
-
         """
         self.ps.test_updates['name'] = 'cc1.01.015' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -523,6 +493,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -532,23 +503,18 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Add co-instructors to a course.
 
         Steps:
-
         Log into Tutor as an admin (admin : password)
         From the user menu, select 'Admin'
         From the 'Course Organization' menu, select 'Courses'
-
         In the Courses table, find the correct course and click the 'Edit'
-        button on the right side of that row
+            button on the right side of that row
         Click on the 'Teachers' tab
         In the search box, enter the teacher's name or username
         Select the teacher in the list below the search bar or hit the down
-        arrow followed by the enter/return key
-
+            arrow followed by the enter/return key
 
         Expected Result:
-
         Co-instructor is linked to the affected course
-
         """
         self.ps.test_updates['name'] = 'cc1.01.020' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -561,6 +527,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -570,21 +537,30 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Log in with an Existing OpenStax Accounts username.
 
         Steps:
-
         Go to the recruitment website ( http://cc.openstax.org/ )
         Click on faculty login
         You are redirected to the accounts page.
         Enter a username and password
         click on Login.
 
-
         Expected Result:
-
         Login should be successful. It should take you to the teacher course
         picker/dashboard page.
-
         """
+        self.ps.test_updates['name'] = 'cc1.01.021' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.01',
+            'cc1.01.021',
+            '7771'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # Case C7772 - 022 - Teacher | Access the Concept Coach course
     @pytest.mark.skipif(str(7772) not in TESTS, reason='Excluded')
@@ -592,17 +568,26 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Access the Concept Coach course.
 
         Steps:
-
         Once you login you will be taken to a course picker page.
         Click on the course you want to check the dashboard
 
-
         Expected Result:
-
         At Concept Coach teacher dashboard
-
         """
+        self.ps.test_updates['name'] = 'cc1.01.022' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.01',
+            'cc1.01.022',
+            '7772'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # Case C7773 - 023 - Teacher | Distribute access codes for the course
     @pytest.mark.skipif(str(7773) not in TESTS, reason='Excluded')
@@ -610,7 +595,6 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Distribute access codes for the teacher's course.
 
         Steps:
-
         CC approves a faculty.
         Login as admin [admin | password]
         Click on user menu
@@ -619,16 +603,26 @@ class TestRecruitingTeachers(unittest.TestCase):
         Click on import [Do not check the box]
         This will automatically create a course for the teacher created.
         Email is sent to the email id used when signing up with
-        the unique course URL.
-
+            the unique course URL.
 
         Expected Result:
-
         Instructors are emailed the unique course url to the address provided
         when they signed up.
-
         """
+        self.ps.test_updates['name'] = 'cc1.01.023' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.01',
+            'cc1.01.023',
+            '7773'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # Case C7774 - 024 - Teacher | Access CC help and support during the course
     @pytest.mark.skipif(str(7774) not in TESTS, reason='Excluded')
@@ -636,18 +630,14 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Access Concept Coach help and support during the course.
 
         Steps:
-
         Login as teacher
         Click on the course name
         On dashboard click on the name of the teacher
         It drops down and displays several options.
         Click on Get Help
 
-
         Expected Result:
-
         It should open a new tab which shows the openstax.force.com
-
         """
         self.ps.test_updates['name'] = 'cc1.01.024' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -660,6 +650,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -669,18 +660,14 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Access Concept Coach help and support after the end of the course.
 
         Steps:
-
         Login as teacher
         Click on the course name
         On dashboard click on the name of the teacher
         It drops down and displays several options.
         Click on Get Help
 
-
         Expected Result:
-
         It should open a new tab which shows the openstax.force.com
-
         """
         self.ps.test_updates['name'] = 'cc1.01.025' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -693,5 +680,6 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True

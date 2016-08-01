@@ -9,16 +9,16 @@ import datetime
 import time
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
+from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 from selenium.common.exceptions import NoSuchElementException
-from staxing.assignment import Assignment  # NOQA
+from staxing.assignment import Assignment
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher  # NOQA
+from staxing.helper import Teacher
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -29,16 +29,16 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    # str([7992, 7993, 7994, 7995,
-    #      7996, 7997, 7998, 7999,
-    #      8000, 8001, 8002, 8003,
-    #      8004, 8005, 8006, 8007,
-    #      8008, 8009, 8010, 8011,
-    #      8012, 8013, 8014, 8015,
-    #      8016, 8017, 8018, 8019,
-    #      8020, 8021, 8022, 8023,
-    #      8024, 8025, 8026, 8027])  # NOQA
-    str([7995])
+    str([
+        7992, 7993, 7994, 7995, 7996,
+        7997, 7998, 7999, 8000, 8001,
+        8002, 8003, 8004, 8005, 8006,
+        8007, 8008, 8009, 8010, 8011,
+        8012, 8013, 8014, 8015, 8016,
+        8017, 8018, 8019, 8020, 8021,
+        8022, 8023, 8024, 8025, 8026,
+        8027
+    ])
 )
 
 
@@ -60,8 +60,10 @@ class TestCreateAReading(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
         except:
@@ -69,7 +71,7 @@ class TestCreateAReading(unittest.TestCase):
 
     # Case C7992 - 001 - Teacher | Add a reading using the Add Assignment
     # dropdown menu
-    @pytest.mark.skipif(str(7992) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7992) not in TESTS, reason='Excluded')
     def test_teacher_add_reading_using_add_assignemnt_dropdown_menu_7992(self):
         """Add a reading using the Add Assignment drop down menu.
 
@@ -95,11 +97,11 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Reading').click()
         assert('readings/new' in self.teacher.current_url()), \
             'not at add readings screen'
+
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C7993 - 002 - Teacher | Add a reading using the calendar date
-    @pytest.mark.skipif(str(7993) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7993) not in TESTS, reason='Excluded')
     def test_teacher_add_a_reading_using_the_calendar_date_7993(self):
         """Add a reading using the calendar date.
 
@@ -110,38 +112,39 @@ class TestCreateAReading(unittest.TestCase):
         Expected Result:
         Takes user add reading screen
         """
+        self.ps.test_updates['name'] = 't1.14.002' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.002', '7993']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
-        # self.ps.test_updates['name'] = 't1.14.002' \
-        #     + inspect.currentframe().f_code.co_name[4:]
-        # self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.002', '7993']
-        # self.ps.test_updates['passed'] = False
-        #
-        # # Test steps and verification assertions
-        # wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        # self.teacher.sleep(10)
-        # calendar_date = wait.until(
-        #     expect.element_to_be_clickable(
-        #         (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
-        #     )
-        # )
-        # self.teacher.driver.execute_script(
-        #     'return arguments[0].scrollIntoView();', calendar_date)
-        # self.teacher.driver.execute_script('window.scrollBy(0, -80);')
-        # actions = ActionChains(self.teacher.driver)
-        # actions.move_to_element(calendar_date)
-        # actions.click()
-        # actions.perform()
-        # # self.teacher.sleep(3)
-        # actions.move_by_offset(15, 15)
-        # actions.click()
-        # actions.perform()
-        # assert('readings/new/' in self.teacher.current_url()), \
-        #     'not at add reading page'
-        # self.ps.test_updates['passed'] = True
+        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
+        self.teacher.sleep(10)
+        calendar_date = wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
+            )
+        )
+        self.teacher.driver.execute_script(
+            'return arguments[0].scrollIntoView();', calendar_date)
+        self.teacher.driver.execute_script('window.scrollBy(0, -80);')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(calendar_date)
+        actions.click()
+        actions.perform()
+        # self.teacher.sleep(3)
+        actions.move_by_offset(15, 15)
+        actions.click()
+        actions.perform()
+        assert('readings/new/' in self.teacher.current_url()), \
+            'not at add reading page'
+
+        self.ps.test_updates['passed'] = True
 
     # Case C7994 - 003 - Teacher | Set open and due dates for all periods
     # collectively
-    @pytest.mark.skipif(str(7994) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7994) not in TESTS, reason='Excluded')
     def test_teacher_set_open_and_due_dates_for_all_periods_collect_7994(self):
         """Set open and due dates for all periods collectively.
 
@@ -150,11 +153,11 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Add Reading' option
         Enter an assignment name into the Assignment name text box
         Enter an assignment description into the Assignment description textbox
-        click on calendar icon next to text field and select desired open date
-        click on calendar icon next to text field and select desired due date
+        Click on calendar icon next to text field and select desired open date
+        Click on calendar icon next to text field and select desired due date
         Click on the "+ Add Readings" button
         Click on section(s) to add to assignment
-        scroll to bottom
+        Scroll to bottom
         Click on the "Add Readings" button
         Click on the "Publish" button
 
@@ -270,11 +273,12 @@ class TestCreateAReading(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+
         self.ps.test_updates['passed'] = True
 
     # Case C7995 - 004 - Teacher | Set open and due dates for periods
     # individually
-    @pytest.mark.skipif(str(7995) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7995) not in TESTS, reason='Excluded')
     def test_teacher_set_open_and_due_dates_for_periods_individuall_7995(self):
         """Set open and due dates for periods individually.
 
@@ -285,8 +289,8 @@ class TestCreateAReading(unittest.TestCase):
         Enter an assignment description into the Assignment description textbox
         Select 'Individual Periods' radio button
         For each period reading is being assigned to:
-        click on calendar icon next to text field and select desired open date
-        click on calendar icon next to text field and select desired due date
+        Click on calendar icon next to text field and select desired open date
+        Click on calendar icon next to text field and select desired due date
         Click on the "+ Add Readings" button
         Click on section(s) to add to assignment
         Scroll to bottom
@@ -416,10 +420,11 @@ class TestCreateAReading(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+
         self.ps.test_updates['passed'] = True
 
     # Case C7996 - 005 - Teacher | Save a draft reading
-    @pytest.mark.skipif(str(7996) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7996) not in TESTS, reason='Excluded')
     def test_teacher_save_a_draft_reading_7996(self):
         """Save a draft reading.
 
@@ -428,8 +433,8 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Add Reading' option
         Enter an assignment name into the Assignment name text box
         Enter an assignment description into the Assignment description textbox
-        click on calendar icon next to text field and select desired open date
-        click on calendar icon next to text field and select desired due date
+        Click on calendar icon next to text field and select desired open date
+        Click on calendar icon next to text field and select desired due date
         Click on the "+ Add Readings" button
         Click on section(s) to add to assignment
         Scroll to bottom
@@ -439,8 +444,7 @@ class TestCreateAReading(unittest.TestCase):
         Expected Result:
         Takes user back to calendar dashboard.
         Assignment appears on user calendar dashboard on due date with correct
-        readings.
-        'draft' should appear before the assignment name.
+        readings. 'draft' should appear before the assignment name.
         """
         self.ps.test_updates['name'] = 't1.14.005' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -502,10 +506,11 @@ class TestCreateAReading(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]")
+
         self.ps.test_updates['passed'] = True
 
     # Case C7997 - 006 - Teacher | Publish a new reading
-    @pytest.mark.skipif(str(7997) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7997) not in TESTS, reason='Excluded')
     def test_teacher_publish_a_new_reading_7997(self):
         """Publish a new reading.
 
@@ -586,10 +591,11 @@ class TestCreateAReading(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+
         self.ps.test_updates['passed'] = True
 
     # Case C7998 - 007 - Teacher | Publish a draft reading
-    @pytest.mark.skipif(str(7998) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7998) not in TESTS, reason='Excluded')
     def test_teacher_publish_a_draft_reading_7998(self):
         """Publish a draft reading.
 
@@ -600,8 +606,7 @@ class TestCreateAReading(unittest.TestCase):
         Expected Result:
         Takes user back to calendar dashboard.
         Assignment appears on user calendar dashboard on due date with correct
-        readings.
-        (draft should no longer be before the assignment name)
+        readings. 'draft' should no longer be before the assignment name.
         """
         self.ps.test_updates['name'] = 't1.14.007' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -647,11 +652,12 @@ class TestCreateAReading(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+
         self.ps.test_updates['passed'] = True
 
     # Case C7999 - 008 - Teacher | Cancel a new reading before making changes
     # using the Cancel button
-    @pytest.mark.skipif(str(7999) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7999) not in TESTS, reason='Excluded')
     def test_teacher_cancel_new_reading_before_changes_cancel_7999(self):
         """Cancel a new reading before making changes using the Cancel button.
 
@@ -687,11 +693,12 @@ class TestCreateAReading(unittest.TestCase):
         ).click()
         assert ('calendar' in self.teacher.current_url()),\
             'not back at calendar after canceling reading'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8000 - 009 - Teacher | Cancel a new reading after making changes
     # using the Cancel button
-    @pytest.mark.skipif(str(8000) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8000) not in TESTS, reason='Excluded')
     def test_teacher_cancel_new_reading_after_changes_cancel_button_8000(self):
         """Cancel a new reading after making changes using the Cancel button.
 
@@ -745,7 +752,7 @@ class TestCreateAReading(unittest.TestCase):
 
     # Case C8001 - 010 - Teacher | Cancel a new reading before making changes
     # using the X
-    @pytest.mark.skipif(str(8001) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8001) not in TESTS, reason='Excluded')
     def test_teacher_cancel_new_reading_before_changes_using_the_x_8001(self):
         """Cancel a new reading before making any changes using the X.
 
@@ -785,7 +792,7 @@ class TestCreateAReading(unittest.TestCase):
 
     # Case C8002 - 011 - Teacher | Cancel a new reading after making changes
     # using the X
-    @pytest.mark.skipif(str(8002) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8002) not in TESTS, reason='Excluded')
     def test_cancel_a_new_reading_after_making_changes_using_the_x_8002(self):
         """Cancel a new reading after making changes using the X.
 
@@ -833,11 +840,12 @@ class TestCreateAReading(unittest.TestCase):
         ).click()
         assert ('calendar' in self.teacher.current_url()),\
             'not back at calendar. canceling with x after making changes'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8003 - 012 - Teacher | Cancel a draft reading before making changes
     # using the Cancel button
-    @pytest.mark.skipif(str(8003) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8003) not in TESTS, reason='Excluded')
     def test_teacher_cancel_draft_reading_before_chages_cancel_8003(self):
         """Cancel draft reading before changes using the Cancel button.
 
@@ -888,11 +896,12 @@ class TestCreateAReading(unittest.TestCase):
         ).click()
         assert ('calendar' in self.teacher.current_url()),\
             'not back at calendar after canceling draft reading'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8004 - 013 - Teacher | Cancel a draft reading after making changes
     # using the Cancel button
-    @pytest.mark.skipif(str(8004) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8004) not in TESTS, reason='Excluded')
     def test_teacher_cancel_draft_reading_after_changes_cancel_8004(self):
         """Cancel a draft reading after making changes using the Cancel button.
 
@@ -961,7 +970,7 @@ class TestCreateAReading(unittest.TestCase):
 
     # Case C8005 - 014 - Teacher | Cancel a draft reading before making changes
     # using the X
-    @pytest.mark.skipif(str(8005) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8005) not in TESTS, reason='Excluded')
     def test_teacher_cancel_draft_reading_before_changes_using_x_8005(self):
         """Cancel a draft reading before making any changes using the X.
 
@@ -1016,7 +1025,7 @@ class TestCreateAReading(unittest.TestCase):
 
     # Case C8006 - 015 - Teacher | Cancel a draft reading after making changes
     # using the X
-    @pytest.mark.skipif(str(8006) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8006) not in TESTS, reason='Excluded')
     def test_teacher_cancel_a_draft_reading_after_changes_using_X_8006(self):
         """Cancel a draft reading after making changes using the X.
 
@@ -1027,10 +1036,8 @@ class TestCreateAReading(unittest.TestCase):
         Click on the "ok" button
 
         Expected Result:
-
         Takes user back to calendar dashboard.
         No changes have been made to the chosen draft on the calendar dashboard
-
         """
         self.ps.test_updates['name'] = 't1.14.015' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1085,23 +1092,20 @@ class TestCreateAReading(unittest.TestCase):
 
     # Case C8007 - 016 - Teacher | Attempt to publish a reading with blank
     # required fields
-    @pytest.mark.skipif(str(8007) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8007) not in TESTS, reason='Excluded')
     def test_teacher_attempt_to_publish_reading_blank_required_8007(self):
         """Attempt to publish a reading with blank required fields.
 
         Steps:
-
         Click on the 'Add Assignment' drop down menu
         Click on the 'Add Reading' option
         Click on the 'Publish' button
 
         Expected Result:
-
         Remains on the Add Assignment page.
         Does not allow user to publish assignments.
         All required fields that were left blank become red,
         and specify that they are required fields.
-
         """
         self.ps.test_updates['name'] = 't1.14.016' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1131,7 +1135,7 @@ class TestCreateAReading(unittest.TestCase):
 
     # Case C8008 - 017 - Teacher | Attempt to save a draft reading with blank
     # required fields
-    @pytest.mark.skipif(str(8008) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8008) not in TESTS, reason='Excluded')
     def test_teacher_attempt_save_draft_reading_blank_required_8008(self):
         """Attempt to save a draft reading with blank required fields.
 
@@ -1171,10 +1175,9 @@ class TestCreateAReading(unittest.TestCase):
             'went back to calendar even though required feilds were left blank'
 
         self.ps.test_updates['passed'] = True
-        self.ps.test_updates['passed'] = True
 
     # Case C8009 - 018 - Teacher | Delete an unopened reading
-    @pytest.mark.skipif(str(8009) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8009) not in TESTS, reason='Excluded')
     def test_teacher_delete_an_unopened_reading_8009(self):
         """Delete an unopened reading.
 
@@ -1240,10 +1243,11 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//label[@data-title="' + assignment_name + '"]')
         assert(len(deleted_reading) == len(original_readings)), \
             'assignment not deleted'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8010 - 019 - Teacher | Delete an open reading
-    @pytest.mark.skipif(str(8010) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8010) not in TESTS, reason='Excluded')
     def test_teacher_delete_an_open_reading_8010(self):
         """Delete an open reading.
 
@@ -1306,10 +1310,11 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//label[@data-title="' + assignment_name + '"]')
         assert(len(deleted_reading) == len(original_readings)), \
             'assignment not deleted'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8011 - 020 - Teacher | Delete a draft reading
-    @pytest.mark.skipif(str(8011) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8011) not in TESTS, reason='Excluded')
     def test_teacher_delete_a_draft_reading_8011(self):
         """Delete a draft reading.
 
@@ -1372,7 +1377,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8012 - 021 - Teacher | Add a description to a reading
-    @pytest.mark.skipif(str(8012) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8012) not in TESTS, reason='Excluded')
     def test_teacher_add_a_description_to_a_reading_8012(self):
         """Add a description to a reading.
 
@@ -1449,10 +1454,11 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8013 - 022 - Teacher | Change a description for a draft reading
-    @pytest.mark.skipif(str(8013) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8013) not in TESTS, reason='Excluded')
     def test_teacher_change_a_description_for_a_draft_reading_8013(self):
         """Change a description for a draft reading.
 
@@ -1521,10 +1527,11 @@ class TestCreateAReading(unittest.TestCase):
             )
         assert('calendar' in self.teacher.current_url()),\
             'not returned to calendar after updating description'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8014 - 023 - Teacher | Change a description for an open reading
-    @pytest.mark.skipif(str(8014) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8014) not in TESTS, reason='Excluded')
     def test_teacher_change_a_description_for_an_open_reading_8014(self):
         """Change a description for an open reading.
 
@@ -1535,10 +1542,8 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Publish' button
 
         Expected Result:
-
         Takes user back to calendar dashboard.
         Assignment description of the chosen reading has the new description.
-
         """
         self.ps.test_updates['name'] = 't1.14.023' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1604,7 +1609,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8015 - 024 - Teacher | Add a name to a reading
-    @pytest.mark.skipif(str(8015) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8015) not in TESTS, reason='Excluded')
     def test_teacher_add_a_name_to_a_reading_8015(self):
         """Add a name to a reading.
 
@@ -1685,24 +1690,22 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8016 - 025 - Teacher | Change a name for a draft reading
-    @pytest.mark.skipif(str(8016) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8016) not in TESTS, reason='Excluded')
     def test_teacher_change_a_name_for_a_draft_reading_8016(self):
         """Change a name for a draft reading.
 
         Steps:
-
         On the calendar click on a draft
         Enter a new name into the Assignment name text box
         Click on the 'Save As Draft' button
 
         Expected Result:
-
         Takes user back to calendar dashboard.
         Assignment description of the chosen draft should have the new name.
-
         """
         self.ps.test_updates['name'] = 't1.14.025' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1757,10 +1760,11 @@ class TestCreateAReading(unittest.TestCase):
             )
         assert('calendar' in self.teacher.current_url()),\
             'not returned to calendar after updating description'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8017 - 026 - Teacher | Change a name for an open reading
-    @pytest.mark.skipif(str(8017) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8017) not in TESTS, reason='Excluded')
     def test_teacher_change_a_name_for_an_open_reading_8017(self):
         """Change a name for an open reading.
 
@@ -1773,7 +1777,6 @@ class TestCreateAReading(unittest.TestCase):
         Expected Result:
         Takes user back to calendar dashboard, with chosen assignment open.
         Assignment name of the chosen reading should have the new name.
-
         """
         self.ps.test_updates['name'] = 't1.14.026' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1833,10 +1836,11 @@ class TestCreateAReading(unittest.TestCase):
             )
         assert('calendar' in self.teacher.current_url()),\
             'not returned to calendar after updating description'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8018 - 027 - Teacher | Add a single section to a reading
-    @pytest.mark.skipif(str(8018) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8018) not in TESTS, reason='Excluded')
     def test_teacher_add_a_single_section_to_a_reading_8018(self):
         """Add a single section to a reading.
 
@@ -1937,10 +1941,11 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8019 - 028 - Teacher | Add a complete chapter to a reading
-    @pytest.mark.skipif(str(8019) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8019) not in TESTS, reason='Excluded')
     def test_teacher_add_a_coplete_chapter_to_a_reading_8019(self):
         """Add a complete chapter to a reading.
 
@@ -2033,11 +2038,12 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8020 - 029 - Teacher | Remove a single section from a reading from
     # the Select Readings screen
-    @pytest.mark.skipif(str(8020) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8020) not in TESTS, reason='Excluded')
     def test_teacher_remove_single_section_select_readings_screen_8020(self):
         """Remove a single section from the Select Readings screen.
 
@@ -2146,11 +2152,12 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8021 - 030 - Teacher | Remove a complete chapter from a reading
     # from the Select Readings screen
-    @pytest.mark.skipif(str(8021) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8021) not in TESTS, reason='Excluded')
     def test_teacher_remove_complete_chapter_select_readings_screen_8021(self):
         """Remove a complete chapter from the Select Readings screen.
 
@@ -2166,7 +2173,6 @@ class TestCreateAReading(unittest.TestCase):
         Expected Result:
         Takes user back to the calendar dashboard.
         Reading assignment has been updated to have the chapter removed.
-
         """
         self.ps.test_updates['name'] = 't1.14.030' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -2258,12 +2264,12 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             )
+
         self.ps.test_updates['passed'] = True
 
-    # not sure if this case is working beacuse the feature is broken now
     # Case C8022 - 031 - Teacher | Remove a single section from a reading from
     # the Add Reading Assignment screen
-    @pytest.mark.skipif(str(8022) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8022) not in TESTS, reason='Excluded')
     def test_teacher_remove_single_section_from_add_readings_screen_8022(self):
         """Remove a single section from the Add Reading Assignment screen.
 
@@ -2276,7 +2282,7 @@ class TestCreateAReading(unittest.TestCase):
         Enter into Due Date text field date as MM/DD/YYYY
         Click on the "+ Add Readings" button
         Click on sections to add to assignment
-        scroll to bottom
+        Scroll to bottom
         Click on the "Add Readings" button
         Click on the "x" button next to selected reading assignment to remove
         Click on the Publish' button
@@ -2360,10 +2366,11 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8023 - 032 - Teacher | Reorder the selected reading sections
-    @pytest.mark.skipif(str(8023) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8023) not in TESTS, reason='Excluded')
     def test_teacher_reorder_the_selected_reading_sections_8023(self):
         """Reorder the selected reading sections.
 
@@ -2443,11 +2450,12 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8024 - 033 - Teacher | Change all fields in an unopened, published
     # reading
-    @pytest.mark.skipif(str(8024) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8024) not in TESTS, reason='Excluded')
     def test_teacher_change_all_feilds_unopened_published_reading_8024(self):
         """Change all fields in an unopened, published reading.
 
@@ -2539,10 +2547,11 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"NEW')]"
             )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8025 - 034 - Teacher | Change all fields in a draft reading
-    @pytest.mark.skipif(str(8025) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8025) not in TESTS, reason='Excluded')
     def test_teacher_change_all_feilds_in_a_draft_reading_8025(self):
         """Change all fields in a draft reading.
 
@@ -2619,20 +2628,23 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//button[contains(@class,"-save")]').click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//a/label[contains(text(), '"+assignment_name+"NEW')]"
+                By.XPATH,
+                "//a/label[contains(text(), '%sNEW')]" % assignment_name
             )
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
             self.teacher.driver.find_element(
-                By.XPATH, "//a/label[contains(text(), '"+assignment_name+"NEW')]"
+                By.XPATH,
+                "//a/label[contains(text(), '%sNEW')]" % assignment_name
             )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8026 - 035 - Teacher | Change the name, description and due dates
     # in an opened reading
-    @pytest.mark.skipif(str(8026) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8026) not in TESTS, reason='Excluded')
     def test_teacher_change_name_description_due_date_open_reading_8026(self):
         """Change the name, description and due dates in an opened reading.
 
@@ -2736,11 +2748,12 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"NEW')]"
             )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8027 - 036 - Teacher | Info icon shows definitions for the status
     # bar buttons
-    @pytest.mark.skipif(str(8027) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8027) not in TESTS, reason='Excluded')
     def test_teacher_info_icon_shows_definitions_for_status_buttons_8027(self):
         """Info icon shows definitions for the status bar buttons.
 
@@ -2775,4 +2788,5 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//button[contains(@class,"footer-instructions")]'
         ).click()
         self.teacher.driver.find_element(By.ID, 'plan-footer-popover')
+
         self.ps.test_updates['passed'] = True

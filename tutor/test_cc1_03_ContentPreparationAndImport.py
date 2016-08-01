@@ -24,8 +24,10 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7603, 7604, 7962, 7963, 7964,
-         7965, 7966, 7967, 7968, 7969])
+    str([
+        7603, 7604, 7962, 7963, 7964,
+        7965, 7966, 7967, 7968, 7969
+    ])
 )
 
 
@@ -73,9 +75,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
         Now wait for at most 5 mins.
 
         Expected Result:
-
         The message "Ecosystem import job queued" appears at the top
-
         """
         self.ps.test_updates['name'] = 'cc1.03.001' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -88,6 +88,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -97,7 +98,6 @@ class TestContentPreparationAndImport(unittest.TestCase):
         """Import content into Tutor.
 
         Steps:
-
         Select Customer Analyst from the dropdown menu on the name
         Click on Ecosystems in the header
         Click "Download Manifest" for the desired course
@@ -109,9 +109,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
         Now wait for at most 5 mins.
 
         Expected Result:
-
         The message "Ecosystem import job queued" appears at the top
-
         """
         self.ps.test_updates['name'] = 'cc1.03.002' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -124,6 +122,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -134,16 +133,13 @@ class TestContentPreparationAndImport(unittest.TestCase):
         """Verify question availability for CC-Derived Biology.
 
         Steps:
-
         Click QA content
         Click Available Books
         Select CC-Derived Biology
         Click on a section in the table of contents
 
         Expected Result:
-
         Questions are available
-
         """
         self.ps.test_updates['name'] = 'cc1.03.003' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -156,6 +152,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -166,17 +163,13 @@ class TestContentPreparationAndImport(unittest.TestCase):
         """Verify question availability for CC-Derived College Physics.
 
         Steps:
-
         Click QA content
         Click Available Books
         Select CC-Derived College Physics
         Click on a section in the table of contents
 
-
         Expected Result:
-
         Questions are available
-
         """
         self.ps.test_updates['name'] = 'cc1.03.004' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -189,6 +182,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -199,17 +193,13 @@ class TestContentPreparationAndImport(unittest.TestCase):
         """Verify question availability for CC-Derived Concepts of Biology.
 
         Steps:
-
         Click QA content
         Click Available Books
         Select CC-Derived Concepts of Biology
         Click on a section in the table of contents
 
-
         Expected Result:
-
         Questions are available
-
         """
         self.ps.test_updates['name'] = 'cc1.03.005' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -222,6 +212,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -232,17 +223,13 @@ class TestContentPreparationAndImport(unittest.TestCase):
         """Verify question availability for CC-Derived Anatomy & Physiology.
 
         Steps:
-
         Click QA content
         Click Available Books
         Select CC-Derived Anatomy and Physiology
         Click on a section in the table of contents
 
-
         Expected Result:
-
         Questions are available
-
         """
         self.ps.test_updates['name'] = 'cc1.03.006' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -255,6 +242,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -265,17 +253,13 @@ class TestContentPreparationAndImport(unittest.TestCase):
         """Verify question availability for CC-Derived Macroeconomics.
 
         Steps:
-
         Click QA content
         Click Available Books
         Select CC-Derived Macroeconomics
         Click on a section in the table of contents
 
-
         Expected Result:
-
         Questions are available
-
         """
         self.ps.test_updates['name'] = 'cc1.03.007' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -288,6 +272,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -298,17 +283,13 @@ class TestContentPreparationAndImport(unittest.TestCase):
         """Verify question availability for CC-Derived Microeconomics.
 
         Steps:
-
         Click QA content
         Click Available Books
         Select CC-Derived Microeconomics
         Click on a section in the table of contents
 
-
         Expected Result:
-
         Questions are available
-
         """
         self.ps.test_updates['name'] = 'cc1.03.008' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -321,6 +302,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -331,17 +313,13 @@ class TestContentPreparationAndImport(unittest.TestCase):
         """Verify question availability for CC-Derived Principles of Economics.
 
         Steps:
-
         Click QA content
         Click Available Books
         Select CC-Derived Principles of Economics
         Click on a section in the table of contents
 
-
         Expected Result:
-
         Questions are available
-
         """
         self.ps.test_updates['name'] = 'cc1.03.009' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -354,6 +332,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -364,17 +343,13 @@ class TestContentPreparationAndImport(unittest.TestCase):
         """Verify question availability for CC-Der Introduction to Sociology.
 
         Steps:
-
         Click QA content
         Click Available Books
         Select CC-Derived Introcution to Sociology
         Click on a section in the table of contents
 
-
         Expected Result:
-
         Questions are available
-
         """
         self.ps.test_updates['name'] = 'cc1.03.010' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -387,5 +362,6 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
