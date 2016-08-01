@@ -39,11 +39,26 @@ class TestImprovesScoresReporting(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
+        self.teacher = Teacher(
             use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities,
         )
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[contains(text(),"View Detailed Scores")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[contains(text(),"Student Scores")]')
+            )
+        )
+
 
     def tearDown(self):
         """Test destructor."""
@@ -60,21 +75,16 @@ class TestImprovesScoresReporting(unittest.TestCase):
         """View student scores as percent complete.
 
         Steps:
-
         Go to https://tutor-qa.openstax.org/
         Click on the 'Login' button
         Enter the teacher user account in the username and password text boxes
         Click on the 'Sign in' button
         If the user has more than one course, click on a CC course name
-
         Click "View Detailed Scores"
         Click on the icon in the progress column
 
-
         Expected Result:
-
         Student Scores are presented as percent complete
-
         """
         self.ps.test_updates['name'] = 'cc2.08.001' \
             + inspect.currentframe().f_code.co_name[4:]
