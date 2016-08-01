@@ -519,7 +519,12 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         Expected Result:
 
         """
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # 14825 - 015 - Teacher | CC assignments have links that can be added to
     # teacher's LMS
@@ -1027,4 +1032,9 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         Expected Result:
 
         """
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
