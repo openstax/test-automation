@@ -62,7 +62,7 @@ class TestStudentProgressViews(unittest.TestCase):
         """View section completion report.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
         Click on the 'Sign in' button

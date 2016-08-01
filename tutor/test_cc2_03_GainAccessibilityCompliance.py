@@ -31,7 +31,9 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([list_of_cases])
+    str([
+        list_of_cases
+    ])
 )
 
 
@@ -41,6 +43,8 @@ class TestGainAccessibilityCompliance(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
@@ -51,8 +55,10 @@ class TestGainAccessibilityCompliance(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
         except:

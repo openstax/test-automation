@@ -37,6 +37,8 @@ class TestDeliveringAssignments(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.Teacher = Teacher(
@@ -63,8 +65,8 @@ class TestDeliveringAssignments(unittest.TestCase):
         """PDF is available for download for a Concept Coach derived copy.
 
         Steps:
-        Login as teacher:
-        Go to https://tutor-qa.openstax.org/
+        ** Login as teacher:
+        Go to Tutor
         Click on the 'Login' button
         Enter the teacher user account in the username and password text boxes
         Click on the 'Sign in' button
@@ -74,7 +76,7 @@ class TestDeliveringAssignments(unittest.TestCase):
         Click on the 'PDF' link
         Click on 'Download for Free'
 
-        Login as student:
+        ** Login as student:
         Go to https://tutor-staging.openstax.org/
         Click on the 'Login' button
         Enter the teacher user account in the username and password text boxes
@@ -109,7 +111,7 @@ class TestDeliveringAssignments(unittest.TestCase):
         """Webview table of contents matches the PDF numbering.
 
         Steps:
-        Go to https://tutor-staging.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the teacher user account in the username and password text boxes
         Click on the 'Sign in' button
@@ -143,7 +145,7 @@ class TestDeliveringAssignments(unittest.TestCase):
 
         Steps:
         Search the title of the book, along with 'openstax' through a search
-        engine
+            engine
 
         Expected Result:
         The search returns a link to the book
@@ -169,7 +171,7 @@ class TestDeliveringAssignments(unittest.TestCase):
         """Find the Concept Coach book from CNX.
 
         Steps:
-        Go to https://legacy.cnx.org
+        Go to CNX
         Search the name of the book in the 'Search Content' text box with '
         with Concept Coach' added to the search
 
@@ -198,7 +200,7 @@ class TestDeliveringAssignments(unittest.TestCase):
         """View the chapter and section number before the CNX page module title.
 
         Steps:
-        Go to a concept coach book
+        Go to a Concept Coach book
         If the contents is not already open, Click on contents
         Click on a chapter
         Click on a section
@@ -228,6 +230,7 @@ class TestDeliveringAssignments(unittest.TestCase):
         """Display correct PDF numbering when the print style is CCAP.
 
         Steps:
+
 
         Expected Result:
 

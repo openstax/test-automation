@@ -37,9 +37,10 @@ class TestStudentsWorkAssignments(unittest.TestCase):
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
-        teacher = Teacher(username='teacher100', password='password',
-                          site='https://tutor-qa.openstax.org/',
-                          pasta_user=self.ps)
+        teacher = Teacher(
+            username='teacher100',
+            password='password',
+            pasta_user=self.ps)
         teacher.login()
         courses = teacher.find_all(By.CLASS_NAME,
                                    'tutor-booksplash-course-item')
@@ -237,7 +238,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """View section completion report.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the teacher user account in the username and password text boxes
         Click on the 'Sign in' button
@@ -301,7 +302,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Spaced practice assessments are from previousy worked modules.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the student user account
         Click on the 'Sign in' button
@@ -337,7 +338,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Module without assessments does not display the CC widget.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
         Click on the 'Sign in' button
@@ -369,7 +370,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Assignment is assistive technology friendly.
 
         Steps:
-        Go to tutor-qa
+        Go to Tutor
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
         Click on the 'Sign in' button
@@ -407,7 +408,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Display the assignment summary after completing the assignment.
 
         Steps:
-        Go to tutor-qa
+        Go to Tutor
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
         Click on the 'Sign in' button
@@ -446,7 +447,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """The exercise ID is visible within the assessment pane.
 
         Steps:
-        Go to tutor-qa
+        Go to Tutor
         Click on the 'Login' button
         Enter the student account in the username and password text boxes
         Click on the 'Sign in' button

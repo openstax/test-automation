@@ -41,9 +41,11 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
+        self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
@@ -66,7 +68,7 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         """Concept Coach Zendesk is web-accesible.
 
         Steps:
-        Log in to tutor as teacher
+        Log in to Tutor as teacher
         If more then one course, click on a concept coach course
         In user menu in top right of header, click 'Get Help'
 
@@ -148,13 +150,13 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         """Submit support questions.
 
         Steps:
-        go to the Concept Coach landing page
-        click on the help button in the bottom right
-        enter keywords to question into text box
-        press return key
-        click on 'Leave us a message'
-        enter name, email and message into corresponding text boxes
-        click 'Send'
+        Go to the Concept Coach landing page
+        Click on the help button in the bottom right
+        Enter keywords to question into text box
+        Press return key
+        Click on 'Leave us a message'
+        Enter name, email and message into corresponding text boxes
+        Click 'Send'
 
         Expected Result:
         'Message sent' displayed in help box
@@ -249,7 +251,7 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         """View instructions on how to use Concept Coach.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the teacher user account in the username and password text boxes
         Click on the 'Sign in' button
@@ -285,7 +287,7 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         """View instructions on how to use Concept Coach.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
         Click on the 'Sign in' button
@@ -317,7 +319,7 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         """View instructions on how to use Concept Coach.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the teacher user account in the username and password text boxes
         Click on the 'Sign in' button
@@ -326,7 +328,8 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         Click "Get Help"
 
         Expected Result:
-        taken to zendesk in a new window or tab. assorted help is given
+        Taken to Zendesk in a new window or tab
+        AAssorted help is displayed
         """
         self.ps.test_updates['name'] = 'cc1.14.009' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -349,6 +352,7 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         """View instructions on how to use Concept Coach.
 
         Steps:
+
 
         Expected Result:
 
@@ -375,6 +379,7 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         """View instructions for Legacy users transitioning to Concept Coach.
 
         Steps:
+
 
         Expected Result:
 

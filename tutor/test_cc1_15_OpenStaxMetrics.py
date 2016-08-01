@@ -24,7 +24,9 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7608])
+    str([
+        7608
+    ])
 )
 
 
@@ -34,6 +36,8 @@ class TestOpenStaxMetrics(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
@@ -59,7 +63,7 @@ class TestOpenStaxMetrics(unittest.TestCase):
         """View a report of enrolled students by course.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the admin user account in the username and password text boxes
         Click on the 'Sign in' button
