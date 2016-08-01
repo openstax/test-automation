@@ -597,8 +597,8 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # 58311 - 017 - Student | View "Getting Started with Concept Coach" Guide
-    @pytest.mark.skipif(str(58275) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_directed_to_a_no_courses_page_when_not_in_any_58275(self):
+    @pytest.mark.skipif(str(58311) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_view_getting_started_with_cc_guide_58311(self):
         """View "Getting Started with Concept Coach" Guide.
 
         Steps:
@@ -627,8 +627,8 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
     # 58274 - 018 - Student | Access CC Help Center after registering for a
     # course
-    @pytest.mark.skipif(str(58275) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_access_cc_help_center_after_registering_for_58275(self):
+    @pytest.mark.skipif(str(58274) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_access_cc_help_center_after_registering_for_58274(self):
         """Access Concept Coach Help Center after registering for a course.
 
         Steps:
