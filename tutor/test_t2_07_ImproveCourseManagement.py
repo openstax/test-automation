@@ -69,7 +69,7 @@ class TestImproveCourseManagement(unittest.TestCase):
         """View Student Use Statistics for Concept Coach college assessments.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the admin account in the username and password text boxes
         Click on the 'Sign in' button
@@ -121,7 +121,20 @@ class TestImproveCourseManagement(unittest.TestCase):
         Expected Result:
 
         """
+        self.ps.test_updates['name'] = 't2.07.002' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't2',
+            't2.07',
+            't2.07.002',
+            '14652'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # 14653 - 003 - Teacher | Move a student and their data to a new section
     @pytest.mark.skipif(str(14653) not in TESTS, reason='Excluded')
@@ -290,7 +303,20 @@ class TestImproveCourseManagement(unittest.TestCase):
         Expected Result:
 
         """
+        self.ps.test_updates['name'] = 't2.07.005' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't2',
+            't2.07',
+            't2.07.005',
+            '14656'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # 14657 - 006 - Teacher | In Student Scores dropped students are not
     # displayed
@@ -556,7 +582,20 @@ class TestImproveCourseManagement(unittest.TestCase):
         Expected Result:
 
         """
+        self.ps.test_updates['name'] = 't2.07.008' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't2',
+            't2.07',
+            't2.07.008',
+            '14658'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # 14660 - 009 - Teacher | Set time zone for a course
     @pytest.mark.skipif(str(14660) not in TESTS, reason='Excluded')
@@ -639,4 +678,17 @@ class TestImproveCourseManagement(unittest.TestCase):
         Expected Result:
 
         """
+        self.ps.test_updates['name'] = 't2.07.010' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't2',
+            't2.07',
+            't2.07.010',
+            '14661'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True

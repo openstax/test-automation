@@ -36,6 +36,8 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
@@ -61,7 +63,7 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
         """Vocabulary question is a question type.
 
         Steps:
-        Go to https://exercises-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the teacher account in the username and password text boxes
         Click on the 'Sign in' button
@@ -93,17 +95,12 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
         """True/False is a question type.
 
         Steps:
-
         Click "Write a new exercise"
         Click on the "True/False" radio button
 
-
         Expected Result:
-
         The user is presented with a page where a True/False question can be
         created
-
-
         """
         self.ps.test_updates['name'] = 't2.12.002' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -127,7 +124,7 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
         """Display embedded videos with attribution and a link back to author.
 
         Steps:
-        Go to tutor-qa
+        Go to Tutor
         Click Login
         Sign in as student01
         Click "HS AP Physics LG"
@@ -157,10 +154,10 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
     # seperate problem when scored
     @pytest.mark.skipif(str(14743) not in TESTS, reason='Excluded')
     def test_teacher_each_part_of_a_multipart_question_counts_as_14743(self):
-        """Each part of a multi-part question counts as a seperate problem when scored.
+        """Multi-part questions count as seperate problems when scored.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Log in as teacher03
         Click "College Introduction to Sociology"
@@ -190,14 +187,13 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
     # seperate problem when scored
     @pytest.mark.skipif(str(14744) not in TESTS, reason='Excluded')
     def test_student_each_part_of_a_multipart_question_counts_as_14744(self):
-        """Each part of a multi-part question counts as a seperate problem when scored.
+        """Multi-part questions count as seperate problems when scored.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Log in as abarnes
         Click "College Introduction to Sociology"
-
         Click on a homework assignment
         Go through the questions
 

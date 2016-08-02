@@ -47,9 +47,11 @@ class TestQuestionWork(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
+        self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
@@ -72,7 +74,7 @@ class TestQuestionWork(unittest.TestCase):
         """Review all questions.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the teacher user account in the username and password text boxes
         Click on the 'Sign in' button
@@ -348,7 +350,7 @@ class TestQuestionWork(unittest.TestCase):
         """Create a brand new multiple choice question.
 
         Steps:
-        Go to https://exercises-qa.openstax.org/
+        Go to Exercises
         Click on the 'Login' button
         Enter the content analyst account
         Click on the 'Sign in' button
@@ -715,8 +717,7 @@ class TestQuestionWork(unittest.TestCase):
         """Create a brand new multiple choice question.
 
         Steps:
-
-        Go to https://exercises-qa.openstax.org/
+        Go to Exercises
         Click on the 'Login' button
         Enter the teacher account in the username and password text boxes
         Click on the 'Sign in' button
@@ -1122,7 +1123,7 @@ class TestQuestionWork(unittest.TestCase):
         """Add vocabulary question.
 
         Steps:
-        Go to https://exercises-qa.openstax.org/
+        Go to Exercises
         Click on the 'Login' button
         Enter the teacher account in the username and password text boxes
         Click on the 'Sign in' button
@@ -1222,7 +1223,7 @@ class TestQuestionWork(unittest.TestCase):
         """Review vocabulary questions.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the content analyst user account in the username and password
             text boxes
@@ -1357,7 +1358,6 @@ class TestQuestionWork(unittest.TestCase):
         Expected Result:
         The assessment in the teacher view should not have the tags that the
         assessment has in QA Content view
-
         """
         self.ps.test_updates['name'] = 't2.11.042' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1439,7 +1439,7 @@ class TestQuestionWork(unittest.TestCase):
         """Create a new multi-part question.
 
         Steps:
-        Go to https://exercises-qa.openstax.org/
+        Go to Exercises
         Click on the 'Login' button
         Enter the teacher account in the username and password text boxes
         Click on the 'Sign in' button

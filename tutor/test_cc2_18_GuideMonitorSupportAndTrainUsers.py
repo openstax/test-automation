@@ -594,8 +594,8 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
     # 58274 - 018 - Student | Access CC Help Center after registering for a
     # course
-    @pytest.mark.skipif(str(58275) not in TESTS, reason='Excluded')
-    def test_student_access_cc_help_center_after_registering_for_58275(self):
+    @pytest.mark.skipif(str(58274) not in TESTS, reason='Excluded')
+    def test_student_access_cc_help_center_after_registering_for_58274(self):
         """Access Concept Coach Help Center after registering for a course.
 
         Steps:

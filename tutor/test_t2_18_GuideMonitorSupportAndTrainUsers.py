@@ -24,7 +24,9 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([14750, 14751, 14752, 14755, 14756])
+    str([
+        14750, 14751, 14752, 14755, 14756
+    ])
 )
 
 
@@ -34,6 +36,8 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(

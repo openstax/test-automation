@@ -31,7 +31,9 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([list_of_cases])
+    str([
+        list_of_cases
+    ])
 )
 
 

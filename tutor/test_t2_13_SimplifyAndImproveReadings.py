@@ -24,7 +24,9 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([14745, 14746])
+    str([
+        14745, 14746
+    ])
 )
 
 
@@ -34,6 +36,8 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
@@ -44,8 +48,10 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
         except:
@@ -58,24 +64,17 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         """Relative size and progress are displayed while working a reading assignment.
 
         Steps:
-
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
         Click on the 'Sign in' button
         If the user has more than one course, click on a Tutor course name
-
         Click on a reading assignment
         Click on the right arrow
 
-
-
         Expected Result:
-
         The progress bar at the top reflects how far along you are as you work
         through the reading assignment
-
-
         """
         self.ps.test_updates['name'] = 't2.13.001' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -88,6 +87,7 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -98,18 +98,12 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         """Access prior milestones in the reading assignment with breadcrumbs.
 
         Steps:
-
         If the user has more than one course, click on a Tutor course name
-
         Click on a reading assignment
         Click on the icon next to the calendar on the header
 
-
         Expected Result:
-
         The user is presented with prior milestones
-
-
         """
         self.ps.test_updates['name'] = 't2.13.002' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -122,5 +116,6 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True

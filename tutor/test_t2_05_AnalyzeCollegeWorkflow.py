@@ -71,16 +71,11 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
         """All work is visible for college students, not just 'This Week'.
 
         Steps:
-
         Log into tutor-qa as student
         Click on a college course
 
-
         Expected Result:
-
         Can view assignments due later than this week
-
-
         """
         self.ps.test_updates['name'] = 't2.05.001' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -114,12 +109,23 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
         Steps:
 
 
-
         Expected Result:
 
-
         """
+        self.ps.test_updates['name'] = 't2.05.002' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't2',
+            't2.05',
+            't2.05.002',
+            '14646'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # 14647 - 003 - Teacher | Create a link to the OpenStax Dashboard
     @pytest.mark.skipif(str(14647) not in TESTS, reason='Excluded')
@@ -129,12 +135,23 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
         Steps:
 
 
-
         Expected Result:
 
-
         """
+        self.ps.test_updates['name'] = 't2.05.003' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't2',
+            't2.05',
+            't2.05.003',
+            '14647'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # 14648 - 004 - Teacher | Create links to assigned readings in their LMS
     @pytest.mark.skipif(str(14648) not in TESTS, reason='Excluded')
@@ -142,22 +159,16 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
         """Create links to assigned readings in their LMS.
 
         Steps:
-
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the teacher user account in the username and password text boxes
         Click on the 'Sign in' button
         If the user has more than one course, click on a CC course name
-
         Click on a published reading assignment on the calendar dashboard
         Click "Get Assignment Link"
 
-
         Expected Result:
-
         The user is presented with links to assigned readings
-
-
         """
         self.ps.test_updates['name'] = 't2.05.004' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -292,30 +303,22 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
         if deleted:
             self.ps.test_updates['passed'] = True
 
-        self.teacher.sleep(5)
-
     # 14649 - 005 - Teacher | Create links to assigned homework in their LMS
     @pytest.mark.skipif(str(14649) not in TESTS, reason='Excluded')
     def test_teacher_create_links_to_assigned_homework_in_lms_14649(self):
         """Create links to assigned homework in their LMS.
 
         Steps:
-
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the teacher user account in the username and password text boxes
         Click on the 'Sign in' button
         If the user has more than one course, click on a CC course name
-
         Click on a published homework assignment on the calendar dashboard
         Click "Get Assignment Link"
 
-
         Expected Result:
-
         The user is presented with links to assigned homework
-
-
         """
         self.ps.test_updates['name'] = 't2.05.005' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -462,10 +465,6 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
         if deleted:
             self.ps.test_updates['passed'] = True
 
-        self.teacher.sleep(5)
-
-        self.ps.test_updates['passed'] = True
-
     # 14650 - 006 - Teacher | View instructions on how to export summary grade
     # for my student's OpenStax practice to my LMS
     @pytest.mark.skipif(str(14650) not in TESTS, reason='Excluded')
@@ -475,9 +474,20 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
         Steps:
 
 
-
         Expected Result:
 
-
         """
+        self.ps.test_updates['name'] = 't2.05.006' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't2',
+            't2.05',
+            't2.05.006',
+            '14650'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
