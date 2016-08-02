@@ -13,6 +13,7 @@ from selenium.webdriver.support import expected_conditions as expect  # NOQA
 from selenium.common.exceptions import NoSuchElementException
 from staxing.assignment import Assignment  # NOQA
 from selenium.webdriver.common.action_chains import ActionChains
+from openpyxl import load_workbook, Workbook
 
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
@@ -31,7 +32,7 @@ TESTS = os.getenv(
     #      14811, 14668, 14670, 14669,
     #      14812, 14813, 14814, 14815,
     #      14816])  # NOQA
-    str([14670, ])
+    str([14814, ])
 )
 
 
@@ -462,9 +463,29 @@ class TestImprovesScoresReporting(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        # no longer a feature?
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[contains(text(),"View Detailed Scores")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[contains(text(),"Student Scores")]')
+            )
+        )
+        icon = self.teacher.driver.find_element(
+            By.XPATH,
+            '//span[contains(@aria-describedby,"scores-cell-info-popover")]')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(icon)
+        actions.perform()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[contains(@id,"scores-cell-info-popover")]')
+            )
+        ).click()
+        # more on each individial thing
         self.ps.test_updates['passed'] = True
 
     # 14812 - 009 - Teacher | Import CC Student Scores export into an LMS
@@ -490,27 +511,54 @@ class TestImprovesScoresReporting(unittest.TestCase):
         """View zeros in exported scores for incomplete assignments.
 
         Steps:
-
-        If the user has more than one course, click on a CC course name
-
         Click "View Detailed Scores"
         Click "Export"
         Open the excel file
 
-
         Expected Result:
-
         For incomplete assignments or assignments that are not started,
         there are zeros instead of blank cells
-
         """
-        # self.ps.test_updates['name'] = 'cc2.08.010' \
-        #     + inspect.currentframe().f_code.co_name[4:]
-        # self.ps.test_updates['tags'] = ['cc2', 'cc2.08', 'cc2.08.010', '14813']
+        self.ps.test_updates['name'] = 'cc2.08.010' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.08', 'cc2.08.010', '14813']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[contains(text(),"View Detailed Scores")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[contains(text(),"Student Scores")]')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[@class="export-button"]//button'
+        ).click()
+        coursename = self.teacher.driver.find_element(
+            By.XPATH, '//div[@class="course-name"]').text.replace(' ', '_')
+        files = os.getcwd()  #
+        print(files)  #
+        files = os.listdir('~/Downloads')
+        file_name = '~/Downloads'
+        for file in files:
+            if coursename+"_Scores" in file:
+                file_name = file
+        print(file_name)
+        wb = load_workbook(str('~/Downloads/' + file_name))
+        period = self.teacher.driver.find_element(
+            By.XPATH, '//span[contains(@class,"tab-item-period-name")]').text
+        sheet = wb[period+' - %']
+        for row in sheet.rows:
+            print(row[0].value)
+            if row[0].value == 'First Name':
+                assert(row[4].value != ''), 'blank cell instead of 0%'
+                if row[4].value == '0%':
+                    # found that 0% is being used istead of blanks
+                    break
 
         self.ps.test_updates['passed'] = True
 
@@ -533,7 +581,22 @@ class TestImprovesScoresReporting(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[contains(text(),"View Detailed Scores")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[contains(text(),"Student Scores")]')
+            )
+        )
+        # Can't figure out a correct xpath to the green checkmarks
+        self.teacher.driver.find_element(
+            By.XPATH,
+            #'//span[contains(@aria-describedby,"scores-cell-info-popover")]' +
+            '//polygon')
+            #'//svg[contains(@class,"finished")]')  #//circle') #[@class="slice"]
         self.ps.test_updates['passed'] = True
 
     # 14815 - 012 - Teacher | The class average info icon displays a definition
@@ -553,15 +616,26 @@ class TestImprovesScoresReporting(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.08.012' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.08',
-            'cc2.08.012',
-            '14815'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.08', 'cc2.08.012', '14815']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[contains(text(),"View Detailed Scores")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[contains(text(),"Student Scores")]')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH, '//i[@type="info-circle"]').click()
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//h3[@class="popover-title" and ' +
+            'contains(text(), "Class and Overall Averages")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -571,27 +645,28 @@ class TestImprovesScoresReporting(unittest.TestCase):
         """View the overall score column.
 
         Steps:
-
-        If the user has more than one course, click on a CC course name
-
         Click "View Detailed Scores
 
-
         Expected Result:
-
         User is presented with the overall score column next to student names
-
         """
         self.ps.test_updates['name'] = 'cc2.08.013' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.08',
-            'cc2.08.013',
-            '14816'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.08', 'cc2.08.013', '14816']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[contains(text(),"View Detailed Scores")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[contains(text(),"Student Scores")]')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(@class,"overall-header-cell")]')
 
         self.ps.test_updates['passed'] = True
