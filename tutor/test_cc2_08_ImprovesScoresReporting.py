@@ -592,11 +592,12 @@ class TestImprovesScoresReporting(unittest.TestCase):
             )
         )
         # Can't figure out a correct xpath to the green checkmarks
+        # copying the exact xpath from inspect console doesn't even work
         self.teacher.driver.find_element(
             By.XPATH,
-            #'//span[contains(@aria-describedby,"scores-cell-info-popover")]' +
-            '//polygon')
-            #'//svg[contains(@class,"finished")]')  #//circle') #[@class="slice"]
+            '//span[contains(@aria-describedby,"scores-cell-info-popover")]')
+            #'//polygon')
+            # '//circle') # [contains(@class,"finished")]')  #//circle') #[@class="slice"]
         self.ps.test_updates['passed'] = True
 
     # 14815 - 012 - Teacher | The class average info icon displays a definition
