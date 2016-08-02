@@ -27,11 +27,14 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    # str([14675, 14676, 14677, 14678, 14800,
-    #      14680, 14681, 14682, 14683, 14801,
-    #      14802, 14803, 14804, 14805, 14685,
-    #      14686, 14687, 14688, 14689])  # NOQA
-    str([14686])
+    str([14675, 14676, 14677, 14678, 14800,
+         14680, 14681, 14682, 14683, 14801,
+         14802, 14803, 14804, 14805, 14685,
+         14686, 14687, 14688, 14689])  # NOQA
+    # these test cases work
+    # str([14675, 14676, 14677, 14678, 14683,
+    #      14801, 14803, 14804, 14805, 14686,
+    #      14688])
 )
 
 
@@ -49,8 +52,8 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             # capabilities=self.desired_capabilities
         )
         self.student = Student(
-            username='student01',
-            password='password',
+            username=os.getenv('STUDENT_USER'),
+            password=os.getenv('STUDENT_PASSWORD'),
             site='https://tutor-qa.openstax.org',
             existing_driver=self.teacher.driver,
             # pasta_user=self.ps,
@@ -257,7 +260,8 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         close_time.send_keys('5:67p')
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
+    # element doesn't exist until scrolled into view.
+    # But scrolling is messing up the table
     # 14800 - 005 - Teacher | Make an assignment on time for a specific student
     @pytest.mark.skipif(str(14800) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_make_assignment_on_time_for_specific_student_14800(self):
@@ -305,6 +309,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         ).click()
         self.ps.test_updates['passed'] = True
 
+    # scrolling is messing up the table
     # 14680 - 006 - Teacher | View score at due date
     @pytest.mark.skipif(str(14680) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_view_score_at_due_date_14680(self):
@@ -335,13 +340,15 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 (By.XPATH, '//div[@class="course-scores-container"]')
             )
         )
-        self.teacher.wait.until(
-            expect.presence_of_element_located(
-                (By.XPATH, '//div[@class="score"]')
-            )
-        )
+        header = self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(text(), "HW Chapter 3")]')
+        self.teacher.driver.execute_script(
+            'return arguments[0].scrollIntoView();', header)
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[@class="score"]')
         self.ps.test_updates['passed'] = True
 
+    # scrolling is messing up the table
     # 14681 - 007 - Teacher | View current score
     @pytest.mark.skipif(str(14681) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_view_current_score_14681(self):
@@ -378,11 +385,12 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 (By.XPATH, '//div[@class="course-scores-container"]')
             )
         )
-        self.teacher.wait.until(
-            expect.presence_of_element_located(
-                (By.XPATH, '//div[@class="score"]')
-            )
-        )
+        header = self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(text(), "HW Chapter 3")]')
+        self.teacher.driver.execute_script(
+            'return arguments[0].scrollIntoView();', header)
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[@class="score"]')
         self.ps.test_updates['passed'] = True
 
     # 14682 - 008 - Teacher | Set points per problem based on difficulty
@@ -548,6 +556,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         )
         self.ps.test_updates['passed'] = True
 
+    # this case is not an implemented feature?
     # 14802 - 011 - Student | A deleted open assignment that the student has
     # worked on is not grayed out but is marked "Withdrawn"
     @pytest.mark.skipif(str(14802) not in TESTS, reason='Excluded')  # NOQA
@@ -562,7 +571,6 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         On the student dashboard, a deleted open assignment that the student
         has worked on is not grayed out but is marked "Withdrawn"
         """
-        # this case is not implemented in the code
         # self.ps.test_updates['name'] = 't2.10.011' \
         #     + inspect.currentframe().f_code.co_name[4:]
         # self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.011', '14802']
@@ -824,7 +832,6 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # 14686 - 016 - Student | A help link explains why two-step problems
     @pytest.mark.skipif(str(14686) not in TESTS, reason='Excluded')  # NOQA
     def test_student_a_help_link_explains_why_two_step_problems_14686(self):
@@ -833,7 +840,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         Steps:
         Login as a student
         If the user has more than one course, click on a Tutor course name
-        Click on a homework or reading assignment
+        Click on a homework, reading assignment, or practice
         Enter text into the free response text box
         Click "Answer"
         Click on "Why?" next to the message "Now choose from one of the
@@ -848,64 +855,62 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        # create a homework
-        self.teacher.login()
-        self.teacher.select_course(appearance='physics')
-        assignment_name = "homework-017"
-        today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=10)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='homework',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'status': 'publish',
-                                        'problems': {'1.1': (1, 2), },
-                                        'feedback': 'non-immeditae',
-                                    })
-        self.teacher.logout()
-        # login as student to work the homework
         self.student.login()
         self.student.select_course(appearance='physics')
-        self.student.driver.find_element(
-            By.XPATH, '//span[contains(text(), "'+assignment_name+'")]'
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//button[contains(@aria-describedby,' +
+                 '"progress-bar-tooltip")]')
+            )
         ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[contains(@class,"task-breadcrumbs")]')
+            )
+        )
         # work homework until a free response problem is found.
         sections = self.student.driver.find_elements(
-            By.XPATH, '//div[@class="openstax-breadcrumbs-step"]'
+            By.XPATH, '//span[contains(@class,"openstax-breadcrumbs-step")]'
         )
         for i in range(len(sections)):
             try:
                 # if the question is two part must answer free response first
                 element = self.student.driver.find_element(
                     By.TAG_NAME, 'textarea')
+            except NoSuchElementException:
+                # click on the next breadcrumb
+                if i == len(sections):
+                    print("no two part questions in the homework")
+                    raise Exception
+                else:
+                    sections_new = self.student.driver.find_elements(
+                        By.XPATH, '//div[@class="openstax-breadcrumbs-step"]')
+                    sections_new[i+1].click()
+            else:
                 answer_text = "answer"
                 for i in answer_text:
                     element.send_keys(i)
                 self.student.wait.until(
-                    expect.visibility_of_element_located(
+                    expect.element_to_be_clickable(
                         (By.XPATH, '//button/span[contains(text(),"Answer")]')
                     )
                 ).click()
                 actions = ActionChains(self.student.driver)
                 why = self.teacher.driver.find_element(
                     By.XPATH, '//span[@class="text-info"]')
+                self.teacher.driver.execute_script(
+                    'return arguments[0].scrollIntoView();', why)
+                self.teacher.driver.execute_script('window.scrollBy(0, -80);')
                 actions.move_to_element(why)
+                actions.perform()
                 self.teacher.driver.find_element(
                     By.XPATH,
                     '//div[@class="popover-content"]' +
                     '//b[contains(text(),' +
                     '"Why do you ask me to answer twice?")]')
                 break
-            except NoSuchElementException:
-                # click on the next breadcrumb
-                if i == len(sections):
-                    print("no two part questions in the homework")
-                    raise Exception
-                sections_new = self.student.driver.find_elements(
-                    By.XPATH, '//div[@class="openstax-breadcrumbs-step"]')
-                sections_new[i+1].click()
         self.ps.test_updates['passed'] = True
 
     # NOT DONE
@@ -965,7 +970,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         ).click()
         # work problems untill a free response question is found
         sections = self.student.driver.find_elements(
-            By.XPATH, '//div[@class="openstax-breadcrumbs-step"]'
+            By.XPATH, '//span[contains(@class,"openstax-breadcrumbs-step")]'
         )
         for i in range(len(sections)):
             try:
@@ -976,7 +981,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 for i in answer_text:
                     element.send_keys(i)
                 self.student.wait.until(
-                    expect.visibility_of_element_located(
+                    expect.element_to_be_clickable(
                         (By.XPATH, '//button/span[contains(text(),"Answer")]')
                     )
                 ).click()
@@ -984,6 +989,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 why = self.teacher.driver.find_element(
                     By.XPATH, '//span[@class="text-info"]')
                 actions.move_to_element(why)
+                actions.perform()
                 self.teacher.driver.find_element(
                     By.XPATH,
                     '//div[@class="popover-content"]' +
