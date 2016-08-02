@@ -567,7 +567,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # 58311 - 017 - Student | View "Getting Started with Concept Coach" Guide
-    @pytest.mark.skipif(str(58275) not in TESTS, reason='Excluded')
+    @pytest.mark.skipif(str(58311) not in TESTS, reason='Excluded')
     def test_student_view_getting_started_with_cc_guide_58311(self):
         """View "Getting Started with Concept Coach" Guide.
 
