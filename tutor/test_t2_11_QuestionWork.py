@@ -50,6 +50,7 @@ class TestQuestionWork(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
+
         self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
@@ -2187,7 +2188,7 @@ class TestQuestionWork(unittest.TestCase):
 
         # Verify image is deleted
         assert len(self.teacher.driver.find_elements_by_xpath(
-            "//button[@class='btn btn-default']") == 0), \
+            "//button[@class='btn btn-default']")) == 0, \
             'Image not deleted'
 
         self.ps.test_updates['passed'] = True
