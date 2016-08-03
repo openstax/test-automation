@@ -19,8 +19,8 @@ from staxing.helper import Teacher
 # - replace list_of_cases on line 31 with all test case IDs in this file
 # - replace CaseID on line 52 with the actual cass ID
 # - delete lines 17 - 22
-list_of_cases = 0
-CaseID = 0
+list_of_cases = None
+CaseID = 'skip'
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -46,7 +46,7 @@ class TestEpicName(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
+        self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
@@ -107,8 +107,9 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         On the calendar dashboard, click on the "Performance Forecast" button
-        on the upper right corner of the calendar OR
-        click on the user drop down menu then click on the
+            on the upper right corner of the calendar
+            OR
+        Click on the user drop down menu then click on the
         "Performance Forecast" button
         Hover the cursor over the info icon that is next to the
         "Performance Forecast" header
@@ -277,9 +278,9 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         On the calendar dashboard, click on the "Performance Forecast"
-        button on the upper right corner of the calendar OR
-        click on the user drop down menu
-        click on the "Performance Forecast" button
+            button on the upper right corner of the calendar OR
+        Click on the user drop down menu
+        Click on the "Performance Forecast" button
         Click on the period with zero answers
 
         Expected Result:
@@ -414,9 +415,10 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         On the calendar dashboard, click on the "Performance Forecast"
-        button on the upper right corner of the calendar OR
-        click on the user drop down menu
-        click on the "Performance Forecast" button
+            button on the upper right corner of the calendar
+            OR
+        Click on the user drop down menu
+        Click on the "Performance Forecast" button
         Click on the desired period
         Scroll to the "Individual Chapters" section
 

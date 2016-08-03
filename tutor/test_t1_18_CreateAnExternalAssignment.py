@@ -60,8 +60,10 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
         except:
@@ -111,7 +113,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Expected Result:
         User taken to Add External Assignment page with due date filled in
         """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
         self.ps.test_updates['name'] = 't1.18.002' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.002', '8086']
@@ -136,6 +137,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         actions.perform()
         assert('externals/new' in self.teacher.current_url()),\
             'not at Add External Assignemnt page'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8087 - 003 - Teacher | Set open and due dates for all periods
@@ -566,6 +568,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.sleep(3)
         assert('plans' in self.teacher.current_url()), \
             'assignment did not publish'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8092 - 008 - Teacher | Cancel a new external assignemnt before

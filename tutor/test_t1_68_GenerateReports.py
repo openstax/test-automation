@@ -22,7 +22,9 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8361])
+    str([
+        8361
+    ])
 )
 
 
@@ -43,8 +45,10 @@ class TestGenerateReports(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.admin.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.admin.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.admin.delete()
         except:

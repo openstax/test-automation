@@ -127,6 +127,7 @@ class TestCreateAnEvent(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH,
                 "//label[contains(text(), '" + assignment_name + "')]")
+
         self.ps.test_updates['passed'] = True
 
     # Case C8118 - 002 - Teacher | Add an event using the Add Assignment
@@ -142,20 +143,20 @@ class TestCreateAnEvent(unittest.TestCase):
         Expected Result:
         User is taken to the add event page
         """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-        # self.ps.test_updates['name'] = 't1.21.002' \
-        #     + inspect.currentframe().f_code.co_name[4:]
-        # self.ps.test_updates['tags'] = ['t1', 't1.21', 't1.21.002', '8118']
-        # self.ps.test_updates['passed'] = False
-        #
-        # # Test steps and verification assertions
-        # self.teacher.driver.find_element(
-        #     By.ID, 'add-assignment').click()
-        # self.teacher.driver.find_element(
-        #     By.LINK_TEXT, 'Add Event').click()
-        # assert('events/new' in self.teacher.current_url()),\
-        #     'not at Add Event Assignemnt page'
-        # self.ps.test_updates['passed'] = True
+        self.ps.test_updates['name'] = 't1.21.002' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.21', 't1.21.002', '8118']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.teacher.driver.find_element(
+            By.ID, 'add-assignment').click()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Add Event').click()
+        assert('events/new' in self.teacher.current_url()),\
+            'not at Add Event Assignemnt page'
+
+        self.ps.test_updates['passed'] = True
 
     # Case C8119 - 003 - Teacher | Add an event using the calendar date
     @pytest.mark.skipif(str(8119) not in TESTS, reason='Excluded')
@@ -192,9 +193,10 @@ class TestCreateAnEvent(unittest.TestCase):
         actions.perform()
         assert('events/new' in self.teacher.current_url()),\
             'not at Add Event page'
+
         self.ps.test_updates['passed'] = True
 
-        # Case C8120 - 004 - Teacher | Set open and due dates for all periods
+    # Case C8120 - 004 - Teacher | Set open and due dates for all periods
     # collectively
     @pytest.mark.skipif(str(8120) not in TESTS, reason='Excluded')
     def test_teacher_set_dates_for_all_periods_collectively_8120(self):
@@ -213,7 +215,6 @@ class TestCreateAnEvent(unittest.TestCase):
         Expected Result:
         Takes user back to calendar dashboard.
         Event appears on its due date
-
         """
         self.ps.test_updates['name'] = 't1.21.004' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -303,6 +304,7 @@ class TestCreateAnEvent(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH,
                 "//label[contains(text(), '" + assignment_name + "')]")
+
         self.ps.test_updates['passed'] = True
 
     # Case C8121 - 005 - Teacher | Set open and due dates for periods
@@ -318,8 +320,8 @@ class TestCreateAnEvent(unittest.TestCase):
         Enter an assignment description into the text box
         Click on the "Individual Periods" radio button
         For each period
-        Enter into Open Date text field date as MM/DD/YYYY
-        Enter into Due Date text field date as MM/DD/YYYY
+        * Enter into Open Date text field date as MM/DD/YYYY
+        * Enter into Due Date text field date as MM/DD/YYYY
         Click on the Publish' button
 
         Expected Result:
@@ -489,6 +491,7 @@ class TestCreateAnEvent(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH,
                 "//label[contains(text(), '" + assignment_name + "')]")
+
         self.ps.test_updates['passed'] = True
 
     # Case C8123 - 007 - Teacher | Publish a new event
@@ -551,9 +554,9 @@ class TestCreateAnEvent(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH,
                 "//label[contains(text(), '" + assignment_name + "')]")
+
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C8124 - 008 - Teacher | Publish a draft event
     @pytest.mark.skipif(str(8124) not in TESTS, reason='Excluded')
     def test_teacher_publish_a_draft_event_8124(self):
@@ -613,6 +616,7 @@ class TestCreateAnEvent(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH,
                 "//label[contains(text(), '" + assignment_name + "')]")
+
         self.ps.test_updates['passed'] = True
 
     # Case C8125 - 009 - Teacher | Cancel a new event before making changes
@@ -652,6 +656,7 @@ class TestCreateAnEvent(unittest.TestCase):
         ).click()
         assert('calendar' in self.teacher.current_url()),\
             'not back at calendar dashboard after canceling assignemnt'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8126 - 010 - Teacher | Cancel a new event after making changes
@@ -741,6 +746,7 @@ class TestCreateAnEvent(unittest.TestCase):
         ).click()
         assert('calendar' in self.teacher.current_url()),\
             'not back at calendar dashboard after canceling assignemnt'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8128 - 012 - Teacher | Cancel a new event after making any changes
@@ -845,6 +851,7 @@ class TestCreateAnEvent(unittest.TestCase):
         ).click()
         assert('calendar' in self.teacher.current_url()),\
             'not back at calendar dashboard after canceling draft'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8130 - 014 - Teacher | Cancel a draft event after making changes
@@ -912,6 +919,7 @@ class TestCreateAnEvent(unittest.TestCase):
         ).click()
         assert('calendar' in self.teacher.current_url()),\
             'not back at calendar dashboard after canceling assignment'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8131 - 015 - Teacher | Cancel a draft event before making any
@@ -1084,6 +1092,7 @@ class TestCreateAnEvent(unittest.TestCase):
             'left add event page despite blank required feilds'
         self.teacher.driver.find_element(
             By.XPATH, '//span[contains(text(),"Required Field")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8134 - 018 - Teacher | Attempt to save a draft event with blank
@@ -1196,6 +1205,7 @@ class TestCreateAnEvent(unittest.TestCase):
             By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
         assert(len(events) == len(events_new)),\
             'unopen event not deleted'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8136 - 020 - Teacher | Delete an open event
@@ -1267,6 +1277,7 @@ class TestCreateAnEvent(unittest.TestCase):
             By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
         assert(len(events) == len(events_new)),\
             'unopen event not deleted'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8137 - 021 - Teacher | Delete a draft event
@@ -1394,6 +1405,7 @@ class TestCreateAnEvent(unittest.TestCase):
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+
         self.ps.test_updates['passed'] = True
 
     # Case C8139 - 023 - Teacher | Change a description for a draft event
@@ -1458,6 +1470,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.teacher.sleep(3)
         assert('calendar' in self.teacher.current_url()),\
             'not taken back to calendar after updating description'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8140 - 024 - Teacher | Change a description for an open event
@@ -1527,6 +1540,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.teacher.sleep(3)
         assert('calendar' in self.teacher.current_url()),\
             'not taken back to calendar after updating description'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8141 - 025 - Teacher | Add a name to an event
@@ -1546,7 +1560,6 @@ class TestCreateAnEvent(unittest.TestCase):
         Expected Result:
         Takes user back to calendar dashboard.
         Event appears on its due date
-
         """
         self.ps.test_updates['name'] = 't1.21.025' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1589,6 +1602,7 @@ class TestCreateAnEvent(unittest.TestCase):
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+
         self.ps.test_updates['passed'] = True
 
     # Case C8142 - 026 - Teacher | Change a name for a draft event
@@ -1600,7 +1614,6 @@ class TestCreateAnEvent(unittest.TestCase):
         Click on the calendar click on a draft event
         Enter a new event name into the Event name text box
         Click on the 'Save As Draft' button
-
 
         Expected Result:
         Takes user back to calendar dashboard.
@@ -1652,6 +1665,7 @@ class TestCreateAnEvent(unittest.TestCase):
             'not taken back to calendar after updating description'
         self.teacher.driver.find_element(
             By.XPATH, '//label[contains(text(),"NEW'+assignment_name+'")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8143 - 027 - Teacher | Change a name for an open event
@@ -1720,6 +1734,7 @@ class TestCreateAnEvent(unittest.TestCase):
             'not taken back to calendar after updating description'
         self.teacher.driver.find_element(
             By.XPATH, '//label[contains(text(),"NEW'+assignment_name+'")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8144 - 028 - Teacher | Info icon shows definitions for the status
@@ -1753,6 +1768,7 @@ class TestCreateAnEvent(unittest.TestCase):
             )
         ).click()
         self.teacher.driver.find_element(By.ID, 'plan-footer-popover')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8145 - 029 - Teacher | Change all fields in an unopened,
@@ -1764,7 +1780,6 @@ class TestCreateAnEvent(unittest.TestCase):
         Steps:
         Click on the calendar click on an unopened event
         Click on the "Edit Event" button
-
         Enter a new event name into the Event name text box
         Enter a new assignment description into the text box
         Enter into Open Date text field a new date as MM/DD/YYYY
@@ -1843,6 +1858,7 @@ class TestCreateAnEvent(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH,
                 "//label[contains(text(), 'NEW"+assignment_name+"')]")
+
         self.ps.test_updates['passed'] = True
 
     # Case C8146 - 030 - Teacher | Change all fields in a draft event
@@ -1925,6 +1941,7 @@ class TestCreateAnEvent(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH,
                 "//label[contains(text(), 'NEW"+assignment_name+"')]")
+
         self.ps.test_updates['passed'] = True
 
     # Case C8147 - 031 - Teacher | Change the name, description, and due dates
@@ -2030,4 +2047,5 @@ class TestCreateAnEvent(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), 'NEW" +
                 assignment_name + "')]")
+
         self.ps.test_updates['passed'] = True

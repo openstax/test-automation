@@ -7,14 +7,14 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-# from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+from staxing.assignment import Assignment
 from selenium.webdriver.support.ui import WebDriverWait
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher  # NOQA
+from staxing.helper import Teacher
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -25,15 +25,14 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8156, 8157, 8158,
-         8159, 8160, 8161,
-         8162, 8163, 8164,
-         8165, 8166, 8167,
-         8168, 8169, 8170,
-         8171, 8172, 8173,
-         8174, 8175, 8176,
-         8177, 8178, 8179,
-         8180, 8181])  # NOQA
+    str([
+        8156, 8157, 8158, 8159, 8160,
+        8161, 8162, 8163, 8164, 8165,
+        8166, 8167, 8168, 8169, 8170,
+        8171, 8172, 8173, 8174, 8175,
+        8176, 8177, 8178, 8179, 8180,
+        8181
+    ])
 )
 
 
@@ -45,7 +44,7 @@ class TestViewClassScores(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
+        self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
@@ -53,15 +52,17 @@ class TestViewClassScores(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
         except:
             pass
 
     # Case C8156 - 001 - Teacher | View the period Student Scores
-    @pytest.mark.skipif(str(8156) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8156) not in TESTS, reason='Excluded')
     def test_teacher_view_the_period_student_scores_8156(self):
         """View the period Student Scores.
 
@@ -84,7 +85,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8157 - 002 - Teacher | Period tabs are shown
-    @pytest.mark.skipif(str(8157) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8157) not in TESTS, reason='Excluded')
     def test_teacher_period_tabs_are_shown_8157(self):
         """Period tabs are shown.
 
@@ -110,7 +111,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8158 - 003 - Teacher | Generate a spreadsheet of class scores
-    @pytest.mark.skipif(str(8158) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8158) not in TESTS, reason='Excluded')
     def test_teacher_generate_a_spreadsheet_of_class_scores_8158(self):
         """Generate a spreadsheet of class scores.
 
@@ -135,10 +136,11 @@ class TestViewClassScores(unittest.TestCase):
             ))
         ).click()
         # assert that it was gererated/downloaded
+
         self.ps.test_updates['passed'] = True
 
     # Case C8159 - 004 - Teacher | Download a spreadsheet of class scores
-    @pytest.mark.skipif(str(8159) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8159) not in TESTS, reason='Excluded')
     def test_teacher_download_a_spread_sheet_of_class_scores_8159(self):
         """Download a spreadsheet of class scores.
 
@@ -170,7 +172,7 @@ class TestViewClassScores(unittest.TestCase):
 
     # Case C8160 - 005 - Teacher | View the Performance Forecast for a single
     # student
-    @pytest.mark.skipif(str(8160) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8160) not in TESTS, reason='Excluded')
     def test_teacher_view_performance_forecast_for_a_single_student_8160(self):
         """View the Performance Forecast for a single student.
 
@@ -197,10 +199,10 @@ class TestViewClassScores(unittest.TestCase):
             By.XPATH, '//*[contains(text(), "Performance Forecast for")]')
 
         self.ps.test_updates['passed'] = True
+
     # Case C8161 - 006 - Teacher | Select a student from the individual
     # Performance Forecast drop down menu
-
-    @pytest.mark.skipif(str(8161) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8161) not in TESTS, reason='Excluded')
     def test_teacher_select_student_from_indiv_perf_forecast_menu_8161(self):
         """Select student from individual Performance Forecast drop down menu.
 
@@ -243,7 +245,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8162 - 007 - Teacher | Info icon shows an explanation of the data
-    @pytest.mark.skipif(str(8162) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8162) not in TESTS, reason='Excluded')
     def test_teacher_info_icon_shows_An_Explanation_of_the_data_8162(self):
         """Info icon shows an explanation of the data.
 
@@ -277,7 +279,7 @@ class TestViewClassScores(unittest.TestCase):
 
     # Case C8163 - 008 - Teacher | Return to the class scores using the
     # Return To Scores button
-    @pytest.mark.skipif(str(8163) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8163) not in TESTS, reason='Excluded')
     def test_teacher_return_to_class_score_return_to_scores_button_8163(self):
         """Return to the class scores using the Return To Scores button.
 
@@ -348,7 +350,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8165 - 010 - Teacher | Sort an assignment by completion
-    @pytest.mark.skipif(str(8165) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8165) not in TESTS, reason='Excluded')
     def test_teacher_sort_an_assignment_by_completion_8165(self):
         """Sort an assignment by completion.
 
@@ -388,7 +390,7 @@ class TestViewClassScores(unittest.TestCase):
 
     # Case C8166 - 011 - Teacher | View the assignment due date for a
     # particular section
-    @pytest.mark.skipif(str(8166) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8166) not in TESTS, reason='Excluded')
     def test_teacher_view_assign_due_date_for_a_particular_section_8166(self):
         """View the assignment due date for a particular section.
 
@@ -418,7 +420,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8167 - 012 - Teacher | Review a reading assignment for a period
-    @pytest.mark.skipif(str(8167) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8167) not in TESTS, reason='Excluded')
     def test_teacher_review_a_reading_assignemnt_for_a_period_8167(self):
         """Review a reading assignment for a period.
 
@@ -455,7 +457,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8168 - 013 - Teacher | Review a homework assignment for a period
-    @pytest.mark.skipif(str(8168) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8168) not in TESTS, reason='Excluded')
     def test_teacher_review_a_hoemwork_assignment_for_a_period_8168(self):
         """Review a homework assignment for a period.
 
@@ -494,7 +496,7 @@ class TestViewClassScores(unittest.TestCase):
 
     # Case C8169 - 014 - Teacher | A homework with responses shows the period
     # average
-    @pytest.mark.skipif(str(8169) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8169) not in TESTS, reason='Excluded')
     def test_teacher_homework_with_responses_shows_period_average_8169(self):
         """A homework with responses shows the period average.
 
@@ -504,16 +506,28 @@ class TestViewClassScores(unittest.TestCase):
         Click on the "Review" button under the selected homework assignment.
 
         Expected Result:
-
         If students have worked the problem, the period average is displayed
         below the assignment due date or in the box next to the questions under
         "Review"
         """
+        self.ps.test_updates['name'] = 't1.23.014' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.23',
+            't1.23.014',
+            '8169'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # Case C8170 - 015 - Teacher | An external assignment shows the number of
     # students who have clicked on the assignment URL
-    @pytest.mark.skipif(str(8170) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8170) not in TESTS, reason='Excluded')
     def test_teacher_external_assignment_shows_students_clicked_8170(self):
         """External assignment shows number students who have clicked on URL.
 
@@ -547,7 +561,7 @@ class TestViewClassScores(unittest.TestCase):
 
     # Case C8171 - 016 - Teacher | Navigate a reading review using the section
     # breadcrumbs
-    @pytest.mark.skipif(str(8171) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8171) not in TESTS, reason='Excluded')
     def test_teacher_navigate_reading_using_the_section_breadcrumbs_8171(self):
         """Navigate a reading review using the section breadcrumbs
 
@@ -601,7 +615,7 @@ class TestViewClassScores(unittest.TestCase):
 
     # Case C8172 - 017 - Teacher | Navigate a homework review using the
     # question breadcrumbs
-    @pytest.mark.skipif(str(8172) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8172) not in TESTS, reason='Excluded')
     def test_teacher_navigates_homework_review_using_breadcrumbs_8172(self):
         """Navigate a homework review using the question breadcrumbs
 
@@ -655,7 +669,7 @@ class TestViewClassScores(unittest.TestCase):
 
     # Case C8173 - 018 - Teacher | Period tabs are shown in the assignment
     # review
-    @pytest.mark.skipif(str(8173) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8173) not in TESTS, reason='Excluded')
     def test_teacher_period_tabs_are_shown_in_assignemnt_review_8173(self):
         """Period tabs are shown in the assignment review
 
@@ -698,7 +712,7 @@ class TestViewClassScores(unittest.TestCase):
 
     # Case C8174 - 019 - Teacher | View the Complete, In Progress, and Not
     # Started counts
-    @pytest.mark.skipif(str(8174) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8174) not in TESTS, reason='Excluded')
     def test_teacher_view_complete_in_progress_not_started_counts_8174(self):
         """View the Complete, In Progress, and Not Started counts for a period
 
@@ -723,12 +737,13 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
     # Case C8175 - 020 - Teacher | Section numbers in review match the section
     # breadcrumbs
-    @pytest.mark.skipif(str(8175) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8175) not in TESTS, reason='Excluded')
     def test_teacher_section_numbers_in_review_match_breadcrumbs_8175(self):
         """Section numbers in review match the section breadcrumbs
 
@@ -786,7 +801,7 @@ class TestViewClassScores(unittest.TestCase):
 
     # Case C8176 - 021 - Teacher | Each assessment has a correct response
     # displayed
-    @pytest.mark.skipif(str(8176) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8176) not in TESTS, reason='Excluded')
     def test_teacher_each_assesment_has_correct_response_displayed_8176(self):
         """Each assessment has a correct response displayed
 
@@ -837,7 +852,7 @@ class TestViewClassScores(unittest.TestCase):
 
     # Case C8177 - 022 - Teacher | Open and view a list of student free
     # response answers
-    @pytest.mark.skipif(str(8177) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8177) not in TESTS, reason='Excluded')
     def test_teacher_view_list_of_student_free_response_answers_8177(self):
         """Open and view list of student free response answers for assessment.
 
@@ -881,12 +896,12 @@ class TestViewClassScores(unittest.TestCase):
                  '//div[contains(@class,"free-response")]')
             )
         )
+
         self.ps.test_updates['passed'] = True
 
-    # don't know what interleaved class stats are
     # Case C8178 - 023 - Teacher | Assessment pane shows interleaved class
     # stats
-    @pytest.mark.skipif(str(8178) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8178) not in TESTS, reason='Excluded')
     def test_teacher_assesment_pane_shows_interleaved_class_stats_8178(self):
         """Assessment pane shows interleaved class stats
 
@@ -901,12 +916,15 @@ class TestViewClassScores(unittest.TestCase):
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = ['t1', 't1.23', 't1.23.023', '8178']
         self.ps.test_updates['passed'] = False
+
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.ps.test_updates['passed'] = True
 
     # Case C8179 - 024 - Teacher | Teacher can see a student's work for a
     # reading assignment
-    @pytest.mark.skipif(str(8179) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8179) not in TESTS, reason='Excluded')
     def test_teacher_see_a_steudents_work_for_a_reading_assignemnt_8179(self):
         """Teacher can see a student's work for a reading assignment
 
@@ -921,11 +939,19 @@ class TestViewClassScores(unittest.TestCase):
         button, or breadcrumbs.
         Only sections student has gone through are shown.
         """
+        self.ps.test_updates['name'] = 't1.23.024' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.23', 't1.23.024', '8179']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # Case C8180 - 025 - Teacher | Teacher can view a student's work for a
     # homework assignment
-    @pytest.mark.skipif(str(8180) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8180) not in TESTS, reason='Excluded')
     def test_teacher_view_a_students_work_for_a_homework_assignment_8180(self):
         """Assessment pane shows interleaved class stats
 
@@ -970,7 +996,7 @@ class TestViewClassScores(unittest.TestCase):
 
     # Case C8181 - 026 - Teacher | Teacher can view a student's work for an
     # external assignment
-    @pytest.mark.skipif(str(8181) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8181) not in TESTS, reason='Excluded')
     def test_teacher_view_students_work_for_an_external_assignemnt_8181(self):
         """Teacher can view a student's work for an external assignment
 
@@ -1010,4 +1036,5 @@ class TestViewClassScores(unittest.TestCase):
         external.click()
         assert('steps' in self.teacher.current_url()), \
             'Not viewing student "work" for external assignment'
+
         self.ps.test_updates['passed'] = True

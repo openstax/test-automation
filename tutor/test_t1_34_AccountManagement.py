@@ -7,14 +7,14 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
+from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Student  # NOQA
+from staxing.helper import Student
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -25,11 +25,13 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8207, 8208, 8209, 8210, 8211,
-         8212, 8213, 8214, 8215, 8216,
-         8217, 8218, 8219, 8220, 8221,
-         8222, 8223, 8224, 8225, 8226,
-         8227, 8387, 8388])
+    str([
+        8207, 8208, 8209, 8210, 8211,
+        8212, 8213, 8214, 8215, 8216,
+        8217, 8218, 8219, 8220, 8221,
+        8222, 8223, 8224, 8225, 8226,
+        8227, 8387, 8388
+    ])
 )
 
 
@@ -57,17 +59,19 @@ class TestAccountManagement(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.student.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.student.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.student.delete()
         except:
             pass
 
     # Case C8207 - 001 - User | Create a new Account with username and password
-    @pytest.mark.skipif(str(8207) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8207) not in TESTS, reason='Excluded')
     def test_user_create_a_new_account_with_a_username_and_password_8207(self):
-        """ Create a new Account with a username and password
+        """Create a new Account with a username and password.
 
         Steps:
         Click on the Sign up link
@@ -116,22 +120,22 @@ class TestAccountManagement(unittest.TestCase):
                  '//div[@id="session-info"]//a[text()="automated_34_'+num+'"]')
             )
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8208 - 002 - User | Create a new Account with Facebook
-    @pytest.mark.skipif(str(8208) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8208) not in TESTS, reason='Excluded')
     def test_user_create_a_new_account_with_facebook_8208(self):
-        """ Create a new Account with Facebook
+        """Create a new Account with Facebook.
 
         Steps:
         Click on the Sign up link
         Click on the Sign up with Facebook button
         [redirects to facebbok.com]
         If you are not logged into Facebook:
-        -enter email and password for facebook, then click the "Log In" button
+        * enter email and password for facebook, then click the "Log In" button
         Click on the "okay" button
-
-        [redirects back to accounts-qa.openstax.org]
+        [redirects back to Accounts]
         Click the checkbox to agree to the Terms of Use and Privacy Policy
         Click the "Create Account Button"
 
@@ -190,28 +194,28 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
         ).click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8209 - 003 - User | Create a new Account with Google
-    @pytest.mark.skipif(str(8209) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8209) not in TESTS, reason='Excluded')
     def test_user_create_a_new_account_with_google_8209(self):
-        """ Create a new Account with Google
+        """Create a new Account with Google.
 
         Steps:
         Click on the Sign up link
         Click on the Sign up with Google button
         [redirects to accounts.google.com]
         If you are not logged in:
-        - Click the 'Add Account' button
-        - Enter email into text box
-        - Click on the 'Next' button
-        - Enter password into text box
-        - Click on the 'Sign in' button
+        * Click the 'Add Account' button
+        * Enter email into text box
+        * Click on the 'Next' button
+        * Enter password into text box
+        * Click on the 'Sign in' button
         Click on the "Allow" button
-        [redirects back to accounts-qa.openstax.org]
+        [redirects back to Accounts]
         Click the checkbox to agree to the Terms of Use and Privacy Policy
         Click the "Create Account Button"
-
 
         Expected Result:
         User logged in and presented with their dashboard
@@ -270,21 +274,22 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
         ).click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8210 - 004 - User | Create a new Account with Twitter
-    @pytest.mark.skipif(str(8210) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8210) not in TESTS, reason='Excluded')
     def test_user_create_a_new_account_with_twitter_8210(self):
-        """ Create a new Account with Twitter
+        """Create a new Account with Twitter.
 
         Steps:
         Click on the Sign up link
         Click on the Sign up with Twitter button
-        enter email and password on twitter
-        click login
-        enter email and last name on signup page on openstax
-        accept terms
-        click button to create account
+        Enter email and password on twitter
+        Click login
+        Enter email and last name on signup page on openstax
+        Accept terms
+        Click button to create account
 
         Expected Result:
         User logged in and presented with their dashboard
@@ -345,19 +350,20 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
         ).click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8211 - 005 - User | Accept the terms of service
-    @pytest.mark.skipif(str(8211) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8211) not in TESTS, reason='Excluded')
     def test_user_accept_the_terms_of_service_8211(self):
-        """ Accept the terms of service
+        """Accept the terms of service.
 
         Steps:
-        Sign up with password (same as 001)
+        Sign up with password
 
         Expected Result:
         Terms of use are accepted
-        user is presented witht the privacy policy
+        User is presented with the privacy policy
         """
         self.ps.test_updates['name'] = 't1.34.005' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -384,15 +390,16 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(By.ID, 'signup_i_agree').click()
         self.student.driver.find_element(
             By.ID, 'create_account_submit').click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8212 - 006 - User | Accept the privacy policy
-    @pytest.mark.skipif(str(8212) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8212) not in TESTS, reason='Excluded')
     def test_user_accept_the_privacy_policy_8212(self):
-        """ Accept the privacy policy
+        """Accept the privacy policy.
 
         Steps:
-        Sign up with password (same as 001)
+        Sign up with password
 
         Expected Result:
         User logged in and presented with their dashboard
@@ -422,12 +429,13 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(By.ID, 'signup_i_agree').click()
         self.student.driver.find_element(
             By.ID, 'create_account_submit').click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8213 - 007 - User | Log into Accounts
-    @pytest.mark.skipif(str(8213) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8213) not in TESTS, reason='Excluded')
     def test_user_log_into_accounts_8213(self):
-        """ Log into Accounts
+        """Log into Accounts.
 
         Steps:
         Enter the  user account in the username and password text boxes
@@ -457,12 +465,13 @@ class TestAccountManagement(unittest.TestCase):
                  self.student.username + '"]')
             )
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C8214 - 008 - User | Edit account name
-    @pytest.mark.skipif(str(8214) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8214) not in TESTS, reason='Excluded')
     def test_user_edit_account_name_8214(self):
-        """ Edit account name
+        """Edit account name.
 
         Steps:
         Enter the teacher user account in the username and password text boxes
@@ -514,12 +523,13 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8215 - 009 - User | Cancel editing the account name
-    @pytest.mark.skipif(str(8215) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8215) not in TESTS, reason='Excluded')
     def test_user_canel_editing_the_account_name_8215(self):
-        """ Cancel editing the account name
+        """Cancel editing the account name.
 
         Steps:
         Enter the teacher user account in the username and password text boxes
@@ -562,9 +572,9 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8216 - 010 - User | Edit the username
-    @pytest.mark.skipif(str(8216) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8216) not in TESTS, reason='Excluded')
     def test_user_edit_the_username_8216(self):
-        """ Edit the username
+        """Edit the username.
 
         Steps:
         Enter the teacher user account in the username and password text boxes
@@ -608,12 +618,13 @@ class TestAccountManagement(unittest.TestCase):
             By.XPATH,
             '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8217 - 011 - User | Cancel editing the username
-    @pytest.mark.skipif(str(8217) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8217) not in TESTS, reason='Excluded')
     def test_user_canel_editing_the_username_8217(self):
-        """ Cancel editing the username
+        """Cancel editing the username.
 
         Steps:
         Enter the teacher user account in the username and password text boxes
@@ -648,10 +659,12 @@ class TestAccountManagement(unittest.TestCase):
         )
         assert(username_edit.text == username_original), 'username not changed'
 
+        self.ps.test_updates['passed'] = True
+
     # Case C8218 - 012 - User | Add an email address
-    @pytest.mark.skipif(str(8218) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8218) not in TESTS, reason='Excluded')
     def test_user_add_an_email_address_8218(self):
-        """ Add an email address
+        """Add an email address.
 
         Steps:
         Enter the teacher user account in the username and password text boxes
@@ -688,30 +701,39 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.XPATH, '//div[@class="popover-content"]' +
             '//button[contains(text(),"OK")]').click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8219 - 013 - User | Verify an email address
-    @pytest.mark.skipif(str(8219) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8219) not in TESTS, reason='Excluded')
     def test_user_verify_an_email_address_8219(self):
-        """ Verify an email address
+        """Verify an email address.
 
         Steps:
         Enter the teacher user account in the username and password text boxes
         Click on the Sign in button
         Click on Click to verify next to an email address
-        ...then log into chosen email address and verify
+        Log into chosen email address and verify
 
         Expected Result:
         Confirmation message displayed saying an email has been sent.
         Email has been sent
         Email adress is verified
         """
+        self.ps.test_updates['name'] = 't1.34.013' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.013', '8219']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
+        self.ps.test_updates['passed'] = True
+
     # Case C8220 - 014 - User | Make an email address serachable
-    @pytest.mark.skipif(str(8220) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8220) not in TESTS, reason='Excluded')
     def test_user_make_an_email_adress_searchable_8220(self):
-        """ Make an email address searchable
+        """Make an email address searchable.
 
         Steps:
         Enter the teacher user account in the username and password text boxes
@@ -752,12 +774,13 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.XPATH, '//div[@class="popover-content"]' +
             '//button[contains(text(),"OK")]').click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8221 - 015 - User | Delete an email address
-    @pytest.mark.skipif(str(8221) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8221) not in TESTS, reason='Excluded')
     def test_user_delete_an_email_adress_8221(self):
-        """ Delete an email address
+        """Delete an email address.
 
         Steps:
         Enter the teacher user account in the username and password text boxes
@@ -796,12 +819,13 @@ class TestAccountManagement(unittest.TestCase):
             By.XPATH,
             '//div[@class="popover-content"]//button[contains(text(),"OK")]'
         ).click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8222 - 016 - User | Edit the account password
-    @pytest.mark.skipif(str(8222) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8222) not in TESTS, reason='Excluded')
     def test_user_edit_the_account_password_8222(self):
-        """ Edit the account password
+        """Edit the account password.
 
         Steps:
         Enter the teacher user account in the username and password text boxes
@@ -835,12 +859,13 @@ class TestAccountManagement(unittest.TestCase):
         ).click()
         self.student.driver.find_element(
             By.XPATH, '//span[contains(text(),"Password changed")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8223 - 017 - User | Cancel editing the account password
-    @pytest.mark.skipif(str(8223) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8223) not in TESTS, reason='Excluded')
     def test_user_cancel_editing_the_account_password_8223(self):
-        """ Cancel editing the account password
+        """Cancel editing the account password.
 
         Steps:
         Enter the teacher user account in the username and password text boxes
@@ -873,19 +898,20 @@ class TestAccountManagement(unittest.TestCase):
             By.XPATH,
             '//button[@type="button"]//i[contains(@class,"remove")]'
         ).click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8224 - 018 - User | Enable login with username and password
-    @pytest.mark.skipif(str(8224) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8224) not in TESTS, reason='Excluded')
     def test_user_enable_standard_login_with_username_and_password_8224(self):
-        """ Enable standard login with username and password
+        """Enable standard login with username and password.
 
         Steps:
-        login with something other than password
-        click enable other login options
-        click the plus sign next to password
-        enter password into input, and enter agian to confirm
-        click check mark
+        Login with something other than password
+        Click enable other login options
+        Click the plus sign next to password
+        Enter password into input, and enter agian to confirm
+        Click check mark
 
         Expected Result:
         Confirmation message displayed.
@@ -948,19 +974,20 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
         ).click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8225 - 019 - User | Enable Facebook login
-    @pytest.mark.skipif(str(8225) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8225) not in TESTS, reason='Excluded')
     def test_user_enable_facebook_login_8225(self):
-        """ Enable Facebook login
+        """Enable Facebook login.
 
         Steps:
-        sign in with password
-        click on Enable other sign in options
-        click on the plus sign next to facebook
-        enter email and passwork on facebook
-        click login OR click return
+        Sign in with password
+        Click on Enable other sign in options
+        Click on the plus sign next to facebook
+        Enter email and passwork on facebook
+        Click login OR click return
 
         Expected Result:
         Confirmation message displayed.
@@ -1003,19 +1030,20 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
         ).click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8226 - 020 - User | Enable Google login
-    @pytest.mark.skipif(str(8226) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8226) not in TESTS, reason='Excluded')
     def test_user_enable_google_login_8226(self):
-        """ Enable Google login
+        """Enable Google login.
 
         Steps:
-        login with  password
-        click enable other login options
-        click the plus sign next to google
-        enter email into input and then click next
-        enter password and then click sign in
+        Login with  password
+        Click enable other login options
+        Click the plus sign next to google
+        Enter email into input and then click next
+        Enter password and then click sign in
 
         Expected Result:
         Confirmation message displayed.
@@ -1058,19 +1086,20 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
         ).click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8227 - 021 - User | Enable Twitter login
-    @pytest.mark.skipif(str(8227) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8227) not in TESTS, reason='Excluded')
     def test_user_enable_twitter_login_8227(self):
-        """ Enable Twitter login
+        """Enable Twitter login.
 
         Steps:
-        login with  password
-        click enable other login options
-        click the plus sign next to twitter
-        enter email and password into input boxes
-        click login
+        Login with  password
+        Click enable other login options
+        Click the plus sign next to twitter
+        Enter email and password into input boxes
+        Click login
 
         Expected Result:
         Confirmation message displayed.
@@ -1109,12 +1138,13 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
         ).click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8387 - 022 - User | Delete login option
-    @pytest.mark.skipif(str(8387) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8387) not in TESTS, reason='Excluded')
     def test_user_delete_login_option_8387(self):
-        """ Delete login option
+        """Delete login option.
 
         Steps:
         Click on the trashcan icon next to login in option to be removed
@@ -1158,12 +1188,13 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
         ).click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8388 - 023 - User | Info Icon shows definiton for searchable option
-    @pytest.mark.skipif(str(8388) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8388) not in TESTS, reason='Excluded')
     def test_user_info_icon_shows_definition_for_searchable_option_8388(self):
-        """ Info Icon shows definiton for searchable option
+        """Info Icon shows definiton for searchable option.
 
         Steps:
         Enter the teacher user account in the username and password text boxes
