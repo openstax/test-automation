@@ -35,6 +35,12 @@ TESTS = os.getenv(
     # str([14675, 14676, 14677, 14678, 14683,
     #      14801, 14803, 14804, 14805, 14686,
     #      14688])
+    # thses have issues with scrolling in the table
+    # str([14800, 14680, 14681])
+    # these are not implemented features
+    # str([14682, 14802, 14685, 14689])
+    # thses aren't tested because issues with the add hw helper
+    # str([14687])
 )
 
 
