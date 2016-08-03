@@ -32,7 +32,7 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([
-        7978, 7879, 7980, 7981, 7982,
+        7978, 7979, 7980, 7981, 7982,
         7983, 7984, 7985, 7986, 7987,
         7988, 7989, 7990, 7991
     ])
