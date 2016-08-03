@@ -19,8 +19,8 @@ from staxing.helper import Student
 # - replace list_of_cases on line 31 with all test case IDs in this file
 # - replace CaseID on line 52 with the actual cass ID
 # - delete lines 17 - 22
-list_of_cases = 0
-CaseID = 0
+list_of_cases = None
+CaseID = 'skip'
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -234,10 +234,10 @@ class TestEpicName(unittest.TestCase):
         """A student with zero answers does not show section breakdowns.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the student user account [ student532 | password ] in the
-        username and password text boxes
+            username and password text boxes
         Click on the 'Sign in' button
         If the user has more than one course, click on a Tutor course name
         Click on the user menu in the upper right corner

@@ -314,8 +314,10 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         ).click()
 
         self.admin.find(By.XPATH, "//a[@class='btn btn-primary']").click()
-        self.admin.find(By.XPATH, "//input[@id='school_name']").send_keys(
-            'automated test')
+        self.admin.find(
+            By.XPATH,
+            "//input[@id='school_name']"
+        ).send_keys('automated test')
         self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
 
         # Edit the school's name
@@ -446,8 +448,10 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
         # Create the school
         self.admin.find(By.XPATH, "//a[@class='btn btn-primary']").click()
-        self.admin.find(By.XPATH, "//input[@id='school_name']").send_keys(
-            'automated test')
+        self.admin.find(
+            By.XPATH,
+            "//input[@id='school_name']"
+        ).send_keys('automated test')
         self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
 
         # Delete the school
@@ -956,7 +960,6 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 self.admin.sleep(10)
                 self.ps.test_updates['passed'] = True
                 break
-
             else:
                 if course.text.find('Delete') >= 0:
                     delete += 1

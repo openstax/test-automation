@@ -343,10 +343,10 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on a reading assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click the "Continue" button
         On a card with a free response assessment, enter a free response into
-        the free response assessment text box
+            the free response assessment text box
         Click the "Continue" button
 
         Expected Result:
@@ -447,7 +447,7 @@ class TestEpicName(unittest.TestCase):
         "This Week" on the dashboard
         Click the "Continue" button
         On a card with a free response assessment, enter a free response
-        into the free response assessment text box
+            into the free response assessment text box
         Click the "Continue" button
         Select a multiple choice answer
 
@@ -544,7 +544,7 @@ class TestEpicName(unittest.TestCase):
         "This Week" on the dashboard
         Click the "Continue" button
         On a card with a free response assessment, enter a free
-        response into the free response assessment text box
+            response into the free response assessment text box
         Click the "Continue" button
         Select a multiple choice answer
         Click the "Continue" button in the left corner of the footer
@@ -646,7 +646,7 @@ class TestEpicName(unittest.TestCase):
         "This Week" on the dashboard
         Click the "Continue" button
         On a card with a free response assessment, enter a free
-        response into the free response assessment text box
+            response into the free response assessment text box
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button in the left corner of the footer
@@ -749,7 +749,7 @@ class TestEpicName(unittest.TestCase):
         "This Week" on the dashboard
         Click the "Continue" button
         On a card with a free response assessment, enter a free
-        response into the free response assessment text box
+            response into the free response assessment text box
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button
@@ -783,7 +783,7 @@ class TestEpicName(unittest.TestCase):
         "This Week" on the dashboard
         Click the "Continue" button
         On a card with a free response assessment that follows a Grasp Check,
-        enter a free response into the free response assessment text box
+            enter a free response into the free response assessment text box
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button
@@ -817,7 +817,7 @@ class TestEpicName(unittest.TestCase):
         "This Week" on the dashboard
         Click the "Continue" button
         On a card with a free response assessment that follows a Grasp Check,
-        enter a free response into the free response assessment text box
+            enter a free response into the free response assessment text box
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button
@@ -851,7 +851,7 @@ class TestEpicName(unittest.TestCase):
         "This Week" on the dashboard
         Click the "Continue" button
         On a card with a free response assessment that follows a Grasp Check,
-        enter a free response into the free response assessment text box
+            enter a free response into the free response assessment text box
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button
@@ -885,7 +885,7 @@ class TestEpicName(unittest.TestCase):
         "This Week" on the dashboard
         Click the "Continue" button
         On a card with a free response assessment that follows a Grasp Check,
-        enter a free response into the free response assessment text box
+            enter a free response into the free response assessment text box
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button
@@ -1022,7 +1022,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on a reading assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click the forward arrow
 
         Expected Result:
@@ -1374,7 +1374,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on a reading assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click the forward arrow
         At the end of the reading, click the "Back to Dashboard" button
 
@@ -1477,20 +1477,20 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8204 - 021 - Student | A completed reading should show
-    # You are done. in the completion report
+    # 'You are done.' in the completion report
     @pytest.mark.skipif(str(8204) not in TESTS, reason='Excluded')
     def test_student_completed_reading_shows_you_are_done_8204(self):
         """A completed reading should show You are done. in completion report.
 
         Steps:
         Click on a reading assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click the forward arrow
         Keep clicking the "Continue" button until the reading is over
 
         Expected Result:
         Once finished with the reading, the user is presented with the
-        completion report that shows "You are done"
+        completion report that shows 'You are done'
         """
         self.ps.test_updates['name'] = 't1.28.021' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1598,7 +1598,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on a reading assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click the forward arrow
         At the end of the reading, click the "Back to Dashboard" button
 
@@ -1639,10 +1639,10 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on a reading assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click the forward arrow
         On a card with a free response assessment, enter a free response
-        into the free response assessment text box
+            into the free response assessment text box
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button in the left corner of the footer

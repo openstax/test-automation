@@ -19,8 +19,8 @@ from staxing.helper import Student
 # - replace list_of_cases on line 31 with all test case IDs in this file
 # - replace CaseID on line 52 with the actual cass ID
 # - delete lines 17 - 22
-list_of_cases = 0
-CaseID = 0
+list_of_cases = None
+CaseID = 'skip'
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -113,7 +113,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on an external assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Hover the cursor over the info icon in the footer
 
         Expected Result:
@@ -165,7 +165,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on an external assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click on the link to the external assignment
 
         Expected Result:
@@ -224,7 +224,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on an external assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click on the link to the external assignment
         Close the assignment tab
 
@@ -286,7 +286,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on an external assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click on the link to the external assignment
         Close the assignment tab
         Click "Back To Dashboard"
@@ -343,8 +343,6 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        self.student.sleep(5)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8286 - 006 - Student | Verify the assignment status as Clicked
@@ -354,7 +352,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on an external assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click on the link to the external assignment
         Close the assignment tab
         Click "Back To Dashboard"

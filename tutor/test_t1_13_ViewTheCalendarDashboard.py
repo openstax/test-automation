@@ -8,7 +8,7 @@ import unittest
 import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
+from random import randint
 from selenium.webdriver.common.by import By
 # from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
@@ -31,9 +31,11 @@ basic_test_env = json.dumps([
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7978, 7879, 7980, 7981, 7982,
-         7983, 7984, 7985, 7986, 7987,
-         7988, 7989, 7990, 7991])
+    str([
+        7978, 7879, 7980, 7981, 7982,
+        7983, 7984, 7985, 7986, 7987,
+        7988, 7989, 7990, 7991
+    ])
 )
 
 
@@ -54,8 +56,10 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
         except:
@@ -119,7 +123,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         Expected Result:
         The teacher is presented with the student scores
-
         """
         self.ps.test_updates['name'] = 't1.13.003' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -239,7 +242,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # #NOT DONE
     # Case C7984 - 007 - Teacher | View a homework assignment summary
     @pytest.mark.skipif(str(7984) not in TESTS, reason='Excluded')
     def test_teacher_view_a_homework_assignment_summary_7984(self):
@@ -282,6 +284,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         # check that it opened
         self.teacher.driver.find_element(
             By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+
         self.ps.test_updates['passed'] = True
 
     # NOT DONE
@@ -330,7 +333,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C7986 - 009 - Teacher | View an event summary
     @pytest.mark.skipif(str(7986) not in TESTS, reason='Excluded')
     def test_teacher_view_an_event_summary_7986(self):
@@ -371,6 +373,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         # check that it opened
         self.teacher.driver.find_element(
             By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+
         self.ps.test_updates['passed'] = True
 
     # Case C7987 - 010 - Teacher | Open the refrenece book using the dashboard
@@ -384,7 +387,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         Click on the 'Browse The Book'button
 
         Expected Result:
-        THe teacher is preseneted with the book in a new tab
+        The teacher is preseneted with the book in a new tab
         """
         self.ps.test_updates['name'] = 't1.13.010' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -415,7 +418,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         Expected Result:
         The teacher is presented with the book in a new tab
-
         """
         self.ps.test_updates['name'] = 't1.13.011' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -475,7 +477,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         """Cick on the OpenStax logo to return to the course picker.
 
         Steps:
-
         If the user has more than one course, click on a Tutor course name
         Click in the OpenStax logo in the header
 
@@ -497,7 +498,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # SHOULD WORK BUT DON'T KNOW HOW TO LOGIN WITH DIFFERENT TEACHER
     # Case C7991 - 014 - Teacher | CLick in the OpenStax logo to return to the
     # dashboard
     @pytest.mark.skipif(str(7991) not in TESTS, reason='Excluded')

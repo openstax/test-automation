@@ -223,7 +223,6 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         """Remove the last instructor from the course.
 
         Steps:
-        (Assuming last means last added to the course)
         Click on the user menu in the upper right corner of the page
         Click "Course Roster"
         Click "Remove" for an instructor under the Instructors section
@@ -237,6 +236,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.42', 't1.42.003', '8260']
         self.ps.test_updates['passed'] = False
 
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
         self.teacher.logout()
         # add extra instructor through admin first
         admin = Admin(
@@ -454,7 +454,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         Click Archive
 
         Expected Result:
-        period is archived
+        Period is archived
         """
         self.ps.test_updates['name'] = 't1.42.007' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -576,7 +576,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
 
         Steps:
         Click "Add Back to Active Roster" for a student under
-        the Dropped Students section
+            the Dropped Students section
         Click "Add" on the box that pops up
 
         Expected Result:
