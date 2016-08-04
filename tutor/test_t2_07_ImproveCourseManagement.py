@@ -44,9 +44,10 @@ class TestImproveCourseManagement(unittest.TestCase):
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
-
         self.admin = Admin(
             use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities,
             existing_driver=self.teacher.driver
         )
 
