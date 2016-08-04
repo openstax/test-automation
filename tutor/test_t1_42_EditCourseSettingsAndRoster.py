@@ -38,7 +38,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
-            use_env_vars=True  # ,
+            use_env_vars=True,
             # pasta_user=self.ps,
             # capabilities=self.desired_capabilities
         )
@@ -315,7 +315,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        period_name = 'automated_4'
+        period_name = 'automated_' + str(randint(0, 999))
         self.teacher.driver.find_element(
             By.XPATH, '//li[contains(@class,"add-period")]//button').click()
         self.teacher.wait.until(
@@ -351,7 +351,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # create a period
-        period_name = 'automated_5'
+        period_name = 'automated_' + str(randint(0, 999))
         self.teacher.driver.find_element(
             By.XPATH, '//li[contains(@class,"add-period")]//button').click()
         self.teacher.wait.until(
@@ -406,7 +406,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # create a period
-        period_name = 'automated_006'
+        period_name = 'automated_' + str(randint(0, 999))
         self.teacher.driver.find_element(
             By.XPATH, '//li[contains(@class,"add-period")]//button').click()
         self.teacher.wait.until(
