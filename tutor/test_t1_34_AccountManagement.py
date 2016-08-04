@@ -25,12 +25,15 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8207, 8208, 8209, 8210, 8211,
-         8212, 8213, 8214, 8215, 8216,
-         8217, 8218, 8219, 8220, 8221,
-         8222, 8223, 8224, 8225, 8226,
-         8227, 8387, 8388])
+    # str([8207, 8208, 8209, 8210, 8211,
+    #      8212, 8213, 8214, 8215, 8216,
+    #      8217, 8218, 8219, 8220, 8221,
+    #      8222, 8223, 8224, 8225, 8226,
+    #      8227, 8387, 8388])
+    str([8388])
 )
+# facebook 8208, 8225,
+# email verification 8219
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -44,8 +47,8 @@ class TestAccountManagement(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.student = Student(
             use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         self.google_account = os.getenv('GOOGLE_USER')
         self.google_password = os.getenv('GOOGLE_PASSWORD')
@@ -104,9 +107,10 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.ID, 'signup_username').send_keys('automated_34_'+num)
         self.student.driver.find_element(
-            By.ID, 'signup_password').send_keys('password')
+            By.ID, 'signup_password').send_keys(self.student.password)
         self.student.driver.find_element(
-            By.ID, 'signup_password_confirmation').send_keys('password')
+            By.ID, 'signup_password_confirmation'
+        ).send_keys(self.student.password)
         self.student.driver.find_element(By.ID, 'signup_i_agree').click()
         self.student.driver.find_element(
             By.ID, 'create_account_submit').click()
@@ -173,10 +177,11 @@ class TestAccountManagement(unittest.TestCase):
             'span[contains(@class,"add mod")]').click()
         self.student.sleep(1)
         self.student.driver.find_element(
-            By.XPATH, '//input[@name="password"]').send_keys('password')
+            By.XPATH, '//input[@name="password"]'
+        ).send_keys(self.student.password)
         self.student.driver.find_element(
             By.XPATH, '//input[@name="password_confirmation"]'
-        ).send_keys('password')
+        ).send_keys(self.student.password)
         self.student.driver.find_element(
             By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
@@ -252,10 +257,11 @@ class TestAccountManagement(unittest.TestCase):
             'span[contains(@class,"add mod")]').click()
         self.student.sleep(1)
         self.student.driver.find_element(
-            By.XPATH, '//input[@name="password"]').send_keys('password')
+            By.XPATH, '//input[@name="password"]'
+        ).send_keys(self.student.password)
         self.student.driver.find_element(
             By.XPATH, '//input[@name="password_confirmation"]'
-        ).send_keys('password')
+        ).send_keys(self.student.password)
         self.student.driver.find_element(
             By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
@@ -328,10 +334,11 @@ class TestAccountManagement(unittest.TestCase):
             'span[contains(@class,"add mod")]').click()
         self.student.sleep(1)
         self.student.driver.find_element(
-            By.XPATH, '//input[@name="password"]').send_keys('password')
+            By.XPATH, '//input[@name="password"]'
+        ).send_keys(self.student.password)
         self.student.driver.find_element(
             By.XPATH, '//input[@name="password_confirmation"]'
-        ).send_keys('password')
+        ).send_keys(self.student.password)
         self.student.driver.find_element(
             By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
@@ -378,9 +385,10 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.ID, 'signup_username').send_keys('automated_34_'+num)
         self.student.driver.find_element(
-            By.ID, 'signup_password').send_keys('password')
+            By.ID, 'signup_password').send_keys(self.student.password)
         self.student.driver.find_element(
-            By.ID, 'signup_password_confirmation').send_keys('password')
+            By.ID, 'signup_password_confirmation'
+        ).send_keys(self.student.password)
         self.student.driver.find_element(By.ID, 'signup_i_agree').click()
         self.student.driver.find_element(
             By.ID, 'create_account_submit').click()
@@ -416,9 +424,10 @@ class TestAccountManagement(unittest.TestCase):
         self.student.driver.find_element(
             By.ID, 'signup_username').send_keys('automated_34_'+num)
         self.student.driver.find_element(
-            By.ID, 'signup_password').send_keys('password')
+            By.ID, 'signup_password').send_keys(self.student.password)
         self.student.driver.find_element(
-            By.ID, 'signup_password_confirmation').send_keys('password')
+            By.ID, 'signup_password_confirmation'
+        ).send_keys(self.student.password)
         self.student.driver.find_element(By.ID, 'signup_i_agree').click()
         self.student.driver.find_element(
             By.ID, 'create_account_submit').click()
@@ -826,10 +835,10 @@ class TestAccountManagement(unittest.TestCase):
         ).click()
         self.student.driver.find_element(
             By.XPATH, '//input[@name="password"]'
-        ).send_keys('password')
+        ).send_keys(self.student.password)
         self.student.driver.find_element(
             By.XPATH, '//input[@name="password_confirmation"]'
-        ).send_keys('password')
+        ).send_keys(self.student.password)
         self.student.driver.find_element(
             By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
@@ -864,11 +873,12 @@ class TestAccountManagement(unittest.TestCase):
             '//div[@data-provider="identity"]//span[contains(@class,"pencil")]'
         ).click()
         self.student.driver.find_element(
-            By.XPATH, '//input[@name="password"]').send_keys('password')
+            By.XPATH, '//input[@name="password"]'
+        ).send_keys(self.student.password)
         self.student.driver.find_element(
             By.XPATH,
             '//input[@name="password_confirmation"]'
-        ).send_keys('password')
+        ).send_keys(self.student.password)
         self.student.driver.find_element(
             By.XPATH,
             '//button[@type="button"]//i[contains(@class,"remove")]'
@@ -928,11 +938,12 @@ class TestAccountManagement(unittest.TestCase):
             'span[contains(@class,"add mod")]').click()
         self.student.sleep(1)
         self.student.driver.find_element(
-            By.XPATH, '//input[@name="password"]').send_keys('password')
+            By.XPATH, '//input[@name="password"]'
+        ).send_keys(self.student.password)
         self.student.driver.find_element(
             By.XPATH,
             '//input[@name="password_confirmation"]'
-        ).send_keys('password')
+        ).send_keys(self.student.password)
         self.student.driver.find_element(
             By.XPATH,
             '//button[@type="submit"]//i[contains(@class,"ok")]'
