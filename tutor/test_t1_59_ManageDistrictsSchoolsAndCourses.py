@@ -687,7 +687,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 self.admin.find(
                     By.XPATH,
                     "//input[@id='course_teacher']").send_keys(
-                    Keys.ARROW_DOWN + Keys.RETURN)
+                    Keys.RETURN)
                 self.admin.find(
                     By.PARTIAL_LINK_TEXT, "Remove from course").click()
                 self.admin.driver.switch_to_alert().accept()
@@ -779,7 +779,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 self.admin.sleep(5)
                 self.admin.find(
                     By.XPATH, "//input[@id='course_teacher']").send_keys(
-                    Keys.ARROW_DOWN + Keys.RETURN)
+                    Keys.RETURN)
 
                 # Remove teacher01 as instructor
                 self.admin.find(
@@ -1304,6 +1304,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.59', 't1.59.019', '8359']
         self.ps.test_updates['passed'] = False
 
+        # //input[contains(@id, 'course_id')]
         # Test steps and verification assertions
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1318,15 +1319,54 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
         self.admin.sleep(2)
 
+        # Create the course
+        self.admin.find(By.XPATH, "//a[@class='btn btn-primary']").click()
+        self.admin.find(By.XPATH, "//input[@id='course_name']").send_keys(
+            "automated test")
+        self.admin.find(
+            By.XPATH,
+            "//select[@id='course_school_district_school_id']"
+        ).send_keys("Denver University")
+        self.admin.find(
+            By.XPATH,
+            "//select[@id='course_catalog_offering_id']").send_keys("Calculus")
+        self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
+
+        # Uncheck the select all box if it is selected
         if self.admin.find(
                 By.XPATH,
                 "//input[@id='courses_select_all']"
-                ).is_selected():
+        ).is_selected():
             self.admin.find(
                 By.XPATH, "//input[@id='courses_select_all']").click()
-        self.admin.find(By.XPATH, "//input[@id='course_id_135']").click()
+
+        # Check the box of the newly created course
+        delete = 0
+        courses = self.admin.driver.find_elements_by_xpath("//tr")
+        for course in courses:
+            if course.text.find('automated test') >= 0:
+                self.admin.sleep(2)
+                num = self.admin.driver.find_elements_by_link_text(
+                    'Delete')[delete].get_attribute('href')
+                self.admin.sleep(5)
+                break
+
+            else:
+                if course.text.find('Delete') >= 0:
+                    delete += 1
+
+        check = num.split('/')[-1]
+        xpath = "//input[contains(@id, 'course_id_"
+        xpath += check
+        xpath += "')]"
+
+        self.admin.find(By.XPATH, xpath).click()
+
+        self.admin.sleep(5)
+
+        # Choose the ecosystem to use for the course, update the course
         self.admin.find(By.XPATH, "//select[@id='ecosystem_id']").send_keys(
-            '64-CC-Derived Macroeconomics (edf2s2@1.1)')
+            '1')
         self.admin.driver.find_elements_by_xpath(
             "//input[@class='btn btn-primary']")[1].click()
         self.admin.sleep(5)
@@ -1335,7 +1375,23 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         assert('Course ecosystem update background jobs queued.' in page), \
             'Ecosystem update not queued'
 
-        self.ps.test_updates['passed'] = True
+        # Delete the course
+        delete = 0
+        courses = self.admin.driver.find_elements_by_xpath("//tr")
+        for course in courses:
+            if course.text.find('automated test') >= 0:
+                self.admin.sleep(2)
+                self.admin.driver.find_elements_by_link_text(
+                    'Delete')[delete].click()
+                self.admin.sleep(12)
+                self.admin.driver.switch_to_alert().accept()
+                self.admin.sleep(5)
+                self.ps.test_updates['passed'] = True
+                break
+
+            else:
+                if course.text.find('Delete') >= 0:
+                    delete += 1
 
     # Case C8360 - 020 - Admin | View the Tutor course counts
     @pytest.mark.skipif(str(8360) not in TESTS, reason='Excluded')
@@ -1354,7 +1410,6 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
         self.admin.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Stats')
