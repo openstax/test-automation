@@ -39,8 +39,8 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.teacher.login()
         self.teacher.select_course(appearance='physics')
