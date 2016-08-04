@@ -1410,7 +1410,6 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
         self.admin.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Stats')
