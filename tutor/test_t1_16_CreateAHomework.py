@@ -487,8 +487,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8033 - 006 - Teacher | Publish a new homework
     @pytest.mark.skipif(str(8033) not in TESTS, reason='Excluded')
@@ -647,8 +647,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8034 - 007 - Teacher | Publish a draft homework
     @pytest.mark.skipif(str(8034) not in TESTS, reason='Excluded')
@@ -698,7 +698,7 @@ class TestCreateAHomework(unittest.TestCase):
         while(self.teacher.find(
                 By.XPATH,
                 "//span[@class = 'datepicker__current-month']"
-                ).text != 'December 2016'):
+        ).text != 'December 2016'):
             self.teacher.find(
                 By.XPATH,
                 "//a[@class = 'datepicker__navigation datepicker__" +
@@ -839,14 +839,14 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8035 - 008 - Teacher | Cancel a new homework before making any
     # changes using the Cancel button
     @pytest.mark.skipif(str(8035) not in TESTS, reason='Excluded')
     def test_teacher_cancel_new_hw_before_change_using_cancel_btn_8035(self):
-        """Cancel a new homework before making any changes using the Cancel button
+        """Cancel new homework before making changes using the Cancel button.
 
         Steps:
         Click on the Add Assignment drop down menu on the user dashboard, OR
@@ -1023,8 +1023,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8035 - 008 - Teacher | Cancel hw before making changes w/ Cancel
     @pytest.mark.skipif(str(8035) not in TESTS, reason='Excluded')
@@ -1418,52 +1418,10 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
         self.teacher.sleep(5)
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the draft and delete it
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-12':
-                assignment.click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='async-button delete-link " +
-                    "pull-right btn btn-default']").click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='btn btn-primary']").click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-12':
-                deleted = False
-                break
-
-        if deleted:
-            self.ps.test_updates['passed'] = True
 
     # Case C8040 - 013 - Teacher | Cancel a draft homework after making
     # changes using the Cancel button
@@ -1640,8 +1598,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8041 - 014 - Teacher | Cancel a draft hw before changes using the X
     @pytest.mark.skipif(str(8041) not in TESTS, reason='Excluded')
@@ -1812,8 +1770,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8042 - 015 - Teacher | Cancel a draft homework after making
     # changes using the X
@@ -1993,8 +1951,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8043 - 016 - Teacher | Attempt to publish a homework with blank
     # required fields
@@ -2251,8 +2209,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8046 - 019 - Teacher | Attempt to delete an open homework
     @pytest.mark.skipif(str(8046) not in TESTS, reason='Excluded')
@@ -2408,13 +2366,13 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8047 - 020 - Teacher | Delete a draft homework
     @pytest.mark.skipif(str(8047) not in TESTS, reason='Excluded')
     def test_teacher_delete_a_draft_homework_8047(self):
-        """Delete a draft homework
+        """Delete a draft homework.
 
         Steps:
         Click on a draft assignment on the calendar
@@ -2465,7 +2423,7 @@ class TestCreateAHomework(unittest.TestCase):
         while(self.teacher.find(
                 By.XPATH,
                 "//span[@class = 'datepicker__current-month']"
-             ).text != 'December 2016'):
+        ).text != 'December 2016'):
             self.teacher.find(
                 By.XPATH,
                 "//a[@class = 'datepicker__navigation datepicker__" +
@@ -2576,13 +2534,13 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8048 - 021 - Teacher | Add a description to a homework
     @pytest.mark.skipif(str(8048) not in TESTS, reason='Excluded')
     def test_teacher_add_a_description_to_the_homework_8048(self):
-        """Add a description to a homework
+        """Add a description to a homework.
 
         Steps:
         From the dashboard, click on the 'Add assignment' drop down menu
@@ -2630,7 +2588,7 @@ class TestCreateAHomework(unittest.TestCase):
     # Case C8049 - 022 - Teacher | Change a description for a draft homework
     @pytest.mark.skipif(str(8049) not in TESTS, reason='Excluded')
     def test_teacher_change_a_description_for_a_draft_homework_8049(self):
-        """Change a description for a draft homework
+        """Change a description for a draft homework.
 
         Steps:
         From the dashboard, click on a draft assignment displayed on the
@@ -2774,8 +2732,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8050 - 023 - Teacher | Change a description for an open homework
     @pytest.mark.skipif(str(8050) not in TESTS, reason='Excluded')
@@ -2954,8 +2912,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8051 - 024 - Teacher | Add a name to a homework
     @pytest.mark.skipif(str(8051) not in TESTS, reason='Excluded')
@@ -3185,8 +3143,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8053 - 026 - Teacher | Change a name for an open homework
     @pytest.mark.skipif(str(8053) not in TESTS, reason='Excluded')
@@ -3364,8 +3322,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8054 - 027 - Teacher | Select when to show feedback to a student
     @pytest.mark.skipif(str(8054) not in TESTS, reason='Excluded')
@@ -3587,8 +3545,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8056 - 029 - Teacher | Change when to show feedback for unopened hw
     @pytest.mark.skipif(str(8056) not in TESTS, reason='Excluded')
@@ -3759,8 +3717,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8057 - 030 - Teacher | Change when to show feedback for opened hw
     @pytest.mark.skipif(str(8057) not in TESTS, reason='Excluded')
@@ -3934,8 +3892,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8058 - 031 - Teacher | Info icon defines Add Hw status bar buttons
     @pytest.mark.skipif(str(8058) not in TESTS, reason='Excluded')
@@ -4479,7 +4437,7 @@ class TestCreateAHomework(unittest.TestCase):
     # Case C8066 - 039 - Teacher | Assessments show their exercise ID + version
     @pytest.mark.skipif(str(8066) not in TESTS, reason='Excluded')
     def test_teacher_assessment_shows_their_exercise_id_and_version_8066(self):
-        """Assessments show their exercise ID and exercise version.
+        """Assessment show their exercise ID and exercise version.
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
@@ -6216,8 +6174,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8083 - 056 - Teacher | Change all fields in a draft homework
     @pytest.mark.skipif(str(8083) not in TESTS, reason='Excluded')
@@ -6450,8 +6408,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8084 - 057 - Teacher | Change the name, description, due dtaes,
     # and feedback timing in an opened homework
@@ -6681,5 +6639,5 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
