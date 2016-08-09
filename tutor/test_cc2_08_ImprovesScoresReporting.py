@@ -269,8 +269,8 @@ class TestImprovesScoresReporting(unittest.TestCase):
         Steps:
         Click "Course Settings and Roster" from the user menu
         Click "Rename Course," "Change Course Timezone,"
-        "Add Period," "Rename," and "Get Student Enrollment Code"
-        (view archived period has been removed)
+        "Add Period," "Rename," "Get Student Enrollment Code,"
+        and "View archived period"
         Expected Result:
         All pop ups have an X button
         """
@@ -340,6 +340,16 @@ class TestImprovesScoresReporting(unittest.TestCase):
             '//div[@class="modal-content"]//button[@class="close"]'
         ).click()
         self.teacher.sleep(0.5)
+        # View Archived periods
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//button//span[contains(text(),"View Archived ")]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button[@class="close"]'
+        ).click()
         self.ps.test_updates['passed'] = True
 
     # 14670 - 007 - Teacher | Close popup with X button
@@ -355,6 +365,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
         - Add Period
         - Rename
         - Get Student Enrollment Code
+        - View Archived Periods
 
         Expected Result:
         Popup is closed
@@ -440,6 +451,21 @@ class TestImprovesScoresReporting(unittest.TestCase):
         with self.assertRaises(NoSuchElementException):
             self.teacher.driver.find_element(
                 By.XPATH, '//div[@class="modal-content"]')
+        # View Archived Periods
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//button//span[contains(text(),"View Archived")]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button[@class="close"]'
+        ).click()
+        self.teacher.sleep(1)
+        with self.assertRaises(NoSuchElementException):
+            self.teacher.driver.find_element(
+                By.XPATH, '//div[@class="modal-content"]')
+
         self.ps.test_updates['passed'] = True
 
     # 14669 - 008 - Teacher | The icon in the progress column shows info on
@@ -504,6 +530,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    # VERY NOT DONE
     # 14813 - 010 - Teacher | View zeros in exported scores instead of blank
     # cells for incomplete assignments
     @pytest.mark.skipif(str(14813) not in TESTS, reason='Excluded')  # NOQA
@@ -562,6 +589,8 @@ class TestImprovesScoresReporting(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    # NOT DONE - sideways scrolling is messed up.
+    # if green check is in starting screen it works though
     # 14814 - 011 - Teacher | Green check icon is displayed for completed
     # assignments
     @pytest.mark.skipif(str(14814) not in TESTS, reason='Excluded')  # NOQA
@@ -591,13 +620,25 @@ class TestImprovesScoresReporting(unittest.TestCase):
                 (By.XPATH, '//span[contains(text(),"Student Scores")]')
             )
         )
-        # Can't figure out a correct xpath to the green checkmarks
-        # copying the exact xpath from inspect console doesn't even work
-        self.teacher.driver.find_element(
+        # scroll to find a green checkmark
+        assignments = self.teacher.driver.find_elements(
             By.XPATH,
-            '//span[contains(@aria-describedby,"scores-cell-info-popover")]')
-            #'//polygon')
-            # '//circle') # [contains(@class,"finished")]')  #//circle') #[@class="slice"]
+            "//span[contains(@aria-describedby,'header-cell-title')]")
+        for i in range(len(assignments)):
+            try:
+                self.teacher.driver.find_element(
+                    By.XPATH,
+                    '//span[contains(@class,"trig")]' +
+                    '//*[contains(@class,"finished")]')
+                break
+            except NoSuchElementException:
+                print("here")
+                if i >= len(assignments)-4:
+                    print("No Green Checkmarks for this class :(")
+                    raise Exception
+                self.teacher.driver.execute_script(
+                   'return arguments[0].scrollIntoView();',
+                   assignments[i+3])
         self.ps.test_updates['passed'] = True
 
     # 14815 - 012 - Teacher | The class average info icon displays a definition
