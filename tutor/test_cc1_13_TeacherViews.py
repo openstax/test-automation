@@ -8,9 +8,10 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
+from selenium.common.exceptions import NoSuchElementException
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher
@@ -24,11 +25,12 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([
-        7609, 7610, 7611, 7612, 7613,
-        7614, 7615, 7616, 7617, 7618,
-        7619, 7620, 7622, 7624
-    ])
+    # str([
+    #     7609, 7610, 7611, 7612, 7613,
+    #     7614, 7615, 7616, 7617, 7618,
+    #     7619, 7620, 7622, 7624
+    # ])
+    str([7611])
 )
 
 
@@ -38,8 +40,6 @@ class TestTeacherViews(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
@@ -48,6 +48,9 @@ class TestTeacherViews(unittest.TestCase):
             # capabilities=self.desired_capabilities
         )
         self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
 
     def tearDown(self):
         """Test destructor."""
@@ -77,16 +80,12 @@ class TestTeacherViews(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc1.13.001' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.13',
-            'cc1.13.001',
-            '7609'
-        ]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.001', '7609']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        assert('cc-dashboard' in self.teacher.current_url()), \
+            'not at Concept Coach Dashboard'
 
         self.ps.test_updates['passed'] = True
 
@@ -104,16 +103,28 @@ class TestTeacherViews(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc1.13.002' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.13',
-            'cc1.13.002',
-            '7610'
-        ]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.002', '7610']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        url1 = self.teacher.current_url().split('courses')[1]
+        print(url1)
+        self.teacher.driver.find_element(
+            By.XPATH, '//a//i[@class="ui-brand-logo"]'
+        ).click()
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@href,"/cc-dashboard") ' +
+                'and not(contains(@href,"'+str(url1)+'"))]'
+            ).click()
+        except NoSuchElementException:
+            print('Only one CC course, cannot go to another')
+            raise Exception
+        assert('cc-dashboard' in self.teacher.current_url()), \
+            'not at Concept Coach Dashboard'
+        assert(url1 != self.teacher.current_url()), \
+            'went to same course'
 
         self.ps.test_updates['passed'] = True
 
@@ -134,16 +145,30 @@ class TestTeacherViews(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc1.13.003' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.13',
-            'cc1.13.003',
-            '7611'
-        ]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.003', '7611']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # HW pdf
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Homework PDF")]'
+        ).click()
+        # do stuff, check that is downloaded
+        # online book
+        self.teacher.driver.find_element(
+            By.XPATH, '//a//span[contains(text(),"Online Book")]'
+        ).click()
+        window_with_book = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_book)
+        assert('cnx' in self.teacher.current_url()), \
+            'Not viewing the textbook PDF'
+        self.teacher.driver.switch_to_window(
+            self.teacher.driver.window_handles[0])
+        # assignemnt links
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Assignment Links")]'
+        ).click()
+        assert('assignment-links' in self.teacher.current_url()), \
+            'not viewing Assignment Links'
 
         self.ps.test_updates['passed'] = True
 
