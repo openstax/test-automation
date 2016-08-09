@@ -24,13 +24,14 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8156, 8157, 8158, 8159,
-         8160, 8161, 8162, 8163,
-         8164, 8165, 8166, 8167,
-         8168, 8169, 8170, 8171,
-         8172, 8173, 8174, 8175,
-         8176, 8177, 8178, 8179,
-         8180, 8181])
+    # str([8156, 8157, 8158, 8159,
+    #      8160, 8161, 8162, 8163,
+    #      8164, 8165, 8166, 8167,
+    #      8168, 8169, 8170, 8171,
+    #      8172, 8173, 8174, 8175,
+    #      8176, 8177, 8178, 8179,
+    #      8180, 8181])
+    str([8158])
 )
 
 
@@ -135,13 +136,17 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH,
-                 '//div[contains(@class,"export-button-buttons")]//button')
-            )
-        ).click()
+        # self.teacher.wait.until(
+        #     expect.visibility_of_element_located(
+        #         (By.XPATH,
+        #          '//div[contains(@class,"export-button-buttons")]//button')
+        #     )
+        # ).click()
         # assert that it was gererated/downloaded
+        print(os.path.exists('/Downloads'))
+        print(os.getcwd())
+        print('')
+        raise Exception
         self.ps.test_updates['passed'] = True
 
     # Case C8159 - 004 - Teacher | Download a spreadsheet of class scores
