@@ -33,7 +33,7 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8320
+        8316
     ])
 )
 """
@@ -134,14 +134,16 @@ class TestEpicName(unittest.TestCase):
         assert('catalog_offerings/new' in self.admin.current_url()), \
             'Not in catalog offerings'
 
-        self.admin.find(By.NAME, 'offering[salesforce_book_name]').send_keys(
-            'TestAutomation')
+        # Create the new course offering
+        self.admin.find(
+            By.XPATH,
+            "//select[@id='offering_salesforce_book_name']").send_keys('O')
         self.admin.find(By.NAME, 'offering[appearance_code]').send_keys(
             'TestAutomation')
         self.admin.find(By.NAME, 'offering[description]').send_keys(
             'TestAutomation')
         self.admin.find(By.NAME, 'offering[content_ecosystem_id]').send_keys(
-            'Sociology 2e (02040312-72c8-441e-a685-20e9333f3e1d)')
+            'P')
         self.admin.find(By.ID, 'offering_is_tutor').click()
         self.admin.find(By.ID, 'offering_is_concept_coach').click()
         self.admin.find(By.NAME, 'offering[pdf_url]').send_keys(
@@ -150,10 +152,16 @@ class TestEpicName(unittest.TestCase):
             'TestAutomation.com')
         self.admin.find(By.NAME, 'offering[default_course_name]').send_keys(
             'TestAutomation')
-        self.admin.find(By.NAME, 'commit').click()
+        self.admin.sleep(5)
+        self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
 
         assert('catalog_offerings' in self.admin.current_url()), \
             'Not in catalog offerings'
+
+        assert('new' not in self.admin.current_url()), \
+            'Not in catalog offerings'
+
+        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
