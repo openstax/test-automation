@@ -24,14 +24,13 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    # str([8156, 8157, 8158, 8159,
-    #      8160, 8161, 8162, 8163,
-    #      8164, 8165, 8166, 8167,
-    #      8168, 8169, 8170, 8171,
-    #      8172, 8173, 8174, 8175,
-    #      8176, 8177, 8178, 8179,
-    #      8180, 8181])
-    str([8158])
+    str([8156, 8157, 8158, 8159,
+         8160, 8161, 8162, 8163,
+         8164, 8165, 8166, 8167,
+         8168, 8169, 8170, 8171,
+         8172, 8173, 8174, 8175,
+         8176, 8177, 8178, 8179,
+         8180, 8181])
 )
 
 
@@ -45,21 +44,26 @@ class TestViewClassScores(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.teacher.login()
         # get rid of any notifications
-        notifications = self.teacher.driver.find_elements(
-            By.XPATH,
-            '//div[contains(@class,"notification")]'
-            '//a[contains(text(),"Dismiss")]')
-        for x in notifications:
-            x.click()
+        # notifications = self.teacher.driver.find_elements(
+        #     By.XPATH,
+        #     '//div[contains(@class,"notification")]'
+        #     '//a[contains(text(),"Dismiss")]')
+        # for x in notifications:
+        #     x.click()
         # go to student scores
         self.teacher.select_course(appearance='physics')
         self.teacher.driver.find_element(
             By.LINK_TEXT, 'Student Scores').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[contains(text(), "Student Scores")]')
+            )
+        ).click()
 
     def tearDown(self):
         """Test destructor."""
@@ -136,17 +140,23 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        # self.teacher.wait.until(
-        #     expect.visibility_of_element_located(
-        #         (By.XPATH,
-        #          '//div[contains(@class,"export-button-buttons")]//button')
-        #     )
-        # ).click()
-        # assert that it was gererated/downloaded
-        print(os.path.exists('/Downloads'))
-        print(os.getcwd())
-        print('')
-        raise Exception
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[contains(@class,"export-button-buttons")]//button')
+            )
+        ).click()
+        coursename = self.teacher.driver.find_element(
+            By.XPATH, '//div[@class="course-name"]').text
+        coursename = coursename.replace(' ', '_') + "_Scores"
+        home = os.getenv("HOME")
+        files = os.listdir(home + '/Downloads')
+        for i in range(len(files)):
+            if (coursename in files[i]) and (files[i][-5:] == '.xlsx'):
+                break
+            else:
+                if i == len(files)-1:
+                    raise Exception
         self.ps.test_updates['passed'] = True
 
     # Case C8159 - 004 - Teacher | Download a spreadsheet of class scores
@@ -175,7 +185,17 @@ class TestViewClassScores(unittest.TestCase):
                  '//div[contains(@class,"export-button-buttons")]//button')
             )
         ).click()
-        # assert that it was gererated/downloaded
+        coursename = self.teacher.driver.find_element(
+            By.XPATH, '//div[@class="course-name"]').text
+        coursename = coursename.replace(' ', '_') + "_Scores"
+        home = os.getenv("HOME")
+        files = os.listdir(home + '/Downloads')
+        for i in range(len(files)):
+            if (coursename in files[i]) and (files[i][-5:] == '.xlsx'):
+                break
+            else:
+                if i == len(files)-1:
+                    raise Exception
         self.ps.test_updates['passed'] = True
 
     # Case C8160 - 005 - Teacher | View the Performance Forecast for a
@@ -482,7 +502,7 @@ class TestViewClassScores(unittest.TestCase):
         ).click()
         self.teacher.driver.find_element(
             By.XPATH,
-            '//span[contains(@class,"review-link")]' +
+            '//span[@class="review-link "]' +
             '//a[contains(text(),"Review")]'
         ).click()
         assert('summary' in self.teacher.current_url()), \
@@ -535,7 +555,9 @@ class TestViewClassScores(unittest.TestCase):
         For external assignments the fraction of students who have clicked on
         the assignment is displayed.
         """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//span[contains(text(),"% have clicked")]')
 
     # Case C8171 - 016 - Teacher | Navigate a reading review using the section
     # breadcrumbs
@@ -614,7 +636,7 @@ class TestViewClassScores(unittest.TestCase):
         ).click()
         self.teacher.driver.find_element(
             By.XPATH,
-            '//span[contains(@class,"review-link")]' +
+            '//span[@class="review-link "]' +
             '//a[contains(text(),"Review")]'
         ).click()
         self.teacher.wait.until(
@@ -660,7 +682,7 @@ class TestViewClassScores(unittest.TestCase):
         ).click()
         self.teacher.driver.find_element(
             By.XPATH,
-            '//span[contains(@class,"review-link")]' +
+            '//span[@class="review-link "]' +
             '//a[contains(text(),"Review")]'
         ).click()
         self.teacher.wait.until(
@@ -701,7 +723,7 @@ class TestViewClassScores(unittest.TestCase):
         ).click()
         self.teacher.driver.find_element(
             By.XPATH,
-            '//span[contains(@class,"review-link")]' +
+            '//span[@class="review-link "]' +
             '//a[contains(text(),"Review")]'
         ).click()
         self.teacher.wait.until(
@@ -751,7 +773,7 @@ class TestViewClassScores(unittest.TestCase):
         ).click()
         self.teacher.driver.find_element(
             By.XPATH,
-            '//span[contains(@class,"review-link")]' +
+            '//span[contains(@class,"review-link wide")]' +
             '//a[contains(text(),"Review")]'
         ).click()
         self.teacher.wait.until(
@@ -779,7 +801,7 @@ class TestViewClassScores(unittest.TestCase):
     # Case C8176 - 021 - Teacher | Each assessment has a correct response
     # displayed
     @pytest.mark.skipif(str(8176) not in TESTS, reason='Excluded')  # NOQA
-    def test_teacher_each_assesment_has_correct_response_displayed_9176(self):
+    def test_teacher_each_assesment_has_correct_response_displayed_8176(self):
         """Each assessment has a correct response displayed
 
         Steps:
@@ -796,14 +818,9 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
-            )
-        ).click()
         self.teacher.driver.find_element(
             By.XPATH,
-            '//span[contains(@class,"review-link")]' +
+            '//span[@class="review-link "]' +
             '//a[contains(text(),"Review")]'
         ).click()
         self.teacher.wait.until(
@@ -816,7 +833,7 @@ class TestViewClassScores(unittest.TestCase):
         correct_answers = self.teacher.driver.find_elements(
             By.XPATH, '//div[contains(@class,"answer-correct")]')
         questions = self.teacher.driver.find_elements(
-            By.XPATH, '//span[contains(@class,"breadcrumbs")]')
+            By.XPATH, '//span[contains(@class,"openstax-breadcrumbs")]')
         assert(len(correct_answers) == len(questions)), \
             "number of correct answers not equal to the number of questions"
 
@@ -850,7 +867,7 @@ class TestViewClassScores(unittest.TestCase):
         ).click()
         self.teacher.driver.find_element(
             By.XPATH,
-            '//span[contains(@class,"review-link")]' +
+            '//span[@class="review-link "]' +
             '//a[contains(text(),"Review")]'
         ).click()
         self.teacher.wait.until(
@@ -871,7 +888,7 @@ class TestViewClassScores(unittest.TestCase):
     # Case C8178 - 023 - Teacher | Assessment pane shows interleaved class
     # stats
     @pytest.mark.skipif(str(8178) not in TESTS, reason='Excluded')  # NOQA
-    def test_teacher_assesment_pane_shows_interleaved_class_stats(self):
+    def test_teacher_assesment_pane_shows_interleaved_class_stats_8178(self):
         """Assessment pane shows interleaved class stats
 
         Steps:
@@ -894,11 +911,9 @@ class TestViewClassScores(unittest.TestCase):
         ).click()
         self.teacher.driver.find_element(
             By.XPATH,
-            '//span[contains(@class,"review-link")]' +
+            '//span[@class="review-link "]' +
             '//a[contains(text(),"Review")]'
         ).click()
-        # not sure what interleaved class stats are
-
         self.ps.test_updates['passed'] = True
 
     # Case C8179 - 024 - Teacher | Teacher can see a student's work for a
@@ -937,7 +952,7 @@ class TestViewClassScores(unittest.TestCase):
     # homework assignment
     @pytest.mark.skipif(str(8180) not in TESTS, reason='Excluded')  # NOQA
     def test_teacher_view_a_students_work_for_a_homework_assignment_8180(self):
-        """Assessment pane shows interleaved class stats
+        """View a student's work for a homework assignment
 
         Steps:
         Click on the "Student Scores" button
@@ -957,13 +972,6 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH,
-                 '//span[contains(@class, "tab-item-period-name")' +
-                 ' and contains(@aria-describedby,"1")]')
-            )
-        ).click()
         homework = self.teacher.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"score")]//a[contains(text(),"%")]')
@@ -997,14 +1005,6 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        # Test steps and verification assertions
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH,
-                 '//span[contains(@class, "tab-item-period-name")' +
-                 ' and contains(@aria-describedby,"1")]')
-            )
-        ).click()
         external = self.teacher.driver.find_element(
             By.XPATH,
             '//a[contains(@data-assignment-type,"external")]' +
