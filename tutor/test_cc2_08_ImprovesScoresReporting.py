@@ -32,7 +32,7 @@ TESTS = os.getenv(
     #      14811, 14668, 14670, 14669,
     #      14812, 14813, 14814, 14815,
     #      14816])  # NOQA
-    str([14814, ])
+    str([14813, ])
 )
 
 
@@ -523,6 +523,9 @@ class TestImprovesScoresReporting(unittest.TestCase):
 
         Expected Result:
         """
+        self.ps.test_updates['name'] = 'cc2.08.009' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.08', 'cc2.08.009', '14812']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -530,7 +533,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # VERY NOT DONE
+    # NOT DONE
     # 14813 - 010 - Teacher | View zeros in exported scores instead of blank
     # cells for incomplete assignments
     @pytest.mark.skipif(str(14813) not in TESTS, reason='Excluded')  # NOQA
@@ -566,26 +569,41 @@ class TestImprovesScoresReporting(unittest.TestCase):
             By.XPATH, '//div[@class="export-button"]//button'
         ).click()
         coursename = self.teacher.driver.find_element(
-            By.XPATH, '//div[@class="course-name"]').text.replace(' ', '_')
-        files = os.getcwd()  #
-        print(files)  #
-        files = os.listdir('~/Downloads')
-        file_name = '~/Downloads'
-        for file in files:
-            if coursename+"_Scores" in file:
-                file_name = file
+             By.XPATH, '//div[@class="course-name"]').text
+        coursename = coursename.replace(' ', '_') + "_Scores"
+        home = os.getenv("HOME")
+        files = os.listdir(home + '/Downloads')
+        file_name = ''
+        for i in range(len(files)):
+            if (coursename in files[i]) and (files[i][-5:] == '.xlsx'):
+                file_name = files[i]
+                break
+            else:
+                if i == len(files)-1:
+                    raise Exception
         print(file_name)
-        wb = load_workbook(str('~/Downloads/' + file_name))
         period = self.teacher.driver.find_element(
             By.XPATH, '//span[contains(@class,"tab-item-period-name")]').text
-        sheet = wb[period+' - %']
-        for row in sheet.rows:
-            print(row[0].value)
-            if row[0].value == 'First Name':
-                assert(row[4].value != ''), 'blank cell instead of 0%'
-                if row[4].value == '0%':
+        wb = load_workbook(str(home + '/Downloads/' + file_name))
+        sheet = wb[period + ' - %']
+        rows = sheet.rows
+        for i in range(len(sheet.rows)):
+            print("rows[i][0].value   " + str(rows[i][0].value) )
+            if rows[i][0].value == 'First Name':
+                assert(rows[i+1][4].value != ''), 'blank cell instead of 0%'
+                print("inner part:  " + str(rows[i+1][1].value))
+                print("inner part:  " + str(rows[i+1][2].value))
+                print("inner part:  " + str(rows[i+1][3].value))
+                print("inner part:  " + str(rows[i+1][4].value))
+                print("inner part:  " + str(rows[i+1][5].value))
+                print("inner part:  " + str(rows[i+1][6].value))
+                if rows[i][4].value == '0%':
                     # found that 0% is being used istead of blanks
                     break
+                # elif rows[i+1][4].value == '':
+                #     print('empty cell instead of 0%')
+                #     raise Exception
+        raise Exception
 
         self.ps.test_updates['passed'] = True
 
