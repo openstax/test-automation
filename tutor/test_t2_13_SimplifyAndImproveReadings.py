@@ -5,15 +5,17 @@ import json
 import os
 import pytest
 import unittest
+import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
+from selenium.webdriver.common.by import By
 # from random import randint
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher
+from staxing.helper import Teacher, Student
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -36,15 +38,40 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
+        self.student = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
+        self.teacher = Teacher(
+            existing_driver=self.student.driver,
+            username=os.getenv('TEACHER_USER'),
+            password=os.getenv('TEACHER_PASSWORD'),
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
+        # create a reading for the student to work
+        self.teacher.login()
+        assignment_name = 'reading_assignemnt'
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='reading',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'reading_list': ['1.1', '1.2'],
+                                        'status': 'draft'
+                                     })
+        self.teacher.logout()
+        #login as a student to work the reading
+        self.student.login()
+        self.student.driver.find_element(
+            By.XPATH, '//div[contains(@class,"task row reading workable")]'
+        ).click()
 
     def tearDown(self):
         """Test destructor."""
