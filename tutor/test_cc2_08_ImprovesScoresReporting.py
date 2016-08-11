@@ -28,11 +28,11 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    # str([14806, 14807, 14808, 14810,
-    #      14811, 14668, 14670, 14669,
-    #      14812, 14813, 14814, 14815,
-    #      14816])  # NOQA
-    str([14813, ])
+    str([14806, 14807, 14808, 14810,
+         14811, 14668, 14670, 14669,
+         14812, 14813, 14814, 14815,
+         14816])  # NOQA
+    # str([14813, ])
 )
 
 
@@ -533,7 +533,6 @@ class TestImprovesScoresReporting(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # 14813 - 010 - Teacher | View zeros in exported scores instead of blank
     # cells for incomplete assignments
     @pytest.mark.skipif(str(14813) not in TESTS, reason='Excluded')  # NOQA
@@ -568,6 +567,14 @@ class TestImprovesScoresReporting(unittest.TestCase):
         self.teacher.driver.find_element(
             By.XPATH, '//div[@class="export-button"]//button'
         ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="export-button"]//button' +
+                 '/span[text()="Export"]')
+            )
+        )
+        self.teacher.sleep(1)
         coursename = self.teacher.driver.find_element(
              By.XPATH, '//div[@class="course-name"]').text
         coursename = coursename.replace(' ', '_') + "_Scores"
@@ -575,35 +582,29 @@ class TestImprovesScoresReporting(unittest.TestCase):
         files = os.listdir(home + '/Downloads')
         file_name = ''
         for i in range(len(files)):
+            print(files[i])
             if (coursename in files[i]) and (files[i][-5:] == '.xlsx'):
                 file_name = files[i]
                 break
             else:
                 if i == len(files)-1:
                     raise Exception
-        print(file_name)
         period = self.teacher.driver.find_element(
             By.XPATH, '//span[contains(@class,"tab-item-period-name")]').text
         wb = load_workbook(str(home + '/Downloads/' + file_name))
         sheet = wb[period + ' - %']
         rows = sheet.rows
+        start_row = float("inf")
         for i in range(len(sheet.rows)):
-            print("rows[i][0].value   " + str(rows[i][0].value) )
             if rows[i][0].value == 'First Name':
-                assert(rows[i+1][4].value != ''), 'blank cell instead of 0%'
-                print("inner part:  " + str(rows[i+1][1].value))
-                print("inner part:  " + str(rows[i+1][2].value))
-                print("inner part:  " + str(rows[i+1][3].value))
-                print("inner part:  " + str(rows[i+1][4].value))
-                print("inner part:  " + str(rows[i+1][5].value))
-                print("inner part:  " + str(rows[i+1][6].value))
-                if rows[i][4].value == '0%':
+                start_row = i
+            if i >= start_row:
+                if rows[i][4].value == 0:
                     # found that 0% is being used istead of blanks
                     break
-                # elif rows[i+1][4].value == '':
-                #     print('empty cell instead of 0%')
-                #     raise Exception
-        raise Exception
+                elif rows[i+1][4].value == None:
+                    print('empty cell instead of 0%')
+                    raise Exception
 
         self.ps.test_updates['passed'] = True
 
