@@ -6,7 +6,6 @@ import os
 import pytest
 import unittest
 import datetime
-import time
 
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint
@@ -29,16 +28,17 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([
-        7992, 7993, 7994, 7995, 7996,
-        7997, 7998, 7999, 8000, 8001,
-        8002, 8003, 8004, 8005, 8006,
-        8007, 8008, 8009, 8010, 8011,
-        8012, 8013, 8014, 8015, 8016,
-        8017, 8018, 8019, 8020, 8021,
-        8022, 8023, 8024, 8025, 8026,
-        8027
-    ])
+    # str([
+    #     7992, 7993, 7994, 7995, 7996,
+    #     7997, 7998, 7999, 8000, 8001,
+    #     8002, 8003, 8004, 8005, 8006,
+    #     8007, 8008, 8009, 8010, 8011,
+    #     8012, 8013, 8014, 8015, 8016,
+    #     8017, 8018, 8019, 8020, 8021,
+    #     8022, 8023, 8024, 8025, 8026,
+    #     8027
+    # ])
+    str([7993])
 )
 
 
@@ -52,8 +52,8 @@ class TestCreateAReading(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
@@ -118,12 +118,10 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        self.teacher.sleep(10)
         calendar_date = wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
+                (By.XPATH, '//div[contains(@class,"Day--upcoming")]/span')
             )
         )
         self.teacher.driver.execute_script(
@@ -132,11 +130,18 @@ class TestCreateAReading(unittest.TestCase):
         actions = ActionChains(self.teacher.driver)
         actions.move_to_element(calendar_date)
         actions.click()
-        actions.perform()
-        # self.teacher.sleep(3)
-        actions.move_by_offset(15, 15)
+        # don't know how to add wait, just testing
+        for _ in range(1000):
+            actions.send_keys('slow')
+        # It just clicks that is behing the add assignement menu?
+        actions.move_by_offset(50, 15)
         actions.click()
         actions.perform()
+        self.teacher.sleep(3)
+        self.teacher.sleep(1)
+        # self.teacher.driver.find_element(
+        #     By.XPATH, '//a[contains(text(),"Add Reading")]').click()
+        # self.teacher.sleep(3)
         assert('readings/new/' in self.teacher.current_url()), \
             'not at add reading page'
 
