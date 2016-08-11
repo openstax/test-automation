@@ -147,6 +147,13 @@ class TestViewClassScores(unittest.TestCase):
                  '//div[contains(@class,"export-button-buttons")]//button')
             )
         ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="export-button"]//button' +
+                 '/span[text()="Export"]')
+            )
+        )
         coursename = self.teacher.driver.find_element(
             By.XPATH, '//div[@class="course-name"]').text
         coursename = coursename.replace(' ', '_') + "_Scores"
@@ -186,6 +193,13 @@ class TestViewClassScores(unittest.TestCase):
                  '//div[contains(@class,"export-button-buttons")]//button')
             )
         ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="export-button"]//button' +
+                 '/span[text()="Export"]')
+            )
+        )
         coursename = self.teacher.driver.find_element(
             By.XPATH, '//div[@class="course-name"]').text
         coursename = coursename.replace(' ', '_') + "_Scores"
