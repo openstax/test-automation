@@ -32,7 +32,11 @@ TESTS = os.getenv(
          7701, 7702, 7703
 """
 
+# Write 7691, finish 7692, currently cycles through concept coach in every
+# book section, need to check for questions and answer one that has not
+# been answered yet
 # Redo 7695 and any that assert the jump cc button is in page, use try/except with find by xpath
+
 
 @PastaDecorator.on_platforms(BROWSERS)
 class TestStudentsWorkAssignments(unittest.TestCase):
@@ -632,6 +636,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -670,6 +675,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -708,6 +714,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
