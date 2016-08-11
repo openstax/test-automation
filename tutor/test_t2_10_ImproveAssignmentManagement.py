@@ -36,7 +36,7 @@ TESTS = os.getenv(
     #      14801, 14803, 14804, 14805, 14686,
     #      14688])
     # thses have issues with scrolling in the table
-    # str([14800, 14680, 14681])
+    #str([14800, 14680, 14681])
     # these are not implemented features
     # str([14682, 14802, 14685, 14689])
     # thses aren't tested because issues with the add hw helper
@@ -299,20 +299,28 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 (By.XPATH, '//div[@class="course-scores-container"]')
             )
         )
-        late_assignment = self.teacher.wait.until(
-            expect.presence_of_element_located(
-                (By.XPATH, '//div[@class="late-caret-trigger"]')
-            )
-        )
-        self.teacher.driver.execute_script(
-            'return arguments[0].scrollIntoView();', late_assignment)
-        self.teacher.sleep(5)  # testing
-        late_assignment.click()
-        self.teacher.sleep(1)
-        self.teacher.driver.find_element(
+
+        assignments = self.teacher.driver.find_elements(
             By.XPATH,
-            '//button[contains(tet(),"Accept late score")]'
-        ).click()
+            "//span[contains(@aria-describedby,'header-cell-title')]")
+        for i in range(len(assignments)):
+            try:
+                self.teacher.driver.find_element(
+                    By.XPATH, '//div[@class="late-caret-trigger"]'
+                ).click()
+                self.teacher.driver.find_element(
+                    By.XPATH,
+                    '//button[contains(tet(),"Accept late score")]'
+                ).click()
+                break
+            except NoSuchElementException:
+                print("here")
+                if i >= len(assignments)-4:
+                    print("No Late assignments for this class :(")
+                    raise Exception
+                self.teacher.driver.execute_script(
+                   'return arguments[0].scrollIntoView();',
+                   assignments[i+3])
         self.ps.test_updates['passed'] = True
 
     # scrolling is messing up the table
@@ -346,12 +354,22 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 (By.XPATH, '//div[@class="course-scores-container"]')
             )
         )
-        header = self.teacher.driver.find_element(
-            By.XPATH, '//div[contains(text(), "HW Chapter 3")]')
-        self.teacher.driver.execute_script(
-            'return arguments[0].scrollIntoView();', header)
-        self.teacher.driver.find_element(
-            By.XPATH, '//div[@class="score"]')
+        assignments = self.teacher.driver.find_elements(
+            By.XPATH,
+            "//span[contains(@aria-describedby,'header-cell-title')]")
+        for i in range(len(assignments)):
+            try:
+                self.teacher.driver.find_element(
+                    By.XPATH, '//div[@class="score"]')
+                break
+            except NoSuchElementException:
+                print("here")
+                if i >= len(assignments)-4:
+                    print("No Late assignments for this class :(")
+                    raise Exception
+                self.teacher.driver.execute_script(
+                   'return arguments[0].scrollIntoView();',
+                   assignments[i+3])
         self.ps.test_updates['passed'] = True
 
     # scrolling is messing up the table
@@ -391,12 +409,19 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 (By.XPATH, '//div[@class="course-scores-container"]')
             )
         )
-        header = self.teacher.driver.find_element(
-            By.XPATH, '//div[contains(text(), "HW Chapter 3")]')
-        self.teacher.driver.execute_script(
-            'return arguments[0].scrollIntoView();', header)
-        self.teacher.driver.find_element(
-            By.XPATH, '//div[@class="score"]')
+        for i in range(len(assignments)):
+            try:
+                self.teacher.driver.find_element(
+                    By.XPATH, '//div[@class="score"]')
+                break
+            except NoSuchElementException:
+                print("here")
+                if i >= len(assignments)-4:
+                    print("No Late assignments for this class :(")
+                    raise Exception
+                self.teacher.driver.execute_script(
+                   'return arguments[0].scrollIntoView();',
+                   assignments[i+3])
         self.ps.test_updates['passed'] = True
 
     # 14682 - 008 - Teacher | Set points per problem based on difficulty
