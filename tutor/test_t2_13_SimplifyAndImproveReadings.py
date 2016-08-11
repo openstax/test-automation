@@ -8,10 +8,9 @@ import unittest
 import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
-from selenium.webdriver.common.by import By
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
@@ -26,9 +25,7 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([
-        14745, 14746
-    ])
+    str([14745, 14746])
 )
 
 
@@ -40,38 +37,60 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.student = Teacher(
+        self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
-        self.teacher = Teacher(
-            existing_driver=self.student.driver,
-            username=os.getenv('TEACHER_USER'),
-            password=os.getenv('TEACHER_PASSWORD'),
+        self.student = Student(
+            existing_driver=self.teacher.driver,
+            username=os.getenv('STUDENT_USER'),
+            password=os.getenv('STUDENT_PASSWORD'),
+            site='https://tutor-qa.openstax.org/',
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
         # create a reading for the student to work
         self.teacher.login()
+        self.teacher.select_course(appearance='physics')
         assignment_name = 'reading_assignemnt'
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
                                         'periods': {'all': (begin, end)},
-                                        'reading_list': ['1.1', '1.2'],
-                                        'status': 'draft'
+                                        'reading_list': ['1.1'],
+                                        'status': 'publish'
                                      })
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"calendar-container")]')
+            )
+        )
         self.teacher.logout()
-        #login as a student to work the reading
+        # login as a student to work the reading
         self.student.login()
-        self.student.driver.find_element(
-            By.XPATH, '//div[contains(@class,"task row reading workable")]'
-        ).click()
+        self.student.select_course(appearance='physics')
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"tab-content")]')
+            )
+        )
+        reading = self.student.driver.find_element(
+            By.XPATH, '//div[contains(@class,"task row reading workable")]')
+        self.teacher.driver.execute_script(
+            'return arguments[0].scrollIntoView();', reading)
+        self.teacher.driver.execute_script('window.scrollBy(0, -80);')
+
+        reading.click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"card-body task-step")]')
+            )
+        )
 
     def tearDown(self):
         """Test destructor."""
@@ -81,6 +100,10 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         )
         try:
             self.teacher.delete()
+        except:
+            pass
+        try:
+            self.student.delete()
         except:
             pass
 
@@ -105,17 +128,13 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.13.001' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.13',
-            't2.13.001',
-            '14745'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.13', 't2.13.001', '14745']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"progress-bar progress-bar-success")]')
         self.ps.test_updates['passed'] = True
 
     # 14746 - 002 - Student | Access prior milestones in the reading assignment
@@ -134,15 +153,17 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.13.002' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.13',
-            't2.13.002',
-            '14746'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.13', 't2.13.002', '14746']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.driver.find_element(
+            By.XPATH,
+            '//a[contains(@class,"milestones-toggle")]/i'
+        ).click()
+        self.student.sleep(1)
+        self.student.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"milestones-wrapper")]'
+        )
         self.ps.test_updates['passed'] = True
