@@ -8,8 +8,8 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
@@ -41,7 +41,7 @@ class TestDeliveringAssignments(unittest.TestCase):
 
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
+        self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
@@ -65,24 +65,11 @@ class TestDeliveringAssignments(unittest.TestCase):
         """PDF is available for download for a Concept Coach derived copy.
 
         Steps:
-        ** Login as teacher:
-        Go to Tutor
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
-        If the user has more than one course, click on a CC course name
-        Click on the 'Online Book' button
-        Click on the 'Get This Book!' button
-        Click on the 'PDF' link
-        Click on 'Download for Free'
-
-        ** Login as student:
-        Go to https://tutor-staging.openstax.org/
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
-        If the user has more than one course, click on a CC course name
-        Click on the 'Get This Book!' button
+        got to https://openstax.org/subjects/
+        select a textbook
+        select online view
+        Scroll to the bottom of the page
+        Click on the 'Downloads' button
         Click on the 'PDF' link
         Click on 'Download for Free'
 
@@ -91,16 +78,45 @@ class TestDeliveringAssignments(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc1.12.001' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.12',
-            'cc1.12.001',
-            '7738'
-        ]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.12', 'cc1.12.001', '7738']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.driver.get('https://openstax.org/subjects')
+        self.teacher.page.wait_for_page_load()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"cover")]')
+
+            )
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[contains(@class,"get-this-title")]' +
+                 '//a[contains(@href,"http://cnx.org/")]')
+
+            )
+        ).click()
+        window_with_book = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_book)
+        self.teacher.page.wait_for_page_load()
+        self.teacher.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[@class="media-footer"]//li[@id="downloads-tab"]'
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="downloads tab-content"]' +
+            '//td/a[contains(text(),".pdf")]'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//a[contains(text(),"Download for Free")]'
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
