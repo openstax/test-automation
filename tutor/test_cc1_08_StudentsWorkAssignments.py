@@ -126,8 +126,9 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         # //span[@class='title section']
         # get the 21 drop downs in toc
 
-        self.student.find(
-            By.PARTIAL_LINK_TEXT, "Macro Econ").click()
+        #self.student.find(
+        #    By.PARTIAL_LINK_TEXT, "Macro Econ").click()
+        self.student.select_course(appearance='macro_economics')
         self.student.sleep(5)
         self.student.find(By.XPATH, "//button[@class='toggle btn']").click()
         self.student.sleep(3)
@@ -172,6 +173,17 @@ class TestStudentsWorkAssignments(unittest.TestCase):
                 self.student.find(
                     By.XPATH, "//button[@class='btn btn-lg btn-primary']").click()
                 self.student.sleep(2)
+
+                # Attempt at dealing with cnx possibly not using accounts-qa
+                if 'No enrollment code? Contact your instructor.' in self.student.driver.page_source:
+                    self.student.find(By.XPATH, "//div[@class='login-gateway login is-closed']").click()
+                    self.student.driver.switch_to.window(self.student.driver.window_handles[-1])
+                    url = self.student.current_url()
+                    self.student.login(username='student01', url=url)
+                    self.student.sleep(5)
+                    self.student.driver.switch_to.window(self.student.driver.window_handles[0])
+                    self.student.sleep(5)
+
                 self.student.find(By.XPATH, "//a/button[@class='btn-plain -coach-close btn btn-default']").click()
 
 
