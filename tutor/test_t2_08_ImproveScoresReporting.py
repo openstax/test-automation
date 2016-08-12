@@ -8,7 +8,9 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver import ActionChains
 # from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
@@ -25,11 +27,15 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14671, 14672, 14674, 14826, 14827,
-        14828, 14829, 14830, 14831, 14832,
-        14833, 14834, 14835, 14836
+        14831
     ])
 )
+
+"""
+14671, 14672, 14674, 14826, 14827,
+        14828, 14829, 14830, 14831, 14832,
+        14833, 14834, 14835, 14836
+"""
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -38,15 +44,18 @@ class TestImproveScoresReporting(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
+        """
+        self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
+        """
+        self.teacher = Teacher(use_env_vars=True)
+        self.teacher.login()
 
     def tearDown(self):
         """Test destructor."""
@@ -192,7 +201,24 @@ class TestImproveScoresReporting(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.select_course(appearance='physics')
+
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Student Scores').click()
+
+        assert('scores' in self.teacher.current_url()), \
+            'Not viewing Student Scores'
+
+        self.teacher.sleep(5)
+
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='overall-header-cell " +
+            "public_fixedDataTableCell_cellContent']")
+
+        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -222,7 +248,26 @@ class TestImproveScoresReporting(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.select_course(appearance='physics')
+
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Student Scores').click()
+
+        assert('scores' in self.teacher.current_url()), \
+            'Not viewing Student Scores'
+
+        self.teacher.sleep(5)
+
+        average1 = self.teacher.find(By.XPATH, "//div[@class='average']").text
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-sm btn-default']").click()
+        self.teacher.sleep(3)
+        average2 = self.teacher.find(By.XPATH, "//div[@class='average']").text
+
+        assert(average1 == average2), \
+            'Overall average is not the same between percentage and number'
 
         self.ps.test_updates['passed'] = True
 
@@ -280,7 +325,20 @@ class TestImproveScoresReporting(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.select_course(appearance='physics')
+
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Student Scores').click()
+
+        assert('scores' in self.teacher.current_url()), \
+            'Not viewing Student Scores'
+
+        self.teacher.sleep(5)
+        self.teacher.find(
+            By.XPATH, "//i[@class='tutor-icon fa fa-info-circle']").click()
+        self.teacher.find(By.XPATH, "//div[@class='popover-content']")
 
         self.ps.test_updates['passed'] = True
 
@@ -310,7 +368,45 @@ class TestImproveScoresReporting(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.select_course(appearance='biology')
+
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Student Scores').click()
+
+        assert('scores' in self.teacher.current_url()), \
+            'Not viewing Student Scores'
+
+        self.teacher.sleep(5)
+
+        self.teacher.find(By.PARTIAL_LINK_TEXT, '3rd').click()
+        scrollbar = self.teacher.find(By.XPATH, "//div[@class='ScrollbarLayout_face ScrollbarLayout_faceHorizontal public_Scrollbar_face']")
+        scrollbar.click()
+
+        # Four arrow rights bring a new assignment into view, try to bring
+        # 50 new assignments into view
+        for num in range(50):
+            for num1 in range(4):
+
+                # Having trouble focusing on scrollbar to send arrow rights,
+                # trying to send the arrows
+                actions = ActionChains(self.teacher.driver)
+                actions.move_to_element(scrollbar)
+                actions.perform()
+
+                # Scroll the scrollbar once scrollbar is in focus
+                scrollbar.send_keys(Keys.ARROW_RIGHT)
+            if len(self.teacher.driver.find_elements_by_xpath("//div[@class='late-caret']")) > 0:
+                self.teacher.find(By.XPATH, "//div[@class='late-caret']").click()
+                self.teacher.find(By.XPATH, "//button[@class='late-button btn btn-default']").click()
+
+                self.teacher.find(By.XPATH, "//div[@class='late-caret accepted']").click()
+                self.teacher.find(By.XPATH, "//button[@class='late-button btn btn-default']").click()
+                break
+
+
+        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
