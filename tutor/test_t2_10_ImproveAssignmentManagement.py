@@ -13,6 +13,7 @@ from selenium.webdriver.common.by import By  # NOQA
 from selenium.webdriver.support import expected_conditions as expect  # NOQA
 from staxing.assignment import Assignment  # NOQA
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import ElementNotVisibleException
 from selenium.webdriver.common.action_chains import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
@@ -27,16 +28,16 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([14675, 14676, 14677, 14678, 14800,
-         14680, 14681, 14682, 14683, 14801,
-         14802, 14803, 14804, 14805, 14685,
-         14686, 14687, 14688, 14689])  # NOQA
+    # str([14675, 14676, 14677, 14678, 14800,
+    #      14680, 14681, 14682, 14683, 14801,
+    #      14802, 14803, 14804, 14805, 14685,
+    #      14686, 14687, 14688, 14689])  # NOQA
     # these test cases work
     # str([14675, 14676, 14677, 14678, 14683,
     #      14801, 14803, 14804, 14805, 14686,
     #      14688])
     # thses have issues with scrolling in the table
-    #str([14800, 14680, 14681])
+    str([14800, 14680, 14681])
     # these are not implemented features
     # str([14682, 14802, 14685, 14689])
     # thses aren't tested because issues with the add hw helper
@@ -299,28 +300,33 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 (By.XPATH, '//div[@class="course-scores-container"]')
             )
         )
-
         assignments = self.teacher.driver.find_elements(
             By.XPATH,
             "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)):
+        for i in range(len(assignments)//4):
             try:
                 self.teacher.driver.find_element(
-                    By.XPATH, '//div[@class="late-caret-trigger"]'
+                    By.XPATH, '//div[@class="late-caret"]'
                 ).click()
                 self.teacher.driver.find_element(
                     By.XPATH,
-                    '//button[contains(tet(),"Accept late score")]'
+                    '//button[contains(text(),"Accept late score")]'
                 ).click()
                 break
-            except NoSuchElementException:
-                print("here")
-                if i >= len(assignments)-4:
+            except (NoSuchElementException, ElementNotVisibleException):
+                if i >= (len(assignments)//4)-1:
                     print("No Late assignments for this class :(")
                     raise Exception
-                self.teacher.driver.execute_script(
-                   'return arguments[0].scrollIntoView();',
-                   assignments[i+3])
+                # try to drag scroll bar instead of scrolling
+                scroll_bar = self.teacher.driver.find_element(
+                    By.XPATH,
+                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                actions = ActionChains(self.teacher.driver)
+                actions.move_to_element(scroll_bar)
+                actions.click_and_hold()
+                actions.move_by_offset(50, 0)
+                actions.release()
+                actions.perform()
         self.ps.test_updates['passed'] = True
 
     # scrolling is messing up the table
@@ -357,19 +363,31 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         assignments = self.teacher.driver.find_elements(
             By.XPATH,
             "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)):
+        for i in range(len(assignments)//4): ##########
             try:
                 self.teacher.driver.find_element(
-                    By.XPATH, '//div[@class="score"]')
+                    By.XPATH, '//div[@class="late-caret accepted"]'
+                ).click()
+                self.teacher.driver.find_element(
+                    By.XPATH,
+                    '//div[contains(@class,"late-status")]' +
+                    '//span[contains(text(),"due date")]'
+                )
                 break
-            except NoSuchElementException:
-                print("here")
-                if i >= len(assignments)-4:
+            except (NoSuchElementException, ElementNotVisibleException):
+                if i >= (len(assignments)//4)-1:
                     print("No Late assignments for this class :(")
                     raise Exception
-                self.teacher.driver.execute_script(
-                   'return arguments[0].scrollIntoView();',
-                   assignments[i+3])
+                # try to drag scroll bar instead of scrolling
+                scroll_bar = self.teacher.driver.find_element(
+                    By.XPATH,
+                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                actions = ActionChains(self.teacher.driver)
+                actions.move_to_element(scroll_bar)
+                actions.click_and_hold()
+                actions.move_by_offset(50, 0)
+                actions.release()
+                actions.perform()
         self.ps.test_updates['passed'] = True
 
     # scrolling is messing up the table
@@ -409,19 +427,28 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 (By.XPATH, '//div[@class="course-scores-container"]')
             )
         )
-        for i in range(len(assignments)):
+        assignments = self.teacher.driver.find_elements(
+            By.XPATH,
+            "//span[contains(@aria-describedby,'header-cell-title')]")
+        for i in range(len(assignments)//4):
             try:
                 self.teacher.driver.find_element(
                     By.XPATH, '//div[@class="score"]')
                 break
-            except NoSuchElementException:
-                print("here")
-                if i >= len(assignments)-4:
+            except (NoSuchElementException):
+                if i >= (len(assignments)//4)-1:
                     print("No Late assignments for this class :(")
                     raise Exception
-                self.teacher.driver.execute_script(
-                   'return arguments[0].scrollIntoView();',
-                   assignments[i+3])
+                # try to drag scroll bar instead of scrolling
+                scroll_bar = self.teacher.driver.find_element(
+                    By.XPATH,
+                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                actions = ActionChains(self.teacher.driver)
+                actions.move_to_element(scroll_bar)
+                actions.click_and_hold()
+                actions.move_by_offset(50, 0)
+                actions.release()
+                actions.perform()
         self.ps.test_updates['passed'] = True
 
     # 14682 - 008 - Teacher | Set points per problem based on difficulty
