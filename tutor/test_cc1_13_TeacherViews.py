@@ -44,12 +44,12 @@ class TestTeacherViews(unittest.TestCase):
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
-            # username='teacher02',
-            # password='staxly16',
+            # username=os.getenv('TEACHER_USER'),
+            # password=os.getenv('TEACHER_PASSWORD'),
             # site='https://tutor-staging.openstax.org',
             use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.teacher.login()
         self.teacher.driver.find_element(
@@ -185,7 +185,6 @@ class TestTeacherViews(unittest.TestCase):
             'not viewing Assignment Links'
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C7612 - 004 - Teacher | Able to copy a system-generated message
     # with a student code, links, and other information
     @pytest.mark.skipif(str(7612) not in TESTS, reason='Excluded')
@@ -207,7 +206,6 @@ class TestTeacherViews(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
             By.XPATH, '//a[contains(text(),"Course Settings and Roster")]'
@@ -215,16 +213,19 @@ class TestTeacherViews(unittest.TestCase):
         self.teacher.driver.find_element(
             By.XPATH, '//span[contains(text(),"student enrollment code")]'
         ).click()
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//*[contains(text(),"Send the following enrollment instruction")]'
+        )
+
         element = self.teacher.driver.find_element(
             By.XPATH,
-            '//div[contains(@class,"enrollment-code-modal")]//textarea'
+            '//div[contains(@class,"enrollment-code-modal")]'
         )
-        # message = element.text
-        element.click()
-        actions = ActionChains(self.teacher.driver)
-        actions.key_down(Keys.CONTROL).send_keys('c').key_up(Keys.CONTROL)
-        actions.perform()
-        # test that it was copied corectly
+        element.find_element(
+            By.XPATH,
+            './/*[contains(text(),"To register for Concept Coach:")]'
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7613 - 005 - Teacher | Periods are relabeled as sections for all
