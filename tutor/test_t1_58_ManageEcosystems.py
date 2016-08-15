@@ -43,7 +43,7 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestManageEcosystems(unittest.TestCase):
     """T1.58 - Manage ecosystems."""
 
     def setUp(self):
