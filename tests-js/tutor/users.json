@@ -6,4 +6,9 @@
   "username": "content",
   "password": "password",
   "tags": ["content-analyst"]  
-}]
+}, {
+  "username": "student01",
+  "password": "password",
+  "tags": ["student"]
+	}
+]
