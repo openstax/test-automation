@@ -8,7 +8,7 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-from selenium.webdriver.common.by import By
+# from selenium.webdriver.common.by import By
 # from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
@@ -86,9 +86,9 @@ class TestChooseCourse(unittest.TestCase):
             capabilities=self.desired_capabilities
         )
         self.user.login()
-        self.user.find(By.PARTIAL_LINK_TEXT, 'AP Physics').click()
+        self.user.select_course(appearance='physics')
 
-        assert('courses/1/list/' in self.user.current_url()), \
+        assert('list' in self.user.current_url()), \
             'Not in a course'
 
         self.ps.test_updates['passed'] = True
@@ -119,14 +119,13 @@ class TestChooseCourse(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
         self.user = Student(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
-        self.user.login()
-        assert('courses/75/list/' in self.user.current_url()), \
+        self.user.login(username="qas_01")
+        assert('list' in self.user.current_url()), \
             'Not in a course'
 
         self.ps.test_updates['passed'] = True
@@ -159,7 +158,7 @@ class TestChooseCourse(unittest.TestCase):
             capabilities=self.desired_capabilities
         )
         self.user.login()
-        self.user.find(By.PARTIAL_LINK_TEXT, 'AP Physics').click()
+        self.user.select_course(appearance='physics')
         assert('calendar' in self.user.current_url()), \
             'Not in a course'
 
@@ -197,7 +196,7 @@ class TestChooseCourse(unittest.TestCase):
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
-        self.user.login()
+        self.user.login(username="qateacher")
         assert('calendar' in self.user.current_url()), \
             'Not in a course'
 
