@@ -8,9 +8,12 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher
@@ -38,15 +41,20 @@ class TestTeacherViews(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
+            # username=os.getenv('TEACHER_USER'),
+            # password=os.getenv('TEACHER_PASSWORD'),
+            # site='https://tutor-staging.openstax.org',
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
 
     def tearDown(self):
         """Test destructor."""
@@ -76,16 +84,12 @@ class TestTeacherViews(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc1.13.001' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.13',
-            'cc1.13.001',
-            '7609'
-        ]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.001', '7609']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        assert('cc-dashboard' in self.teacher.current_url()), \
+            'not at Concept Coach Dashboard'
 
         self.ps.test_updates['passed'] = True
 
@@ -103,16 +107,27 @@ class TestTeacherViews(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc1.13.002' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.13',
-            'cc1.13.002',
-            '7610'
-        ]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.002', '7610']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        url1 = self.teacher.current_url().split('courses')[1]
+        self.teacher.driver.find_element(
+            By.XPATH, '//a//i[@class="ui-brand-logo"]'
+        ).click()
+        try:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//a[contains(@href,"/cc-dashboard") ' +
+                'and not(contains(@href,"'+str(url1)+'"))]'
+            ).click()
+        except NoSuchElementException:
+            print('Only one CC course, cannot go to another')
+            raise Exception
+        assert('cc-dashboard' in self.teacher.current_url()), \
+            'not at Concept Coach Dashboard'
+        assert(url1 != self.teacher.current_url()), \
+            'went to same course'
 
         self.ps.test_updates['passed'] = True
 
@@ -133,17 +148,41 @@ class TestTeacherViews(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc1.13.003' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.13',
-            'cc1.13.003',
-            '7611'
-        ]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.003', '7611']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        # HW pdf
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Homework PDF")]'
+        ).click()
+        coursename = self.teacher.driver.find_element(
+            By.XPATH, '//div[@class="cc-dashboard"]/div'
+        ).get_attribute('data-appearance')
+        coursename = coursename.replace('_', '-')
+        home = os.getenv("HOME")
+        files = os.listdir(home + '/Downloads')
+        for i in range(len(files)):
+            if (coursename in files[i]) and (files[i][-4:] == '.pdf'):
+                break
+            else:
+                if i == len(files)-1:
+                    raise Exception
+        # online book
+        self.teacher.driver.find_element(
+            By.XPATH, '//a//span[contains(text(),"Online Book")]'
+        ).click()
+        window_with_book = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_book)
+        assert('cnx' in self.teacher.current_url()), \
+            'Not viewing the textbook PDF'
+        self.teacher.driver.switch_to_window(
+            self.teacher.driver.window_handles[0])
+        # assignemnt links
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Assignment Links")]'
+        ).click()
+        assert('assignment-links' in self.teacher.current_url()), \
+            'not viewing Assignment Links'
         self.ps.test_updates['passed'] = True
 
     # Case C7612 - 004 - Teacher | Able to copy a system-generated message
@@ -163,17 +202,30 @@ class TestTeacherViews(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc1.13.004' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.13',
-            'cc1.13.004',
-            '7612'
-        ]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.004', '7612']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Course Settings and Roster")]'
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH, '//span[contains(text(),"student enrollment code")]'
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//*[contains(text(),"Send the following enrollment instruction")]'
+        )
 
+        element = self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"enrollment-code-modal")]'
+        )
+        element.find_element(
+            By.XPATH,
+            './/*[contains(text(),"To register for Concept Coach:")]'
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7613 - 005 - Teacher | Periods are relabeled as sections for all
@@ -193,17 +245,18 @@ class TestTeacherViews(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc1.13.005' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.13',
-            'cc1.13.005',
-            '7613'
-        ]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.005', '7613']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Course Settings and Roster")]'
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//li[contains(@class,"add-period")]//span[text()="Section"]'
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7614 - 006 - Teacher | View a score report
@@ -220,17 +273,19 @@ class TestTeacherViews(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc1.13.006' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.13',
-            'cc1.13.006',
-            '7614'
-        ]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.006', '7614']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Student Scores")]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Student Scores"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7615 - 007 - Teacher | View a report showing an individual
@@ -240,31 +295,35 @@ class TestTeacherViews(unittest.TestCase):
         """View a report showing an individual student's work pages.
 
         Steps:
-        Go to Tutor
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
-        If the user has more than one course, click on a CC course name
         Click the user menu in the right corner of the header
         Click "Student Scores"
         Click on the percentage in the "Score" column
 
         Expected Result:
-
+        Individual student's work is shown
         """
         self.ps.test_updates['name'] = 'cc1.13.007' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.13',
-            'cc1.13.007',
-            '7614'
-        ]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.007', '7614']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Student Scores")]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Student Scores"]')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"scores-cell")]' +
+            '/div[@class="score"]'
+        ).click()
+        assert('steps' in self.teacher.current_url()), \
+            "Not taken to individual student's work for assignemnt"
         self.ps.test_updates['passed'] = True
 
     # Case C7616 - 008 - Teacher | View a summary report showing a class's work
@@ -274,6 +333,8 @@ class TestTeacherViews(unittest.TestCase):
         """View a summary report showing a class's work pages.
 
         Steps:
+        Click the user menu in the right corner of the header
+        Click "Student Scores"
         Click on the desired period tab
 
         Expected Result:
@@ -281,17 +342,24 @@ class TestTeacherViews(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc1.13.008' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.13',
-            'cc1.13.008',
-            '7616'
-        ]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.008', '7616']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Student Scores")]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Student Scores"]')
+            )
+        )
+        periods = self.teacher.driver.find_elements(
+            By.XPATH, '//span[contains(@class,"tab-item-period-name")]'
+        )
+        for period in periods:
+            period.click()
         self.ps.test_updates['passed'] = True
 
     # Case C7617 - 009 - Teacher | View the aggregate student scores
@@ -308,17 +376,21 @@ class TestTeacherViews(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc1.13.009' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.13',
-            'cc1.13.009',
-            '7617'
-        ]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.009', '7617']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Student Scores")]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Student Scores"]')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(@class,"course-scores-container")]')
         self.ps.test_updates['passed'] = True
 
     # Case C7618 - 010 - Teacher | View scores for an individual student's
@@ -337,17 +409,23 @@ class TestTeacherViews(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc1.13.010' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.13',
-            'cc1.13.010',
-            '7618'
-        ]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.010', '7618']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Student Scores")]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Student Scores"]')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"name-cell")]'
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7619 - 011 - Teacher | View an individual student's question set
@@ -366,17 +444,33 @@ class TestTeacherViews(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc1.13.011' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.13',
-            'cc1.13.011',
-            '7619'
-        ]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.011', '7619']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Student Scores")]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Student Scores"]')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"scores-cell")]' +
+            '/div[@class="score"]'
+        ).click()
+        breadcrumbs = self.teacher.driver.find_elements(
+            By.XPATH, '//span[contains(@class,"openstax-breadcrumbs-")]'
+        )
+        for i in range(len(breadcrumbs)-1):
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//span[contains(@class,"openstax-breadcrumbs-")' +
+                'and contains(@data-reactid,"step-' + str(i) + '")]'
+            ).click()
         self.ps.test_updates['passed'] = True
 
     # Case C7620 - 012 - Teacher | View an assignment summary
@@ -395,16 +489,40 @@ class TestTeacherViews(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc1.13.012' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.13',
-            'cc1.13.012',
-            '7620'
-        ]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.012', '7620']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Student Scores")]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Student Scores"]')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"scores-cell")]' +
+            '/div[@class="score"]'
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//span[contains(@class,"openstax-breadcrumbs-")' +
+            'and contains(@data-reactid,"-end-")]'
+        ).click()
+        self.teacher.sleep(0.5)
+        breadcrumbs_answered = self.teacher.driver.find_elements(
+            By.XPATH,
+            '//span[contains(@class,"openstax-breadcrumbs-")' +
+            'and contains(@class,"completed")]'
+        )
+        question_cards = self.teacher.driver.find_elements(
+            By.XPATH, '//div[contains(@class,"openstax-exercise-card")]'
+        )
+        assert(len(question_cards) == len(breadcrumbs_answered)), \
+            'all answered questions not in summary'
 
         self.ps.test_updates['passed'] = True
 
@@ -421,18 +539,38 @@ class TestTeacherViews(unittest.TestCase):
         Expected Result:
         Student scores are downloaded in an excel spreadsheet
         """
-        self.ps.test_updates['name'] = 'cc1.13.013' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.13',
-            'cc1.13.013',
-            '7622'
-        ]
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Student Scores")]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Student Scores"]')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(@class,"export-button")]//button'
+        ).click()
+        # wait for it to export. It says generating when still not done
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[contains(@class,"export-button")]//button' +
+                 '//span[text()="Export"]')
+            )
+        )
+        # check that it was downloaded
+        coursename = self.teacher.driver.find_element(
+            By.XPATH, '//div[@class="course-name"]').text
+        coursename = coursename.replace(' ', '_') + "_Scores"
+        home = os.getenv("HOME")
+        files = os.listdir(home + '/Downloads')
+        for i in range(len(files)):
+            if (coursename in files[i]) and (files[i][-5:] == '.xlsx'):
+                break
+            else:
+                if i == len(files)-1:
+                    raise Exception
 
         self.ps.test_updates['passed'] = True
 
@@ -453,15 +591,36 @@ class TestTeacherViews(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc1.13.014' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc1',
-            'cc1.13',
-            'cc1.13.014',
-            '7624'
-        ]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.014', '7624']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Student Scores")]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Student Scores"]')
+            )
+        )
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"scores-cell")]' +
+            '/div[@class="score"]'
+        ).click()
+        breadcrumbs = self.teacher.driver.find_elements(
+            By.XPATH, '//span[contains(@class,"openstax-breadcrumbs-")]'
+        )
+        for i in range(len(breadcrumbs)-1):
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//span[contains(@class,"exercise-identifier-link")]' +
+                '//span[contains(text(),"ID")]'
+            )
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//span[contains(@class,"openstax-breadcrumbs-")' +
+                'and contains(@data-reactid,"step-' + str(i) + '")]'
+            ).click()
         self.ps.test_updates['passed'] = True
