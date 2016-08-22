@@ -1,4 +1,7 @@
-"""Concept Coach v1, Epic 6 - Concept Coach Widget Mechanics and Infrastructure."""
+"""Concept Coach v1, Epic 6.
+
+Concept Coach Widget Mechanics and Infrastructure.
+"""
 
 import inspect
 import json
@@ -7,13 +10,13 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from random import randint
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.support import expected_conditions as expect
+# from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Student, Teacher  # NOQA
+from staxing.helper import Teacher
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -24,16 +27,20 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7748, 7749, 7750])  # NOQA
+    str([
+        7748, 7749, 7750
+    ])
 )
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestConceptCoachWidgetMechanicsAndInfrastructure(unittest.TestCase):
     """CC1.06 - Concept Coach Widget Mechanics and Infrastructure."""
 
     def setUp(self):
         """Pretest settings."""
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.Teacher = Teacher(
@@ -52,26 +59,21 @@ class TestEpicName(unittest.TestCase):
             pass
 
     # Case C7748 - 001 - Student | View a Concept Coach book and see the widget
-    @pytest.mark.skipif(str(7748) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    @pytest.mark.skipif(str(7748) not in TESTS, reason='Excluded')
+    def test_student_view_a_cc_book_and_see_the_widget_7748(self):
         """View a Concept Coach book and see the widget.
 
-        Steps: 
-
-        go to https://tutor-staging.openstax.org/
-        login as a student 
+        Steps:
+        go to tutor-qa
+        login as a student
         click on a concept coach book
         Click on the 'Contents +' button
         Click on the a chapter in the contents
         Click on a section other than the introduction
         Scroll down
 
-
-
         Expected Result:
-
-        Concept Coach widget visible 
-
+        Concept Coach widget visible
         """
         self.ps.test_updates['name'] = 'cc1.06.001' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -84,19 +86,18 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
-
     # Case C7749 - 002 - Teacher | View a Concept Coach book and see the widget
-    @pytest.mark.skipif(str(7749) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    @pytest.mark.skipif(str(7749) not in TESTS, reason='Excluded')
+    def test_teacher_view_a_cc_book_and_see_the_widget_7749(self):
         """View a Concept Coach book and see the widget.
 
-        Steps: 
-
-        go to https://tutor-staging.openstax.org/
-        login as a teacher 
+        Steps:
+        Go to Tutor
+        Login as a teacher
         Click on a concept coach book
         Click on 'Online Book' in the header
         Click on the 'Contents +' button
@@ -104,11 +105,8 @@ class TestEpicName(unittest.TestCase):
         Click on a section other than the introduction
         Scroll down
 
-
         Expected Result:
-
-        Concept Coach widget visible 
-
+        Concept Coach widget visible
         """
         self.ps.test_updates['name'] = 'cc1.06.002' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -121,30 +119,26 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
-
     # Case C7750 - 003 - Student | Doesn't see end-of-page exercise sections
-    @pytest.mark.skipif(str(7750) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
+    @pytest.mark.skipif(str(7750) not in TESTS, reason='Excluded')
+    def test_student_doesnt_see_end_of_page_exercise_sections_7750(self):
         """Doesn't see end-of-page exercise sections.
 
-        Steps: 
-
-        go to https://tutor-staging.openstax.org/
-        login as a student 
-        click on a concept coach book
+        Steps:
+        Go to Tutor
+        Login as a student
+        Click on a concept coach book
         Click on the 'Contents +' button
         Click on the a chapter in the contents
         Click on a section other than the introduction
         Scroll down
 
-
         Expected Result:
-
-        End-of-page exercise sections are not displayed. 
-
+        End-of-page exercise sections are not displayed.
         """
         self.ps.test_updates['name'] = 'cc1.06.003' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -157,5 +151,6 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True

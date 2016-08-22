@@ -7,7 +7,7 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint
+# from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.common.action_chains import ActionChains
@@ -24,13 +24,14 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8156, 8157, 8158, 8159,
-         8160, 8161, 8162, 8163,
-         8164, 8165, 8166, 8167,
-         8168, 8169, 8170, 8171,
-         8172, 8173, 8174, 8175,
-         8176, 8177, 8178, 8179,
-         8180, 8181])
+    str([
+        8156, 8157, 8158, 8159, 8160,
+        8161, 8162, 8163, 8164, 8165,
+        8166, 8167, 8168, 8169, 8170,
+        8171, 8172, 8173, 8174, 8175,
+        8176, 8177, 8178, 8179, 8180,
+        8181
+    ])
 )
 
 
@@ -69,7 +70,8 @@ class TestViewClassScores(unittest.TestCase):
         """Test destructor."""
         self.ps.update_job(
             job_id=str(self.teacher.driver.session_id),
-            **self.ps.test_updates)
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
         except:
@@ -165,11 +167,12 @@ class TestViewClassScores(unittest.TestCase):
             else:
                 if i == len(files)-1:
                     raise Exception
+
         self.ps.test_updates['passed'] = True
 
     # Case C8159 - 004 - Teacher | Download a spreadsheet of class scores
     @pytest.mark.skipif(str(8159) not in TESTS, reason='Excluded')
-    def test_teacher_download_a_spread_sheet_of_class_scores_8159(self):
+    def test_teacher_download_a_spreadsheet_of_class_scores_8159(self):
         """Download a spreadsheet of class scores.
 
         Steps:
@@ -241,6 +244,7 @@ class TestViewClassScores(unittest.TestCase):
         self.teacher.driver.find_element(
             By.XPATH,
             '//span[contains(text(), "Performance Forecast for")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8161 - 006 - Teacher | Select a student from the individual
@@ -257,7 +261,6 @@ class TestViewClassScores(unittest.TestCase):
 
         Expected Result:
         Displays performance Forecast for selected student.
-
         """
         self.ps.test_updates['name'] = 't1.23.006' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -284,11 +287,12 @@ class TestViewClassScores(unittest.TestCase):
         ).click()
         self.teacher.driver.find_element(
             By.XPATH, '//span[contains(text(), "'+name+'")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8162 - 007 - Teacher | Info icon shows an explanation of the data
     @pytest.mark.skipif(str(8162) not in TESTS, reason='Excluded')
-    def test_teacher_info_icon_shows_An_Explanation_of_the_data_8162(self):
+    def test_teacher_info_icon_shows_an_explanation_of_the_data_8162(self):
         """Info icon shows an explanation of the data.
 
         Steps:
@@ -310,6 +314,7 @@ class TestViewClassScores(unittest.TestCase):
                 (By.XPATH, '//a[contains(@class,"student-name")]')
             )
         ).click()
+        # technically this is a hover, but click seems to work too
         self.teacher.driver.find_element(
             By.XPATH, '//span[contains(@class,"info-link")]').click()
         self.teacher.driver.find_element(
@@ -455,11 +460,12 @@ class TestViewClassScores(unittest.TestCase):
         ).click()
         self.teacher.driver.find_element(
             By.XPATH, '//div[contains(@class,"due")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8167 - 012 - Teacher | Review a reading assignment for a period
     @pytest.mark.skipif(str(8167) not in TESTS, reason='Excluded')
-    def test_teacher_review_a_reading_assignemnt_for_a_period_8167(self):
+    def test_teacher_review_a_reading_assignment_for_a_period_8167(self):
         """Review a reading assignment for a period.
 
         Steps:
@@ -488,11 +494,12 @@ class TestViewClassScores(unittest.TestCase):
         ).click()
         assert('summary' in self.teacher.current_url()), \
             'Not viewing reading assignment summary'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8168 - 013 - Teacher | Review a homework assignment for a period
     @pytest.mark.skipif(str(8168) not in TESTS, reason='Excluded')
-    def test_teacher_review_a_hoemwork_assignment_for_a_period_8168(self):
+    def test_teacher_review_a_homework_assignment_for_a_period_8168(self):
         """Review a homework assignment for a period.
 
         Steps:
@@ -573,6 +580,8 @@ class TestViewClassScores(unittest.TestCase):
         self.teacher.driver.find_element(
             By.XPATH,
             '//span[contains(text(),"% have clicked")]')
+
+        self.ps.test_updates['passed'] = True
 
     # Case C8171 - 016 - Teacher | Navigate a reading review using the section
     # breadcrumbs
@@ -816,7 +825,7 @@ class TestViewClassScores(unittest.TestCase):
     # Case C8176 - 021 - Teacher | Each assessment has a correct response
     # displayed
     @pytest.mark.skipif(str(8176) not in TESTS, reason='Excluded')
-    def test_teacher_each_assesment_has_correct_response_displayed_8176(self):
+    def test_teacher_each_assessment_has_correct_response_displayed_8176(self):
         """Each assessment has a correct response displayed
 
         Steps:
@@ -934,7 +943,7 @@ class TestViewClassScores(unittest.TestCase):
     # Case C8179 - 024 - Teacher | Teacher can see a student's work for a
     # reading assignment
     @pytest.mark.skipif(str(8179) not in TESTS, reason='Excluded')
-    def test_teacher_see_a_students_work_for_a_reading_assignemnt_8179(self):
+    def test_teacher_see_a_students_work_for_a_reading_assignment_8179(self):
         """Teacher can see a student's work for a reading assignment
 
         Steps:
@@ -962,6 +971,8 @@ class TestViewClassScores(unittest.TestCase):
             '//div[contains(@class,"popover-content")]' +
             '//a[contains(text(),"Review")]'
         ).click()
+
+        self.ps.test_updates['passed'] = True
 
     # Case C8180 - 025 - Teacher | Teacher can view a student's work for a
     # homework assignment
@@ -1002,7 +1013,7 @@ class TestViewClassScores(unittest.TestCase):
     # Case C8181 - 026 - Teacher | Teacher can view a student's work for an
     # external assignment
     @pytest.mark.skipif(str(8181) not in TESTS, reason='Excluded')
-    def test_teacher_view_a_students_work_for_external_assignemnt_8181(self):
+    def test_teacher_view_students_work_for_an_external_assignment_8181(self):
         """Teacher can view a student's work for an external assignment
 
         Steps:
@@ -1030,4 +1041,5 @@ class TestViewClassScores(unittest.TestCase):
         external.click()
         assert('steps' in self.teacher.current_url()), \
             'Not viewing student "work" for external assignment'
+
         self.ps.test_updates['passed'] = True

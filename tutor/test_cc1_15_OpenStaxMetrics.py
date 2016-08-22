@@ -7,13 +7,13 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from random import randint
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.support import expected_conditions as expect
+# from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Admin  # NOQA
+from staxing.helper import Teacher
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -24,19 +24,23 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7608])  # NOQA
+    str([
+        7608
+    ])
 )
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestOpenStaxMetrics(unittest.TestCase):
     """CC1.15 - OpenStax Metrics."""
 
     def setUp(self):
         """Pretest settings."""
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
+        self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
@@ -44,35 +48,32 @@ class TestEpicName(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
         except:
             pass
 
     # Case C7608 - 001 - Admin | View a report of enrolled students by course
-    @pytest.mark.skipif(str(7608) not in TESTS, reason='Excluded')  # NOQA
-    def test_usertype_story_text(self):
-        """View a report of enrolled students by course
+    @pytest.mark.skipif(str(7608) not in TESTS, reason='Excluded')
+    def test_admin_view_a_report_of_enrolled_students_by_course_7608(self):
+        """View a report of enrolled students by course.
 
-        Steps: 
-
-        Go to https://tutor-qa.openstax.org/
+        Steps:
+        Go to Tutor
         Click on the 'Login' button
-        Enter the admin user account [ admin | password ] in the username and password text boxes
+        Enter the admin user account in the username and password text boxes
         Click on the 'Sign in' button
-        Open the drop down menu by clicking on the user menu link containing the user's name
-        Click on the 'Admin' button
+        Click on the 'Admin' button from the user menu
         Open the drop down menu by clicking 'Course Organization'
         Click the 'Courses' option
         Click the 'List Students' button for the chosen course
 
-
         Expected Result:
-
         List of students for chosen course is displayed
-
         """
         self.ps.test_updates['name'] = 'cc1.15.001' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -85,5 +86,6 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True

@@ -7,13 +7,11 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 
-# select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Admin  # NOQA
+from staxing.helper import Admin
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -24,7 +22,9 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8361])  # NOQA
+    str([
+        8361
+    ])
 )
 
 
@@ -37,24 +37,26 @@ class TestGenerateReports(unittest.TestCase):
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.admin = Admin(
-            use_env_vars=True#,
-            #pasta_user=self.ps,
-            #capabilities=self.desired_capabilities
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.admin.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.admin.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.admin.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.admin.delete()
         except:
             pass
 
     # Case C8361 - 001 - Admin | Export research data to OwnCloud Research
-    @pytest.mark.skipif(str(8361) not in TESTS, reason='Excluded')  # NOQA
-    def test_admin_export_research_data_to_own_cloud_research(self):
+    @pytest.mark.skipif(str(8361) not in TESTS, reason='Excluded')
+    def test_admin_export_research_data_to_own_cloud_research_8361(self):
         """Export research data to OwnCloud Research.
 
         Steps:
@@ -68,7 +70,7 @@ class TestGenerateReports(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.68.001' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1','t1.68','t1.68.001','8361']
+        self.ps.test_updates['tags'] = ['t1', 't1.68', 't1.68.001', '8361']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -80,10 +82,10 @@ class TestGenerateReports(unittest.TestCase):
         ).click()
         self.admin.page.wait_for_page_load()
         self.admin.driver.find_element(
-            By.XPATH,'//a[contains(text(),"Research Data")]').click()
+            By.XPATH, '//a[contains(text(),"Research Data")]').click()
         self.admin.driver.find_element(
-            By.XPATH,'//input[@value="Export Data"]').click()
+            By.XPATH, '//input[@value="Export Data"]').click()
         self.admin.driver.find_element(
-            By.XPATH,'//div[contains(@class,"alert-info")]')
+            By.XPATH, '//div[contains(@class,"alert-info")]')
 
         self.ps.test_updates['passed'] = True
