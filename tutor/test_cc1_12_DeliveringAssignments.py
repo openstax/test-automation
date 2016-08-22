@@ -120,6 +120,7 @@ class TestDeliveringAssignments(unittest.TestCase):
         home = os.getenv("HOME")
         print(home + '/Downloads' + coursename)
         os.path.isfile(home + '/Downloads' + coursename)
+
         self.ps.test_updates['passed'] = True
 
     # Case C7741 - 002 - System | Webview table of contents matches the PDF
@@ -182,6 +183,7 @@ class TestDeliveringAssignments(unittest.TestCase):
         )
         self.student.driver.find_element(
             By.XPATH, '//cite[contains(text(),"https://cnx.org/")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C7743 - 004 - Student | Find the Concept Coach book from CNX
@@ -228,6 +230,7 @@ class TestDeliveringAssignments(unittest.TestCase):
                  '//td//a[contains(text(),"Biology with Concept Coach")]')
             )
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C7746 - 005 - User | View the chapter and section number before the
@@ -280,6 +283,7 @@ class TestDeliveringAssignments(unittest.TestCase):
                 (By.XPATH, '//span[@class="title-chapter" and text()="1.1"]')
             )
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C7747 - 006 - System | Display correct PDF numbering when the print

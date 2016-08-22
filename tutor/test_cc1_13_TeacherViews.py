@@ -12,8 +12,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver import ActionChains
+# from selenium.webdriver.common.keys import Keys
+# from selenium.webdriver import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher
@@ -183,6 +183,7 @@ class TestTeacherViews(unittest.TestCase):
         ).click()
         assert('assignment-links' in self.teacher.current_url()), \
             'not viewing Assignment Links'
+
         self.ps.test_updates['passed'] = True
 
     # Case C7612 - 004 - Teacher | Able to copy a system-generated message
@@ -226,6 +227,7 @@ class TestTeacherViews(unittest.TestCase):
             By.XPATH,
             './/*[contains(text(),"To register for Concept Coach:")]'
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C7613 - 005 - Teacher | Periods are relabeled as sections for all
@@ -257,6 +259,7 @@ class TestTeacherViews(unittest.TestCase):
             By.XPATH,
             '//li[contains(@class,"add-period")]//span[text()="Section"]'
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C7614 - 006 - Teacher | View a score report
@@ -286,6 +289,7 @@ class TestTeacherViews(unittest.TestCase):
                 (By.XPATH, '//span[text()="Student Scores"]')
             )
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C7615 - 007 - Teacher | View a report showing an individual
@@ -324,6 +328,7 @@ class TestTeacherViews(unittest.TestCase):
         ).click()
         assert('steps' in self.teacher.current_url()), \
             "Not taken to individual student's work for assignemnt"
+
         self.ps.test_updates['passed'] = True
 
     # Case C7616 - 008 - Teacher | View a summary report showing a class's work
@@ -360,6 +365,7 @@ class TestTeacherViews(unittest.TestCase):
         )
         for period in periods:
             period.click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C7617 - 009 - Teacher | View the aggregate student scores
@@ -391,6 +397,7 @@ class TestTeacherViews(unittest.TestCase):
         )
         self.teacher.driver.find_element(
             By.XPATH, '//div[contains(@class,"course-scores-container")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C7618 - 010 - Teacher | View scores for an individual student's
@@ -426,6 +433,7 @@ class TestTeacherViews(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"name-cell")]'
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C7619 - 011 - Teacher | View an individual student's question set
@@ -471,6 +479,7 @@ class TestTeacherViews(unittest.TestCase):
                 '//span[contains(@class,"openstax-breadcrumbs-")' +
                 'and contains(@data-reactid,"step-' + str(i) + '")]'
             ).click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C7620 - 012 - Teacher | View an assignment summary
@@ -623,4 +632,5 @@ class TestTeacherViews(unittest.TestCase):
                 '//span[contains(@class,"openstax-breadcrumbs-")' +
                 'and contains(@data-reactid,"step-' + str(i) + '")]'
             ).click()
+
         self.ps.test_updates['passed'] = True

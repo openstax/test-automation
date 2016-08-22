@@ -141,7 +141,7 @@ class TestViewClassScores(unittest.TestCase):
 
     # Case C8159 - 004 - Teacher | Download a spreadsheet of class scores
     @pytest.mark.skipif(str(8159) not in TESTS, reason='Excluded')
-    def test_teacher_download_a_spread_sheet_of_class_scores_8159(self):
+    def test_teacher_download_a_spreadsheet_of_class_scores_8159(self):
         """Download a spreadsheet of class scores.
 
         Steps:
@@ -246,7 +246,7 @@ class TestViewClassScores(unittest.TestCase):
 
     # Case C8162 - 007 - Teacher | Info icon shows an explanation of the data
     @pytest.mark.skipif(str(8162) not in TESTS, reason='Excluded')
-    def test_teacher_info_icon_shows_An_Explanation_of_the_data_8162(self):
+    def test_teacher_info_icon_shows_an_explanation_of_the_data_8162(self):
         """Info icon shows an explanation of the data.
 
         Steps:
@@ -421,7 +421,7 @@ class TestViewClassScores(unittest.TestCase):
 
     # Case C8167 - 012 - Teacher | Review a reading assignment for a period
     @pytest.mark.skipif(str(8167) not in TESTS, reason='Excluded')
-    def test_teacher_review_a_reading_assignemnt_for_a_period_8167(self):
+    def test_teacher_review_a_reading_assignment_for_a_period_8167(self):
         """Review a reading assignment for a period.
 
         Steps:
@@ -458,7 +458,7 @@ class TestViewClassScores(unittest.TestCase):
 
     # Case C8168 - 013 - Teacher | Review a homework assignment for a period
     @pytest.mark.skipif(str(8168) not in TESTS, reason='Excluded')
-    def test_teacher_review_a_hoemwork_assignment_for_a_period_8168(self):
+    def test_teacher_review_a_homework_assignment_for_a_period_8168(self):
         """Review a homework assignment for a period.
 
         Steps:
@@ -670,7 +670,7 @@ class TestViewClassScores(unittest.TestCase):
     # Case C8173 - 018 - Teacher | Period tabs are shown in the assignment
     # review
     @pytest.mark.skipif(str(8173) not in TESTS, reason='Excluded')
-    def test_teacher_period_tabs_are_shown_in_assignemnt_review_8173(self):
+    def test_teacher_period_tabs_are_shown_in_assignment_review_8173(self):
         """Period tabs are shown in the assignment review
 
         Steps:
@@ -802,7 +802,7 @@ class TestViewClassScores(unittest.TestCase):
     # Case C8176 - 021 - Teacher | Each assessment has a correct response
     # displayed
     @pytest.mark.skipif(str(8176) not in TESTS, reason='Excluded')
-    def test_teacher_each_assesment_has_correct_response_displayed_8176(self):
+    def test_teacher_each_assessment_has_correct_response_displayed_8176(self):
         """Each assessment has a correct response displayed
 
         Steps:
@@ -902,7 +902,7 @@ class TestViewClassScores(unittest.TestCase):
     # Case C8178 - 023 - Teacher | Assessment pane shows interleaved class
     # stats
     @pytest.mark.skipif(str(8178) not in TESTS, reason='Excluded')
-    def test_teacher_assesment_pane_shows_interleaved_class_stats_8178(self):
+    def test_teacher_assessment_pane_shows_interleaved_class_stats_8178(self):
         """Assessment pane shows interleaved class stats
 
         Steps:
@@ -925,7 +925,7 @@ class TestViewClassScores(unittest.TestCase):
     # Case C8179 - 024 - Teacher | Teacher can see a student's work for a
     # reading assignment
     @pytest.mark.skipif(str(8179) not in TESTS, reason='Excluded')
-    def test_teacher_see_a_steudents_work_for_a_reading_assignemnt_8179(self):
+    def test_teacher_see_a_students_work_for_a_reading_assignment_8179(self):
         """Teacher can see a student's work for a reading assignment
 
         Steps:
@@ -997,7 +997,7 @@ class TestViewClassScores(unittest.TestCase):
     # Case C8181 - 026 - Teacher | Teacher can view a student's work for an
     # external assignment
     @pytest.mark.skipif(str(8181) not in TESTS, reason='Excluded')
-    def test_teacher_view_students_work_for_an_external_assignemnt_8181(self):
+    def test_teacher_view_students_work_for_an_external_assignment_8181(self):
         """Teacher can view a student's work for an external assignment
 
         Steps:
