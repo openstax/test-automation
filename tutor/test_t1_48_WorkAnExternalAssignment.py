@@ -39,7 +39,7 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestWorkAnExternalAssignment(unittest.TestCase):
     """T1.48 - Work an external assignment."""
 
     def setUp(self):

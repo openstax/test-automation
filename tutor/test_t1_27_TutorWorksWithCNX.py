@@ -38,7 +38,7 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestTutorWorksWithCNX(unittest.TestCase):
     """T1.27 - Tutor works with CNX."""
 
     def setUp(self):

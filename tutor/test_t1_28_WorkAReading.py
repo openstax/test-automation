@@ -44,7 +44,7 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestWorkAReading(unittest.TestCase):
     """T1.28 - Work a reading."""
 
     def setUp(self):
