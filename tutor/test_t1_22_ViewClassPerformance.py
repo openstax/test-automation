@@ -39,7 +39,7 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestViewClassPerformance(unittest.TestCase):
     """T1.22 - View Class Performance."""
 
     def setUp(self):
