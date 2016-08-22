@@ -25,7 +25,9 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([14745, 14746])
+    str([
+        14745, 14746
+    ])
 )
 
 
@@ -135,6 +137,7 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         self.student.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"progress-bar progress-bar-success")]')
+
         self.ps.test_updates['passed'] = True
 
     # 14746 - 002 - Student | Access prior milestones in the reading assignment
@@ -166,4 +169,5 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"milestones-wrapper")]'
         )
+
         self.ps.test_updates['passed'] = True

@@ -33,16 +33,13 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8316
-    ])
-)
-"""
-8316, 8317, 8318, 8319, 8320,
+        8316, 8317, 8318, 8319, 8320,
         8321, 8322, 8323, 8324, 8325,
         8326, 8327, 8328, 8329, 8330,
         8331, 8332, 8333, 8334, 8335,
         8336, 8337, 8338, 8339, 8340
-"""
+    ])
+)
 
 
 @PastaDecorator.on_platforms(BROWSERS)

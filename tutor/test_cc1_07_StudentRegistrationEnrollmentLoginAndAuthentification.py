@@ -174,6 +174,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -486,6 +487,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
