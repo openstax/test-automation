@@ -169,18 +169,17 @@ def main(argv):
     if len(results) == 1:
         results = [results]
     if len(results) > 0:
-        # package = runner.test_rail.add_results(
-        runner.test_rail.add_results(
+        package = runner.test_rail.add_results(
             run_id=int(runner.run_id),
             data={'results': results}
         )
-        # out = ''
-        # for index, line in enumerate(package):
-        #     out = out + str(index) + ':' + Result.NEW_LINE
-        #     for key in line:
-        #         value = str(line[key]).replace('    ', ' ')[-70:]
-        #        out = out + '    ' + str(key) + ': ' + value + Result.NEW_LINE
-        # print(out)
+        out = ''
+        for index, line in enumerate(package):
+            out = out + str(index) + ':' + Result.NEW_LINE
+            for key in line:
+                value = str(line[key]).replace('    ', ' ')[-70:]
+                out = out + '    ' + str(key) + ': ' + value + Result.NEW_LINE
+        print(out)
 
 
 if __name__ == '__main__':
