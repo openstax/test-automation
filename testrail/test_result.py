@@ -39,6 +39,7 @@ class Result(object):
 
     def find_test_id(self, case_id, tests):
         """Return a test ID."""
+        # print('Test ID:', case_id)
         try:
             case = int(case_id)
         except ValueError:
@@ -52,6 +53,7 @@ class Result(object):
             return -1
         for test in tests:
             if case == test['case_id']:
+                print(case, '==>', test['id'], '(%s)' % len(tests))
                 return test['id']
         return -1
 
@@ -146,10 +148,6 @@ def main(argv):
             server = argument
     print('Break up the XML file')
     runner = Result(path=path, data=file_name, url=server)
-    print(
-        'Results:',
-        ElementTree.tostring(runner.root, encoding='utf8', method='xml')
-    )
     print('Process the tests')
     runner.retrieve_test_results()
     print('Build the data results for load')
@@ -168,13 +166,21 @@ def main(argv):
                     'defects': '',
                     'assignedto_id': '',
                 })
-    if len(results) < 2:
+    if len(results) == 1:
         results = [results]
-    package = runner.test_rail.add_results(
-        run_id=int(runner.run_id),
-        data={'results': results}
-    )
-    print(package)
+    if len(results) > 0:
+        # package = runner.test_rail.add_results(
+        runner.test_rail.add_results(
+            run_id=int(runner.run_id),
+            data={'results': results}
+        )
+        # out = ''
+        # for index, line in enumerate(package):
+        #     out = out + str(index) + ':' + Result.NEW_LINE
+        #     for key in line:
+        #         value = str(line[key]).replace('    ', ' ')[-70:]
+        #        out = out + '    ' + str(key) + ': ' + value + Result.NEW_LINE
+        # print(out)
 
 
 if __name__ == '__main__':
