@@ -12,8 +12,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 from selenium.common.exceptions import NoSuchElementException
-# from selenium.webdriver.common.keys import Keys
-# from selenium.webdriver import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher
@@ -44,9 +42,6 @@ class TestTeacherViews(unittest.TestCase):
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
-            # username=os.getenv('TEACHER_USER'),
-            # password=os.getenv('TEACHER_PASSWORD'),
-            # site='https://tutor-staging.openstax.org',
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities

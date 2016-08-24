@@ -311,7 +311,33 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7723 - 009 - Teacher | Rename the course
+    # Case C58354 - 009 - Teacher | Unarchive a section
+    @pytest.mark.skipif(str(58354) not in TESTS, reason='Excluded')
+    def test_teacher_unarchive_a_section_58354(self):
+        """Unarchive a section.
+
+        Steps:
+
+
+        Expected Result:
+
+        """
+        self.ps.test_updates['name'] = 'cc1.10.009' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.10',
+            'cc1.10.009',
+            '58354'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C7723 - 010 - Teacher | Rename the course
     @pytest.mark.skipif(str(7723) not in TESTS, reason='Excluded')
     def test_teacher_rename_the_course_7723(self):
         """Rename the course.
@@ -329,12 +355,12 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         Expected Result:
         Course is renamed.
         """
-        self.ps.test_updates['name'] = 'cc1.10.009' \
+        self.ps.test_updates['name'] = 'cc1.10.010' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.10',
-            'cc1.10.009',
+            'cc1.10.010',
             '7723'
         ]
         self.ps.test_updates['passed'] = False
@@ -344,7 +370,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7724 - 010 - Teacher | Remove other teachers from the course
+    # Case C7724 - 011 - Teacher | Remove other teachers from the course
     @pytest.mark.skipif(str(7724) not in TESTS, reason='Excluded')
     def test_teacher_remove_other_teachers_from_the_course_7724(self):
         """Remove other teachers from the course.
@@ -361,12 +387,12 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         Expected Result:
         Instructor is removed from the course
         """
-        self.ps.test_updates['name'] = 'cc1.10.010' \
+        self.ps.test_updates['name'] = 'cc1.10.011' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.10',
-            'cc1.10.010',
+            'cc1.10.011',
             '7724'
         ]
         self.ps.test_updates['passed'] = False
@@ -376,7 +402,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7725 - 011 - Teacher | Remove themself from the course
+    # Case C7725 - 012 - Teacher | Remove themself from the course
     @pytest.mark.skipif(str(7725) not in TESTS, reason='Excluded')
     def test_teacher_remove_themself_from_the_course_7725(self):
         """Remove themself from the course.
@@ -393,12 +419,12 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         Expected Result:
         Teacher is removed from course and taken back to dashboard
         """
-        self.ps.test_updates['name'] = 'cc1.10.011' \
+        self.ps.test_updates['name'] = 'cc1.10.012' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.10',
-            'cc1.10.011',
+            'cc1.10.012',
             '7725'
         ]
         self.ps.test_updates['passed'] = False
@@ -408,7 +434,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7726 - 012 - Teacher | Transfer a student to another period
+    # Case C7726 - 013 - Teacher | Transfer a student to another period
     @pytest.mark.skipif(str(7726) not in TESTS, reason='Excluded')
     def test_teacher_transfer_a_student_to_another_period_7726(self):
         """Transfer a student to another period.
@@ -426,12 +452,12 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         Expected Result:
         Student is moved to chosen section
         """
-        self.ps.test_updates['name'] = 'cc1.10.012' \
+        self.ps.test_updates['name'] = 'cc1.10.013' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.10',
-            'cc1.10.012',
+            'cc1.10.013',
             '7726'
         ]
         self.ps.test_updates['passed'] = False
@@ -441,7 +467,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7727 - 013 - Teacher | Remove a student from a course
+    # Case C7727 - 014 - Teacher | Remove a student from a course
     @pytest.mark.skipif(str(7727) not in TESTS, reason='Excluded')
     def test_teacher_remove_a_student_from_a_course_7727(self):
         """Remove a student from a course.
@@ -459,12 +485,12 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         Expected Result:
         Student is dropped from the course
         """
-        self.ps.test_updates['name'] = 'cc1.10.013' \
+        self.ps.test_updates['name'] = 'cc1.10.014' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.10',
-            'cc1.10.013',
+            'cc1.10.014',
             '7727'
         ]
         self.ps.test_updates['passed'] = False
@@ -474,7 +500,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7728 - 014 - Admin | Impersonate a teacher
+    # Case C7728 - 015 - Admin | Impersonate a teacher
     @pytest.mark.skipif(str(7728) not in TESTS, reason='Excluded')
     def test_admin_impersonate_a_teacher_7728(self):
         """Impersonate a teacher.
@@ -497,12 +523,12 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         If multiple courses list of textbooks
         If one course straight to dashboard
         """
-        self.ps.test_updates['name'] = 'cc1.10.014' \
+        self.ps.test_updates['name'] = 'cc1.10.015' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.10',
-            'cc1.10.014',
+            'cc1.10.015',
             '7728'
         ]
         self.ps.test_updates['passed'] = False
@@ -512,7 +538,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7729 - 015 - Admin | Change a course ecosystem
+    # Case C7729 - 016 - Admin | Change a course ecosystem
     @pytest.mark.skipif(str(7729) not in TESTS, reason='Excluded')
     def test_admin_change_a_course_ecosystem_7729(self):
         """Change a course ecosystem.
@@ -533,12 +559,12 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         Expected Result:
         Course ecosystem change is put on a queue
         """
-        self.ps.test_updates['name'] = 'cc1.10.015' \
+        self.ps.test_updates['name'] = 'cc1.10.016' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.10',
-            'cc1.10.015',
+            'cc1.10.016',
             '7729'
         ]
         self.ps.test_updates['passed'] = False
@@ -548,7 +574,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7730 - 016 - Admin | Change multiple course ecosystems in bulk
+    # Case C7730 - 017 - Admin | Change multiple course ecosystems in bulk
     @pytest.mark.skipif(str(7730) not in TESTS, reason='Excluded')
     def test_admin_change_multiple_course_ecosystems_in_bulk_7730(self):
         """Change multiple course ecosystems in bulk.
@@ -568,12 +594,12 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         Expected Result:
         Course ecosystem change is put on a queue
         """
-        self.ps.test_updates['name'] = 'cc1.10.016' \
+        self.ps.test_updates['name'] = 'cc1.10.017' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.10',
-            'cc1.10.016',
+            'cc1.10.017',
             '7730'
         ]
         self.ps.test_updates['passed'] = False
@@ -583,7 +609,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7731 - 017 - Teacher | Receive a notice when students register
+    # Case C7731 - 018 - Teacher | Receive a notice when students register
     @pytest.mark.skipif(str(7731) not in TESTS, reason='Excluded')
     def test_teacher_receive_a_notice_when_students_register_7731(self):
         """Receive a notice when students register.
@@ -594,12 +620,12 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         Expected Result:
 
         """
-        self.ps.test_updates['name'] = 'cc1.10.017' \
+        self.ps.test_updates['name'] = 'cc1.10.018' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             'cc1',
             'cc1.10',
-            'cc1.10.017',
+            'cc1.10.018',
             '7731'
         ]
         self.ps.test_updates['passed'] = False

@@ -662,7 +662,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
 
         Steps:
         Open a new page of OpenStax Exercises
-        Sign with username 'openstax' and password 'password'
+        Sign with username 'openstax'
         Go back to exercises on OpenStax Tutor page
         For an exercise, click on 'edit' button on the lower right corner
         Edit the exercise
@@ -698,7 +698,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         Log into Tutor as a teacher
         View exercises
         Open a new page of OpenStax Exercises
-        Sign with username 'openstax' and password 'password'
+        Sign with username 'openstax'
         Go back to exercises on OpenStax Tutor page
         For an exercise, click on 'edit' button on the lower right corner
         Edit the exercise
@@ -734,7 +734,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         Log into Tutor as an admin
         View exercises
         Open a new page of OpenStax Exercises
-        Sign with username 'openstax' and password 'password'
+        Sign with username 'openstax'
         Go back to exercises on OpenStax Tutor page
         For an exercise, click on 'edit' button on the lower right corner
         Edit the exercise
@@ -768,7 +768,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
 
         Steps:
         Open a new page of OpenStax Exercises
-        Sign with username 'openstax' and password 'password'
+        Sign with username 'openstax'
         Go back to exercises on OpenStax Tutor page
         For an exercise, click on 'edit' button on the lower right corner
         Edit the exercise
@@ -803,7 +803,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         Log into Tutor as a teacher
         View exercises
         Open a new page of OpenStax Exercises
-        Sign with username 'openstax' and password 'password'
+        Sign with username 'openstax'
         Go back to exercises on OpenStax Tutor page
         For an exercise, click on 'edit' button on the lower right corner
         Edit the exercise
@@ -838,7 +838,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         Log into Tutor as an admin
         View exercises
         Open a new page of OpenStax Exercises
-        Sign with username 'openstax' and password 'password'
+        Sign with username 'openstax'
         Go back to exercises on OpenStax Tutor page
         For an exercise, click on 'edit' button on the lower right corner
         Edit the exercise

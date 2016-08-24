@@ -26,7 +26,8 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         8258, 8259, 8260, 8261, 8262,
-        8263, 8264, 8265, 8266, 8267
+        8263, 8264, 8265, 8266, 8267,
+        58356
     ])
 )
 
@@ -609,5 +610,34 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[@class="roster"]//td[contains(text(),"%s")]' % student_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C58356 - 011 - Teacher | Unarchive an empty period
+    @pytest.mark.skipif(str(58356) not in TESTS, reason='Excluded')
+    def test_teacher_unarchive_an_empty_period_58356(self):
+        """Unarchive an empty period.
+
+        Steps:
+        Go to Tutor
+        Click on the 'Login' button
+        Enter the teacher user account [ teacher001 ] and password in the boxes
+        Click on the 'Sign in' button
+        If the user has more than one course, click on a Tutor course name
+        Click on the user menu in the upper right corner of the page
+        Click "Course Settings and Roster"
+        Click "View Archived Period(s)"
+        Click Unarchived period next to selected course
+
+        Expected Result:
+        Period is made active.
+        """
+        self.ps.test_updates['name'] = 't1.42.011' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.42', 't1.42.011', '58356']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
