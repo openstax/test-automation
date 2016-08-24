@@ -53,7 +53,6 @@ class Result(object):
             return -1
         for test in tests:
             if case == test['case_id']:
-                print(case, '==>', test['id'], '(%s)' % len(tests))
                 return test['id']
         return -1
 
@@ -99,7 +98,10 @@ class Result(object):
             )
             sub = list(child.iter())
             if len(sub) >= 2:
-                child.set('status', sub[1].tag)
+                if sub[1].tag == 'system-out':
+                    child.set('status', 'passed')
+                else:
+                    child.set('status', sub[1].tag)
                 message = sub[1].get('message') if 'message' in \
                     sub[1].attrib else ''
                 parts = message.split(
@@ -157,15 +159,18 @@ def main(argv):
             child.set('status', 'skipped')
         if child.get('status') != 'skipped':
             if 'test' in child.attrib and child.get('test') != -1:
-                results.append({
-                    'test_id': child.get('test'),
-                    'status_id': runner.get_status(child.get('status')),
-                    'comment': child.get('message'),
-                    'version': '',
-                    'elapsed': runner.get_time_string(child.get('time')),
-                    'defects': '',
-                    'assignedto_id': '',
-                })
+                case_status = runner.get_status(child.get('status'))
+                if case_status == TestRailAPI.PASSED or \
+                        case_status == TestRailAPI.FAILED:
+                    results.append({
+                        'test_id': child.get('test'),
+                        'status_id': case_status,
+                        'comment': child.get('message'),
+                        'version': '',
+                        'elapsed': runner.get_time_string(child.get('time')),
+                        'defects': '',
+                        'assignedto_id': '',
+                    })
     if len(results) == 1:
         results = [results]
     if len(results) > 0:
@@ -177,7 +182,7 @@ def main(argv):
         for index, line in enumerate(package):
             out = out + str(index) + ':' + Result.NEW_LINE
             for key in line:
-                value = str(line[key]).replace('    ', ' ')[-70:]
+                value = str(line[key]).replace('    ', ' ')[-60:]
                 out = out + '    ' + str(key) + ': ' + value + Result.NEW_LINE
         print(out)
 
