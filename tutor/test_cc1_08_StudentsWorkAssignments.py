@@ -38,18 +38,19 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         teacher = Teacher(
-            username='teacher100',
-            password='password',
+            username=os.getenv('TEACHER_USER_CC'),
+            password=os.getenv('TEACHER_PASSWORD'),
             pasta_user=self.ps)
         teacher.login()
-        courses = teacher.find_all(By.CLASS_NAME,
-                                   'tutor-booksplash-course-item')
-        assert(courses), 'No courses found.'
-        if not isinstance(courses, list):
-            courses = [courses]
-        course_id = randint(0, len(courses) - 1)
-        self.course = courses[course_id].get_attribute('data-title')
-        teacher.select_course(title=self.course)
+        if 'cc-dashboard' not in teacher.current_url():
+            courses = teacher.find_all(By.CLASS_NAME,
+                                       'tutor-booksplash-course-item')
+            assert(courses), 'No courses found.'
+            if not isinstance(courses, list):
+                courses = [courses]
+            course_id = randint(0, len(courses) - 1)
+            self.course = courses[course_id].get_attribute('data-title')
+            teacher.select_course(title=self.course)
         teacher.goto_course_roster()
         section = '%s' % randint(100, 999)
         try:
