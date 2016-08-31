@@ -11,9 +11,10 @@ from pastasauce import PastaSauce, PastaDecorator
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
+from selenium.webdriver.common.keys import Keys
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Student
+from staxing.helper import Student, Teacher
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -24,11 +25,11 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    # str([
-    #     7625, 7626, 7627, 7628, 7629,
-    #     7630
-    # ])
-    str([7625])
+    str([
+        7625, 7626, 7627, 7628, 7629,
+        7630
+    ])
+    # 7626 not done
 )
 
 
@@ -155,6 +156,19 @@ class TestCNXNavigation(unittest.TestCase):
 
         # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.login()
+        self.student.driver.find_element(
+            By.XPATH,
+            '//a[contains(@href,"cnx.org/contents/")]'
+        ).click()
+        self.student.page.wait_for_page_load()
+        # what should author links look like how to search for them?
+        # is it that it says by opnstax, and not a person?
+        # author_links = self.student.driver.find_elements(
+        #     By.XPATH,
+        #     '?????'
+        # ).click()
+        # assert(len(author_links) == 0), 'author link found'
 
         self.ps.test_updates['passed'] = True
 
@@ -182,7 +196,30 @@ class TestCNXNavigation(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.login()
+        self.student.driver.find_element(
+            By.XPATH,
+            '//a[contains(@href,"cnx.org/contents/")]'
+        ).click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.XPATH,
+            '//button[@class="toggle btn"]//span[contains(text(),"Contents")]'
+        ).click()
+        self.student.sleep(0.5)
+        element = self.student.driver.find_element(
+            By.XPATH,
+            '//span[@class="name-wrapper"]' +
+            '//span[@class="chapter-number"]'
+        )
+        chapter = element.text
+        element.click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//span[@class="title-chapter" and text()="' + chapter + '"]')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -209,7 +246,25 @@ class TestCNXNavigation(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.login()
+        self.student.driver.find_element(
+            By.XPATH,
+            '//a[contains(@href,"cnx.org/contents/")]'
+        ).click()
+        self.student.page.wait_for_page_load()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//input[@placeholder="Search this book"]')
+            )
+        ).send_keys('balance' + Keys.ENTER)
+        # make sure the search worked
+        # still passes if no results found and it says: No matching results...
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="result-count"]')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -242,8 +297,43 @@ class TestCNXNavigation(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        teacher = Teacher(
+            existing_driver=self.student.driver,
+            username=os.getenv('TEACHER_USER'),
+            password=os.getenv('TEACHER_PASSWORD'),
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities,
+        )
+        teacher.login()
+        teacher.driver.find_element(
+            By.XPATH,
+            '//a[contains(@href,"/cc-dashboard/")]'
+        ).click()
+        teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//a//span[contains(text(),"Online Book")]')
+            )
+        ).click()
+        window_with_book = teacher.driver.window_handles[1]
+        teacher.driver.switch_to_window(window_with_book)
+        assert('cnx' in teacher.current_url()), \
+            'Not viewing the textbook PDF'
+        teacher.page.wait_for_page_load()
+        teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//input[@placeholder="Search this book"]')
+            )
+        ).send_keys('balance' + Keys.ENTER)
+        # make sure the search worked
+        # still passes if no results found and it says: No matching results...
+        teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="result-count"]')
+            )
+        )
+        teacher.delete()
         self.ps.test_updates['passed'] = True
 
     # Case C7630 - 006 - Admin | CNX URLs are shorter
@@ -269,6 +359,19 @@ class TestCNXNavigation(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.get('https://demo.cnx.org/scripts/settings.js')
+        # get the text in the concept coach section
+        page_text = self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.TAG_NAME, 'pre')
+            )
+        ).text.split('uuids')[1].splitlines()
+        # loop through the lines that are the cnx urls only
+        for i in range(1, len(page_text)-9, 2):
+            line_1 = page_text[i]
+            line_2 = page_text[i + 1]
+            print(line_1)
+            print(line_2)
+            assert(line_1.find("'", 14) > line_2.find("'", 14)), \
+                "CNX URLs aren't shorter"
         self.ps.test_updates['passed'] = True
