@@ -172,28 +172,32 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.content.login(
+        admin = ContentQA(
+            existing_driver=self.content.driver,
             username=os.getenv('ADMIN_USER'),
             password=os.getenv('ADMIN_PASSWORD'),
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities,
         )
-        self.content.open_user_menu()
-        self.content.driver.find_element(
+        admin.login()
+        admin.open_user_menu()
+        admin.driver.find_element(
             By.LINK_TEXT, "Content Analyst"
         ).click()
-        self.content.page.wait_for_page_load()
-        self.content.driver.find_element(
+        admin.page.wait_for_page_load()
+        admin.driver.find_element(
             By.LINK_TEXT, "Ecosystems"
         ).click()
         # download a manifest to test with
-        self.content.wait.until(
+        admin.wait.until(
             expect.visibility_of_element_located(
                 (By.LINK_TEXT, "Download Manifest")
             )
         ).click()
         # import a new ecosystem
-        self.content.driver.execute_script(
+        admin.driver.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);")
-        self.content.driver.find_element(
+        admin.driver.find_element(
             By.LINK_TEXT, "Import a new Ecosystem"
         ).click()
         # find a downloaded manifest
@@ -208,25 +212,25 @@ class TestContentPreparationAndImport(unittest.TestCase):
                 if i == len(files)-1:
                     print('no .yml file found in downloads')
                     raise Exception
-        self.content.wait.until(
+        admin.wait.until(
             expect.visibility_of_element_located(
                 (By.ID, "ecosystem_manifest")
             )
         ).send_keys(home + '/Downloads/' + file)
-        self.content.wait.until(
+        admin.wait.until(
             expect.visibility_of_element_located(
                 (By.ID, "ecosystem_comments")
             )
         ).send_keys(str(datetime.date.today()) + ' automated-admin')
-        self.content.driver.find_element(
+        admin.driver.find_element(
             By.XPATH, "//input[@type='submit']"
         ).click()
-        self.content.wait.until(
+        admin.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"alert-info")]')
             )
         )
-        self.content.sleep(4)
+        admin.delete()
         self.ps.test_updates['passed'] = True
 
     # Case C7962 - 003 - Content Analyst| Verify question availability for
