@@ -172,7 +172,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        admin = ContentQA(
+        admin = Admin(
             existing_driver=self.content.driver,
             username=os.getenv('ADMIN_USER'),
             password=os.getenv('ADMIN_PASSWORD'),
