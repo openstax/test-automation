@@ -32,9 +32,8 @@ TESTS = os.getenv(
     #     7770, 7771, 7772, 7773, 7774,
     #     7775
     # ])
-    str([7764])
-    # 7751 - 7764 done except
-    # 7754 not done
+    str([7754])
+    # 7754, 7773 not done
 )
 
 
@@ -211,9 +210,14 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.teacher.driver.switch_to_window(window_with_book)
         self.teacher.page.wait_for_page_load()
         self.teacher.sleep(2)
-        self.teacher.driver.find_element(
-            By.XPATH, '//div[@id="player"]'
-        ).click()
+        # self.teacher.driver.find_element(
+        #     By.XPATH, '//div[@id="player"]'
+        # ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'player')
+            )
+        )
         self.teacher.driver.find_element(
             By.XPATH, '//div[@id="player"]/div[contains(@class"playing-mode")]'
         )
@@ -223,7 +227,6 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.teacher.driver.find_element(
             By.XPATH, '//div[@id="player"]/div[contains(@class"paused-mode")]'
         )
-
 
         self.ps.test_updates['passed'] = True
 
@@ -850,7 +853,56 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.driver.get('http://cc.openstax.org/')
+        self.teacher.page.wait_for_page_load()
+        self.teacher.driver.find_element(
+            By.XPATH, '//section[@id="video2"]//a[@href="/sign-up"]'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.driver.find_element(
+            By.ID, 'signup-form'
+        )
+        self.teacher.driver.find_element(
+            By.ID, 'first_name'
+        ).send_keys('first')
+        self.teacher.driver.find_element(
+            By.ID, 'last_name'
+        ).send_keys('last')
+        self.teacher.driver.find_element(
+            By.ID, 'email'
+        ).send_keys('email@test.com')
+        self.teacher.driver.find_element(
+            By.ID, 'company'
+        ).send_keys('school')
+        menu = self.teacher.driver.find_element(
+            By.XPATH,
+            '//span[@id="book-select"]' +
+            '//span[contains(@class,"select2-container--")]'
+        )
+        self.teacher.driver.execute_script(
+            'return arguments[0].scrollIntoView();', menu)
+        self.teacher.driver.execute_script('window.scrollBy(0, -120);')
+        self.teacher.sleep(0.5)
+        menu.click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//li[contains(@class,"select2-results__option")]'
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH, '//input[@maxlength="255" and @required]'
+        ).send_keys('25')
+        self.teacher.driver.find_element(
+            By.XPATH, '//input[@type="submit"]'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//h1[contains(text(),"Thank you")]')
+            )
+        )
+        assert('/thank-you' in self.teacher.current_url()), \
+            'not at thank you page after submitting form'
 
         self.ps.test_updates['passed'] = True
 
@@ -860,7 +912,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Add co-instructors to a course.
 
         Steps:
-        Log into Tutor as an admin (admin : password)
+        Log into Tutor as an admin
         From the user menu, select 'Admin'
         From the 'Course Organization' menu, select 'Courses'
         In the Courses table, find the correct course and click the 'Edit'
@@ -884,7 +936,54 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login(
+            username=os.getenv('ADMIN_USER'),
+            password=os.getenv('ADMIN_PASSWORD'))
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[@role="menuitem" and contains(text(),"Admin")]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Course Organization')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Courses')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Edit')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Teachers')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'course_teacher')
+            )
+        ).send_keys('teacher0')
+        element = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//ul[contains(@class,"ui-autocomplete")]' +
+                 '//li[contains(text(),"(teacher0")]')
+            )
+        )
+        teacher_name = element.text.split(' (')[0]
+        element.click()
+        # check that the teacher has been added to the table
+        print(teacher_name)
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//td[contains(text(),"' + teacher_name + '")]')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -915,7 +1014,41 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.driver.get(self.teacher.url)
+        self.teacher.page.wait_for_page_load()
+        # check to see if the screen width is normal or condensed
+        if self.teacher.driver.get_window_size()['width'] <= \
+           self.teacher.CONDENSED_WIDTH:
+            # get small-window menu toggle
+            is_collapsed = self.teacher.driver.find_element(
+                By.XPATH,
+                '//button[contains(@class,"navbar-toggle")]'
+            )
+            # check if the menu is collapsed and, if yes, open it
+            if('collapsed' in is_collapsed.get_attribute('class')):
+                is_collapsed.click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Login')
+            )
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.driver.find_element(
+            By.ID,
+            'auth_key'
+        ).send_keys(self.teacher.username)
+        self.teacher.driver.find_element(
+            By.ID,
+            'password'
+        ).send_keys(self.teacher.password)
+        # click on the sign in button
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//button[text()="Sign in"]'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        assert('dashboard' in self.teacher.current_url()),\
+            'Not taken to dashboard: %s' % self.teacher.current_url()
 
         self.ps.test_updates['passed'] = True
 
@@ -942,18 +1075,23 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
+        ).click()
+        assert('cc-dashboard' in self.teacher.current_url()),\
+            'Not taken to dashboard: %s' % self.teacher.current_url()
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7773 - 023 - Teacher | Distribute access codes for the course
+    # Case C7773 - 023 - Admin | Distribute access codes for the course
     @pytest.mark.skipif(str(7773) not in TESTS, reason='Excluded')
-    def test_teacher_distribute_access_codes_for_the_course_7773(self):
+    def test_admin_distribute_access_codes_for_the_course_7773(self):
         """Distribute access codes for the teacher's course.
 
         Steps:
         CC approves a faculty.
-        Login as admin [admin | password]
+        Login as admin
         Click on user menu
         Click on Admin
         Click on Salesforce tab
@@ -978,6 +1116,7 @@ class TestRecruitingTeachers(unittest.TestCase):
 
         # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
 
         self.ps.test_updates['passed'] = True
 
@@ -1007,7 +1146,20 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "Get Help"
+        ).click()
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.page.wait_for_page_load()
+        self.teacher.driver.find_element(
+            By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
@@ -1024,7 +1176,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         Click on Get Help
 
         Expected Result:
-        It should open a new tab which shows the openstax.force.com
+        It should open a new tab which shows the CC help center
         """
         self.ps.test_updates['name'] = 'cc1.01.025' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1037,6 +1189,16 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "Get Help"
+        ).click()
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.page.wait_for_page_load()
+        self.teacher.driver.find_element(
+            By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
+        ).click()
 
         self.ps.test_updates['passed'] = True
