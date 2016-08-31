@@ -44,8 +44,6 @@ class TestContentPreparationAndImport(unittest.TestCase):
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities,
-            username=os.getenv('CONTENT_USER'),
-            password=os.getenv('CONTENT_PASSWORD'),
         )
 
     def tearDown(self):
