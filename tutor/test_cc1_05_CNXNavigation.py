@@ -8,12 +8,12 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher
+from staxing.helper import Student
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -24,10 +24,11 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([
-        7625, 7626, 7627, 7628, 7629,
-        7630
-    ])
+    # str([
+    #     7625, 7626, 7627, 7628, 7629,
+    #     7630
+    # ])
+    str([7625])
 )
 
 
@@ -37,24 +38,23 @@ class TestCNXNavigation(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
+        self.student = Student(
             use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
 
     def tearDown(self):
         """Test destructor."""
         self.ps.update_job(
-            job_id=str(self.teacher.driver.session_id),
+            job_id=str(self.student.driver.session_id),
             **self.ps.test_updates
         )
         try:
-            self.teacher.delete()
+            self.student.delete()
         except:
             pass
 
@@ -84,7 +84,47 @@ class TestCNXNavigation(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.driver.get(self.student.url)
+        self.student.page.wait_for_page_load()
+        # check to see if the screen width is normal or condensed
+        if self.student.driver.get_window_size()['width'] <= \
+           self.student.CONDENSED_WIDTH:
+            # get small-window menu toggle
+            is_collapsed = self.student.driver.find_element(
+                By.XPATH,
+                '//button[contains(@class,"navbar-toggle")]'
+            )
+            # check if the menu is collapsed and, if yes, open it
+            if('collapsed' in is_collapsed.get_attribute('class')):
+                is_collapsed.click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Login')
+            )
+        ).click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.ID,
+            'auth_key'
+        ).send_keys(self.student.username)
+        self.student.driver.find_element(
+            By.ID,
+            'password'
+        ).send_keys(self.student.password)
+        # click on the sign in button
+        self.student.driver.find_element(
+            By.XPATH,
+            '//button[text()="Sign in"]'
+        ).click()
+        self.student.page.wait_for_page_load()
+        assert('dashboard' in self.student.current_url()), \
+            'Not taken to dashboard: %s' % self.student.current_url()
+        self.student.driver.find_element(
+            By.XPATH,
+            '//a[contains(@href,"cnx.org/contents/")]'
+        ).click()
+        assert('cnx.org/contents/' in self.student.current_url()), \
+            'Not taken to dashboard: %s' % self.student.current_url()
 
         self.ps.test_updates['passed'] = True
 
