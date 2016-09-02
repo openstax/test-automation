@@ -29,9 +29,7 @@ TESTS = os.getenv(
         7625, 7626, 7627, 7628, 7629,
         7630
     ])
-    # 7626 not done
 )
-
 
 @PastaDecorator.on_platforms(BROWSERS)
 class TestCNXNavigation(unittest.TestCase):
@@ -44,8 +42,8 @@ class TestCNXNavigation(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.student = Student(
             use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
 
     def tearDown(self):
@@ -155,21 +153,18 @@ class TestCNXNavigation(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
         self.student.login()
         self.student.driver.find_element(
             By.XPATH,
             '//a[contains(@href,"cnx.org/contents/")]'
         ).click()
         self.student.page.wait_for_page_load()
-        # what should author links look like how to search for them?
-        # is it that it says by opnstax, and not a person?
-        # author_links = self.student.driver.find_elements(
-        #     By.XPATH,
-        #     '?????'
-        # ).click()
-        # assert(len(author_links) == 0), 'author link found'
-
+        # check that it says by OpenStax instead of by another author
+        self.student.driver.find_element(
+            By.XPATH,
+            '//span[@ class="collection-authors"]' +
+            '//span[@class="list-comma" and text()="OpenStax College"]'
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7627 - 003 - Student | Able to use the table of contents to
