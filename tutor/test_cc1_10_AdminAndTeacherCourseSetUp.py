@@ -8,8 +8,8 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
@@ -72,9 +72,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         Steps:
 
-
         Expected Result:
-
         """
         self.ps.test_updates['name'] = 'cc1.10.001' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -99,9 +97,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         Steps:
 
-
         Expected Result:
-
         """
         self.ps.test_updates['name'] = 'cc1.10.002' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -126,9 +122,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         Steps:
 
-
         Expected Result:
-
         """
         self.ps.test_updates['name'] = 'cc1.10.003' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -174,6 +168,15 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Course Settings and Roster")]'
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
