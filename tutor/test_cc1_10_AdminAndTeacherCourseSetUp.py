@@ -33,7 +33,7 @@ TESTS = os.getenv(
     #     7729, 7730, 7731
     # ])
     str([7729])
-    # 7724, 7725, 7729, 7730 -- still need to do
+    # 7729, 7730 -- still need to do
     # 7715, 7716, 7717, 7731 -- not implemented on tutor
 )
 
@@ -720,8 +720,6 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # come back to this because need to login as admin
-    # and add an extra teacher first
     # Case C7724 - 011 - Teacher | Remove other teachers from the course
     @pytest.mark.skipif(str(7724) not in TESTS, reason='Excluded')
     def test_teacher_remove_other_teachers_from_the_course_7724(self):
@@ -750,7 +748,59 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.admin.login()
+        self.admin.driver.get(
+            'https://tutor-qa.openstax.org/admin/courses/8/edit')
+        self.admin.page.wait_for_page_load()
+        teacher_name = 'Trent'
+        self.admin.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Teachers")]').click()
+        self.admin.driver.find_element(
+            By.ID, 'course_teacher').send_keys(teacher_name)
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//li[contains(text(),"%s")]' % teacher_name)
+            )
+        ).click()
+        self.admin.sleep(1)
+        self.admin.driver.find_element(
+            By.LINK_TEXT, 'Main Dashboard').click()
+        self.admin.page.wait_for_page_load()
+        self.admin.logout()
+        # redo set-up, but make sure to go to course 8
+        self.teacher.login()
+        self.teacher.driver.get('https://tutor-qa.openstax.org/courses/8')
+        self.teacher.open_user_menu()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Course Settings and Roster')
+            )
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        # delete teacher
+        teachers_list = self.teacher.driver.find_elements(
+            By.XPATH, '//div[@class="teachers-table"]//tbody//tr')
+        for x in teachers_list:
+            temp_first = x.find_element(
+                By.XPATH,
+                './td[1]'
+            ).text
+            if temp_first == teacher_name:
+                x.find_element(
+                    By.XPATH,
+                    './/td//span[contains(text(),"Remove")]'
+                ).click()
+                self.teacher.sleep(1)
+                self.teacher.driver.find_element(
+                    By.XPATH, '//div[@class="popover-content"]//button'
+                ).click()
+                break
+            if x == teachers_list[-1]:
+                print('added teacher was not found, and not deleted')
+                raise Exception
+        deleted_teacher = self.teacher.driver.find_elements(
+            By.XPATH, '//td[contains(text(),"%s")]' % teacher_name)
+        assert(len(deleted_teacher) == 0), 'teacher not deleted'
 
         self.ps.test_updates['passed'] = True
 
@@ -783,8 +833,69 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.admin.login()
+        self.admin.driver.get(
+            'https://tutor-qa.openstax.org/admin/courses/8/edit')
+        self.admin.page.wait_for_page_load()
+        teacher_name = 'Trent'
+        self.admin.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Teachers")]').click()
+        self.admin.driver.find_element(
+            By.ID, 'course_teacher').send_keys(teacher_name)
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//li[contains(text(),"%s")]' % teacher_name)
+            )
+        ).click()
+        self.admin.sleep(1)
+        self.admin.driver.find_element(
+            By.LINK_TEXT, 'Main Dashboard').click()
+        self.admin.page.wait_for_page_load()
+        self.admin.logout()
+        # redo set-up, but make sure to go to course 8
+        # login as the teacher just added to the course
+        teacher2 = Teacher(
+            username='teacher05',
+            password=os.getenv('TEACHER_PASSWORD'),
+            existing_driver=self.teacher.driver
+        )
+        teacher2.login()
+        teacher2.driver.get('https://tutor-qa.openstax.org/courses/8')
+        teacher2.open_user_menu()
+        teacher2.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Course Settings and Roster')
+            )
+        ).click()
+        teacher2.page.wait_for_page_load()
+        # delete teacher
+        teachers_list = teacher2.driver.find_elements(
+            By.XPATH, '//div[@class="teachers-table"]//tbody//tr')
+        for x in teachers_list:
+            temp_first = x.find_element(
+                By.XPATH,
+                './td[1]'
+            ).text
+            if temp_first == teacher_name:
+                x.find_element(
+                    By.XPATH,
+                    './/td//span[contains(text(),"Remove")]'
+                ).click()
+                teacher2.sleep(1)
+                teacher2.driver.find_element(
+                    By.XPATH, '//div[@class="popover-content"]//button'
+                ).click()
+                break
+            if x == teachers_list[-1]:
+                print('added teacher was not found, and not deleted')
+                raise Exception
+        # after removing self from course taken to dashboard
+        # or course if only 1 other course
+        # self.teacher.sleep(0.5)
+        # self.teacher2.page.wait_for_page_load()
+        assert('/courses/8' not in teacher2.current_url()), \
+            'teacher not deleted'
+        teacher2.delete()
         self.ps.test_updates['passed'] = True
 
     # Case C7726 - 013 - Teacher | Transfer a student to another period
@@ -1022,8 +1133,6 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.admin.login()
         self.admin.open_user_menu()
         self.teacher.driver.find_element(
@@ -1050,7 +1159,23 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
                 (By.LINK_TEXT, 'Course content')
             )
         ).click()
-
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'ecosystem_id')
+            )
+        ).send_keys('1' + Keys.ENTER)
+        # self.admin.wait.until(
+        #     expect.visibility_of_element_located(
+        #         (By.XPATH, '//select[@id="ecosystem_id"]//option[1]')
+        #     )
+        # ).click()
+        self.admin.driver.find_element(
+            By.XPATH, '//div[@id="content"]//input[@type="submit"]'
+        ).click()
+        self.admin.sleep(1)
+        self.admin.driver.find_element(
+            By.XPATH, '//div[contains(@class,"alert-info")]'
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7730 - 017 - Admin | Change multiple course ecosystems in bulk
