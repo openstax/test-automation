@@ -7,10 +7,12 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-# from random import randint
+from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
+from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Admin, Teacher
@@ -24,12 +26,15 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([
-        7715, 7716, 7717, 7718, 7719,
-        7720, 7721, 7722, 7723, 7724,
-        7725, 7726, 7727, 7728, 7729,
-        7730, 7731
-    ])
+    # str([
+    #     7715, 7716, 7717, 7718, 7719,
+    #     7720, 7721, 7722, 58354, 7723,
+    #     7724, 7725, 7726, 7727, 7728,
+    #     7729, 7730, 7731
+    # ])
+    str([7729])
+    # 7724, 7725, 7729, 7730 -- still need to do
+    # 7715, 7716, 7717, 7731 -- not implemented on tutor
 )
 
 
@@ -39,18 +44,19 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         self.admin = Admin(
             use_env_vars=True,
-            existing_driver=self.teacher.driver
+            existing_driver=self.teacher.driver,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
+
         )
 
     def tearDown(self):
@@ -71,6 +77,10 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         """Send course setup data from Sales Force.
 
         Steps:
+        Go to tutor-staging.openstax.org and login as admin
+        Click on the user menu
+        Select the Admin option
+        Click on Salesforce on the header
 
         Expected Result:
         """
@@ -86,6 +96,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        #  ## maybe put in real code
 
         self.ps.test_updates['passed'] = True
 
@@ -167,17 +178,36 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
         self.teacher.driver.find_element(
             By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
         ).click()
         self.teacher.page.wait_for_page_load()
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.XPATH, '//a[contains(text(),"Course Settings and Roster")]'
+            By.LINK_TEXT, 'Course Settings and Roster'
         ).click()
-
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"add-period")]//button')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="modal-content"]//input[@type="text"]')
+            )
+        ).send_keys('test_period')
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button/span[text()="Add"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//li//a[@role="tab" and text()="test_period"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7719 - 005 - Teacher | View student enrollment code for
@@ -210,8 +240,27 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Course Settings and Roster'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//button[contains(@class,"show-enrollment-code")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="enrollment-code"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7720 - 006 - Teacher | Rename a course period
@@ -244,7 +293,58 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Course Settings and Roster'
+        ).click()
+        period_name = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//li//a[@role="tab"]')
+            )
+        ).text
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[contains(@class,"rename-period")]//button')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="modal-content"]//input[@type="text"]')
+            )
+        ).send_keys('_EDIT')
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button/span[text()="Rename"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//li//a[@role="tab" and text()="' + period_name + '_EDIT"]')
+            )
+        )
+        # then set it back to what it was before
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[contains(@class,"rename-period")]//button')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="modal-content"]//input[@type="text"]')
+            )
+        ).send_keys(Keys.BACK_SPACE * 5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button/span[text()="Rename"]'
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
@@ -277,8 +377,56 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        section_name = 'test_' + str(randint(0, 1000))
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Course Settings and Roster'
+        ).click()
+        # create an empty section
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"add-period")]//button')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="modal-content"]//input[@type="text"]')
+            )
+        ).send_keys(section_name)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button/span[text()="Add"]'
+        ).click()
+        # archive the section just created
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//li//a[@role="tab" and text()="' + section_name + '"]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//a[contains(@class,"archive-period")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@role="tooltip"]//button' +
+                 '//span[contains(text(),"Archive")]')
+            )
+        ).click()
+        self.teacher.sleep(2)
+        archived = self.teacher.driver.find_elements(
+            By.XPATH, '//li//a[@role="tab" and text()="' + section_name + '"]')
+        assert(len(archived) == 0), ' not archived'
         self.ps.test_updates['passed'] = True
 
     # Case C7722 - 008 - Teacher | Archive a non-empty period
@@ -310,8 +458,80 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Course Settings and Roster'
+        ).click()
+        # name of period to archive (first tab)
+        period_name = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//li//a[@role="tab"]')
+            )
+        ).text
+        # archive the section
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//li//a[@role="tab" and text()="' + period_name + '"]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//a[contains(@class,"archive-period")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@role="tooltip"]//button' +
+                 '//span[contains(text(),"Archive")]')
+            )
+        ).click()
+        self.teacher.sleep(2)
+        archived = self.teacher.driver.find_elements(
+            By.XPATH, '//li//a[@role="tab" and text()="' + section_name + '"]')
+        assert(len(archived) == 0), ' not archived'
+        # add the archived period back
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[contains(@class,"view-archived-periods")]//button')
+            )
+        ).click()
+        periods = self.teacher.driver.find_elements(
+            By.XPATH, '//div[@class="modal-content"]//tbody//tr'
+        )
+        print(period_name)
+        print(len(periods))
+        for period in periods:
+            try:
+                print('here')
+                period.find_element(
+                    By.XPATH, ".//td[text()='" + period_name + "']")
+                print('here22222222')
+                period.find_element(
+                    By.XPATH,
+                    ".//td//span[contains(@class,'restore-period')]//button"
+                ).click()
+                break
+            except NoSuchElementException:
+                if period == periods[-1]:
+                    print('archived period not found')
+                    raise Exception
+        self.teacher.sleep(2)
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//li//a[@role="tab" and text()="' + period_name + '"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C58354 - 009 - Teacher | Unarchive a section
@@ -320,10 +540,16 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         """Unarchive a section.
 
         Steps:
-
+        go to tutor-qa.openstax.org
+        log in as a teacher
+        click on a Concept Coach book
+        click on the user menu
+        select course roster
+        Click "View Archived Section"
+        Click "Unarchive" for the desired section
 
         Expected Result:
-
+        section is unarchived
         """
         self.ps.test_updates['name'] = 'cc1.10.009' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -336,8 +562,80 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Course Settings and Roster'
+        ).click()
+        # name of period to archive (first tab)
+        period_name = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//li//a[@role="tab"]')
+            )
+        ).text
+        # archive the section
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//li//a[@role="tab" and text()="' + period_name + '"]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//a[contains(@class,"archive-period")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@role="tooltip"]//button' +
+                 '//span[contains(text(),"Archive")]')
+            )
+        ).click()
+        self.teacher.sleep(2)
+        archived = self.teacher.driver.find_elements(
+            By.XPATH, '//li//a[@role="tab" and text()="' + section_name + '"]')
+        assert(len(archived) == 0), ' not archived'
+        # add the archived period back
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[contains(@class,"view-archived-periods")]//button')
+            )
+        ).click()
+        periods = self.teacher.driver.find_elements(
+            By.XPATH, '//div[@class="modal-content"]//tbody//tr'
+        )
+        print(period_name)
+        print(len(periods))
+        for period in periods:
+            try:
+                print('here')
+                period.find_element(
+                    By.XPATH, ".//td[text()='" + period_name + "']")
+                print('here22222222')
+                period.find_element(
+                    By.XPATH,
+                    ".//td//span[contains(@class,'restore-period')]//button"
+                ).click()
+                break
+            except NoSuchElementException:
+                if period == periods[-1]:
+                    print('archived period not found')
+                    raise Exception
+        self.teacher.sleep(2)
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//li//a[@role="tab" and text()="' + period_name + '"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7723 - 010 - Teacher | Rename the course
@@ -369,10 +667,61 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Course Settings and Roster'
+        ).click()
+        # rename section
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[@class="-rename-course-link"]//button')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="modal-content"]//input[@type="text"]')
+            )
+        ).send_keys("_EDIT")
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button/span[text()="Rename"]'
+        ).click()
+        # check that the name was changed
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="course-settings-title"]' +
+                 '//span[contains(text(),"_EDIT")]')
+            )
+        )
+        # change it back
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[@class="-rename-course-link"]//button')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="modal-content"]//input[@type="text"]')
+            )
+        ).send_keys(Keys.BACK_SPACE * 5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button/span[text()="Rename"]'
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
+    # come back to this because need to login as admin
+    # and add an extra teacher first
     # Case C7724 - 011 - Teacher | Remove other teachers from the course
     @pytest.mark.skipif(str(7724) not in TESTS, reason='Excluded')
     def test_teacher_remove_other_teachers_from_the_course_7724(self):
@@ -405,6 +754,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    # come back to this because adding teacher through admin first
     # Case C7725 - 012 - Teacher | Remove themself from the course
     @pytest.mark.skipif(str(7725) not in TESTS, reason='Excluded')
     def test_teacher_remove_themself_from_the_course_7725(self):
@@ -466,8 +816,49 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Course Settings and Roster'
+        ).click()
+        # move student
+        first_student = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="period"]//tbody/tr[1]')
+            )
+        )
+        student_name = first_student.find_element(
+            By.XPATH, './/td[1]').text
+        first_student.find_element(
+            By.XPATH,
+            './/td[@class="actions"]/a[@aria-describedby="change-period"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="popover-content"]//li[1]')
+            )
+        ).click()
+        # check that student was moved
+        self.teacher.sleep(2)
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//li[@tabindex="1"]//a[@role="tab"]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="period"]//tbody/tr' +
+                 '//td[text()="' + student_name + '"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7727 - 014 - Teacher | Remove a student from a course
@@ -499,8 +890,43 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Course Settings and Roster'
+        ).click()
+        # drop student
+        first_student = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="period"]//tbody/tr[1]')
+            )
+        )
+        student_name = first_student.find_element(
+            By.XPATH, './/td[1]').text
+        first_student.find_element(
+            By.XPATH,
+            './/td[@class="actions"]/a[@aria-describedby="drop-student"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@id="drop-student"]//button')
+            )
+        ).click()
+        # check that student was removed
+        self.teacher.sleep(2)
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[contains(@class,"dropped-students")]//tbody/tr' +
+                 '//td[text()="' + student_name + '"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7728 - 015 - Admin | Impersonate a teacher
@@ -537,7 +963,30 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.driver.find_element(
+            By.LINK_TEXT, 'Admin'
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Users')
+            )
+        ).click()
+        self.admin.page.wait_for_page_load()
+        self.admin.driver.find_element(By.ID, 'query').send_keys('teacher01')
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@value="Search"]').click()
+        self.admin.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(text(),"Sign in as")]')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//span[contains(text(),"Charles Morris")]')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -574,6 +1023,33 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Admin'
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Course Organization')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Courses')
+            )
+        ).click()
+        self.admin.page.wait_for_page_load()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Edit')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Course content')
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
@@ -619,9 +1095,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         Steps:
 
-
         Expected Result:
-
         """
         self.ps.test_updates['name'] = 'cc1.10.018' \
             + inspect.currentframe().f_code.co_name[4:]
