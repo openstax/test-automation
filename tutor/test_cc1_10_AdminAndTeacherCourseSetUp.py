@@ -32,7 +32,7 @@ TESTS = os.getenv(
         7724, 7725, 7726, 7727, 7728,
         7729, 7730, 7731
     ])
-    # 7715, 7716, 7717, 7731 -- not implemented on tutor
+    # 7716, 7717, 7731 -- not implemented on tutor
 )
 
 
@@ -54,7 +54,6 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
             existing_driver=self.teacher.driver,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
-
         )
 
     def tearDown(self):
@@ -93,8 +92,17 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-        #  ## maybe put in real code
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Admin'
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Salesforce')
+            )
+        ).click()
+        assert('salesforce' in self.admin.current_url()), 'not at salesforce'
 
         self.ps.test_updates['passed'] = True
 
