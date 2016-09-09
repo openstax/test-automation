@@ -26,14 +26,12 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    # str([
-    #     7715, 7716, 7717, 7718, 7719,
-    #     7720, 7721, 7722, 58354, 7723,
-    #     7724, 7725, 7726, 7727, 7728,
-    #     7729, 7730, 7731
-    # ])
-    str([7729])
-    # 7729, 7730 -- still need to do
+    str([
+        7715, 7716, 7717, 7718, 7719,
+        7720, 7721, 7722, 58354, 7723,
+        7724, 7725, 7726, 7727, 7728,
+        7729, 7730, 7731
+    ])
     # 7715, 7716, 7717, 7731 -- not implemented on tutor
 )
 
@@ -48,14 +46,14 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.admin = Admin(
             use_env_vars=True,
             existing_driver=self.teacher.driver,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
 
         )
 
@@ -1209,7 +1207,55 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Admin'
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Course Organization')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Courses')
+            )
+        ).click()
+        self.admin.page.wait_for_page_load()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'courses_select_all')
+            )
+        ).click()
+        # click the checkmarks for two courses
+        courses = self.admin.driver.find_elements(
+            By.XPATH, '//input[@class="course_id_select"]')
+        course_1 = courses[0]
+        self.admin.driver.execute_script(
+            'return arguments[0].scrollIntoView();', course_1)
+        self.admin.driver.execute_script('window.scrollBy(0, -120);')
+        course_1.click()
+        self.admin.sleep(0.5)
+        course_2 = courses[1]
+        self.admin.driver.execute_script(
+            'return arguments[0].scrollIntoView();', course_2)
+        self.admin.driver.execute_script('window.scrollBy(0, -120);')
+        course_2.click()
+        self.admin.sleep(0.5)
+        # scroll to bottom and set bulk ecosystems
+        self.admin.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'ecosystem_id')
+            )
+        ).send_keys('1' + Keys.ENTER)
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"alert-info")]')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
