@@ -7,10 +7,11 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-# from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
+from selenium.common.exceptions import TimeoutException
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Admin, ContentQA
@@ -24,14 +25,15 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([
-        7651, 7652, 7653, 7654, 7655,
-        7656, 7657, 7658, 7659, 7660,
-        7661, 7662, 7663, 7665, 7667,
-        7669, 7670, 7672, 7673, 7674,
-        7675, 7676, 7677, 7678, 7679,
-        7681, 7682, 7683, 7686, 7687
-    ])
+    # str([
+    #     7651, 7652, 7653, 7654, 7655,
+    #     7656, 7657, 7658, 7659, 7660,
+    #     7661, 7662, 7663, 7665, 7667,
+    #     7669, 7670, 7672, 7673, 7674,
+    #     7675, 7676, 7677, 7678, 7679,
+    #     7681, 7682, 7683, 7686, 7687
+    # ])
+    str([7658])
 )
 
 
@@ -41,26 +43,30 @@ class TestExerciseEditingAndQA(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.admin = Admin(
             use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         self.content = ContentQA(
             use_env_vars=True,
-            existing_driver=self.admin.driver
+            existing_driver=self.admin.driver,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
 
     def tearDown(self):
         """Test destructor."""
         self.ps.update_job(
-            job_id=str(self.teacher.driver.session_id),
+            job_id=str(self.content.driver.session_id),
             **self.ps.test_updates
         )
+        try:
+            self.content.delete()
+        except:
+            pass
         try:
             self.admin.delete()
         except:
@@ -93,7 +99,29 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Content Analyst')
+            )
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Failed Imports')
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'failed')
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
@@ -125,7 +153,34 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Admin')
+            )
+        ).click()
+        self.admin.page.wait_for_page_load()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Content')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Failed Imports')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'failed')
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
@@ -157,7 +212,63 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Admin')
+            )
+        ).click()
+        self.admin.page.wait_for_page_load()
+        self.admin.driver.find_element(
+            By.XPATH,
+            '//a[contains(text(),"Users")]'
+        ).click()
+        # create a user
+        # so that when run again user won't alread have content access
+        num = str(randint(2000, 2999))
+        self.admin.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+        self.admin.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Create user")]').click()
+        self.admin.wait.until(
+            expect.element_to_be_clickable((By.ID, 'user_username'))
+        ).click()
+        self.admin.driver.find_element(
+            By.ID, 'user_username').send_keys('automated_test_user_'+num)
+        self.admin.driver.find_element(
+            By.ID, 'user_password').send_keys('password')
+        self.admin.driver.find_element(
+            By.ID, 'user_first_name').send_keys('first_name_'+num)
+        self.admin.driver.find_element(
+            By.ID, 'user_last_name').send_keys('last_name_'+num)
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@value="Save"]').click()
+        # search for that user
+        self.admin.wait.until(
+            expect.element_to_be_clickable((By.ID, 'query'))
+        ).send_keys('automated_test_user_'+num)
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@value="Search"]').click()
+        # edit user
+        self.admin.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(text(),"Edit")]')
+            )
+        ).click()
+        self.admin.driver.find_element(
+            By.ID, 'user_content_analyst').click()
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@value="Save"]').click()
+        # search for user to make sure they were updated
+        self.admin.wait.until(
+            expect.element_to_be_clickable((By.ID, 'query'))
+        ).send_keys('automated_test_user_'+num)
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@value="Search"]').click()
+        element = self.admin.driver.find_element(By.XPATH, '//tr/td[5]')
+        assert(element.get_attribute('innerHTML') == 'Yes'), \
+            'permission not elevated ' + element.get_attribute('innerHTML')
 
         self.ps.test_updates['passed'] = True
 
@@ -189,7 +300,63 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Admin')
+            )
+        ).click()
+        self.admin.page.wait_for_page_load()
+        self.admin.driver.find_element(
+            By.XPATH,
+            '//a[contains(text(),"Users")]'
+        ).click()
+        # create a user
+        # so that when run again user won't alread have content access
+        num = str(randint(3000, 3999))
+        self.admin.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+        self.admin.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Create user")]').click()
+        self.admin.wait.until(
+            expect.element_to_be_clickable((By.ID, 'user_username'))
+        ).click()
+        self.admin.driver.find_element(
+            By.ID, 'user_username').send_keys('automated_test_user_'+num)
+        self.admin.driver.find_element(
+            By.ID, 'user_password').send_keys('password')
+        self.admin.driver.find_element(
+            By.ID, 'user_first_name').send_keys('first_name_'+num)
+        self.admin.driver.find_element(
+            By.ID, 'user_last_name').send_keys('last_name_'+num)
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@value="Save"]').click()
+        # search for that user
+        self.admin.wait.until(
+            expect.element_to_be_clickable((By.ID, 'query'))
+        ).send_keys('automated_test_user_'+num)
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@value="Search"]').click()
+        # edit user
+        self.admin.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(text(),"Edit")]')
+            )
+        ).click()
+        self.admin.driver.find_element(
+            By.ID, 'user_customer_service').click()
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@value="Save"]').click()
+        # search for user to make sure they were updated
+        self.admin.wait.until(
+            expect.element_to_be_clickable((By.ID, 'query'))
+        ).send_keys('automated_test_user_'+num)
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@value="Search"]').click()
+        element = self.admin.driver.find_element(By.XPATH, '//tr/td[4]')
+        assert(element.get_attribute('innerHTML') == 'Yes'), \
+            'permission not elevated ' + element.get_attribute('innerHTML')
 
         self.ps.test_updates['passed'] = True
 
@@ -221,7 +388,63 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Admin')
+            )
+        ).click()
+        self.admin.page.wait_for_page_load()
+        self.admin.driver.find_element(
+            By.XPATH,
+            '//a[contains(text(),"Users")]'
+        ).click()
+        # create a user
+        # so that when run again user won't alread have content access
+        num = str(randint(4000, 4999))
+        self.admin.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+        self.admin.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Create user")]').click()
+        self.admin.wait.until(
+            expect.element_to_be_clickable((By.ID, 'user_username'))
+        ).click()
+        self.admin.driver.find_element(
+            By.ID, 'user_username').send_keys('automated_test_user_'+num)
+        self.admin.driver.find_element(
+            By.ID, 'user_password').send_keys('password')
+        self.admin.driver.find_element(
+            By.ID, 'user_first_name').send_keys('first_name_'+num)
+        self.admin.driver.find_element(
+            By.ID, 'user_last_name').send_keys('last_name_'+num)
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@value="Save"]').click()
+        # search for that user
+        self.admin.wait.until(
+            expect.element_to_be_clickable((By.ID, 'query'))
+        ).send_keys('automated_test_user_'+num)
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@value="Search"]').click()
+        # edit user
+        self.admin.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(text(),"Edit")]')
+            )
+        ).click()
+        self.admin.driver.find_element(
+            By.ID, 'user_administrator').click()
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@value="Save"]').click()
+        # search for user to make sure they were updated
+        self.admin.wait.until(
+            expect.element_to_be_clickable((By.ID, 'query'))
+        ).send_keys('automated_test_user_'+num)
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@value="Search"]').click()
+        element = self.admin.driver.find_element(By.XPATH, '//tr/td[3]')
+        assert(element.get_attribute('innerHTML') == 'Yes'), \
+            'permission not elevated ' + element.get_attribute('innerHTML')
 
         self.ps.test_updates['passed'] = True
 
@@ -251,7 +474,36 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Content Analyst')
+            )
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+        comment = self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'ecosystem_comments')
+            )
+        )
+        comment_text = comment.get_attribute('value')
+        comment.send_keys('_EDIT')
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//input[@value="Save"]')
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//input[@value="' + comment_text + '_EDIT"]')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -282,10 +534,45 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Admin')
+            )
+        ).click()
+        self.admin.page.wait_for_page_load()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Content')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+        comment = self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'ecosystem_comments')
+            )
+        )
+        comment_text = comment.get_attribute('value')
+        comment.send_keys('_EDIT')
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//input[@value="Save"]')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//input[@value="' + comment_text + '_EDIT"]')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
+    # check this, not sure if working
     # Case C7658 - 008 - Content Analyst | Delete an unused ecosystem
     @pytest.mark.skipif(str(7658) not in TESTS, reason='Excluded')
     def test_content_analyst_delete_an_unused_ecosystem_7658(self):
@@ -313,7 +600,38 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Content Analyst')
+            )
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+        deletes = self.content.driver.find_elements(By.LINK_TEXT, 'Delete')
+        deletes[1].click()
+        try:
+            self.content.wait. \
+                until(
+                    expect.alert_is_present(),
+                    'Timed out waiting for alert.'
+                )
+            alert = self.content.driver.switch_to_alert()
+            alert.accept()
+            print('alert accepted')
+        except TimeoutException:
+            print('no alert')
+        # reload page
+        self.content.driver.get(self.content.current_url())
+        self.content.page.wait()
+        deletes_new = self.content.driver.find_elements(By.LINK_TEXT, 'Delete')
+        assert(len(deletes) == len(deletes_new) + 1), \
+            'ecosystem not deleted'
 
         self.ps.test_updates['passed'] = True
 
