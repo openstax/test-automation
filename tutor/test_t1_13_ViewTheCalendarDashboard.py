@@ -10,7 +10,7 @@ import datetime
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint
 from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 from staxing.helper import Teacher
 
@@ -81,7 +81,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.001', '7978']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(title='HS Physics')
+        # self.teacher.select_course(title='HS Physics')
         assert('calendar' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
@@ -104,7 +104,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.002', '7979']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(title='HS Physics')
+        # self.teacher.select_course(title='HS Physics')
         self.teacher.find(By.LINK_TEXT, 'Student Scores').click()
         assert('scores' in self.teacher.current_url()), \
             'Not viewing student scores'
@@ -129,7 +129,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.003', '7980']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(title='HS Physics')
+        # self.teacher.select_course(title='HS Physics')
         self.teacher.open_user_menu()
         self.teacher.find(By.CLASS_NAME, 'viewScores'). \
             find_element_by_tag_name('a'). \
@@ -157,10 +157,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.004', '7981']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(title='HS Physics')
-        self.teacher.find(By.CLASS_NAME, 'calendar-actions'). \
-            find_element_by_link_text('Performance Forecast'). \
-            click()
+        self.teacher.find(By.LINK_TEXT, 'Performance Forecast').click()
         self.teacher.page.wait_for_page_load()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing the performance forecast'
@@ -186,7 +183,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.005', '7982']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(title='HS Physics')
+        # self.teacher.select_course(title='HS Physics')
         self.teacher.open_user_menu()
         self.teacher.find(By.CLASS_NAME, 'viewTeacherPerformanceForecast'). \
             find_element_by_tag_name('a'). \
@@ -215,7 +212,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.006', '7983']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
+        # self.teacher.select_course(appearance='physics')
         # create an assignemnt
         assignment_name = 'reading-%s' % randint(100, 999)
         today = datetime.date.today()
@@ -232,14 +229,16 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
             }
         )
         # click on assignemnt
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[contains(text(), "%s")]' % assignment_name
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, '//label[contains(text(), "%s")]' % assignment_name)
+            )
         ).click()
         # check that it opened
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//h2[contains(text(), "%s")]' % assignment_name
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+            )
         )
 
         self.ps.test_updates['passed'] = True
@@ -262,7 +261,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.007', '7984']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
+        # self.teacher.select_course(appearance='physics')
         # create an assignment
         assignment_name = "homework-%s" % randint(100, 999)
         today = datetime.date.today()
@@ -279,13 +278,17 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
             }
         )
         # click on assignemnt
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[contains(text(), "%s")]' % assignment_name
-        ).click()  # should it be label not div
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, '//label[contains(text(), "%s")]' % assignment_name)
+            )
+        ).click()
         # check that it opened
-        self.teacher.driver.find_element(
-            By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -323,14 +326,16 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
             }
         )
         # click on assignemnt
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[contains(text(), "%s")]' % assignment_name
-        ).click()  # should it be label not div
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, '//label[contains(text(), "%s")]' % assignment_name)
+            )
+        ).click()
         # check that it opened
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//h2[contains(text(), "%s")]' % assignment_name
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+            )
         )
 
         self.ps.test_updates['passed'] = True
@@ -352,7 +357,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.009', '7986']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
+        # self.teacher.select_course(appearance='physics')
         # create an assignment
         assignment_name = "homework-%s" % randint(100, 999)
         today = datetime.date.today()
@@ -368,13 +373,17 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
             }
         )
         # click on assignemnt
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[contains(text(), "%s")]' % assignment_name
-        ).click()  # should it be label not div
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, '//label[contains(text(), "%s")]' % assignment_name)
+            )
+        ).click()
         # check that it opened
-        self.teacher.driver.find_element(
-            By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -396,7 +405,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.010', '7987']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(title='HS Physics')
+        # self.teacher.select_course(title='HS Physics')
         self.teacher.driver.find_element(
             By.LINK_TEXT,
             'Browse The Book'
@@ -426,7 +435,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.011', '7988']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(title='HS Physics')
+        # self.teacher.select_course(title='HS Physics')
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
             By.CLASS_NAME,
@@ -458,7 +467,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.012', '7989']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
+        # self.teacher.select_course(appearance='physics')
         self.teacher.driver.find_element(
             By.CLASS_NAME,
             'viewTeacherPerformanceForecast'
@@ -490,7 +499,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.013', '7990']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
+        # self.teacher.select_course(appearance='physics')
         self.teacher.driver.find_element(
             By.CLASS_NAME,
             'ui-brand-logo'

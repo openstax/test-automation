@@ -1,21 +1,21 @@
 """Tutor v1, Epic 14 - Create a Reading."""
 
+import datetime
 import inspect
 import json
 import os
 import pytest
 import unittest
-import datetime
 import time
 
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
-from selenium.common.exceptions import NoSuchElementException
-from staxing.assignment import Assignment
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.action_chains import ActionChains
+from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher
@@ -56,7 +56,7 @@ class TestCreateAReading(unittest.TestCase):
             capabilities=self.desired_capabilities
         )
         self.teacher.login()
-        self.teacher.select_course(appearance='biology')
+        # self.teacher.select_course(appearance='biology')
 
     def tearDown(self):
         """Test destructor."""
@@ -89,10 +89,11 @@ class TestCreateAReading(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.ID,
+            'add-assignment'
+        )
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if assignment_menu.get_attribute('aria-expanded') == 'false':
             assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Reading').click()
         assert('readings/new' in self.teacher.current_url()), \
@@ -118,19 +119,20 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        self.teacher.sleep(10)
-        calendar_date = wait.until(
-            expect.element_to_be_clickable(
-                (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
+        # self.teacher.sleep(10)
+        calendar_dates = wait.until(
+            expect.presence_of_all_elements_located(
+                (By.CLASS_NAME, 'Day--upcoming')
             )
         )
+        if len(calendar_dates) == 1:
+            calendar_dates = [calendar_dates]
         self.teacher.driver.execute_script(
-            'return arguments[0].scrollIntoView();', calendar_date)
+            'return arguments[0].scrollIntoView();', calendar_dates[0])
         self.teacher.driver.execute_script('window.scrollBy(0, -80);')
         actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(calendar_date)
+        actions.move_to_element(calendar_dates[0])
         actions.click()
         actions.perform()
         # self.teacher.sleep(3)
@@ -614,28 +616,31 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading007'
+        assignment_name = 'Reading-%s' % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='reading',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'reading_list': ['1.1'],
-                                        'status': 'draft'
-                                     })
+        self.teacher.add_assignment(
+            assignment='reading',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'reading_list': ['1.1'],
+                'status': 'draft',
+            }
+        )
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH, '//a/label[contains(text(),"%s")]' % assignment_name
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
-                By.XPATH, "//a[contains(@class, 'header-control next')]"
+                By.XPATH,
+                '//a[contains(@class,"header-control next")]'
             ).click()
             self.teacher.driver.find_element(
-                By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH, '//label[contains(text(),"%s")]' % assignment_name
             ).click()
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -645,13 +650,13 @@ class TestCreateAReading(unittest.TestCase):
         ).click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH, '//label[contains(text(),"%s")]' % assignment_name)
         except NoSuchElementException:
             self.teacher.driver.find_element(
-                By.XPATH, "//a[contains(@class, 'header-control next')]"
+                By.XPATH, '//a[contains(@class,"header-control next")]'
             ).click()
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH, '//label[contains(text(),"%s")]' % assignment_name)
 
         self.ps.test_updates['passed'] = True
 
