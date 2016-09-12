@@ -42,7 +42,6 @@ class TestAccountManagement(unittest.TestCase):
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
-        self.desired_capabilities = {}
         self.desired_capabilities['name'] = self.id()
         self.student = Student(
             use_env_vars=True,
