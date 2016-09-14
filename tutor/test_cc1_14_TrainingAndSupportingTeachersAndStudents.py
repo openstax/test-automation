@@ -14,6 +14,7 @@ from pastasauce import PastaSauce, PastaDecorator
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
+from selenium.webdriver.common.action_chains import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher, Student
@@ -219,10 +220,14 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         self.teacher.driver.get('http://cc.openstax.org/')
         # number hardcoded because condenses at different size than tutor
         if self.teacher.driver.get_window_size()['width'] < 1105:
-            self.teacher.driver.find_element(
-                By.XPATH,
-                '//label[@for="mobileNavToggle" and contains(@class,"fixed")]'
-            ).click()
+            element = self.teacher.driver.find_element(
+                By.XPATH, '//label[@for="mobileNavToggle"]'
+            )
+            # use action chain because it is clicking to the wrong elemnt
+            actions = ActionChains(self.teacher.driver)
+            actions.move_to_element(element)
+            actions.click()
+            actions.perform()
         self.teacher.driver.find_element(
             By.LINK_TEXT, 'support'
         ).click()
