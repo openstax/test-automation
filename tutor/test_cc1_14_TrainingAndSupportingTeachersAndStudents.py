@@ -11,12 +11,12 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher
+from staxing.helper import Teacher, Student
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -27,11 +27,12 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([
-        7704, 7705, 7706, 7707, 7708,
-        7709, 7710, 7711, 7712, 7713,
-        7714
-    ])
+    # str([
+    #     7704, 7705, 7706, 7707, 7708,
+    #     7709, 7710, 7711, 7712, 7713,
+    #     7714
+    # ])
+    str([7707])
 )
 
 
@@ -41,15 +42,20 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
+        self.student = Student(
+            use_env_vars=True,
+            existing_driver=self.teacher.driver,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
+        )
+
 
     def tearDown(self):
         """Test destructor."""
@@ -86,7 +92,21 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        # change to window with help center
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.driver.find_element(
+            By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
+        )
+        assert('support' in self.teacher.current_url()), 'not at help center'
 
         self.ps.test_updates['passed'] = True
 
@@ -113,7 +133,21 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        # change to window with help center
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.driver.find_element(
+            By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
+        )
+        assert('support' in self.teacher.current_url()), 'not at help center'
 
         self.ps.test_updates['passed'] = True
 
@@ -140,7 +174,18 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.login()
+        self.student.open_user_menu()
+        self.student.driver.find_element(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        # change to window with help center
+        window_with_help = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_help)
+        self.student.driver.find_element(
+            By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
+        )
+        assert('support' in self.student.current_url()), 'not at help center'
 
         self.ps.test_updates['passed'] = True
 
@@ -151,12 +196,11 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
 
         Steps:
         Go to the Concept Coach landing page
-        Click on the help button in the bottom right
-        Enter keywords to question into text box
-        Press return key
-        Click on 'Leave us a message'
-        Enter name, email and message into corresponding text boxes
-        Click 'Send'
+        click support in the header
+        enter text into the search box
+        click contact us
+        fillout form
+        click Submit
 
         Expected Result:
         'Message sent' displayed in help box
@@ -172,8 +216,46 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.driver.get('http://cc.openstax.org/')
+        # number hardcoded because condenses at different size than tutor
+        if self.teacher.driver.get_window_size()['width'] < 1105:
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//label[@for="mobileNavToggle" and contains(@class,"fixed")]'
+            ).click()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'support'
+        ).click()
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.page.wait_for_page_load()
+        self.teacher.driver.find_element(
+            By.ID, 'searchAskInput'
+        ).send_keys('fake_question')
+        self.teacher.driver.find_element(
+            By.ID, 'searchAskButton'
+        ).click()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Contact Us'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.driver.find_element(
+            By.XPATH, '//input[contains(@id,"contactUsForm:firstName")]'
+        ).send_keys('qa')
+        self.teacher.driver.find_element(
+            By.XPATH, '//input[contains(@id,"contactUsForm:lastName")]'
+        ).send_keys('test')
+        self.teacher.driver.find_element(
+            By.XPATH, '//input[contains(@id,"contactUsForm:email")]'
+        ).send_keys('automated@qa.test')
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[@class="submit-container"]//input'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//p[contains(text(),"Thank you")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7708 - 005 - Teacher | Submit support questions
