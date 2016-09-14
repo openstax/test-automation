@@ -14,7 +14,7 @@ from selenium.webdriver.support import expected_conditions as expect
 from selenium.common.exceptions import TimeoutException
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Admin, ContentQA
+from staxing.helper import Admin, ContentQA, Teacher
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -25,15 +25,19 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    # str([
-    #     7651, 7652, 7653, 7654, 7655,
-    #     7656, 7657, 7658, 7659, 7660,
-    #     7661, 7662, 7663, 7665, 7667,
-    #     7669, 7670, 7672, 7673, 7674,
-    #     7675, 7676, 7677, 7678, 7679,
-    #     7681, 7682, 7683, 7686, 7687
-    # ])
-    str([7658])
+    str([
+        7651, 7652, 7653, 7654, 7655,
+        7656, 7657, 7658, 7659, 7660,
+        7661, 7662, 7663, 7665, 7667,
+        7669, 7670, 7672, 7673, 7674,
+        7675, 7676, 7677, 7678, 7679,
+        7681, 7682, 7683, 7686, 7687
+    ])
+    # 7658, 7659 -- not working run forever/SUPER long time
+    #        -- so code commented out and exception raised
+    #        sort -of works though see notes below
+    # 7681, 7682, 7683, 7686 - not implemented in code
+    # all else passes locally
 )
 
 
@@ -47,14 +51,14 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.admin = Admin(
             use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.content = ContentQA(
             use_env_vars=True,
             existing_driver=self.admin.driver,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
 
     def tearDown(self):
@@ -572,7 +576,11 @@ class TestExerciseEditingAndQA(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # check this, not sure if working
+    # properly acceps alert but not showing ecosystem as deleted,
+    # because it takes to long for the deleted ecosystem to disappear.
+    # the test runs for a ridiculous amount of time without timing out
+    # but if you check later on requalr window of tutor the ecosystem has
+    # been deleted
     # Case C7658 - 008 - Content Analyst | Delete an unused ecosystem
     @pytest.mark.skipif(str(7658) not in TESTS, reason='Excluded')
     def test_content_analyst_delete_an_unused_ecosystem_7658(self):
@@ -600,41 +608,42 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.content.login()
-        self.content.open_user_menu()
-        self.content.wait.until(
-            expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Content Analyst')
-            )
-        ).click()
-        self.content.page.wait_for_page_load()
-        self.content.wait.until(
-            expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Ecosystems')
-            )
-        ).click()
-        deletes = self.content.driver.find_elements(By.LINK_TEXT, 'Delete')
-        deletes[1].click()
-        try:
-            self.content.wait. \
-                until(
-                    expect.alert_is_present(),
-                    'Timed out waiting for alert.'
-                )
-            alert = self.content.driver.switch_to_alert()
-            alert.accept()
-            print('alert accepted')
-        except TimeoutException:
-            print('no alert')
-        # reload page
-        self.content.driver.get(self.content.current_url())
-        self.content.page.wait()
-        deletes_new = self.content.driver.find_elements(By.LINK_TEXT, 'Delete')
-        assert(len(deletes) == len(deletes_new) + 1), \
-            'ecosystem not deleted'
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # self.content.login()
+        # self.content.open_user_menu()
+        # self.content.wait.until(
+        #     expect.visibility_of_element_located(
+        #         (By.LINK_TEXT, 'Content Analyst')
+        #     )
+        # ).click()
+        # self.content.page.wait_for_page_load()
+        # self.content.wait.until(
+        #     expect.visibility_of_element_located(
+        #         (By.LINK_TEXT, 'Ecosystems')
+        #     )
+        # ).click()
+        # deletes = self.content.driver.find_elements(By.LINK_TEXT, 'Delete')
+        # deletes[1].click()
+        # try:
+        #     self.content.wait. \
+        #         until(
+        #             expect.alert_is_present(),
+        #             'Timed out waiting for alert.'
+        #         )
+        #     alert = self.content.driver.switch_to_alert()
+        #     alert.accept()
+        # except TimeoutException:
+        #     pass
+        # # reload page
+        # # self.content.driver.get(self.content.current_url())
+        # # # self.content.page.wait_for_page_load()
+        # deletes_new = self.content.driver.find_elements(By.LINK_TEXT, 'Delete')
+        # assert(len(deletes) == len(deletes_new) + 1), \
+        #     'ecosystem not deleted'
 
         self.ps.test_updates['passed'] = True
 
+    # same issue as 7658
     # Case C7659 - 009 - Admin | Delete an unused ecosystem
     @pytest.mark.skipif(str(7659) not in TESTS, reason='Excluded')
     def test_admin_delete_an_unused_ecosystem_7659(self):
@@ -663,6 +672,37 @@ class TestExerciseEditingAndQA(unittest.TestCase):
 
         # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # self.admin.login()
+        # self.admin.open_user_menu()
+        # self.admin.wait.until(
+        #     expect.visibility_of_element_located(
+        #         (By.LINK_TEXT, 'Content Analyst')
+        #     )
+        # ).click()
+        # self.admin.page.wait_for_page_load()
+        # self.admin.wait.until(
+        #     expect.visibility_of_element_located(
+        #         (By.LINK_TEXT, 'Ecosystems')
+        #     )
+        # ).click()
+        # deletes = self.admin.driver.find_elements(By.LINK_TEXT, 'Delete')
+        # deletes[1].click()
+        # try:
+        #     self.admin.wait. \
+        #         until(
+        #             expect.alert_is_present(),
+        #             'Timed out waiting for alert.'
+        #         )
+        #     alert = self.admin.driver.switch_to_alert()
+        #     alert.accept()
+        # except TimeoutException:
+        #     pass
+        # # reload page
+        # self.admin.driver.get(self.admin.current_url())
+        # self.admin.page.wait_for_page_load()
+        # deletes_new = self.admin.driver.find_elements(By.LINK_TEXT, 'Delete')
+        # assert(len(deletes) == len(deletes_new) + 1), \
+        #     'ecosystem not deleted'
 
         self.ps.test_updates['passed'] = True
 
@@ -693,8 +733,25 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Content Analyst')
+            )
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+        deletes = self.content.driver.find_elements(By.LINK_TEXT, 'Delete')
+        rows = self.content.driver.find_elements(
+            By.XPATH, '//tr')
+        # assert that there are some rows without delete buttons
+        assert(len(deletes) < len(rows) + 1), \
+            'all ecosystems can be deleted.'
         self.ps.test_updates['passed'] = True
 
     # Case C7661 - 011 - Admin | Unable to delete an assigned ecosystem
@@ -723,7 +780,26 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Content Analyst')
+            )
+        ).click()
+        self.admin.page.wait_for_page_load()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Ecosystems')
+            )
+        ).click()
+        deletes = self.admin.driver.find_elements(By.LINK_TEXT, 'Delete')
+        rows = self.admin.driver.find_elements(
+            By.XPATH, '//tr')
+        # assert that there are some rows without delete buttons
+        assert(len(deletes) < len(rows) + 1), \
+            'all ecosystems can be deleted.'
+        self.ps.test_updates['passed'] = True
 
         self.ps.test_updates['passed'] = True
 
@@ -752,8 +828,25 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        # click on non-intro section
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//li[@data-section="1.1"]')
+            )
+        ).click()
+        # search for questions
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="panel-body"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7663 - 013 - Content Analyst | From the QA exercise view open
@@ -785,8 +878,37 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        # click on non-intro section
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//li[@data-section="1.1"]')
+            )
+        ).click()
+        exercise_id = self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[@class="exercise-tag" and' +
+                 ' contains(@data-reactid,"ID")]')
+            )
+        ).text
+        exercise_id = exercise_id.split(':')[1].split('@')[0].strip(' ')
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[@class="edit-link"]')
+            )
+        ).click()
+        edit_window = self.content.driver.window_handles[1]
+        self.content.driver.switch_to_window(edit_window)
+        assert('openstax.org/exercises' in self.content.current_url()), \
+            'not at correct exercise edit page'
+        assert(exercise_id in self.content.current_url()), \
+            'not at correct exercise edit page'
         self.ps.test_updates['passed'] = True
 
     # Case C7665 - 014 - Content Analyst | Able to filter exercises in the
@@ -813,7 +935,37 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        # click on non-intro section
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//li[@data-section="1.1"]')
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'multi-select')
+            )
+        ).click()
+        q_type = self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[@role="menuitem"]//span[@class="title"]')
+            )
+        ).text
+        self.content.driver.find_element(
+            By.XPATH, '//a[@role="menuitem"]//i[contains(@type,"check-")]'
+        ).click()
+        self.content.sleep(0.5)
+        elements = self.content.driver.find_elements(
+            By.XPATH, '//span[@class="' + q_type + '"]'
+        )
+        assert(len(elements) == 0), "still showing elements of filtered type"
 
         self.ps.test_updates['passed'] = True
 
@@ -841,8 +993,26 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        # click show content
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//li[@class="teacher-edition"]/a')
+            )
+        ).click()
+        # find book content
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="openstax-has-html page center-panel"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7669 - 016 - Content Analyst | Able to navigate between book
@@ -873,7 +1043,27 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        # click show content
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//li[@class="teacher-edition"]/a')
+            )
+        ).click()
+        # click on new section
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//li[@data-section="1.1"]')
+            )
+        ).click()
+        assert(self.content.current_url()[-3:] == '1.1'), \
+            'did not navigate to the correct section'
 
         self.ps.test_updates['passed'] = True
 
@@ -906,7 +1096,63 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Admin')
+            )
+        ).click()
+        self.admin.page.wait_for_page_load()
+        self.admin.driver.find_element(
+            By.XPATH,
+            '//a[contains(text(),"Users")]'
+        ).click()
+        # create a user - because don't know the dms account names
+        # also when run again user won't alread have content access
+        num = str(randint(4000, 4999))
+        self.admin.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+        self.admin.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Create user")]').click()
+        self.admin.wait.until(
+            expect.element_to_be_clickable((By.ID, 'user_username'))
+        ).click()
+        self.admin.driver.find_element(
+            By.ID, 'user_username').send_keys('automated_test_user_'+num)
+        self.admin.driver.find_element(
+            By.ID, 'user_password').send_keys('password')
+        self.admin.driver.find_element(
+            By.ID, 'user_first_name').send_keys('first_name_'+num)
+        self.admin.driver.find_element(
+            By.ID, 'user_last_name').send_keys('last_name_'+num)
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@value="Save"]').click()
+        # search for that user
+        self.admin.wait.until(
+            expect.element_to_be_clickable((By.ID, 'query'))
+        ).send_keys('automated_test_user_'+num)
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@value="Search"]').click()
+        # edit user
+        self.admin.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(text(),"Edit")]')
+            )
+        ).click()
+        self.admin.driver.find_element(
+            By.ID, 'user_content_analyst').click()
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@value="Save"]').click()
+        # search for user to make sure they were updated
+        self.admin.wait.until(
+            expect.element_to_be_clickable((By.ID, 'query'))
+        ).send_keys('automated_test_user_'+num)
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@value="Search"]').click()
+        element = self.admin.driver.find_element(By.XPATH, '//tr/td[5]')
+        assert(element.get_attribute('innerHTML') == 'Yes'), \
+            'permission not elevated ' + element.get_attribute('innerHTML')
 
         self.ps.test_updates['passed'] = True
 
@@ -920,12 +1166,11 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         Log into Tutor as a content analyst user (content : password)
         Select 'QA Content' from the User Menu
         Select 'Physics' from Available Books Menu
-        From the side bar on the left choose section
-        '6.1 Angle of Rotation and Angular Velocity'
-        Scroll to the 4th exercise: What equation defines angular velocity?
+        From the side bar on the left choose section 1.1
+        Scroll to find LaTex
 
         Expected Result:
-        View equations that are render of LaTex
+        View equations/numbers that are render of LaTex
         """
         self.ps.test_updates['name'] = 'cc1.04.018' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -938,8 +1183,44 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        # change book to physics
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'available-books')
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="title-version"]' +
+                 '/span[contains(text(),"Physics")]')
+            )
+        ).click()
+        # click show content
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//li[@class="teacher-edition"]/a')
+            )
+        ).click()
+        # click on a non-intro section
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//li[@data-section="1.1"]')
+            )
+        ).click()
+        # serached for rendered math in LaTex
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[contains(@class,"math-rendered")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7673 - 019 - Content Analyst | In the QA exercise view verify that
@@ -969,8 +1250,26 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        # click on a non-intro section
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//li[@data-section="1.1"]')
+            )
+        ).click()
+        # search for exercise ID
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[@class="exercise-tag" and' +
+                 ' contains(@data-reactid,"ID")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7674 - 020 - Content Analyst | Able to publish an exercise
@@ -982,7 +1281,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         Open a new page of OpenStax Exercises
         Sign with username 'openstax'
         Go back to exercises on OpenStax Tutor page
-        For an exercise, click on 'edit' button on the lower right corner
+        Click write a new exercise
         Edit the exercise
         Click on Save at bottom of the page
         Click OK when asked if sure want to save
@@ -1003,8 +1302,51 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        # login
+        self.content.get('https://exercises-qa.openstax.org/')
+        self.content.driver.find_element(
+            By.XPATH, '//a[text()="Sign in"]').click()
+        self.content.driver.find_element(
+            By.ID, 'auth_key').send_keys(self.content.username)
+        self.content.driver.find_element(
+            By.ID, 'password').send_keys(self.content.password)
+        # click on the sign in button
+        self.content.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]'
+        ).click()
+        self.content.page.wait_for_page_load()
+        # self.content.login('https://exercises-qa.openstax.org/')
+        self.content.driver.find_element(
+            By.ID, 'top-nav-exercises-new-link'
+        ).click()
+        self.content.page.wait_for_page_load()
+        text_areas = self.content.driver.find_elements(
+            By.XPATH, '//div[@class="question"]//textarea[1]'
+        )
+        text_areas[0].send_keys('fake question stem')
+        text_areas[1].send_keys('fake answer choice')
+        text_areas[2].send_keys('fake feedback')
+        self.content.driver.find_element(
+            By.XPATH, '//button/span[text()="Save Draft"]'
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button/span[text()="Publish"]')
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@id="confirmation-alert"]//button[text()="Publish"]')
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="modal-content"]' +
+                 '//span[contains(text(),"published successfully")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7675 - 021 - Teacher | Able to publish an exercise
@@ -1039,8 +1381,57 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        teacher = Teacher(
+            use_env_vars=True,
+            existing_driver=self.admin.driver,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
+        # login
+        teacher.get('https://exercises-qa.openstax.org/')
+        teacher.driver.find_element(
+            By.XPATH, '//a[text()="Sign in"]').click()
+        teacher.driver.find_element(
+            By.ID, 'auth_key').send_keys(teacher.username)
+        teacher.driver.find_element(
+            By.ID, 'password').send_keys(teacher.password)
+        # click on the sign in button
+        teacher.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]'
+        ).click()
+        teacher.page.wait_for_page_load()
+        # teacher.login('https://exercises-qa.openstax.org/')
+        teacher.driver.find_element(
+            By.ID, 'top-nav-exercises-new-link'
+        ).click()
+        teacher.page.wait_for_page_load()
+        text_areas = teacher.driver.find_elements(
+            By.XPATH, '//div[@class="question"]//textarea[1]'
+        )
+        text_areas[0].send_keys('fake question stem')
+        text_areas[1].send_keys('fake answer choice')
+        text_areas[2].send_keys('fake feedback')
+        teacher.driver.find_element(
+            By.XPATH, '//button/span[text()="Save Draft"]'
+        ).click()
+        teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button/span[text()="Publish"]')
+            )
+        ).click()
+        teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@id="confirmation-alert"]//button[text()="Publish"]')
+            )
+        ).click()
+        teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="modal-content"]' +
+                 '//span[contains(text(),"published successfully")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7676 - 022 - Admin | Able to publish an exercise
@@ -1075,8 +1466,51 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        # login
+        self.admin.get('https://exercises-qa.openstax.org/')
+        self.admin.driver.find_element(
+            By.XPATH, '//a[text()="Sign in"]').click()
+        self.admin.driver.find_element(
+            By.ID, 'auth_key').send_keys(self.admin.username)
+        self.admin.driver.find_element(
+            By.ID, 'password').send_keys(self.admin.password)
+        # click on the sign in button
+        self.admin.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]'
+        ).click()
+        self.admin.page.wait_for_page_load()
+        # self.admin.login('https://exercises-qa.openstax.org/')
+        self.admin.driver.find_element(
+            By.ID, 'top-nav-exercises-new-link'
+        ).click()
+        self.admin.page.wait_for_page_load()
+        text_areas = self.admin.driver.find_elements(
+            By.XPATH, '//div[@class="question"]//textarea[1]'
+        )
+        text_areas[0].send_keys('fake question stem')
+        text_areas[1].send_keys('fake answer choice')
+        text_areas[2].send_keys('fake feedback')
+        self.admin.driver.find_element(
+            By.XPATH, '//button/span[text()="Save Draft"]'
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button/span[text()="Publish"]')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@id="confirmation-alert"]//button[text()="Publish"]')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="modal-content"]' +
+                 '//span[contains(text(),"published successfully")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7677 - 023 - Content Analyst | Able to save an exercise as a draft
@@ -1108,8 +1542,47 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        # login
+        self.content.get('https://exercises-qa.openstax.org/')
+        self.content.driver.find_element(
+            By.XPATH, '//a[text()="Sign in"]').click()
+        self.content.driver.find_element(
+            By.ID, 'auth_key').send_keys(self.content.username)
+        self.content.driver.find_element(
+            By.ID, 'password').send_keys(self.content.password)
+        # click on the sign in button
+        self.content.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]'
+        ).click()
+        self.content.page.wait_for_page_load()
+        # self.content.login('https://exercises-qa.openstax.org/')
+        self.content.driver.find_element(
+            By.ID, 'top-nav-exercises-new-link'
+        ).click()
+        self.content.page.wait_for_page_load()
+        text_areas = self.content.driver.find_elements(
+            By.XPATH, '//div[@class="question"]//textarea[1]'
+        )
+        text_areas[0].send_keys('fake question stem')
+        text_areas[1].send_keys('fake answer choice')
+        text_areas[2].send_keys('fake feedback')
+        self.content.driver.find_element(
+            By.XPATH, '//button/span[text()="Save Draft"]'
+        ).click()
+        # check that the publish button appears after saving
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button/span[text()="Publish"]')
+            )
+        )
+        # check that it has been given an exercise ID
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//span[@class="exercise-tag" ' +
+                 'and contains(@data-reactid,"ID")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7678 - 024 - Teacher | Able to save an exercise as a draft
@@ -1143,8 +1616,53 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        teacher = Teacher(
+            use_env_vars=True,
+            existing_driver=self.admin.driver,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
+        # login
+        teacher.get('https://exercises-qa.openstax.org/')
+        teacher.driver.find_element(
+            By.XPATH, '//a[text()="Sign in"]').click()
+        teacher.driver.find_element(
+            By.ID, 'auth_key').send_keys(teacher.username)
+        teacher.driver.find_element(
+            By.ID, 'password').send_keys(teacher.password)
+        # click on the sign in button
+        teacher.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]'
+        ).click()
+        teacher.page.wait_for_page_load()
+        # self.content.login('https://exercises-qa.openstax.org/')
+        teacher.driver.find_element(
+            By.ID, 'top-nav-exercises-new-link'
+        ).click()
+        teacher.page.wait_for_page_load()
+        text_areas = teacher.driver.find_elements(
+            By.XPATH, '//div[@class="question"]//textarea[1]'
+        )
+        text_areas[0].send_keys('fake question stem')
+        text_areas[1].send_keys('fake answer choice')
+        text_areas[2].send_keys('fake feedback')
+        teacher.driver.find_element(
+            By.XPATH, '//button/span[text()="Save Draft"]'
+        ).click()
+        # check that the publish button appears after saving
+        teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button/span[text()="Publish"]')
+            )
+        )
+        # check that it has been given an exercise ID
+        teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//span[@class="exercise-tag" ' +
+                 'and contains(@data-reactid,"ID")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7679 - 025 - Admin | Able to save an exercise as a draft
@@ -1178,8 +1696,47 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        # login
+        self.admin.get('https://exercises-qa.openstax.org/')
+        self.admin.driver.find_element(
+            By.XPATH, '//a[text()="Sign in"]').click()
+        self.admin.driver.find_element(
+            By.ID, 'auth_key').send_keys(self.admin.username)
+        self.admin.driver.find_element(
+            By.ID, 'password').send_keys(self.admin.password)
+        # click on the sign in button
+        self.admin.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]'
+        ).click()
+        self.admin.page.wait_for_page_load()
+        # self.admin.login('https://exercises-qa.openstax.org/')
+        self.admin.driver.find_element(
+            By.ID, 'top-nav-exercises-new-link'
+        ).click()
+        self.admin.page.wait_for_page_load()
+        text_areas = self.admin.driver.find_elements(
+            By.XPATH, '//div[@class="question"]//textarea[1]'
+        )
+        text_areas[0].send_keys('fake question stem')
+        text_areas[1].send_keys('fake answer choice')
+        text_areas[2].send_keys('fake feedback')
+        self.admin.driver.find_element(
+            By.XPATH, '//button/span[text()="Save Draft"]'
+        ).click()
+        # check that the publish button appears after saving
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button/span[text()="Publish"]')
+            )
+        )
+        # check that it has been given an exercise ID
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//span[@class="exercise-tag" ' +
+                 'and contains(@data-reactid,"ID")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7681 - 026 - Student | Denied access to exercise solutions
@@ -1208,6 +1765,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        # not implemented on site, student accounts able to access
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
@@ -1239,6 +1797,8 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        # not working on site now
+        # show plaing page with only "{"total_count":0,"items":[]}"
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
@@ -1273,6 +1833,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        # no staff button on page
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
@@ -1305,6 +1866,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        # no staff button on page
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
@@ -1339,6 +1901,42 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        # change book to physics
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'available-books')
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="title-version"]' +
+                 '/span[contains(text(),"Physics")]')
+            )
+        ).click()
+        # click on a non-intro section
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//li[@data-section="2.4"]')
+            )
+        ).click()
+        # click show content
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//li[@class="teacher-edition"]/a')
+            )
+        ).click()
+        # check for a graph
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//img[contains(@alt,"graph")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
