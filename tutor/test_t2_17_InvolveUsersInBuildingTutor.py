@@ -1,6 +1,6 @@
 """Tutor v2, Epic 17 - Involve Users in Building Tutor."""
 
-import inspect
+# import inspect
 import json
 import os
 # import pytest
@@ -41,8 +41,6 @@ class TestInvolveUsersInBuildingTutor(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(

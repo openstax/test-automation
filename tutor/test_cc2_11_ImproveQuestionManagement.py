@@ -48,7 +48,9 @@ class TestIImproveQuestionManagement(unittest.TestCase):
         )
         self.student = Student(
             use_env_vars=True,
-            existing_driver=self.teacher.driver
+            existing_driver=self.teacher.driver,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
 
     def tearDown(self):

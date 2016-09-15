@@ -10,7 +10,7 @@ import unittest
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint
 from selenium.common.exceptions import NoSuchElementException
-# from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.support.ui import WebDriverWait
@@ -54,7 +54,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             capabilities=self.desired_capabilities
         )
         self.teacher.login()
-        self.teacher.select_course(appearance='biology')
 
     def tearDown(self):
         """Test destructor."""
@@ -101,6 +100,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     # Case C8086 - 002 - Teacher | Add an external assignment using the
     # calendar date
     @pytest.mark.skipif(str(8086) not in TESTS, reason='Excluded')
+    @pytest.mark.skipif(True, reason='Manual testing only')
     def test_teacher_add_external_assignment_using_calendar_date_8086(self):
         """Add an external assignment using the calendar date.
 
@@ -126,8 +126,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.driver.execute_script(
             'return arguments[0].scrollIntoView();', day)
         self.teacher.sleep(0.5)
-        # day.find_element(By.XPATH, './span').click()
-        day.click()
         # Psuedo-test - cannot click on react component
         try:
             date = self.teacher.find_all(
@@ -1848,18 +1846,20 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = "ext026"
+        assignment_name = Assignment.rword(6)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'draft'
-                                    })
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'draft'
+            }
+        )
         # click in the open assignment
         try:
             self.teacher.driver.find_element(

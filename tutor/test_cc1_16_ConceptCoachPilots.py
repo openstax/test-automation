@@ -1,6 +1,6 @@
 """Concept Coach v1, Epic 16 - Concept Coach Pilots."""
 
-import inspect
+# import inspect
 import json
 import os
 # import pytest
@@ -43,8 +43,6 @@ class TestConceptCoachPilots(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(

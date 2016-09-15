@@ -52,7 +52,9 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         )
         self.content = ContentQA(
             use_env_vars=True,
-            existing_driver=self.admin.driver
+            existing_driver=self.admin.driver,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
 
     def tearDown(self):
