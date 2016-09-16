@@ -8,12 +8,12 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
+from selenium.webdriver.common.by import By
 # from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher
+from staxing.helper import Admin
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -36,11 +36,9 @@ class TestOpenStaxMetrics(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
+        self.admin = Admin(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
@@ -49,11 +47,11 @@ class TestOpenStaxMetrics(unittest.TestCase):
     def tearDown(self):
         """Test destructor."""
         self.ps.update_job(
-            job_id=str(self.teacher.driver.session_id),
+            job_id=str(self.admin.driver.session_id),
             **self.ps.test_updates
         )
         try:
-            self.teacher.delete()
+            self.admin.delete()
         except:
             pass
 
@@ -86,6 +84,25 @@ class TestOpenStaxMetrics(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.driver.find_element(
+            By.LINK_TEXT, 'Admin'
+        ).click()
+        self.admin.page.wait_for_page_load()
+        self.admin.driver.find_element(
+            By.LINK_TEXT, 'Course Organization'
+        ).click()
+        self.admin.driver.find_element(
+            By.LINK_TEXT, 'Courses'
+        ).click()
+        self.admin.page.wait_for_page_load()
+        self.admin.driver.find_element(
+            By.LINK_TEXT, 'List Students'
+        ).click()
+        # assert thaken to correct page
+        self.admin.driver.find_element(
+            By.XPATH, '//h1[contains(text(),"Students for course")]'
+        )
+        assert('student' in self.admin.current_url())
         self.ps.test_updates['passed'] = True
