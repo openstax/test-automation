@@ -14,7 +14,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher
+from staxing.helper import Teacher, Admin
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -25,14 +25,13 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    # str([
-    #     7751, 7752, 7753, 7754, 7755,
-    #     7756, 7757, 7758, 7759, 7760,
-    #     7761, 7762, 7763, 7764, 7765,
-    #     7770, 7771, 7772, 7773, 7774,
-    #     7775
-    # ])
-    str([7754])
+    str([
+        7751, 7752, 7753, 7754, 7755,
+        7756, 7757, 7758, 7759, 7760,
+        7761, 7762, 7763, 7764, 7765,
+        7770, 7771, 7772, 7773, 7774,
+        7775
+    ])
     # 7754, 7773 not done
 )
 
@@ -193,6 +192,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         ]
         self.ps.test_updates['passed'] = False
 
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
         # Test steps and verification assertions
         self.teacher.driver.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
@@ -213,19 +213,30 @@ class TestRecruitingTeachers(unittest.TestCase):
         # self.teacher.driver.find_element(
         #     By.XPATH, '//div[@id="player"]'
         # ).click()
-        self.teacher.wait.until(
+        title = self.teacher.wait.until(
             expect.visibility_of_element_located(
-                (By.ID, 'player')
+                (By.XPATH, '//span[contains(text(),"Inelastic Collisions")]')
             )
         )
+        # self.teacher.wait.until(
+        #     expect.presence_of_element_located(
+        #         (By.ID, 'player')
+        #     )
+        # )
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(title)
+        actions.move_by_offset(0, 300)
+        actions.click()
+        actions.perform()
+        self.teacher.sleep(2)
         self.teacher.driver.find_element(
-            By.XPATH, '//div[@id="player"]/div[contains(@class"playing-mode")]'
+            By.XPATH,
+            '//div[contains(@class,"playing-mode")]'
         )
+        # actions.perform()
         self.teacher.driver.find_element(
-            By.ID, 'player'
-        ).click()
-        self.teacher.driver.find_element(
-            By.XPATH, '//div[@id="player"]/div[contains(@class"paused-mode")]'
+            By.XPATH,
+            '//div[@id="player"]/div[contains(@class,"paused-mode")]'
         )
 
         self.ps.test_updates['passed'] = True
@@ -1116,6 +1127,21 @@ class TestRecruitingTeachers(unittest.TestCase):
 
         # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        admin = Admin(
+            use_env_vars=True,
+            existing_driver=self.teacher.driver,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
+        )
+        admin.login()
+        admin.open_user_menu()
+        admin.driver.find_element(By.LINK_TEXT, 'Admin').click()
+        admin.page.wait_for_page_load()
+        admin.driver.find_element(By.LINK_TEXT, 'Salesforce').click()
+        admin.page.wait_for_page_load()
+        admin.driver.find_element(
+            By.XPATH, '//input[@vale="Import Courses"]'
+        ).click()
 
 
         self.ps.test_updates['passed'] = True
