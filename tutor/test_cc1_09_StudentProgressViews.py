@@ -41,6 +41,7 @@ class TestStudentProgressViews(unittest.TestCase):
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
+        self.student = Student(use_env_vars=True)
         self.student.login()
 
     def tearDown(self):
@@ -235,8 +236,16 @@ class TestStudentProgressViews(unittest.TestCase):
         self.student.sleep(5)
         page = self.student.driver.page_source
 
+        # Go to the first question
+        ids = 0
+        self.student.find(
+            By.XPATH, "//div[@class='task-breadcrumbs']/span").click()
+
         # Work through Concept Coach
         while 'or review your work below.' not in page:
+            self.student.find(
+                By.XPATH, "//span[@class='exercise-identifier-link']/span[2]")
+            ids += 1
 
             action = False
 
@@ -302,6 +311,7 @@ class TestStudentProgressViews(unittest.TestCase):
         crumbs += len(self.student.driver.find_elements_by_xpath(
             "//i[@class='icon-lg icon-incorrect']"))
 
+        """
         ids = len(
             self.student.driver.find_elements_by_xpath(
                 "//div[@class='reactive reactive-loaded']/div[@class='exerci" +
@@ -310,6 +320,7 @@ class TestStudentProgressViews(unittest.TestCase):
                 "se-card']/div/span[@class='exercise-identifier-link']/span[2]"
             )
         )
+        """
 
         assert(crumbs == ids), \
             'IDs do not match number of answered questions'
