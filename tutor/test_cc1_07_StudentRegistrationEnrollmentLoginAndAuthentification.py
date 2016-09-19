@@ -11,12 +11,13 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
+from selenium.webdriver.common.keys import Keys
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher
+from staxing.helper import Student, Teacher
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -27,12 +28,19 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([
-        7631, 7632, 7633, 7634, 7635,
-        7636, 7637, 7638, 7639, 7640,
-        7641, 7642, 7643, 7644, 7645,
-        7646, 7647, 7648, 7650
-    ])
+    # str([
+    #     7631, 7632, 7633, 7634, 7635,
+    #     7636, 7637, 7638, 7639, 7640,
+    #     7641, 7642, 7643, 7644, 7645,
+    #     7646, 7647, 7648, 7650
+    # ])
+    str([7633])
+    # done:7631, 7632, ..., 7636, 7637, ..., 7640, 7641, ..., 7648
+    # skipped: 7633, 7634, 7650
+    # issues: 7635 the confirmation message goes by so fast, no time to inspect
+    # 7638 - says DEL on test rail make sure that means delete it
+    #  about terms: 7642, 7643, 7644, 7645, 7646, 7647
+    # ask greg about what this case need, see notes above case
 )
 
 
@@ -42,22 +50,31 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
+        self.student = Student(
+            use_env_vars=True,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
+        )
         self.teacher = Teacher(
             use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            existing_driver=self.student.driver,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
+
 
     def tearDown(self):
         """Test destructor."""
         self.ps.update_job(
-            job_id=str(self.teacher.driver.session_id),
+            job_id=str(self.student.driver.session_id),
             **self.ps.test_updates
         )
+        try:
+            self.student.delete()
+        except:
+            pass
         try:
             self.teacher.delete()
         except:
@@ -98,8 +115,77 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        # login as teacher to get access code
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Course Settings and Roster'
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH, '//span[contains(text(),"Your student enrollment code")]'
+        ).click()
+        self.teacher.sleep(1)
+        code = self.teacher.driver.find_element(
+            By.XPATH, '//p[@class="code"]'
+        ).text
+        enrollement_url = self.teacher.driver.find_element(
+            By.XPATH, '//textarea'
+        ).text
+        enrollement_url = enrollement_url.split('\n')[5]
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[@class="close"]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.logout()
+        # login as student to register for course
+        self.student.driver.get(enrollement_url)
+        self.student.page.wait_for_page_load()
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Jump to Concept Coach')
+            )
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Launch Concept Coach"]')
+            )
+        ).click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.XPATH, '//div[text()="Sign in"]'
+        ).click()
+        self.student.sleep(0.5)
+        login_window = self.student.driver.window_handles[1]
+        cc_window = self.student.driver.window_handles[0]
+        self.student.driver.switch_to_window(login_window)
+        self.student.driver.find_element(
+            By.ID, 'auth_key').send_keys('student73')
+        self.student.driver.find_element(
+            By.ID, 'password').send_keys(self.student.password)
+        self.student.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]').click()
+        self.student.driver.switch_to_window(cc_window)
+        self.student.sleep(1)
+        self.student.driver.find_element(
+            By.XPATH, '//input[@placeholder="enrollment code"]'
+        ).send_keys(code)
+        self.student.driver.find_element(
+            By.XPATH, '//button/span[text()="Enroll"]'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[@class="skip"]')
+            )
+        ).click()
+        # check that enrollemnt code worked, and student is at cc questions
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="task-breadcrumbs"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7632 - 002 - Student | Register for a class using a provided
@@ -136,8 +222,81 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # login as teacher to get access code
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Course Settings and Roster'
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH, '//span[contains(text(),"Your student enrollment code")]'
+        ).click()
+        self.teacher.sleep(1)
+        code = self.teacher.driver.find_element(
+            By.XPATH, '//p[@class="code"]'
+        ).text
+        enrollement_url = self.teacher.driver.find_element(
+            By.XPATH, '//textarea'
+        ).text
+        enrollement_url = enrollement_url.split('\n')[5]
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[@class="close"]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.logout()
+        # login as student to register for course
+        self.student.driver.get(enrollement_url)
+        self.student.page.wait_for_page_load()
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Jump to Concept Coach')
+            )
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Launch Concept Coach"]')
+            )
+        ).click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.XPATH, '//div[text()="Sign in"]'
+        ).click()
+        self.student.sleep(0.5)
+        login_window = self.student.driver.window_handles[1]
+        cc_window = self.student.driver.window_handles[0]
+        self.student.driver.switch_to_window(login_window)
+        self.student.driver.find_element(
+            By.ID, 'facebook-login-button'
+        ).click()
 
+        self.student.driver.find_element(
+            By.ID, 'email'
+        ).send_keys(os.getenv('FACEBOOK_USER'))
+        self.student.driver.find_element(
+            By.ID, 'pass'
+        ).send_keys(os.getenv('FACEBOOK_PASSWORD') + Keys.RETURN)
+        self.student.driver.switch_to_window(cc_window)
+        self.student.sleep(1)
+        self.student.driver.find_element(
+            By.XPATH, '//input[@placeholder="enrollment code"]'
+        ).send_keys(code)
+        self.student.driver.find_element(
+            By.XPATH, '//button/span[text()="Enroll"]'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[@class="skip"]')
+            )
+        ).click()
+        # check that enrollemnt code worked, and student is at cc questions
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="task-breadcrumbs"]')
+            )
+        ).click()
         self.ps.test_updates['passed'] = True
 
     # Case C7633 - 003 - Student | Register for a class using a provided
@@ -174,7 +333,80 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # login as teacher to get access code
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Course Settings and Roster'
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH, '//span[contains(text(),"Your student enrollment code")]'
+        ).click()
+        self.teacher.sleep(1)
+        code = self.teacher.driver.find_element(
+            By.XPATH, '//p[@class="code"]'
+        ).text
+        enrollement_url = self.teacher.driver.find_element(
+            By.XPATH, '//textarea'
+        ).text
+        enrollement_url = enrollement_url.split('\n')[5]
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[@class="close"]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.logout()
+        # login as student to register for course
+        self.student.driver.get(enrollement_url)
+        self.student.page.wait_for_page_load()
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Jump to Concept Coach')
+            )
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Launch Concept Coach"]')
+            )
+        ).click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.XPATH, '//div[text()="Sign in"]'
+        ).click()
+        self.student.sleep(0.5)
+        login_window = self.student.driver.window_handles[1]
+        cc_window = self.student.driver.window_handles[0]
+        self.student.driver.switch_to_window(login_window)
+        self.student.driver.find_element(
+            By.ID, 'twitter-login-button'
+        ).click()
+        self.student.driver.find_element(
+            By.ID, 'username_or_email'
+        ).send_keys(os.getenv('TWITTER_USER'))
+        self.student.driver.find_element(
+            By.ID, 'password'
+        ).send_keys(os.getenv('TWITTER_PASSWORD') + Keys.RETURN)
+        self.student.driver.switch_to_window(cc_window)
+        self.student.sleep(1)
+        self.student.driver.find_element(
+            By.XPATH, '//input[@placeholder="enrollment code"]'
+        ).send_keys(code)
+        self.student.driver.find_element(
+            By.XPATH, '//button/span[text()="Enroll"]'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[@class="skip"]')
+            )
+        ).click()
+        # check that enrollemnt code worked, and student is at cc questions
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="task-breadcrumbs"]')
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
@@ -213,6 +445,31 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
 
         # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # login as teacher to get access code
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Course Settings and Roster'
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH, '//span[contains(text(),"Your student enrollment code")]'
+        ).click()
+        self.teacher.sleep(1)
+        code = self.teacher.driver.find_element(
+            By.XPATH, '//p[@class="code"]'
+        ).text
+        enrollement_url = self.teacher.driver.find_element(
+            By.XPATH, '//textarea'
+        ).text
+        enrollement_url = enrollement_url.split('\n')[5]
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[@class="close"]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.logout()
 
         self.ps.test_updates['passed'] = True
 
@@ -250,7 +507,78 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # login as teacher to get access code
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Course Settings and Roster'
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH, '//span[contains(text(),"Your student enrollment code")]'
+        ).click()
+        self.teacher.sleep(1)
+        code = self.teacher.driver.find_element(
+            By.XPATH, '//p[@class="code"]'
+        ).text
+        enrollement_url = self.teacher.driver.find_element(
+            By.XPATH, '//textarea'
+        ).text
+        enrollement_url = enrollement_url.split('\n')[5]
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[@class="close"]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.logout()
+        # login as student to register for course
+        self.student.driver.get(enrollement_url)
+        self.student.page.wait_for_page_load()
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Jump to Concept Coach')
+            )
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Launch Concept Coach"]')
+            )
+        ).click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.XPATH, '//div[text()="Sign in"]'
+        ).click()
+        self.student.sleep(0.5)
+        login_window = self.student.driver.window_handles[1]
+        cc_window = self.student.driver.window_handles[0]
+        self.student.driver.switch_to_window(login_window)
+        self.student.driver.find_element(
+            By.ID, 'auth_key').send_keys('student49')
+        self.student.driver.find_element(
+            By.ID, 'password').send_keys(self.student.password)
+        self.student.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]').click()
+        self.student.driver.switch_to_window(cc_window)
+        self.student.sleep(1)
+        self.student.driver.find_element(
+            By.XPATH, '//input[@placeholder="enrollment code"]'
+        ).send_keys(code)
+        self.student.driver.find_element(
+            By.XPATH, '//button/span[text()="Enroll"]'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[@class="skip"]')
+            )
+        ).click()
+        # check that enrollemnt code worked, and student is at cc questions
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//h3/div[contains(text(),"You have successfully joined")]')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -287,8 +615,71 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        # login as teacher to get access code
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Course Settings and Roster'
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH, '//span[contains(text(),"Your student enrollment code")]'
+        ).click()
+        self.teacher.sleep(1)
+        enrollement_url = self.teacher.driver.find_element(
+            By.XPATH, '//textarea'
+        ).text
+        enrollement_url = enrollement_url.split('\n')[5]
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[@class="close"]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.logout()
+        # login as student to register for course
+        self.student.driver.get(enrollement_url)
+        self.student.page.wait_for_page_load()
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Jump to Concept Coach')
+            )
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Launch Concept Coach"]')
+            )
+        ).click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.XPATH, '//div[text()="Sign in"]'
+        ).click()
+        self.student.sleep(0.5)
+        login_window = self.student.driver.window_handles[1]
+        cc_window = self.student.driver.window_handles[0]
+        self.student.driver.switch_to_window(login_window)
+        self.student.driver.find_element(
+            By.ID, 'auth_key').send_keys('student22')
+        self.student.driver.find_element(
+            By.ID, 'password').send_keys(self.student.password)
+        self.student.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]').click()
+        self.student.driver.switch_to_window(cc_window)
+        self.student.sleep(1)
+        self.student.driver.find_element(
+            By.XPATH, '//input[@placeholder="enrollment code"]'
+        ).send_keys('not a real enrollment code')
+        self.student.driver.find_element(
+            By.XPATH, '//button/span[text()="Enroll"]'
+        ).click()
+        # find an error message
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//li[contains(text(),' +
+                 '"The provided enrollment code is not valid.")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7637 - 007 - Student | Able to change to another course
@@ -325,8 +716,75 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.get(
+            "https://qa.cnx.org/contents/JydfSfIS@2.2:HR_VN3f7@3/" +
+            "Introduction-to-Science-and-th")
+            # is it okay to use the url like this
+        # get to non-into section
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button//span[text()="Contents"]')
+            )
+        ).click()
+        self.student.sleep(0.5)
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//span[@class="chapter-number" and text()="1.1"]')
+            )
+        ).click()
+        # open concept coach
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Jump to Concept Coach')
+            )
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Launch Concept Coach"]')
+            )
+        ).click()
+        # login
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[text()="Sign in"]')
+            )
+        ).click()
+        self.student.sleep(0.5)
+        login_window = self.student.driver.window_handles[1]
+        cc_window = self.student.driver.window_handles[0]
+        self.student.driver.switch_to_window(login_window)
+        self.student.driver.find_element(
+            By.ID, 'auth_key').send_keys('student01')
+        self.student.driver.find_element(
+            By.ID, 'password').send_keys(self.student.password)
+        self.student.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]').click()
+        self.student.driver.switch_to_window(cc_window)
+        self.student.sleep(0.5)
+        # check for name
+        self.student.driver.find_element(
+            By.XPATH, '//span[contains(text(),"Atticus")]'
+        )
+        # go to another course
+        self.student.get(
+            'https://qa.cnx.org/contents/lHoUF1_V@2.2:6RH0nLs4@8/' +
+            'What-Economics-Is-and-Why-Its-')
+        self.student.page.wait_for_page_load()
+        # open concept coach
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Jump to Concept Coach')
+            )
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Launch Concept Coach"]')
+            )
+        ).click()
+        # check that still logged in
+        self.student.driver.find_element(
+            By.XPATH, '//span[contains(text(),"Atticus")]'
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7638 - 008 - Student | Able to change period in the same course
@@ -367,6 +825,8 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    # can this be done by just finding a student enrolled in two courses
+    # or does it need to be enrolling a student in a second course?
     # Case C7639 - 009- Student | Able to enroll in more than one CC course
     @pytest.mark.skipif(str(7639) not in TESTS, reason='Excluded')
     def test_student_able_to_enroll_in_more_than_one_cc_course_7639(self):
@@ -424,8 +884,44 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.get(
+            "https://qa.cnx.org/contents/JydfSfIS@2.2:HR_VN3f7@3/" +
+            "Introduction-to-Science-and-th")
+            # is it okay to use the url like this
+        # get to non-into section
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button//span[text()="Contents"]')
+            )
+        ).click()
+        self.student.sleep(0.5)
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//span[@class="chapter-number" and text()="1.1"]')
+            )
+        ).click()
+        # open concept coach
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Jump to Concept Coach')
+            )
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Launch Concept Coach"]')
+            )
+        ).click()
+        # view sign in and sign up buttons
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(text(),"Sign up")]')
+            )
+        )
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[text()="Sign in"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7641 - 011- Student | Able to view their name in header sections
@@ -453,8 +949,55 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.get(
+            "https://qa.cnx.org/contents/JydfSfIS@2.2:HR_VN3f7@3/" +
+            "Introduction-to-Science-and-th")
+            # is it okay to use the url like this
+        # get to non-into section
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button//span[text()="Contents"]')
+            )
+        ).click()
+        self.student.sleep(0.5)
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//span[@class="chapter-number" and text()="1.1"]')
+            )
+        ).click()
+        # open concept coach
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Jump to Concept Coach')
+            )
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Launch Concept Coach"]')
+            )
+        ).click()
+        # login
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[text()="Sign in"]')
+            )
+        ).click()
+        self.student.sleep(0.5)
+        login_window = self.student.driver.window_handles[1]
+        cc_window = self.student.driver.window_handles[0]
+        self.student.driver.switch_to_window(login_window)
+        self.student.driver.find_element(
+            By.ID, 'auth_key').send_keys('student01')
+        self.student.driver.find_element(
+            By.ID, 'password').send_keys(self.student.password)
+        self.student.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]').click()
+        self.student.driver.switch_to_window(cc_window)
+        self.student.sleep(0.5)
+        # view name in header
+        self.student.driver.find_element(
+            By.XPATH, '//span[contains(text(),"Atticus")]'
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7642 - 012- Student | Presented the current privacy policy
@@ -694,8 +1237,64 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.get(
+            "https://qa.cnx.org/contents/JydfSfIS@2.2:HR_VN3f7@3/" +
+            "Introduction-to-Science-and-th")
+            # is it okay to use the url like this
+        # get to non-into section
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button//span[text()="Contents"]')
+            )
+        ).click()
+        self.student.sleep(0.5)
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//span[@class="chapter-number" and text()="1.1"]')
+            )
+        ).click()
+        # open concept coach
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Jump to Concept Coach')
+            )
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Launch Concept Coach"]')
+            )
+        ).click()
+        # login
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[text()="Sign in"]')
+            )
+        ).click()
+        self.student.sleep(0.5)
+        login_window = self.student.driver.window_handles[1]
+        cc_window = self.student.driver.window_handles[0]
+        self.student.driver.switch_to_window(login_window)
+        self.student.driver.find_element(
+            By.ID, 'auth_key').send_keys('student01')
+        self.student.driver.find_element(
+            By.ID, 'password').send_keys(self.student.password)
+        self.student.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]').click()
+        self.student.driver.switch_to_window(cc_window)
+        self.student.sleep(0.5)
+        # go to profile
+        self.student.driver.find_element(
+            By.XPATH, '//span[contains(text(),"Atticus")]'
+        ).click()
+        self.student.driver.find_element(
+            By.LINK_TEXT, 'Account Profile'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[contains(@class,"concept-coach-view-profile")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7650 - 019 - Student |  Registration and login are assistive
