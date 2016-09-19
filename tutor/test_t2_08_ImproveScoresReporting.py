@@ -37,6 +37,8 @@ TESTS = os.getenv(
         14833, 14834, 14835, 14836
 """
 
+#14831, 
+
 
 @PastaDecorator.on_platforms(BROWSERS)
 class TestImproveScoresReporting(unittest.TestCase):
@@ -383,6 +385,7 @@ class TestImproveScoresReporting(unittest.TestCase):
         self.teacher.find(By.PARTIAL_LINK_TEXT, '3rd').click()
         scrollbar = self.teacher.find(By.XPATH, "//div[@class='ScrollbarLayout_face ScrollbarLayout_faceHorizontal public_Scrollbar_face']")
         scrollbar.click()
+        table = self.teacher.find(By.XPATH, "//div[@class='course-scores-container']/div")
 
         # Four arrow rights bring a new assignment into view, try to bring
         # 50 new assignments into view
@@ -392,8 +395,13 @@ class TestImproveScoresReporting(unittest.TestCase):
                 # Having trouble focusing on scrollbar to send arrow rights,
                 # trying to send the arrows
                 actions = ActionChains(self.teacher.driver)
-                actions.move_to_element(scrollbar)
-                actions.perform()
+                actions.move_to_element(scrollbar).perform()
+                #actions.click(scrollbar)
+                #actions.perform()
+                #table.click()
+                self.teacher.sleep(5)
+                self.teacher.driver.execute_script("arguments[0].scrollTop = 200", table)
+                self.teacher.sleep(20)
 
                 # Scroll the scrollbar once scrollbar is in focus
                 scrollbar.send_keys(Keys.ARROW_RIGHT)
