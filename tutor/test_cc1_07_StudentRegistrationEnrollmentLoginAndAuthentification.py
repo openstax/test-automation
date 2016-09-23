@@ -16,10 +16,11 @@ from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.action_chains import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Student, Teacher
+from staxing.helper import Student, Teacher, Admin
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -37,13 +38,11 @@ TESTS = os.getenv(
     #     7646, 7647, 7648, 7650, 87364,
     #     87365
     # ])
-    str([7650])
-    # done: 7631,7632,7633,7634,7635,7636,7637, ..., 7640, 7641, ..., 7648,...
-    # skipped: 7650
+    str([7639])
     # issues:
     # 7650 - assistive tech, not registering tab key to move from elements
     # 7638 - says DEL on test rail make sure that means delete it
-    #  about terms: 7642, 7643, 7644, 7645, 7646, 7647
+    #  about terms: 7646, 7647 <- steps do not seem correct, copy of 7642, 7643
     # 7639 - ask greg about what this case need, see notes below on case
     # 87364, 87365 - no steps testrail. are they imlemented on tutor yet?
 )
@@ -68,6 +67,12 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
             # pasta_user=self.ps,
             # capabilities=self.desired_capabilities
         )
+        self.admin = Admin(
+            use_env_vars=True,
+            existing_driver=self.student.driver,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
+        )
 
     def tearDown(self):
         """Test destructor."""
@@ -83,8 +88,12 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
             self.teacher.delete()
         except:
             pass
+        try:
+            self.admin.delete()
+        except:
+            pass
 
-    def get_enrollemnt_code(self):
+    def get_enrollemnt_code(self, number=1):
         """
         Steps:
         Sign in as teacher
@@ -97,9 +106,15 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
             enrollemnt_url - url of book for course
         """
         self.teacher.login()
-        self.teacher.driver.find_element(
-            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
-        ).click()
+        if number != 1:
+            cc_courses = self.teacher.driver.find_elements(
+                By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+            )
+            cc_courses[number].click()
+        else:
+            self.teacher.driver.find_element(
+                By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+            ).click()
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
             By.LINK_TEXT, 'Course Settings and Roster'
@@ -780,6 +795,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         )
         self.ps.test_updates['passed'] = True
 
+    # DEL?
     # Case C7638 - 008 - Student | Able to change period in the same course
     @pytest.mark.skipif(str(7638) not in TESTS, reason='Excluded')
     def test_student_able_to_change_period_in_the_same_course_7638(self):
@@ -848,6 +864,9 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
 
         # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # create new student
+        # get enrollemnet code for two diff cc courses
+        # enroll in both of those courses
 
         self.ps.test_updates['passed'] = True
 
@@ -877,10 +896,10 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        # is it okay to use the url like this
         self.student.get(
             "https://qa.cnx.org/contents/JydfSfIS@2.2:HR_VN3f7@3/" +
             "Introduction-to-Science-and-th")
-            # is it okay to use the url like this
         # get to non-into section
         self.student.wait.until(
             expect.element_to_be_clickable(
@@ -1023,8 +1042,34 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.driver.get("http://accounts-qa.openstax.org")
+        num = str(randint(4000, 4999))
+        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
+        self.student.driver.find_element(
+            By.ID, 'identity-login-button').click()
+        self.student.driver.find_element(
+            By.ID, 'signup_first_name').send_keys('first_name_001')
+        self.student.driver.find_element(
+            By.ID, 'signup_last_name').send_keys('last_name_001')
+        self.student.driver.find_element(
+            By.ID, 'signup_email_address').send_keys('email_001@test.com')
+        self.student.driver.find_element(
+            By.ID, 'signup_username').send_keys('automated_07_'+num)
+        self.student.driver.find_element(
+            By.ID, 'signup_password'
+        ).send_keys(os.getenv('STUDENT_PASSWORD'))
+        self.student.driver.find_element(
+            By.ID, 'signup_password_confirmation'
+        ).send_keys(os.getenv('STUDENT_PASSWORD'))
+        self.student.driver.find_element(
+            By.LINK_TEXT, 'Privacy Policy'
+        ).click()
+        self.student.driver.find_element(
+            By.XPATH, '//div[@id="terms_dialog"]//h3[text()="Privacy Policy"]')
+        self.student.driver.find_element(
+            By.XPATH, '//div[@id="terms_dialog"]//button[@class="close"]'
+        ).click()
+        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
         self.ps.test_updates['passed'] = True
 
     # Case C7643 - 013- Student | Presented the current terms of service
@@ -1055,7 +1100,32 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.driver.get("http://accounts-qa.openstax.org")
+        num = str(randint(5000, 5999))
+        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
+        self.student.driver.find_element(
+            By.ID, 'identity-login-button').click()
+        self.student.driver.find_element(
+            By.ID, 'signup_first_name').send_keys('first_name_001')
+        self.student.driver.find_element(
+            By.ID, 'signup_last_name').send_keys('last_name_001')
+        self.student.driver.find_element(
+            By.ID, 'signup_email_address').send_keys('email_001@test.com')
+        self.student.driver.find_element(
+            By.ID, 'signup_username').send_keys('automated_07_'+num)
+        self.student.driver.find_element(
+            By.ID, 'signup_password'
+        ).send_keys(os.getenv('STUDENT_PASSWORD'))
+        self.student.driver.find_element(
+            By.ID, 'signup_password_confirmation'
+        ).send_keys(os.getenv('STUDENT_PASSWORD'))
+        self.student.driver.find_element(By.LINK_TEXT, 'Terms of Use').click()
+        self.student.driver.find_element(
+            By.XPATH, '//div[@id="terms_dialog"]//h3[text()="Terms of Use"]')
+        self.student.driver.find_element(
+            By.XPATH, '//div[@id="terms_dialog"]//button[@class="close"]'
+        ).click()
+        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
 
         self.ps.test_updates['passed'] = True
 
@@ -1094,8 +1164,78 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.driver.find_element(By.LINK_TEXT, 'Admin').click()
+        self.admin.page.wait_for_page_load()
+        self.admin.driver.find_element(By.LINK_TEXT, 'Legal').click()
+        self.admin.driver.find_element(By.LINK_TEXT, 'Terms').click()
+        self.admin.page.wait_for_page_load()
+        contracts = self.admin.driver.find_elements(
+            By.XPATH,
+            '//div[@class="fine_print contract_index"]/ul'
+        )
+        for contract in contracts:
+            contract_name = contract.find_element(By.XPATH, './li').text
+            if contract_name == 'privacy_policy':
+                contract.find_element(
+                    By.XPATH, './/a[text()="New Version"]'
+                ).click()
+                break
+        self.admin.page.wait_for_page_load()
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@name="commit"]'
+        ).click()
+        self.admin.page.wait_for_page_load()
+        self.admin.driver.find_element(By.LINK_TEXT, 'Publish').click()
+        try:
+            self.admin.wait. \
+                until(
+                    expect.alert_is_present(),
+                    'Timed out waiting for alert.'
+                )
+            alert = self.admin.driver.switch_to_alert()
+            alert.accept()
+            print('alert accepted')
+        except TimeoutException:
+            print('no alert')
+        # logout funtion not working for admin from this page.
+        self.admin.driver.find_element(By.LINK_TEXT, 'Log Out').click()
+        self.admin.sleep(1)
+        # have to log student in manually, login function accepts policy
+        self.student.page.wait_for_page_load()
+        if self.student.driver.get_window_size()['width'] <= \
+                self.student.CONDENSED_WIDTH:
+            # get small-window menu toggle
+            is_collapsed = self.student.driver.find_element(
+                By.XPATH,
+                '//button[contains(@class,"navbar-toggle")]'
+            )
+            # check if the menu is collapsed and, if yes, open it
+            if('collapsed' in is_collapsed.get_attribute('class')):
+                is_collapsed.click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Login')
+            )
+        ).click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.ID, 'auth_key').send_keys(self.student.username)
+        self.student.driver.find_element(
+            By.ID, 'password').send_keys(self.student.password)
+        # click on the sign in button
+        self.student.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]'
+        ).click()
+        self.student.page.wait_for_page_load()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//h2[text()="Privacy Policy"]')
+            )
+        )
+        self.student.driver.find_element(By.ID, 'i_agree').click()
+        self.student.driver.find_element(By.ID, 'agreement_submit').click()
         self.ps.test_updates['passed'] = True
 
     # Case C7645 - 015 - Student | Presented the new terms of service when
@@ -1132,7 +1272,78 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.driver.find_element(By.LINK_TEXT, 'Admin').click()
+        self.admin.page.wait_for_page_load()
+        self.admin.driver.find_element(By.LINK_TEXT, 'Legal').click()
+        self.admin.driver.find_element(By.LINK_TEXT, 'Terms').click()
+        self.admin.page.wait_for_page_load()
+        contracts = self.admin.driver.find_elements(
+            By.XPATH,
+            '//div[@class="fine_print contract_index"]/ul'
+        )
+        for contract in contracts:
+            contract_name = contract.find_element(By.XPATH, './li').text
+            if contract_name == 'general_terms_of_use':
+                contract.find_element(
+                    By.XPATH, './/a[text()="New Version"]'
+                ).click()
+                break
+        self.admin.page.wait_for_page_load()
+        self.admin.driver.find_element(
+            By.XPATH, '//input[@name="commit"]'
+        ).click()
+        self.admin.page.wait_for_page_load()
+        self.admin.driver.find_element(By.LINK_TEXT, 'Publish').click()
+        try:
+            self.admin.wait. \
+                until(
+                    expect.alert_is_present(),
+                    'Timed out waiting for alert.'
+                )
+            alert = self.admin.driver.switch_to_alert()
+            alert.accept()
+            print('alert accepted')
+        except TimeoutException:
+            print('no alert')
+        # logout funtion not working for admin from this page.
+        self.admin.driver.find_element(By.LINK_TEXT, 'Log Out').click()
+        self.admin.sleep(1)
+        # have to log student in manually, login function accepts policy
+        self.student.page.wait_for_page_load()
+        if self.student.driver.get_window_size()['width'] <= \
+                self.student.CONDENSED_WIDTH:
+            # get small-window menu toggle
+            is_collapsed = self.student.driver.find_element(
+                By.XPATH,
+                '//button[contains(@class,"navbar-toggle")]'
+            )
+            # check if the menu is collapsed and, if yes, open it
+            if('collapsed' in is_collapsed.get_attribute('class')):
+                is_collapsed.click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Login')
+            )
+        ).click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.ID, 'auth_key').send_keys(self.student.username)
+        self.student.driver.find_element(
+            By.ID, 'password').send_keys(self.student.password)
+        # click on the sign in button
+        self.student.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]'
+        ).click()
+        self.student.page.wait_for_page_load()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//h2[text()="Terms of Use"]')
+            )
+        )
+        self.student.driver.find_element(By.ID, 'i_agree').click()
+        self.student.driver.find_element(By.ID, 'agreement_submit').click()
 
         self.ps.test_updates['passed'] = True
 
@@ -1168,7 +1379,34 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.driver.get("http://accounts-qa.openstax.org")
+        num = str(randint(6000, 6999))
+        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
+        self.student.driver.find_element(
+            By.ID, 'identity-login-button').click()
+        self.student.driver.find_element(
+            By.ID, 'signup_first_name').send_keys('first_name_001')
+        self.student.driver.find_element(
+            By.ID, 'signup_last_name').send_keys('last_name_001')
+        self.student.driver.find_element(
+            By.ID, 'signup_email_address').send_keys('email_001@test.com')
+        self.student.driver.find_element(
+            By.ID, 'signup_username').send_keys('automated_07_'+num)
+        self.student.driver.find_element(
+            By.ID, 'signup_password'
+        ).send_keys(os.getenv('STUDENT_PASSWORD'))
+        self.student.driver.find_element(
+            By.ID, 'signup_password_confirmation'
+        ).send_keys(os.getenv('STUDENT_PASSWORD'))
+        self.student.driver.find_element(
+            By.LINK_TEXT, 'Privacy Policy'
+        ).click()
+        self.student.driver.find_element(
+            By.XPATH, '//div[@id="terms_dialog"]//h3[text()="Privacy Policy"]')
+        self.student.driver.find_element(
+            By.XPATH, '//div[@id="terms_dialog"]//button[@class="close"]'
+        ).click()
+        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
 
         self.ps.test_updates['passed'] = True
 
@@ -1202,7 +1440,32 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.driver.get("http://accounts-qa.openstax.org")
+        num = str(randint(7000, 7999))
+        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
+        self.student.driver.find_element(
+            By.ID, 'identity-login-button').click()
+        self.student.driver.find_element(
+            By.ID, 'signup_first_name').send_keys('first_name_001')
+        self.student.driver.find_element(
+            By.ID, 'signup_last_name').send_keys('last_name_001')
+        self.student.driver.find_element(
+            By.ID, 'signup_email_address').send_keys('email_001@test.com')
+        self.student.driver.find_element(
+            By.ID, 'signup_username').send_keys('automated_07_'+num)
+        self.student.driver.find_element(
+            By.ID, 'signup_password'
+        ).send_keys(os.getenv('STUDENT_PASSWORD'))
+        self.student.driver.find_element(
+            By.ID, 'signup_password_confirmation'
+        ).send_keys(os.getenv('STUDENT_PASSWORD'))
+        self.student.driver.find_element(By.LINK_TEXT, 'Terms of Use').click()
+        self.student.driver.find_element(
+            By.XPATH, '//div[@id="terms_dialog"]//h3[text()="Terms of Use"]')
+        self.student.driver.find_element(
+            By.XPATH, '//div[@id="terms_dialog"]//button[@class="close"]'
+        ).click()
+        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
 
         self.ps.test_updates['passed'] = True
 
@@ -1341,7 +1604,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
         # signing in
         self.student.get('https://tutor-qa.openstax.org')
         self.student.page.wait_for_page_load()
@@ -1367,7 +1630,8 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         # name_action.send_keys(os.getenv('STUDENT_USER') + Keys.TAB)
         # name_action.perform()
         # password_action = ActionChains(self.student.driver)
-        # password_action.send_keys(os.getenv('STUDENT_PASSWORD') + Keys.RETURN)
+        # password_action.send_keys(
+        #   os.getenv('STUDENT_PASSWORD') + Keys.RETURN)
         # password_action.perform()
         assert('accounts' in self.student.current_url()), 'not logged in'
 
@@ -1399,7 +1663,6 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
-
 
     # Case C87365 - 021 - Student |  The same socail login may not be added to
     # the same account twice
