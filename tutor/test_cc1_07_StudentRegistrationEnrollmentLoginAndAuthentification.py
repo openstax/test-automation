@@ -42,8 +42,6 @@ TESTS = os.getenv(
     # issues:
     # 7650 - assistive tech, not registering tab key to move from elements
     # 7638 - says DEL on test rail make sure that means delete it
-    #  about terms: 7646, 7647 <- steps do not seem correct, copy of 7642, 7643
-    # 7639 - ask greg about what this case need, see notes below on case
     # 87364, 87365 - no steps testrail. are they imlemented on tutor yet?
 )
 
@@ -93,7 +91,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         except:
             pass
 
-    def get_enrollemnt_code(self, number=1):
+    def get_enrollemnt_code(self, number=0):
         """
         Steps:
         Sign in as teacher
@@ -106,7 +104,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
             enrollemnt_url - url of book for course
         """
         self.teacher.login()
-        if number != 1:
+        if number != 0:
             cc_courses = self.teacher.driver.find_elements(
                 By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
             )
@@ -834,20 +832,26 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # can this be done by just finding a student enrolled in two courses
-    # or does it need to be enrolling a student in a second course?
     # Case C7639 - 009- Student | Able to enroll in more than one CC course
     @pytest.mark.skipif(str(7639) not in TESTS, reason='Excluded')
     def test_student_able_to_enroll_in_more_than_one_cc_course_7639(self):
         """Able to enroll in more than one Concept Coach course.
 
         Steps:
-        Access a Concept Coach book that the student is not enrolled in
-        Access Chapter 1 Section 1 of the book
-        Click on 'Launch Concept Coach'
-        Enter the course code in the text box labeled 'enrollment code'
-        Click 'Enroll'
-        Click 'Confirm'
+        create a new student
+        get enrollment codes, and urls for two differnet cc courses
+            -login as teacher
+            - click on a cc course
+            - in the user menu click Course settings and Roster
+            - click Your student enrollment code
+            (repeat for a second cc course)
+        logout of teacher
+        go to first url
+        Click Jump to Concept Coach
+        Click Launch Concept Coach
+        login as student created earlier
+        enter enrollemnt code
+        repeat with second url and code(except don't have to login again)
 
         Expected Result:
         The student joins a new course.
@@ -863,10 +867,110 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
         # create new student
+        rand_username = self.create_user(8000, 8999)
         # get enrollemnet code for two diff cc courses
-        # enroll in both of those courses
+        code1, enrollement_url1 = self.get_enrollemnt_code()
+        code2, enrollement_url2 = self.get_enrollemnt_code(1)
+        # enroll in first course
+        self.student.driver.get(enrollement_url1)
+        self.student.page.wait_for_page_load()
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Jump to Concept Coach')
+            )
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Launch Concept Coach"]')
+            )
+        ).click()
+        self.student.page.wait_for_page_load()
+        self.student.driver.find_element(
+            By.XPATH, '//div[text()="Sign in"]'
+        ).click()
+        self.student.sleep(0.5)
+        login_window = self.student.driver.window_handles[1]
+        cc_window = self.student.driver.window_handles[0]
+        self.student.driver.switch_to_window(login_window)
+        self.student.driver.find_element(
+            By.ID, 'auth_key').send_keys(rand_username)
+        self.student.driver.find_element(
+            By.ID, 'password').send_keys(self.student.password)
+        self.student.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]').click()
+        try:
+            self.student.driver.find_element(By.ID, "i_agree").click()
+            self.student.driver.find_element(By.ID, "agreement_submit").click()
+            self.student.driver.find_element(By.ID, "i_agree").click()
+            self.student.driver.find_element(By.ID, "agreement_submit").click()
+        except NoSuchElementException:
+            pass
+        self.student.driver.switch_to_window(cc_window)
+        self.student.sleep(1)
+        self.student.driver.find_element(
+            By.XPATH, '//input[@placeholder="enrollment code"]'
+        ).send_keys(code1)
+        self.student.driver.find_element(
+            By.XPATH, '//button/span[text()="Enroll"]'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[@class="skip"]')
+            )
+        ).click()
+        # check that enrollemnt code worked, and student is at cc questions
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="task-breadcrumbs"]')
+            )
+        )
+        # enroll in second course
+        self.student.driver.get(enrollement_url2)
+        self.student.page.wait_for_page_load()
+        self.student.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Jump to Concept Coach')
+            )
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Launch Concept Coach"]')
+            )
+        ).click()
+        self.student.page.wait_for_page_load()   # check if have to login again
+        # self.student.driver.find_element(
+        #     By.XPATH, '//div[text()="Sign in"]'
+        # ).click()
+        # self.student.sleep(0.5)
+        # login_window = self.student.driver.window_handles[1]
+        # cc_window = self.student.driver.window_handles[0]
+        # self.student.driver.switch_to_window(login_window)
+        # self.student.driver.find_element(
+        #     By.ID, 'auth_key').send_keys(rand_username)
+        # self.student.driver.find_element(
+        #     By.ID, 'password').send_keys(self.student.password)
+        # self.student.driver.find_element(
+        #     By.XPATH, '//button[text()="Sign in"]').click()
+        # self.student.driver.switch_to_window(cc_window)
+        self.student.sleep(1)
+        self.student.driver.find_element(
+            By.XPATH, '//input[@placeholder="enrollment code"]'
+        ).send_keys(code2)
+        self.student.driver.find_element(
+            By.XPATH, '//button/span[text()="Enroll"]'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[@class="skip"]')
+            )
+        ).click()
+        # check that enrollemnt code worked, and student is at cc questions
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="task-breadcrumbs"]')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -1604,6 +1708,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
         # raise NotImplementedError(inspect.currentframe().f_code.co_name)
         # signing in
         self.student.get('https://tutor-qa.openstax.org')
