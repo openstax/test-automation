@@ -31,17 +31,17 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    # str([
-    #     7631, 7632, 7633, 7634, 7635,
-    #     7636, 7637, 7638, 7639, 7640,
-    #     7641, 7642, 7643, 7644, 7645,
-    #     7646, 7647, 7648, 7650, 87364,
-    #     87365
-    # ])
-    str([7639])
+    str([
+        7631, 7632, 7633, 7634, 7635,
+        7636, 7637, 7638, 7639, 7640,
+        7641, 7642, 7643, 7644, 7645,
+        7646, 7647, 7648, 7650, 87364,
+        87365
+    ])
     # issues:
     # 7650 - assistive tech, not registering tab key to move from elements
-    # 7638 - says DEL on test rail make sure that means delete it
+    # 7638 - says DEL on test rail make sure that means delete it,
+    #          left it with exception raised
     # 87364, 87365 - no steps testrail. are they imlemented on tutor yet?
 )
 
@@ -56,20 +56,20 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.student = Student(
             use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.teacher = Teacher(
             use_env_vars=True,
             existing_driver=self.student.driver,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.admin = Admin(
             use_env_vars=True,
             existing_driver=self.student.driver,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
 
     def tearDown(self):
