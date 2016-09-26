@@ -24,9 +24,10 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([
-        14739, 14741, 14742, 14743, 14744
-    ])
+    # str([
+    #     14739, 14741, 14742, 14743, 14744
+    # ])
+    str([14739])
 )
 
 
@@ -36,7 +37,6 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
@@ -80,7 +80,34 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.driver.get("https://exercises-qa.openstax.org/")
+        self.teacher.page.wait_for_page_load()
+        # login
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[@id="account-bar-content"]//a[text()="Sign in"]'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.driver.find_element(
+            By.ID, 'auth_key'
+        ).send_keys(self.teacher.username)
+        self.teacher.driver.find_element(
+            By.ID, 'password'
+        ).send_keys(self.teacher.password)
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]'
+        ).click()
+        # create new vocab
+        self.teacher.page.wait_for_page_load()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[@href="/exercises/new"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[text()="New Vocabulary Term"]')
+            )
+        ).click()
+        assert('/vocabulary/new' in self.teacher.current_url()), \
+            'not at new vocab page'
 
         self.ps.test_updates['passed'] = True
 
