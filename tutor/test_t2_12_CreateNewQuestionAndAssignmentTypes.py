@@ -8,8 +8,8 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
@@ -42,8 +42,8 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
 
     def tearDown(self):
@@ -76,12 +76,7 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.12.001' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.12',
-            't2.12.001',
-            '14739'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.12', 't2.12.001', '14739']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -104,12 +99,7 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.12.002' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.12',
-            't2.12.002',
-            '14741'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.12', 't2.12.002', '14741']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -137,12 +127,7 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.12.003' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.12',
-            't2.12.003',
-            '14742'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.12', 't2.12.003', '14742']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -170,12 +155,7 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.12.004' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.12',
-            't2.12.004',
-            '14743'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.12', 't2.12.004', '14743']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -204,12 +184,7 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.12.005' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.12',
-            't2.12.005',
-            '14744'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.12', 't2.12.005', '14744']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
