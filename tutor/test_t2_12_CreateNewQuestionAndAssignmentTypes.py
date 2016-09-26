@@ -7,13 +7,13 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-# from random import randint
+from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher
+from staxing.helper import Teacher, Student
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -27,7 +27,7 @@ TESTS = os.getenv(
     # str([
     #     14739, 14741, 14742, 14743, 14744
     # ])
-    str([14739])
+    str([14741])
 )
 
 
@@ -45,6 +45,12 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
             # pasta_user=self.ps,
             # capabilities=self.desired_capabilities
         )
+        self.student = Student(
+            use_env_vars=True,
+            existing_driver=self.teacher.driver,
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
+        )
 
     def tearDown(self):
         """Test destructor."""
@@ -54,6 +60,10 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
         )
         try:
             self.teacher.delete()
+        except:
+            pass
+        try:
+            self.student.delete()
         except:
             pass
 
@@ -130,8 +140,35 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.driver.get("https://exercises-qa.openstax.org/")
+        self.teacher.page.wait_for_page_load()
+        # login
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[@id="account-bar-content"]//a[text()="Sign in"]'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.driver.find_element(
+            By.ID, 'auth_key'
+        ).send_keys(self.teacher.username)
+        self.teacher.driver.find_element(
+            By.ID, 'password'
+        ).send_keys(self.teacher.password)
+        self.teacher.driver.find_element(
+            By.XPATH, '//button[text()="Sign in"]'
+        ).click()
+        # create new vocab
+        self.teacher.page.wait_for_page_load()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[@href="/exercises/new"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//input[@label="True/False"]')
+            )
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH, '//span[text()="True/False"]'
+        )
         self.ps.test_updates['passed'] = True
 
     # 14742 - 003 - System | Display embedded videos with attribution and link
@@ -187,6 +224,11 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
 
         # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        assignemnt_name = randint(0, 999)
+        # create a hw with a multi part question, and gice it a randomized name
+        # ID: 12061@6 is multi part
+        self.teacher.login()
+        self.teacher.select_course(appearance="intro_sociology")
 
         self.ps.test_updates['passed'] = True
 
@@ -215,6 +257,7 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # create a hw with a multi part question, and gice it a randomized name
+        # ID: 12252@5 is multi part
 
         self.ps.test_updates['passed'] = True
