@@ -5,6 +5,7 @@ import json
 import os
 import pytest
 import unittest
+import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint
@@ -27,7 +28,7 @@ TESTS = os.getenv(
     # str([
     #     14739, 14741, 14742, 14743, 14744
     # ])
-    str([14741])
+    str([14743])
 )
 
 
@@ -171,6 +172,8 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
         )
         self.ps.test_updates['passed'] = True
 
+    # possibly changed implementation on site
+    # no info icon found
     # 14742 - 003 - System | Display embedded videos with attribution and link
     # back to author
     @pytest.mark.skipif(str(14742) not in TESTS, reason='Excluded')
@@ -199,6 +202,9 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    # NOT DONE
+    # create hw helper still not working
+    # can test later half with manually created assignemnt
     # 14743 - 004 - Teacher | Each part of a multi-part question counts as a
     # seperate problem when scored
     @pytest.mark.skipif(str(14743) not in TESTS, reason='Excluded')
@@ -223,15 +229,55 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-        assignemnt_name = randint(0, 999)
         # create a hw with a multi part question, and gice it a randomized name
         # ID: 12061@6 is multi part
         self.teacher.login()
-        self.teacher.select_course(appearance="intro_sociology")
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@data-appearance="intro_sociology"]' +
+            '//a[not(contains(@href,"/cc-dashboard"))]'
+        ).click()
+        assignment_name = "homework-%s" % randint(100, 999)
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=100)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='homework',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'problems': {'1.1': ['12024@10'], },
+                'status': 'publish',
+            }
+        )
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Student Scores'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        # can just click the first review because assignemnt just created
+        # and should be the most recent one
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Review'
+        ).click()
+        cards = self.teacher.driver.find_elements(
+            By.XPATH, '//div[contains(@class,"card-body")]')
+        breadcrumbs = self.teacher.driver.find_elements(
+            By.XPATH, '//div[contains(@class,"openstax-question")]')
+        questions = self.teacher.driver.find_elements(
+            By.XPATH, '//span[contains(@class,"openstax-breadcrumb")]')
+        # check that more breadcrumbs than cards?
+        assert(len(questions) == len(breadcrumbs)), \
+            'breadcrumbs and questions not equal'
+        assert(len(cards) > len(breadcrumbs)), \
+            'multipart q card has multiple questions,' + \
+            'not matching up with  breadcrumbs'
 
         self.ps.test_updates['passed'] = True
 
+    # NOT DONE
+    # same issue as above w/ add_homework helper
     # 14744 - 005 - Student | Each part of a multi-part question counts as a
     # seperate problem when scored
     @pytest.mark.skipif(str(14744) not in TESTS, reason='Excluded')
@@ -257,7 +303,37 @@ class TestCreateNewQuestionAndAssignmentTypes(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
         # create a hw with a multi part question, and gice it a randomized name
         # ID: 12252@5 is multi part
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@data-appearance="intro_sociology"]' +
+            '//a[not(contains(@href,"/cc-dashboard"))]'
+        ).click()
+        assignment_name = "homework-%s" % randint(100, 999)
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=100)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='homework',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'problems': {'1.1': ['12024@10'], },
+                'status': 'publish',
+            }
+        )
+        self.teacher.logout()
+        # login as student and go to same class
+        self.student.login()
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@data-appearance="intro_sociology"]' +
+            '//a[not(contains(@href,"/cc-dashboard"))]'
+        ).click()
+        # go to assignment (find my assignemnt_name)
 
         self.ps.test_updates['passed'] = True
