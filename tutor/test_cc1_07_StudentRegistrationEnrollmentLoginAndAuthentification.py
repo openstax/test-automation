@@ -105,30 +105,30 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         """
         self.teacher.login()
         if number != 0:
-            cc_courses = self.teacher.driver.find_elements(
+            cc_courses = self.teacher.find_all(
                 By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
             )
             cc_courses[number].click()
         else:
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
             ).click()
         self.teacher.open_user_menu()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.LINK_TEXT, 'Course Settings and Roster'
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//span[contains(text(),"Your student enrollment code")]'
         ).click()
         self.teacher.sleep(1)
-        code = self.teacher.driver.find_element(
+        code = self.teacher.find(
             By.XPATH, '//p[@class="code"]'
         ).text
-        enrollement_url = self.teacher.driver.find_element(
+        enrollement_url = self.teacher.find(
             By.XPATH, '//textarea'
         ).text
         enrollement_url = enrollement_url.split('\n')[5]
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//button[@class="close"]'
         ).click()
         self.teacher.sleep(0.5)
@@ -139,27 +139,27 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         """
         creates a new user and return the username
         """
-        self.student.driver.get("http://accounts-qa.openstax.org")
+        self.student.get("http://accounts-qa.openstax.org")
         num = str(randint(start_num, end_num))
-        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
-        self.student.driver.find_element(
+        self.student.find(By.LINK_TEXT, 'Sign up').click()
+        self.student.find(
             By.ID, 'identity-login-button').click()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_first_name').send_keys('first_name_001')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_last_name').send_keys('last_name_001')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_email_address').send_keys('email_001@test.com')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_username').send_keys('automated_07_'+num)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_password'
         ).send_keys(os.getenv('STUDENT_PASSWORD'))
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_password_confirmation'
         ).send_keys(os.getenv('STUDENT_PASSWORD'))
-        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
-        self.student.driver.find_element(
+        self.student.find(By.ID, 'signup_i_agree').click()
+        self.student.find(
             By.ID, 'create_account_submit').click()
         self.student.wait.until(
             expect.visibility_of_element_located(
@@ -208,8 +208,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         # login as teacher to get access code
         code, enrollement_url = self.get_enrollemnt_code()
         # login as student to register for course
-        self.student.driver.get(enrollement_url)
-        self.student.page.wait_for_page_load()
+        self.student.get(enrollement_url)
         self.student.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Jump to Concept Coach')
@@ -221,32 +220,32 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
             )
         ).click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[text()="Sign in"]'
         ).click()
         self.student.sleep(0.5)
         login_window = self.student.driver.window_handles[1]
         cc_window = self.student.driver.window_handles[0]
         self.student.driver.switch_to_window(login_window)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'auth_key').send_keys(rand_username)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'password').send_keys(self.student.password)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button[text()="Sign in"]').click()
         try:
-            self.student.driver.find_element(By.ID, "i_agree").click()
-            self.student.driver.find_element(By.ID, "agreement_submit").click()
-            self.student.driver.find_element(By.ID, "i_agree").click()
-            self.student.driver.find_element(By.ID, "agreement_submit").click()
+            self.student.find(By.ID, "i_agree").click()
+            self.student.find(By.ID, "agreement_submit").click()
+            self.student.find(By.ID, "i_agree").click()
+            self.student.find(By.ID, "agreement_submit").click()
         except NoSuchElementException:
             pass
         self.student.driver.switch_to_window(cc_window)
         self.student.sleep(1)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@placeholder="enrollment code"]'
         ).send_keys(code)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button/span[text()="Enroll"]'
         ).click()
         self.student.wait.until(
@@ -299,8 +298,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         # login as teacher to get access code
         code, enrollement_url = self.get_enrollemnt_code()
         # login as student to register for course
-        self.student.driver.get(enrollement_url)
-        self.student.page.wait_for_page_load()
+        self.student.get(enrollement_url)
         self.student.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Jump to Concept Coach')
@@ -312,29 +310,29 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
             )
         ).click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[text()="Sign in"]'
         ).click()
         self.student.sleep(0.5)
         login_window = self.student.driver.window_handles[1]
         cc_window = self.student.driver.window_handles[0]
         self.student.driver.switch_to_window(login_window)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'facebook-login-button'
         ).click()
 
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'email'
         ).send_keys(os.getenv('FACEBOOK_USER'))
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'pass'
         ).send_keys(os.getenv('FACEBOOK_PASSWORD') + Keys.RETURN)
         self.student.driver.switch_to_window(cc_window)
         self.student.sleep(1)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@placeholder="enrollment code"]'
         ).send_keys(code)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button/span[text()="Enroll"]'
         ).click()
         self.student.wait.until(
@@ -387,8 +385,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         # login as teacher to get access code
         code, enrollement_url = self.get_enrollemnt_code()
         # login as student to register for course
-        self.student.driver.get(enrollement_url)
-        self.student.page.wait_for_page_load()
+        self.student.get(enrollement_url)
         self.student.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Jump to Concept Coach')
@@ -400,28 +397,28 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
             )
         ).click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[text()="Sign in"]'
         ).click()
         self.student.sleep(0.5)
         login_window = self.student.driver.window_handles[1]
         cc_window = self.student.driver.window_handles[0]
         self.student.driver.switch_to_window(login_window)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'twitter-login-button'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'username_or_email'
         ).send_keys(os.getenv('TWITTER_USER'))
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'password'
         ).send_keys(os.getenv('TWITTER_PASSWORD') + Keys.RETURN)
         self.student.driver.switch_to_window(cc_window)
         self.student.sleep(1)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@placeholder="enrollment code"]'
         ).send_keys(code)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button/span[text()="Enroll"]'
         ).click()
         self.student.wait.until(
@@ -474,8 +471,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         # login as teacher to get access code
         code, enrollement_url = self.get_enrollemnt_code()
         # login as student to register for course
-        self.student.driver.get(enrollement_url)
-        self.student.page.wait_for_page_load()
+        self.student.get(enrollement_url)
         self.student.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Jump to Concept Coach')
@@ -487,28 +483,28 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
             )
         ).click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[text()="Sign in"]'
         ).click()
         self.student.sleep(0.5)
         login_window = self.student.driver.window_handles[1]
         cc_window = self.student.driver.window_handles[0]
         self.student.driver.switch_to_window(login_window)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'google-login-button'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'Email'
         ).send_keys(os.getenv('GOOGLE_USER') + Keys.RETURN)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'Passwd'
         ).send_keys(os.getenv('GOOGLE_PASSWORD') + Keys.RETURN)
         self.student.driver.switch_to_window(cc_window)
         self.student.sleep(1)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@placeholder="enrollment code"]'
         ).send_keys(code)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button/span[text()="Enroll"]'
         ).click()
         self.student.wait.until(
@@ -563,8 +559,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         # login as teacher to get access code
         code, enrollement_url = self.get_enrollemnt_code()
         # login as student to register for course
-        self.student.driver.get(enrollement_url)
-        self.student.page.wait_for_page_load()
+        self.student.get(enrollement_url)
         self.student.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Jump to Concept Coach')
@@ -576,25 +571,25 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
             )
         ).click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[text()="Sign in"]'
         ).click()
         self.student.sleep(0.5)
         login_window = self.student.driver.window_handles[1]
         cc_window = self.student.driver.window_handles[0]
         self.student.driver.switch_to_window(login_window)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'auth_key').send_keys(rand_username)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'password').send_keys(self.student.password)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button[text()="Sign in"]').click()
         self.student.driver.switch_to_window(cc_window)
         self.student.sleep(1)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@placeholder="enrollment code"]'
         ).send_keys(code)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button/span[text()="Enroll"]'
         ).click()
         self.student.wait.until(
@@ -650,8 +645,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         # login as teacher to get access code
         code, enrollement_url = self.get_enrollemnt_code()
         # login as student to register for course
-        self.student.driver.get(enrollement_url)
-        self.student.page.wait_for_page_load()
+        self.student.get(enrollement_url)
         self.student.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Jump to Concept Coach')
@@ -663,25 +657,25 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
             )
         ).click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[text()="Sign in"]'
         ).click()
         self.student.sleep(0.5)
         login_window = self.student.driver.window_handles[1]
         cc_window = self.student.driver.window_handles[0]
         self.student.driver.switch_to_window(login_window)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'auth_key').send_keys(rand_username)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'password').send_keys(self.student.password)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button[text()="Sign in"]').click()
         self.student.driver.switch_to_window(cc_window)
         self.student.sleep(1)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@placeholder="enrollment code"]'
         ).send_keys('not a real enrollment code')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button/span[text()="Enroll"]'
         ).click()
         # find an error message
@@ -759,16 +753,16 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         login_window = self.student.driver.window_handles[1]
         cc_window = self.student.driver.window_handles[0]
         self.student.driver.switch_to_window(login_window)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'auth_key').send_keys('student01')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'password').send_keys(self.student.password)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button[text()="Sign in"]').click()
         self.student.driver.switch_to_window(cc_window)
         self.student.sleep(0.5)
         # check for name
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//span[contains(text(),"Atticus")]'
         )
         # go to another course
@@ -788,7 +782,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
             )
         ).click()
         # check that still logged in
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//span[contains(text(),"Atticus")]'
         )
         self.ps.test_updates['passed'] = True
@@ -873,8 +867,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         code1, enrollement_url1 = self.get_enrollemnt_code()
         code2, enrollement_url2 = self.get_enrollemnt_code(1)
         # enroll in first course
-        self.student.driver.get(enrollement_url1)
-        self.student.page.wait_for_page_load()
+        self.student.get(enrollement_url1)
         self.student.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Jump to Concept Coach')
@@ -886,32 +879,32 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
             )
         ).click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[text()="Sign in"]'
         ).click()
         self.student.sleep(0.5)
         login_window = self.student.driver.window_handles[1]
         cc_window = self.student.driver.window_handles[0]
         self.student.driver.switch_to_window(login_window)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'auth_key').send_keys(rand_username)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'password').send_keys(self.student.password)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button[text()="Sign in"]').click()
         try:
-            self.student.driver.find_element(By.ID, "i_agree").click()
-            self.student.driver.find_element(By.ID, "agreement_submit").click()
-            self.student.driver.find_element(By.ID, "i_agree").click()
-            self.student.driver.find_element(By.ID, "agreement_submit").click()
+            self.student.find(By.ID, "i_agree").click()
+            self.student.find(By.ID, "agreement_submit").click()
+            self.student.find(By.ID, "i_agree").click()
+            self.student.find(By.ID, "agreement_submit").click()
         except NoSuchElementException:
             pass
         self.student.driver.switch_to_window(cc_window)
         self.student.sleep(1)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@placeholder="enrollment code"]'
         ).send_keys(code1)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button/span[text()="Enroll"]'
         ).click()
         self.student.wait.until(
@@ -926,8 +919,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
             )
         )
         # enroll in second course
-        self.student.driver.get(enrollement_url2)
-        self.student.page.wait_for_page_load()
+        self.student.get(enrollement_url2)
         self.student.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Jump to Concept Coach')
@@ -939,25 +931,25 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
             )
         ).click()
         self.student.page.wait_for_page_load()   # check if have to login again
-        # self.student.driver.find_element(
+        # self.student.find(
         #     By.XPATH, '//div[text()="Sign in"]'
         # ).click()
         # self.student.sleep(0.5)
         # login_window = self.student.driver.window_handles[1]
         # cc_window = self.student.driver.window_handles[0]
         # self.student.driver.switch_to_window(login_window)
-        # self.student.driver.find_element(
+        # self.student.find(
         #     By.ID, 'auth_key').send_keys(rand_username)
-        # self.student.driver.find_element(
+        # self.student.find(
         #     By.ID, 'password').send_keys(self.student.password)
-        # self.student.driver.find_element(
+        # self.student.find(
         #     By.XPATH, '//button[text()="Sign in"]').click()
         # self.student.driver.switch_to_window(cc_window)
         self.student.sleep(1)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@placeholder="enrollment code"]'
         ).send_keys(code2)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button/span[text()="Enroll"]'
         ).click()
         self.student.wait.until(
@@ -1102,16 +1094,16 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         login_window = self.student.driver.window_handles[1]
         cc_window = self.student.driver.window_handles[0]
         self.student.driver.switch_to_window(login_window)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'auth_key').send_keys('student01')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'password').send_keys(self.student.password)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button[text()="Sign in"]').click()
         self.student.driver.switch_to_window(cc_window)
         self.student.sleep(0.5)
         # view name in header
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//span[contains(text(),"Atticus")]'
         )
         self.ps.test_updates['passed'] = True
@@ -1146,34 +1138,34 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.driver.get("http://accounts-qa.openstax.org")
+        self.student.get("http://accounts-qa.openstax.org")
         num = str(randint(4000, 4999))
-        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
-        self.student.driver.find_element(
+        self.student.find(By.LINK_TEXT, 'Sign up').click()
+        self.student.find(
             By.ID, 'identity-login-button').click()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_first_name').send_keys('first_name_001')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_last_name').send_keys('last_name_001')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_email_address').send_keys('email_001@test.com')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_username').send_keys('automated_07_'+num)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_password'
         ).send_keys(os.getenv('STUDENT_PASSWORD'))
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_password_confirmation'
         ).send_keys(os.getenv('STUDENT_PASSWORD'))
-        self.student.driver.find_element(
+        self.student.find(
             By.LINK_TEXT, 'Privacy Policy'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@id="terms_dialog"]//h3[text()="Privacy Policy"]')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@id="terms_dialog"]//button[@class="close"]'
         ).click()
-        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
+        self.student.find(By.ID, 'signup_i_agree').click()
         self.ps.test_updates['passed'] = True
 
     # Case C7643 - 013- Student | Presented the current terms of service
@@ -1204,32 +1196,32 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.driver.get("http://accounts-qa.openstax.org")
+        self.student.get("http://accounts-qa.openstax.org")
         num = str(randint(5000, 5999))
-        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
-        self.student.driver.find_element(
+        self.student.find(By.LINK_TEXT, 'Sign up').click()
+        self.student.find(
             By.ID, 'identity-login-button').click()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_first_name').send_keys('first_name_001')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_last_name').send_keys('last_name_001')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_email_address').send_keys('email_001@test.com')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_username').send_keys('automated_07_'+num)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_password'
         ).send_keys(os.getenv('STUDENT_PASSWORD'))
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_password_confirmation'
         ).send_keys(os.getenv('STUDENT_PASSWORD'))
-        self.student.driver.find_element(By.LINK_TEXT, 'Terms of Use').click()
-        self.student.driver.find_element(
+        self.student.find(By.LINK_TEXT, 'Terms of Use').click()
+        self.student.find(
             By.XPATH, '//div[@id="terms_dialog"]//h3[text()="Terms of Use"]')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@id="terms_dialog"]//button[@class="close"]'
         ).click()
-        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
+        self.student.find(By.ID, 'signup_i_agree').click()
 
         self.ps.test_updates['passed'] = True
 
@@ -1270,12 +1262,12 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         # Test steps and verification assertions
         self.admin.login()
         self.admin.open_user_menu()
-        self.admin.driver.find_element(By.LINK_TEXT, 'Admin').click()
+        self.admin.find(By.LINK_TEXT, 'Admin').click()
         self.admin.page.wait_for_page_load()
-        self.admin.driver.find_element(By.LINK_TEXT, 'Legal').click()
-        self.admin.driver.find_element(By.LINK_TEXT, 'Terms').click()
+        self.admin.find(By.LINK_TEXT, 'Legal').click()
+        self.admin.find(By.LINK_TEXT, 'Terms').click()
         self.admin.page.wait_for_page_load()
-        contracts = self.admin.driver.find_elements(
+        contracts = self.admin.find_all(
             By.XPATH,
             '//div[@class="fine_print contract_index"]/ul'
         )
@@ -1287,11 +1279,11 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
                 ).click()
                 break
         self.admin.page.wait_for_page_load()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@name="commit"]'
         ).click()
         self.admin.page.wait_for_page_load()
-        self.admin.driver.find_element(By.LINK_TEXT, 'Publish').click()
+        self.admin.find(By.LINK_TEXT, 'Publish').click()
         try:
             self.admin.wait. \
                 until(
@@ -1304,14 +1296,14 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         except TimeoutException:
             print('no alert')
         # logout funtion not working for admin from this page.
-        self.admin.driver.find_element(By.LINK_TEXT, 'Log Out').click()
+        self.admin.find(By.LINK_TEXT, 'Log Out').click()
         self.admin.sleep(1)
         # have to log student in manually, login function accepts policy
         self.student.page.wait_for_page_load()
         if self.student.driver.get_window_size()['width'] <= \
                 self.student.CONDENSED_WIDTH:
             # get small-window menu toggle
-            is_collapsed = self.student.driver.find_element(
+            is_collapsed = self.student.find(
                 By.XPATH,
                 '//button[contains(@class,"navbar-toggle")]'
             )
@@ -1324,12 +1316,12 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
             )
         ).click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'auth_key').send_keys(self.student.username)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'password').send_keys(self.student.password)
         # click on the sign in button
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button[text()="Sign in"]'
         ).click()
         self.student.page.wait_for_page_load()
@@ -1338,8 +1330,8 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
                 (By.XPATH, '//h2[text()="Privacy Policy"]')
             )
         )
-        self.student.driver.find_element(By.ID, 'i_agree').click()
-        self.student.driver.find_element(By.ID, 'agreement_submit').click()
+        self.student.find(By.ID, 'i_agree').click()
+        self.student.find(By.ID, 'agreement_submit').click()
         self.ps.test_updates['passed'] = True
 
     # Case C7645 - 015 - Student | Presented the new terms of service when
@@ -1378,12 +1370,12 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         # Test steps and verification assertions
         self.admin.login()
         self.admin.open_user_menu()
-        self.admin.driver.find_element(By.LINK_TEXT, 'Admin').click()
+        self.admin.find(By.LINK_TEXT, 'Admin').click()
         self.admin.page.wait_for_page_load()
-        self.admin.driver.find_element(By.LINK_TEXT, 'Legal').click()
-        self.admin.driver.find_element(By.LINK_TEXT, 'Terms').click()
+        self.admin.find(By.LINK_TEXT, 'Legal').click()
+        self.admin.find(By.LINK_TEXT, 'Terms').click()
         self.admin.page.wait_for_page_load()
-        contracts = self.admin.driver.find_elements(
+        contracts = self.admin.find_all(
             By.XPATH,
             '//div[@class="fine_print contract_index"]/ul'
         )
@@ -1395,11 +1387,11 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
                 ).click()
                 break
         self.admin.page.wait_for_page_load()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@name="commit"]'
         ).click()
         self.admin.page.wait_for_page_load()
-        self.admin.driver.find_element(By.LINK_TEXT, 'Publish').click()
+        self.admin.find(By.LINK_TEXT, 'Publish').click()
         try:
             self.admin.wait. \
                 until(
@@ -1412,14 +1404,14 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         except TimeoutException:
             print('no alert')
         # logout funtion not working for admin from this page.
-        self.admin.driver.find_element(By.LINK_TEXT, 'Log Out').click()
+        self.admin.find(By.LINK_TEXT, 'Log Out').click()
         self.admin.sleep(1)
         # have to log student in manually, login function accepts policy
         self.student.page.wait_for_page_load()
         if self.student.driver.get_window_size()['width'] <= \
                 self.student.CONDENSED_WIDTH:
             # get small-window menu toggle
-            is_collapsed = self.student.driver.find_element(
+            is_collapsed = self.student.find(
                 By.XPATH,
                 '//button[contains(@class,"navbar-toggle")]'
             )
@@ -1432,12 +1424,12 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
             )
         ).click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'auth_key').send_keys(self.student.username)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'password').send_keys(self.student.password)
         # click on the sign in button
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button[text()="Sign in"]'
         ).click()
         self.student.page.wait_for_page_load()
@@ -1446,8 +1438,8 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
                 (By.XPATH, '//h2[text()="Terms of Use"]')
             )
         )
-        self.student.driver.find_element(By.ID, 'i_agree').click()
-        self.student.driver.find_element(By.ID, 'agreement_submit').click()
+        self.student.find(By.ID, 'i_agree').click()
+        self.student.find(By.ID, 'agreement_submit').click()
 
         self.ps.test_updates['passed'] = True
 
@@ -1483,34 +1475,34 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.driver.get("http://accounts-qa.openstax.org")
+        self.student.get("http://accounts-qa.openstax.org")
         num = str(randint(6000, 6999))
-        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
-        self.student.driver.find_element(
+        self.student.find(By.LINK_TEXT, 'Sign up').click()
+        self.student.find(
             By.ID, 'identity-login-button').click()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_first_name').send_keys('first_name_001')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_last_name').send_keys('last_name_001')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_email_address').send_keys('email_001@test.com')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_username').send_keys('automated_07_'+num)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_password'
         ).send_keys(os.getenv('STUDENT_PASSWORD'))
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_password_confirmation'
         ).send_keys(os.getenv('STUDENT_PASSWORD'))
-        self.student.driver.find_element(
+        self.student.find(
             By.LINK_TEXT, 'Privacy Policy'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@id="terms_dialog"]//h3[text()="Privacy Policy"]')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@id="terms_dialog"]//button[@class="close"]'
         ).click()
-        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
+        self.student.find(By.ID, 'signup_i_agree').click()
 
         self.ps.test_updates['passed'] = True
 
@@ -1544,32 +1536,32 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.driver.get("http://accounts-qa.openstax.org")
+        self.student.get("http://accounts-qa.openstax.org")
         num = str(randint(7000, 7999))
-        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
-        self.student.driver.find_element(
+        self.student.find(By.LINK_TEXT, 'Sign up').click()
+        self.student.find(
             By.ID, 'identity-login-button').click()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_first_name').send_keys('first_name_001')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_last_name').send_keys('last_name_001')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_email_address').send_keys('email_001@test.com')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_username').send_keys('automated_07_'+num)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_password'
         ).send_keys(os.getenv('STUDENT_PASSWORD'))
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_password_confirmation'
         ).send_keys(os.getenv('STUDENT_PASSWORD'))
-        self.student.driver.find_element(By.LINK_TEXT, 'Terms of Use').click()
-        self.student.driver.find_element(
+        self.student.find(By.LINK_TEXT, 'Terms of Use').click()
+        self.student.find(
             By.XPATH, '//div[@id="terms_dialog"]//h3[text()="Terms of Use"]')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@id="terms_dialog"]//button[@class="close"]'
         ).click()
-        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
+        self.student.find(By.ID, 'signup_i_agree').click()
 
         self.ps.test_updates['passed'] = True
 
@@ -1634,19 +1626,19 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         login_window = self.student.driver.window_handles[1]
         cc_window = self.student.driver.window_handles[0]
         self.student.driver.switch_to_window(login_window)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'auth_key').send_keys('student01')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'password').send_keys(self.student.password)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button[text()="Sign in"]').click()
         self.student.driver.switch_to_window(cc_window)
         self.student.sleep(0.5)
         # go to profile
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//span[contains(text(),"Atticus")]'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.LINK_TEXT, 'Account Profile'
         ).click()
         self.student.wait.until(
