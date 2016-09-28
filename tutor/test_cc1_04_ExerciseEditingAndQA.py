@@ -10,7 +10,7 @@ from pastasauce import PastaSauce, PastaDecorator
 from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
-# from staxing.assignment import Assignment
+from staxing.assignment import Assignment
 # from selenium.common.exceptions import TimeoutException
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
@@ -33,10 +33,13 @@ TESTS = os.getenv(
         7675, 7676, 7677, 7678, 7679,
         7681, 7682, 7683, 7686, 7687
     ])
+    # str([7675])
     # 7658, 7659 -- not working run forever/SUPER long time
     #        -- so code commented out and exception raised
     #        sort -of works though see notes below
     # 7681, 7682, 7683, 7686 - not implemented in code
+    # 7663 - not working because link takes user to openstax.org, not -qa
+    # and login doesn't work there
     # all else passes locally
 )
 
@@ -51,14 +54,14 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.admin = Admin(
             use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         self.content = ContentQA(
             use_env_vars=True,
             existing_driver=self.admin.driver,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
 
     def tearDown(self):
@@ -231,10 +234,10 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         # create a user
         # so that when run again user won't alread have content access
         num = str(randint(2000, 2999))
-        self.admin.driver.execute_script(
-            "window.scrollTo(0, document.body.scrollHeight);")
-        self.admin.find(
-            By.XPATH, '//a[contains(text(),"Create user")]').click()
+        create_user = self.admin.find(
+            By.XPATH, '//a[contains(text(),"Create user")]')
+        Assignment.scroll_to(self.admin.driver, create_user)
+        create_user.click()
         self.admin.wait.until(
             expect.element_to_be_clickable((By.ID, 'user_username'))
         ).click()
@@ -319,10 +322,10 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         # create a user
         # so that when run again user won't alread have content access
         num = str(randint(3000, 3999))
-        self.admin.driver.execute_script(
-            "window.scrollTo(0, document.body.scrollHeight);")
-        self.admin.find(
-            By.XPATH, '//a[contains(text(),"Create user")]').click()
+        create_user = self.admin.find(
+            By.XPATH, '//a[contains(text(),"Create user")]')
+        Assignment.scroll_to(self.admin.driver, create_user)
+        create_user.click()
         self.admin.wait.until(
             expect.element_to_be_clickable((By.ID, 'user_username'))
         ).click()
@@ -407,10 +410,10 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         # create a user
         # so that when run again user won't alread have content access
         num = str(randint(4000, 4999))
-        self.admin.driver.execute_script(
-            "window.scrollTo(0, document.body.scrollHeight);")
-        self.admin.find(
-            By.XPATH, '//a[contains(text(),"Create user")]').click()
+        create_user = self.admin.find(
+            By.XPATH, '//a[contains(text(),"Create user")]')
+        Assignment.scroll_to(self.admin.driver, create_user)
+        create_user.click()
         self.admin.wait.until(
             expect.element_to_be_clickable((By.ID, 'user_username'))
         ).click()
@@ -1111,10 +1114,10 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         # create a user - because don't know the dms account names
         # also when run again user won't alread have content access
         num = str(randint(4000, 4999))
-        self.admin.driver.execute_script(
-            "window.scrollTo(0, document.body.scrollHeight);")
-        self.admin.find(
-            By.XPATH, '//a[contains(text(),"Create user")]').click()
+        create_user = self.admin.find(
+            By.XPATH, '//a[contains(text(),"Create user")]')
+        Assignment.scroll_to(self.admin.driver, create_user)
+        create_user.click()
         self.admin.wait.until(
             expect.element_to_be_clickable((By.ID, 'user_username'))
         ).click()
@@ -1474,12 +1477,11 @@ class TestExerciseEditingAndQA(unittest.TestCase):
             By.ID, 'auth_key').send_keys(self.admin.username)
         self.admin.find(
             By.ID, 'password').send_keys(self.admin.password)
-        # click on the sign in button
         self.admin.find(
             By.XPATH, '//button[text()="Sign in"]'
         ).click()
         self.admin.page.wait_for_page_load()
-        # self.admin.login('https://exercises-qa.openstax.org/')
+        # create new exercise
         self.admin.find(
             By.ID, 'top-nav-exercises-new-link'
         ).click()
