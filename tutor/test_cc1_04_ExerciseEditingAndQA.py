@@ -33,7 +33,6 @@ TESTS = os.getenv(
         7675, 7676, 7677, 7678, 7679,
         7681, 7682, 7683, 7686, 7687
     ])
-    # str([7675])
     # 7658, 7659 -- not working run forever/SUPER long time
     #        -- so code commented out and exception raised
     #        sort -of works though see notes below
@@ -54,14 +53,14 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.admin = Admin(
             use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.content = ContentQA(
             use_env_vars=True,
             existing_driver=self.admin.driver,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
 
     def tearDown(self):
