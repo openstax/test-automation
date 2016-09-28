@@ -11,7 +11,7 @@ from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
-from selenium.common.exceptions import TimeoutException
+# from selenium.common.exceptions import TimeoutException
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Admin, ContentQA, Teacher
@@ -224,7 +224,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
             )
         ).click()
         self.admin.page.wait_for_page_load()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH,
             '//a[contains(text(),"Users")]'
         ).click()
@@ -233,26 +233,26 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         num = str(randint(2000, 2999))
         self.admin.driver.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);")
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[contains(text(),"Create user")]').click()
         self.admin.wait.until(
             expect.element_to_be_clickable((By.ID, 'user_username'))
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_username').send_keys('automated_test_user_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_password').send_keys('password')
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_first_name').send_keys('first_name_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_last_name').send_keys('last_name_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Save"]').click()
         # search for that user
         self.admin.wait.until(
             expect.element_to_be_clickable((By.ID, 'query'))
         ).send_keys('automated_test_user_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Search"]').click()
         # edit user
         self.admin.wait.until(
@@ -260,17 +260,17 @@ class TestExerciseEditingAndQA(unittest.TestCase):
                 (By.XPATH, '//a[contains(text(),"Edit")]')
             )
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_content_analyst').click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Save"]').click()
         # search for user to make sure they were updated
         self.admin.wait.until(
             expect.element_to_be_clickable((By.ID, 'query'))
         ).send_keys('automated_test_user_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Search"]').click()
-        element = self.admin.driver.find_element(By.XPATH, '//tr/td[5]')
+        element = self.admin.find(By.XPATH, '//tr/td[5]')
         assert(element.get_attribute('innerHTML') == 'Yes'), \
             'permission not elevated ' + element.get_attribute('innerHTML')
 
@@ -312,7 +312,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
             )
         ).click()
         self.admin.page.wait_for_page_load()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH,
             '//a[contains(text(),"Users")]'
         ).click()
@@ -321,26 +321,26 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         num = str(randint(3000, 3999))
         self.admin.driver.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);")
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[contains(text(),"Create user")]').click()
         self.admin.wait.until(
             expect.element_to_be_clickable((By.ID, 'user_username'))
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_username').send_keys('automated_test_user_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_password').send_keys('password')
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_first_name').send_keys('first_name_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_last_name').send_keys('last_name_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Save"]').click()
         # search for that user
         self.admin.wait.until(
             expect.element_to_be_clickable((By.ID, 'query'))
         ).send_keys('automated_test_user_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Search"]').click()
         # edit user
         self.admin.wait.until(
@@ -348,17 +348,17 @@ class TestExerciseEditingAndQA(unittest.TestCase):
                 (By.XPATH, '//a[contains(text(),"Edit")]')
             )
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_customer_service').click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Save"]').click()
         # search for user to make sure they were updated
         self.admin.wait.until(
             expect.element_to_be_clickable((By.ID, 'query'))
         ).send_keys('automated_test_user_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Search"]').click()
-        element = self.admin.driver.find_element(By.XPATH, '//tr/td[4]')
+        element = self.admin.find(By.XPATH, '//tr/td[4]')
         assert(element.get_attribute('innerHTML') == 'Yes'), \
             'permission not elevated ' + element.get_attribute('innerHTML')
 
@@ -400,7 +400,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
             )
         ).click()
         self.admin.page.wait_for_page_load()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH,
             '//a[contains(text(),"Users")]'
         ).click()
@@ -409,26 +409,26 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         num = str(randint(4000, 4999))
         self.admin.driver.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);")
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[contains(text(),"Create user")]').click()
         self.admin.wait.until(
             expect.element_to_be_clickable((By.ID, 'user_username'))
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_username').send_keys('automated_test_user_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_password').send_keys('password')
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_first_name').send_keys('first_name_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_last_name').send_keys('last_name_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Save"]').click()
         # search for that user
         self.admin.wait.until(
             expect.element_to_be_clickable((By.ID, 'query'))
         ).send_keys('automated_test_user_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Search"]').click()
         # edit user
         self.admin.wait.until(
@@ -436,17 +436,17 @@ class TestExerciseEditingAndQA(unittest.TestCase):
                 (By.XPATH, '//a[contains(text(),"Edit")]')
             )
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_administrator').click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Save"]').click()
         # search for user to make sure they were updated
         self.admin.wait.until(
             expect.element_to_be_clickable((By.ID, 'query'))
         ).send_keys('automated_test_user_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Search"]').click()
-        element = self.admin.driver.find_element(By.XPATH, '//tr/td[3]')
+        element = self.admin.find(By.XPATH, '//tr/td[3]')
         assert(element.get_attribute('innerHTML') == 'Yes'), \
             'permission not elevated ' + element.get_attribute('innerHTML')
 
@@ -622,7 +622,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         #         (By.LINK_TEXT, 'Ecosystems')
         #     )
         # ).click()
-        # deletes = self.content.driver.find_elements(By.LINK_TEXT, 'Delete')
+        # deletes = self.content.find_all(By.LINK_TEXT, 'Delete')
         # deletes[1].click()
         # try:
         #     self.content.wait. \
@@ -637,7 +637,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         # # reload page
         # # self.content.driver.get(self.content.current_url())
         # # # self.content.page.wait_for_page_load()
-        # deletes_new = self.content.driver.find_elements(By.LINK_TEXT, 'Delete')
+        # deletes_new = self.content.find_all(By.LINK_TEXT, 'Delete')
         # assert(len(deletes) == len(deletes_new) + 1), \
         #     'ecosystem not deleted'
 
@@ -685,7 +685,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         #         (By.LINK_TEXT, 'Ecosystems')
         #     )
         # ).click()
-        # deletes = self.admin.driver.find_elements(By.LINK_TEXT, 'Delete')
+        # deletes = self.admin.find_all(By.LINK_TEXT, 'Delete')
         # deletes[1].click()
         # try:
         #     self.admin.wait. \
@@ -700,7 +700,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         # # reload page
         # self.admin.driver.get(self.admin.current_url())
         # self.admin.page.wait_for_page_load()
-        # deletes_new = self.admin.driver.find_elements(By.LINK_TEXT, 'Delete')
+        # deletes_new = self.admin.find_all(By.LINK_TEXT, 'Delete')
         # assert(len(deletes) == len(deletes_new) + 1), \
         #     'ecosystem not deleted'
 
@@ -746,8 +746,8 @@ class TestExerciseEditingAndQA(unittest.TestCase):
                 (By.LINK_TEXT, 'Ecosystems')
             )
         ).click()
-        deletes = self.content.driver.find_elements(By.LINK_TEXT, 'Delete')
-        rows = self.content.driver.find_elements(
+        deletes = self.content.find_all(By.LINK_TEXT, 'Delete')
+        rows = self.content.find_all(
             By.XPATH, '//tr')
         # assert that there are some rows without delete buttons
         assert(len(deletes) < len(rows) + 1), \
@@ -793,8 +793,8 @@ class TestExerciseEditingAndQA(unittest.TestCase):
                 (By.LINK_TEXT, 'Ecosystems')
             )
         ).click()
-        deletes = self.admin.driver.find_elements(By.LINK_TEXT, 'Delete')
-        rows = self.admin.driver.find_elements(
+        deletes = self.admin.find_all(By.LINK_TEXT, 'Delete')
+        rows = self.admin.find_all(
             By.XPATH, '//tr')
         # assert that there are some rows without delete buttons
         assert(len(deletes) < len(rows) + 1), \
@@ -958,11 +958,11 @@ class TestExerciseEditingAndQA(unittest.TestCase):
                 (By.XPATH, '//a[@role="menuitem"]//span[@class="title"]')
             )
         ).text
-        self.content.driver.find_element(
+        self.content.find(
             By.XPATH, '//a[@role="menuitem"]//i[contains(@type,"check-")]'
         ).click()
         self.content.sleep(0.5)
-        elements = self.content.driver.find_elements(
+        elements = self.content.find_all(
             By.XPATH, '//span[@class="' + q_type + '"]'
         )
         assert(len(elements) == 0), "still showing elements of filtered type"
@@ -1104,7 +1104,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
             )
         ).click()
         self.admin.page.wait_for_page_load()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH,
             '//a[contains(text(),"Users")]'
         ).click()
@@ -1113,26 +1113,26 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         num = str(randint(4000, 4999))
         self.admin.driver.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);")
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[contains(text(),"Create user")]').click()
         self.admin.wait.until(
             expect.element_to_be_clickable((By.ID, 'user_username'))
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_username').send_keys('automated_test_user_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_password').send_keys('password')
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_first_name').send_keys('first_name_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_last_name').send_keys('last_name_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Save"]').click()
         # search for that user
         self.admin.wait.until(
             expect.element_to_be_clickable((By.ID, 'query'))
         ).send_keys('automated_test_user_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Search"]').click()
         # edit user
         self.admin.wait.until(
@@ -1140,17 +1140,17 @@ class TestExerciseEditingAndQA(unittest.TestCase):
                 (By.XPATH, '//a[contains(text(),"Edit")]')
             )
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'user_content_analyst').click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Save"]').click()
         # search for user to make sure they were updated
         self.admin.wait.until(
             expect.element_to_be_clickable((By.ID, 'query'))
         ).send_keys('automated_test_user_'+num)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Search"]').click()
-        element = self.admin.driver.find_element(By.XPATH, '//tr/td[5]')
+        element = self.admin.find(By.XPATH, '//tr/td[5]')
         assert(element.get_attribute('innerHTML') == 'Yes'), \
             'permission not elevated ' + element.get_attribute('innerHTML')
 
@@ -1304,29 +1304,29 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         # Test steps and verification assertions
         # login
         self.content.get('https://exercises-qa.openstax.org/')
-        self.content.driver.find_element(
+        self.content.find(
             By.XPATH, '//a[text()="Sign in"]').click()
-        self.content.driver.find_element(
+        self.content.find(
             By.ID, 'auth_key').send_keys(self.content.username)
-        self.content.driver.find_element(
+        self.content.find(
             By.ID, 'password').send_keys(self.content.password)
         # click on the sign in button
-        self.content.driver.find_element(
+        self.content.find(
             By.XPATH, '//button[text()="Sign in"]'
         ).click()
         self.content.page.wait_for_page_load()
         # self.content.login('https://exercises-qa.openstax.org/')
-        self.content.driver.find_element(
+        self.content.find(
             By.ID, 'top-nav-exercises-new-link'
         ).click()
         self.content.page.wait_for_page_load()
-        text_areas = self.content.driver.find_elements(
+        text_areas = self.content.find_all(
             By.XPATH, '//div[@class="question"]//textarea[1]'
         )
         text_areas[0].send_keys('fake question stem')
         text_areas[1].send_keys('fake answer choice')
         text_areas[2].send_keys('fake feedback')
-        self.content.driver.find_element(
+        self.content.find(
             By.XPATH, '//button/span[text()="Save Draft"]'
         ).click()
         self.content.wait.until(
@@ -1389,29 +1389,29 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         )
         # login
         teacher.get('https://exercises-qa.openstax.org/')
-        teacher.driver.find_element(
+        teacher.find(
             By.XPATH, '//a[text()="Sign in"]').click()
-        teacher.driver.find_element(
+        teacher.find(
             By.ID, 'auth_key').send_keys(teacher.username)
-        teacher.driver.find_element(
+        teacher.find(
             By.ID, 'password').send_keys(teacher.password)
         # click on the sign in button
-        teacher.driver.find_element(
+        teacher.find(
             By.XPATH, '//button[text()="Sign in"]'
         ).click()
         teacher.page.wait_for_page_load()
         # teacher.login('https://exercises-qa.openstax.org/')
-        teacher.driver.find_element(
+        teacher.find(
             By.ID, 'top-nav-exercises-new-link'
         ).click()
         teacher.page.wait_for_page_load()
-        text_areas = teacher.driver.find_elements(
+        text_areas = teacher.find_all(
             By.XPATH, '//div[@class="question"]//textarea[1]'
         )
         text_areas[0].send_keys('fake question stem')
         text_areas[1].send_keys('fake answer choice')
         text_areas[2].send_keys('fake feedback')
-        teacher.driver.find_element(
+        teacher.find(
             By.XPATH, '//button/span[text()="Save Draft"]'
         ).click()
         teacher.wait.until(
@@ -1468,29 +1468,29 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         # Test steps and verification assertions
         # login
         self.admin.get('https://exercises-qa.openstax.org/')
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[text()="Sign in"]').click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'auth_key').send_keys(self.admin.username)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'password').send_keys(self.admin.password)
         # click on the sign in button
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//button[text()="Sign in"]'
         ).click()
         self.admin.page.wait_for_page_load()
         # self.admin.login('https://exercises-qa.openstax.org/')
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'top-nav-exercises-new-link'
         ).click()
         self.admin.page.wait_for_page_load()
-        text_areas = self.admin.driver.find_elements(
+        text_areas = self.admin.find_all(
             By.XPATH, '//div[@class="question"]//textarea[1]'
         )
         text_areas[0].send_keys('fake question stem')
         text_areas[1].send_keys('fake answer choice')
         text_areas[2].send_keys('fake feedback')
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//button/span[text()="Save Draft"]'
         ).click()
         self.admin.wait.until(
@@ -1544,29 +1544,29 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         # Test steps and verification assertions
         # login
         self.content.get('https://exercises-qa.openstax.org/')
-        self.content.driver.find_element(
+        self.content.find(
             By.XPATH, '//a[text()="Sign in"]').click()
-        self.content.driver.find_element(
+        self.content.find(
             By.ID, 'auth_key').send_keys(self.content.username)
-        self.content.driver.find_element(
+        self.content.find(
             By.ID, 'password').send_keys(self.content.password)
         # click on the sign in button
-        self.content.driver.find_element(
+        self.content.find(
             By.XPATH, '//button[text()="Sign in"]'
         ).click()
         self.content.page.wait_for_page_load()
         # self.content.login('https://exercises-qa.openstax.org/')
-        self.content.driver.find_element(
+        self.content.find(
             By.ID, 'top-nav-exercises-new-link'
         ).click()
         self.content.page.wait_for_page_load()
-        text_areas = self.content.driver.find_elements(
+        text_areas = self.content.find_all(
             By.XPATH, '//div[@class="question"]//textarea[1]'
         )
         text_areas[0].send_keys('fake question stem')
         text_areas[1].send_keys('fake answer choice')
         text_areas[2].send_keys('fake feedback')
-        self.content.driver.find_element(
+        self.content.find(
             By.XPATH, '//button/span[text()="Save Draft"]'
         ).click()
         # check that the publish button appears after saving
@@ -1624,29 +1624,29 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         )
         # login
         teacher.get('https://exercises-qa.openstax.org/')
-        teacher.driver.find_element(
+        teacher.find(
             By.XPATH, '//a[text()="Sign in"]').click()
-        teacher.driver.find_element(
+        teacher.find(
             By.ID, 'auth_key').send_keys(teacher.username)
-        teacher.driver.find_element(
+        teacher.find(
             By.ID, 'password').send_keys(teacher.password)
         # click on the sign in button
-        teacher.driver.find_element(
+        teacher.find(
             By.XPATH, '//button[text()="Sign in"]'
         ).click()
         teacher.page.wait_for_page_load()
         # self.content.login('https://exercises-qa.openstax.org/')
-        teacher.driver.find_element(
+        teacher.find(
             By.ID, 'top-nav-exercises-new-link'
         ).click()
         teacher.page.wait_for_page_load()
-        text_areas = teacher.driver.find_elements(
+        text_areas = teacher.find_all(
             By.XPATH, '//div[@class="question"]//textarea[1]'
         )
         text_areas[0].send_keys('fake question stem')
         text_areas[1].send_keys('fake answer choice')
         text_areas[2].send_keys('fake feedback')
-        teacher.driver.find_element(
+        teacher.find(
             By.XPATH, '//button/span[text()="Save Draft"]'
         ).click()
         # check that the publish button appears after saving
@@ -1698,29 +1698,29 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         # Test steps and verification assertions
         # login
         self.admin.get('https://exercises-qa.openstax.org/')
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[text()="Sign in"]').click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'auth_key').send_keys(self.admin.username)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'password').send_keys(self.admin.password)
         # click on the sign in button
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//button[text()="Sign in"]'
         ).click()
         self.admin.page.wait_for_page_load()
         # self.admin.login('https://exercises-qa.openstax.org/')
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'top-nav-exercises-new-link'
         ).click()
         self.admin.page.wait_for_page_load()
-        text_areas = self.admin.driver.find_elements(
+        text_areas = self.admin.find_all(
             By.XPATH, '//div[@class="question"]//textarea[1]'
         )
         text_areas[0].send_keys('fake question stem')
         text_areas[1].send_keys('fake answer choice')
         text_areas[2].send_keys('fake feedback')
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//button/span[text()="Save Draft"]'
         ).click()
         # check that the publish button appears after saving
