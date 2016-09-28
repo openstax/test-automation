@@ -46,8 +46,8 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.CONDENSED_WIDTH = 1105
 
@@ -84,7 +84,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get('http://cc.openstax.org/')
+        self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
 
         self.ps.test_updates['passed'] = True
@@ -112,9 +112,9 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get('http://cc.openstax.org/')
+        self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(By.ID, 'who-we-are')
+        self.teacher.find(By.ID, 'who-we-are')
 
         self.ps.test_updates['passed'] = True
 
@@ -145,9 +145,9 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get('http://cc.openstax.org/')
+        self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
-        demo_link = self.teacher.driver.find_element(
+        demo_link = self.teacher.find(
             By.XPATH,
             '//section[@id="interactive-demo"]' +
             '//a[@class="btn" and contains(@href,"cc-mockup")]'
@@ -194,9 +194,9 @@ class TestRecruitingTeachers(unittest.TestCase):
 
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
         # Test steps and verification assertions
-        self.teacher.driver.get('http://cc.openstax.org/')
+        self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
-        demo_link = self.teacher.driver.find_element(
+        demo_link = self.teacher.find(
             By.XPATH,
             '//section[@id="interactive-demo"]' +
             '//a[@class="btn" and contains(@href,"cc-mockup-physics")]'
@@ -210,7 +210,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.teacher.driver.switch_to_window(window_with_book)
         self.teacher.page.wait_for_page_load()
         self.teacher.sleep(2)
-        # self.teacher.driver.find_element(
+        # self.teacher.find(
         #     By.XPATH, '//div[@id="player"]'
         # ).click()
         title = self.teacher.wait.until(
@@ -229,12 +229,12 @@ class TestRecruitingTeachers(unittest.TestCase):
         actions.click()
         actions.perform()
         self.teacher.sleep(2)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"playing-mode")]'
         )
         # actions.perform()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[@id="player"]/div[contains(@class,"paused-mode")]'
         )
@@ -269,9 +269,9 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get('http://cc.openstax.org/')
+        self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
-        demo_link = self.teacher.driver.find_element(
+        demo_link = self.teacher.find(
             By.XPATH,
             '//section[@id="interactive-demo"]' +
             '//a[@class="btn" and contains(@href,"cc-mockup-physics")]'
@@ -285,10 +285,10 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.teacher.driver.switch_to_window(window_with_book)
         self.teacher.page.wait_for_page_load()
         self.teacher.sleep(1)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//span[contains(text(),"JUMP TO CONCEPT COACH")]'
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[contains(@data-label,"q1-multiple-choice")]')
         self.teacher.sleep(2)
         answer = self.teacher.wait.until(
@@ -300,7 +300,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         actions.move_to_element(answer)
         actions.click()
         actions.perform()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, "//div[@data-label='State2']"
         ).click()
         self.teacher.wait.until(
@@ -335,7 +335,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get('http://cc.openstax.org/')
+        self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
         if self.teacher.driver.get_window_size()['width'] < \
                 self.CONDENSED_WIDTH:
@@ -346,12 +346,12 @@ class TestRecruitingTeachers(unittest.TestCase):
                 )
             ).click()
             self.teacher.sleep(1)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[contains(text(),"support")]'
         ).click()
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
         )
 
@@ -380,13 +380,13 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get('http://cc.openstax.org/')
+        self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//section[@id="video2"]//a[@href="/sign-up"]'
         ).click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'signup-form'
         )
         self.ps.test_updates['passed'] = True
@@ -414,28 +414,28 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get('http://cc.openstax.org/')
+        self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//section[@id="video2"]//a[@href="/sign-up"]'
         ).click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'signup-form'
         )
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'first_name'
         ).send_keys('first')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'last_name'
         ).send_keys('last')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'email'
         ).send_keys('email@test.com')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'company'
         ).send_keys('school')
-        menu = self.teacher.driver.find_element(
+        menu = self.teacher.find(
             By.XPATH,
             '//span[@id="book-select"]' +
             '//span[contains(@class,"select2-container--")]'
@@ -446,14 +446,14 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.teacher.sleep(0.5)
         menu.click()
         self.teacher.sleep(0.5)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//li[contains(@class,"select2-results__option")]'
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//input[@maxlength="255" and @required]'
         ).send_keys('25')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//input[@type="submit"]'
         ).click()
         self.teacher.page.wait_for_page_load()
@@ -493,16 +493,16 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get('http://cc.openstax.org/')
+        self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//section[@id="video2"]//a[@href="/sign-up"]'
         ).click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'signup-form'
         )
-        submit = self.teacher.driver.find_element(
+        submit = self.teacher.find(
             By.XPATH, '//input[@type="submit"]'
         )
         self.teacher.driver.execute_script(
@@ -511,7 +511,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         submit.click()
         assert('/sign-up' in self.teacher.current_url()), \
             'moved from sign up when submitting with blank required fields'
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[contains(text(),"Please fill out this field.")]'
         )
 
@@ -543,29 +543,29 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get('http://cc.openstax.org/')
+        self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//section[@id="video2"]//a[@href="/sign-up"]'
         ).click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'signup-form'
         )
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'first_name'
         ).send_keys('first')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'last_name'
         ).send_keys('last')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'email'
         ).send_keys('email@test.com')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'company'
         ).send_keys('school')
         # choose a book!
-        menu = self.teacher.driver.find_element(
+        menu = self.teacher.find(
             By.XPATH,
             '//span[@id="book-select"]' +
             '//span[contains(@class,"select2-container--")]'
@@ -576,14 +576,14 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.teacher.sleep(0.5)
         menu.click()
         self.teacher.sleep(0.5)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//li[contains(@class,"select2-results__option")]'
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//input[@maxlength="255" and @required]'
         ).send_keys('25')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//input[@type="submit"]'
         ).click()
         self.teacher.page.wait_for_page_load()
@@ -625,13 +625,13 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get('http://cc.openstax.org/')
+        self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//section[@id="video2"]//a[@href="/sign-up"]'
         ).click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'signup-form'
         )
         option = self.teacher.wait.until(
@@ -676,13 +676,13 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get('http://cc.openstax.org/')
+        self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//section[@id="video2"]//a[@href="/sign-up"]'
         ).click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'signup-form'
         )
         menu = self.teacher.wait.until(
@@ -698,14 +698,14 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.teacher.sleep(0.5)
         menu.click()
         self.teacher.sleep(0.5)
-        book = self.teacher.driver.find_element(
+        book = self.teacher.find(
             By.XPATH,
             '//li[contains(@class,"select2-results__option")]'
         )
         title = book.text
         book.click()
         self.teacher.sleep(0.5)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//span[contains(@title,"' + title + '") and ' +
             'contains(@class,"select2-selection__rendered")]'
@@ -738,13 +738,13 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get('http://cc.openstax.org/')
+        self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//section[@id="video2"]//a[@href="/sign-up"]'
         ).click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'signup-form'
         )
         textarea = self.teacher.wait.until(
@@ -786,28 +786,28 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get('http://cc.openstax.org/')
+        self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//section[@id="video2"]//a[@href="/sign-up"]'
         ).click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'signup-form'
         )
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'first_name'
         ).send_keys('first')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'last_name'
         ).send_keys('last')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'email'
         ).send_keys('email@test.com')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'company'
         ).send_keys('school')
-        menu = self.teacher.driver.find_element(
+        menu = self.teacher.find(
             By.XPATH,
             '//span[@id="book-select"]' +
             '//span[contains(@class,"select2-container--")]'
@@ -818,14 +818,14 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.teacher.sleep(0.5)
         menu.click()
         self.teacher.sleep(0.5)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//li[contains(@class,"select2-results__option")]'
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//input[@maxlength="255" and @required]'
         ).send_keys('25')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//input[@type="submit"]'
         ).click()
         self.teacher.page.wait_for_page_load()
@@ -864,28 +864,28 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get('http://cc.openstax.org/')
+        self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//section[@id="video2"]//a[@href="/sign-up"]'
         ).click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'signup-form'
         )
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'first_name'
         ).send_keys('first')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'last_name'
         ).send_keys('last')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'email'
         ).send_keys('email@test.com')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'company'
         ).send_keys('school')
-        menu = self.teacher.driver.find_element(
+        menu = self.teacher.find(
             By.XPATH,
             '//span[@id="book-select"]' +
             '//span[contains(@class,"select2-container--")]'
@@ -896,14 +896,14 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.teacher.sleep(0.5)
         menu.click()
         self.teacher.sleep(0.5)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//li[contains(@class,"select2-results__option")]'
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//input[@maxlength="255" and @required]'
         ).send_keys('25')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//input[@type="submit"]'
         ).click()
         self.teacher.page.wait_for_page_load()
@@ -951,7 +951,7 @@ class TestRecruitingTeachers(unittest.TestCase):
             username=os.getenv('ADMIN_USER'),
             password=os.getenv('ADMIN_PASSWORD'))
         self.teacher.open_user_menu()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[@role="menuitem" and contains(text(),"Admin")]'
         ).click()
         self.teacher.wait.until(
@@ -1025,13 +1025,13 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get(self.teacher.url)
+        self.teacher.get(self.teacher.url)
         self.teacher.page.wait_for_page_load()
         # check to see if the screen width is normal or condensed
         if self.teacher.driver.get_window_size()['width'] <= \
            self.teacher.CONDENSED_WIDTH:
             # get small-window menu toggle
-            is_collapsed = self.teacher.driver.find_element(
+            is_collapsed = self.teacher.find(
                 By.XPATH,
                 '//button[contains(@class,"navbar-toggle")]'
             )
@@ -1044,16 +1044,16 @@ class TestRecruitingTeachers(unittest.TestCase):
             )
         ).click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID,
             'auth_key'
         ).send_keys(self.teacher.username)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID,
             'password'
         ).send_keys(self.teacher.password)
         # click on the sign in button
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//button[text()="Sign in"]'
         ).click()
@@ -1087,7 +1087,7 @@ class TestRecruitingTeachers(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
         ).click()
         assert('cc-dashboard' in self.teacher.current_url()),\
@@ -1135,11 +1135,11 @@ class TestRecruitingTeachers(unittest.TestCase):
         )
         admin.login()
         admin.open_user_menu()
-        admin.driver.find_element(By.LINK_TEXT, 'Admin').click()
+        admin.find(By.LINK_TEXT, 'Admin').click()
         admin.page.wait_for_page_load()
-        admin.driver.find_element(By.LINK_TEXT, 'Salesforce').click()
+        admin.find(By.LINK_TEXT, 'Salesforce').click()
         admin.page.wait_for_page_load()
-        admin.driver.find_element(
+        admin.find(
             By.XPATH, '//input[@vale="Import Courses"]'
         ).click()
 
@@ -1173,17 +1173,17 @@ class TestRecruitingTeachers(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
         ).click()
         self.teacher.open_user_menu()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.PARTIAL_LINK_TEXT, "Get Help"
         ).click()
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
         ).click()
 
@@ -1217,13 +1217,13 @@ class TestRecruitingTeachers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.open_user_menu()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.PARTIAL_LINK_TEXT, "Get Help"
         ).click()
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
         ).click()
 
