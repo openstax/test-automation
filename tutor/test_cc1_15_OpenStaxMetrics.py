@@ -86,22 +86,22 @@ class TestOpenStaxMetrics(unittest.TestCase):
         # Test steps and verification assertions
         self.admin.login()
         self.admin.open_user_menu()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.LINK_TEXT, 'Admin'
         ).click()
         self.admin.page.wait_for_page_load()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.LINK_TEXT, 'Course Organization'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.LINK_TEXT, 'Courses'
         ).click()
         self.admin.page.wait_for_page_load()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.LINK_TEXT, 'List Students'
         ).click()
         # assert thaken to correct page
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//h1[contains(text(),"Students for course")]'
         )
         assert('student' in self.admin.current_url())
