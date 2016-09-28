@@ -92,17 +92,17 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
         ).click()
         self.teacher.open_user_menu()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
         # change to window with help center
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
         )
         assert('support' in self.teacher.current_url()), 'not at help center'
@@ -133,17 +133,17 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
         ).click()
         self.teacher.open_user_menu()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
         # change to window with help center
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
         )
         assert('support' in self.teacher.current_url()), 'not at help center'
@@ -175,13 +175,13 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         # Test steps and verification assertions
         self.student.login()
         self.student.open_user_menu()
-        self.student.driver.find_element(
+        self.student.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
         # change to window with help center
         window_with_help = self.student.driver.window_handles[1]
         self.student.driver.switch_to_window(window_with_help)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
         )
         assert('support' in self.student.current_url()), 'not at help center'
@@ -214,7 +214,8 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get('http://cc.openstax.org/')
+        self.teacher.get('http://cc.openstax.org/')
+        self.teacher.sleep(1)
         # number hardcoded because condenses at different size than tutor
         if self.teacher.driver.get_window_size()['width'] < 1105:
             element = self.teacher.wait.until(
@@ -227,7 +228,7 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
             actions.move_to_element(element)
             actions.click()
             actions.perform()
-        support = self.teacher.driver.find_element(
+        support = self.teacher.find(
             By.LINK_TEXT, 'support'
         )
         actions = ActionChains(self.teacher.driver)
@@ -237,26 +238,26 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'searchAskInput'
         ).send_keys('fake_question')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'searchAskButton'
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.LINK_TEXT, 'Contact Us'
         ).click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//input[contains(@id,"contactUsForm:firstName")]'
         ).send_keys('qa')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//input[contains(@id,"contactUsForm:lastName")]'
         ).send_keys('test')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//input[contains(@id,"contactUsForm:email")]'
         ).send_keys('automated@qa.test')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[@class="submit-container"]//input'
         ).click()
         self.teacher.wait.until(
@@ -298,41 +299,41 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
         ).click()
         self.teacher.open_user_menu()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
         # change to window with help center
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
         )
         assert('support' in self.teacher.current_url()), 'not at help center'
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'searchAskInput'
         ).send_keys('fake_question')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.ID, 'searchAskButton'
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.LINK_TEXT, 'Contact Us'
         ).click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//input[contains(@id,"contactUsForm:firstName")]'
         ).send_keys('qa')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//input[contains(@id,"contactUsForm:lastName")]'
         ).send_keys('test')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//input[contains(@id,"contactUsForm:email")]'
         ).send_keys('automated@qa.test')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[@class="submit-container"]//input'
         ).click()
         self.teacher.wait.until(
@@ -374,37 +375,37 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         # Test steps and verification assertions
         self.student.login()
         self.student.open_user_menu()
-        self.student.driver.find_element(
+        self.student.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
         # change to window with help center
         window_with_help = self.student.driver.window_handles[1]
         self.student.driver.switch_to_window(window_with_help)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
         )
         assert('support' in self.student.current_url()), 'not at help center'
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'searchAskInput'
         ).send_keys('fake_question')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'searchAskButton'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.LINK_TEXT, 'Contact Us'
         ).click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[contains(@id,"contactUsForm:firstName")]'
         ).send_keys('qa')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[contains(@id,"contactUsForm:lastName")]'
         ).send_keys('test')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[contains(@id,"contactUsForm:email")]'
         ).send_keys('automated@qa.test')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@class="submit-container"]//input'
         ).click()
         self.student.wait.until(
@@ -448,14 +449,14 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
         ).click()
         self.teacher.open_user_menu()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.LINK_TEXT, 'Getting Started'
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//h3[contains(text(),"Getting Started")]'
         ).click()
         assert('help' in self.teacher.current_url()), 'not at help center'
@@ -492,13 +493,13 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         # Test steps and verification assertions
         self.student.login()
         self.student.open_user_menu()
-        self.student.driver.find_element(
+        self.student.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
         # change to window with help center
         window_with_help = self.student.driver.window_handles[1]
         self.student.driver.switch_to_window(window_with_help)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
         )
         assert('support' in self.student.current_url()), 'not at help center'
@@ -534,17 +535,17 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
         ).click()
         self.teacher.open_user_menu()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
         # change to window with help center
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
         )
         assert('support' in self.teacher.current_url()), 'not at help center'
