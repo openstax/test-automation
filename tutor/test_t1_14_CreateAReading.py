@@ -6,7 +6,6 @@ import json
 import os
 import pytest
 import unittest
-import time
 
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint
@@ -52,11 +51,11 @@ class TestCreateAReading(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         self.teacher.login()
-        # self.teacher.select_course(appearance='biology')
+        self.teacher.select_course(appearance='biology')
 
     def tearDown(self):
         """Test destructor."""
@@ -88,7 +87,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.driver.find_element(
+        assignment_menu = self.teacher.find(
             By.ID,
             'add-assignment'
         )
@@ -207,7 +206,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(By.ID, "hide-periods-radio").click()
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"-due-date")]' +
@@ -486,7 +485,7 @@ class TestCreateAReading(unittest.TestCase):
         # set date
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
         # add reading sections to the assignment
@@ -572,7 +571,7 @@ class TestCreateAReading(unittest.TestCase):
         # set date
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
         # add reading sections to the assignment
@@ -626,7 +625,7 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'Reading-%s' % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(
             assignment='reading',
             args={
@@ -638,15 +637,27 @@ class TestCreateAReading(unittest.TestCase):
             }
         )
         try:
-            self.teacher.driver.find_element(
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
                 By.XPATH, '//a/label[contains(text(),"%s")]' % assignment_name
             ).click()
         except NoSuchElementException:
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH,
                 '//a[contains(@class,"header-control next")]'
             ).click()
-            self.teacher.driver.find_element(
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
                 By.XPATH, '//label[contains(text(),"%s")]' % assignment_name
             ).click()
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
@@ -656,13 +667,13 @@ class TestCreateAReading(unittest.TestCase):
             )
         ).click()
         try:
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH, '//label[contains(text(),"%s")]' % assignment_name)
         except NoSuchElementException:
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH, '//a[contains(@class,"header-control next")]'
             ).click()
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH, '//label[contains(text(),"%s")]' % assignment_name)
 
         self.ps.test_updates['passed'] = True
@@ -878,7 +889,7 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading012'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                         'title': assignment_name,
@@ -888,6 +899,12 @@ class TestCreateAReading(unittest.TestCase):
                                         'status': 'draft'
                                     })
         try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
@@ -895,6 +912,12 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
@@ -937,7 +960,7 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading013'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                          'title': assignment_name,
@@ -947,6 +970,12 @@ class TestCreateAReading(unittest.TestCase):
                                          'status': 'draft'
                                      })
         try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
@@ -954,6 +983,12 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
@@ -1003,7 +1038,7 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading007'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                         'title': assignment_name,
@@ -1013,15 +1048,29 @@ class TestCreateAReading(unittest.TestCase):
                                         'status': 'draft'
                                     })
         try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
         except NoSuchElementException:
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -1060,7 +1109,7 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading015'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                         'title': assignment_name,
@@ -1068,20 +1117,33 @@ class TestCreateAReading(unittest.TestCase):
                                         'periods': {'all': (begin, end)},
                                         'reading_list': ['1.1'],
                                         'status': 'draft'
-                                     })
+                                    })
         try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
         except NoSuchElementException:
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -1092,7 +1154,7 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH,
             '//button[@aria-role="close" and contains(@class,"close-x")]'
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
@@ -1214,7 +1276,7 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//label[@data-title="' + assignment_name + '"]')
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                         'title': assignment_name,
@@ -1224,15 +1286,29 @@ class TestCreateAReading(unittest.TestCase):
                                         'status': 'publish'
                                     })
         try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
         except NoSuchElementException:
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -1281,7 +1357,7 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//label[@data-title="'+assignment_name+'"]')
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                         'title': assignment_name,
@@ -1291,15 +1367,29 @@ class TestCreateAReading(unittest.TestCase):
                                         'status': 'publish'
                                     })
         try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
         except NoSuchElementException:
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -1350,7 +1440,7 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//label[@data-title="'+assignment_name+'"]')
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                         'title': assignment_name,
@@ -1360,15 +1450,29 @@ class TestCreateAReading(unittest.TestCase):
                                         'status': 'draft'
                                     })
         try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
         except NoSuchElementException:
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -1436,7 +1540,7 @@ class TestCreateAReading(unittest.TestCase):
         # set date
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
         # add reading sections to the assignment
@@ -1457,16 +1561,17 @@ class TestCreateAReading(unittest.TestCase):
         ).click()
         try:
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             )
         except NoSuchElementException:
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             )
-
         self.ps.test_updates['passed'] = True
 
     # Case C8013 - 022 - Teacher | Change a description for a draft reading
@@ -1492,7 +1597,7 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading-022'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                         'title': assignment_name,
@@ -1502,15 +1607,29 @@ class TestCreateAReading(unittest.TestCase):
                                         'status': 'draft'
                                     })
         try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
         except NoSuchElementException:
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -1528,14 +1647,16 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//button[contains(@class,"-publish")]').click()
         try:
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             )
         except NoSuchElementException:
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             )
         assert('calendar' in self.teacher.current_url()),\
             'not returned to calendar after updating description'
@@ -1566,7 +1687,7 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading-023'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                         'title': assignment_name,
@@ -1576,15 +1697,29 @@ class TestCreateAReading(unittest.TestCase):
                                         'status': 'publish'
                                     })
         try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
         except NoSuchElementException:
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -1606,14 +1741,16 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//button[contains(@class,"-publish")]').click()
         try:
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             )
         except NoSuchElementException:
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             )
         assert('calendar' in self.teacher.current_url()),\
             'not returned to calendar after updating description'
@@ -1672,7 +1809,7 @@ class TestCreateAReading(unittest.TestCase):
         # set date
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
         # add reading sections to the assignment
@@ -1693,14 +1830,16 @@ class TestCreateAReading(unittest.TestCase):
         ).click()
         try:
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             )
         except NoSuchElementException:
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             )
 
         self.ps.test_updates['passed'] = True
@@ -1728,7 +1867,7 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading-025'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                         'title': assignment_name,
@@ -1738,15 +1877,29 @@ class TestCreateAReading(unittest.TestCase):
                                         'status': 'draft'
                                     })
         try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
         except NoSuchElementException:
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -1761,14 +1914,16 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//button[contains(@class,"-publish")]').click()
         try:
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"NEW')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"NEW')]"
             )
         except NoSuchElementException:
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"NEW')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"NEW')]"
             )
         assert('calendar' in self.teacher.current_url()),\
             'not returned to calendar after updating description'
@@ -1799,7 +1954,7 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading-026'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                         'title': assignment_name,
@@ -1809,15 +1964,29 @@ class TestCreateAReading(unittest.TestCase):
                                         'status': 'publish'
                                     })
         try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
         except NoSuchElementException:
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -1837,14 +2006,16 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//button[contains(@class,"-publish")]').click()
         try:
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"NEW')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"NEW')]"
             )
         except NoSuchElementException:
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"NEW')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"NEW')]"
             )
         assert('calendar' in self.teacher.current_url()),\
             'not returned to calendar after updating description'
@@ -1904,7 +2075,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(By.ID, "hide-periods-radio").click()
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         assignment.assign_periods(
             self.teacher.driver, {'all': [opens_on, closes_on]})
         # add reading sections to the assignment
@@ -1944,14 +2115,16 @@ class TestCreateAReading(unittest.TestCase):
         ).click()
         try:
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             )
         except NoSuchElementException:
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
             self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
             )
 
         self.ps.test_updates['passed'] = True
@@ -2008,7 +2181,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(By.ID, "hide-periods-radio").click()
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         assignment.assign_periods(
             self.teacher.driver, {'all': [opens_on, closes_on]})
         # add reading sections to the assignment
@@ -2080,7 +2253,7 @@ class TestCreateAReading(unittest.TestCase):
         section_to_remove = '1.2'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                         'title': assignment_name,
@@ -2092,6 +2265,12 @@ class TestCreateAReading(unittest.TestCase):
                                         'status': 'publish'
                                     })
         try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
@@ -2099,6 +2278,12 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
@@ -2195,7 +2380,7 @@ class TestCreateAReading(unittest.TestCase):
         section_to_remove = 'ch2'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                         'title': assignment_name,
@@ -2206,6 +2391,12 @@ class TestCreateAReading(unittest.TestCase):
                                         'status': 'publish'
                                     })
         try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
@@ -2213,6 +2404,12 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
@@ -2333,7 +2530,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(By.ID, "hide-periods-radio").click()
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         assignment.assign_periods(
             self.teacher.driver, {'all': [opens_on, closes_on]})
         # add reading sections to the assignment
@@ -2402,7 +2599,7 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading-032'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                         'title': assignment_name,
@@ -2412,6 +2609,12 @@ class TestCreateAReading(unittest.TestCase):
                                         'status': 'publish'
                                      })
         try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
@@ -2419,6 +2622,12 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
@@ -2494,7 +2703,7 @@ class TestCreateAReading(unittest.TestCase):
         assignment = Assignment()
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                         'title': assignment_name,
@@ -2504,6 +2713,12 @@ class TestCreateAReading(unittest.TestCase):
                                         'status': 'publish'
                                      })
         try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
@@ -2511,6 +2726,12 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
@@ -2536,7 +2757,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(By.ID, "hide-periods-radio").click()
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         assignment.assign_periods(
             self.teacher.driver, {'all': [opens_on, closes_on]})
         # remove reading section from the assignment
@@ -2589,7 +2810,7 @@ class TestCreateAReading(unittest.TestCase):
         assignment = Assignment()
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                         'title': assignment_name,
@@ -2599,6 +2820,12 @@ class TestCreateAReading(unittest.TestCase):
                                         'status': 'draft'
                                      })
         try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
@@ -2606,6 +2833,12 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
@@ -2626,7 +2859,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(By.ID, "hide-periods-radio").click()
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         assignment.assign_periods(
             self.teacher.driver, {'all': [opens_on, closes_on]})
         # remove reading section from the assignment
@@ -2680,7 +2913,7 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading-035'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(assignment='reading',
                                     args={
                                         'title': assignment_name,
@@ -2690,6 +2923,12 @@ class TestCreateAReading(unittest.TestCase):
                                         'status': 'publish'
                                     })
         try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
@@ -2697,6 +2936,12 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
@@ -2721,7 +2966,7 @@ class TestCreateAReading(unittest.TestCase):
         # set new due date
         self.teacher.find(By.ID, "hide-periods-radio").click()
         today = datetime.date.today()
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
         self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"-due-date")]' +
