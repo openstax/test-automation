@@ -25,14 +25,14 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8207, 8208, 8209, 8210, 8211,
-         8212, 8213, 8214, 8215, 8216,
-         8217, 8218, 8219, 8220, 8221,
-         8222, 8223, 8224, 8225, 8226,
-         8227, 8387, 8388])
+    # str([8207, 8208, 8209, 8210, 8211,
+    #      8212, 8213, 8214, 8215, 8216,
+    #      8217, 8218, 8219, 8220, 8221,
+    #      8222, 8223, 8224, 8225, 8226,
+    #      8227, 8387, 8388])
+    str([8219])
 )
-# facebook 8208, 8225,
-# email verification 8219
+
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -46,8 +46,8 @@ class TestAccountManagement(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.student = Student(
             use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         self.google_account = os.getenv('GOOGLE_USER')
         self.google_password = os.getenv('GOOGLE_PASSWORD')
@@ -714,7 +714,67 @@ class TestAccountManagement(unittest.TestCase):
         Email has been sent
         Email adress is verified
         """
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.ps.test_updates['name'] = 't1.34.013' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.013', '8219']
+        self.ps.test_updates['passed'] = False
+
+        self.student.login(url='http://accounts-qa.openstax.org')
+        self.student.wait.until(
+            expect.visibility_of_element_located((By.ID, 'add-an-email'))
+        ).click()
+        self.student.driver.find_element(
+            By.XPATH, '//input[@type="text"]').send_keys(self.google_account)
+        self.student.driver.find_element(
+            By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                '//div[not(@id="email-template")]' +
+                '//input[@value="Click to verify"]')
+            )
+        ).click()
+        self.student.get('gmail.com')
+        self.student.driver.find_element(
+            By.ID, 'Email').send_keys(self.google_account)
+        self.student.driver.find_element(By.ID, 'next').click()
+        self.student.driver.find_element(
+            By.ID, 'Passwd').send_keys(self.google_password)
+        self.student.driver.find_element(By.ID, 'signIn').click()
+        self.student.page.wait_for_page_load()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//b[text()="[OpenStax] Verify your email address"]')
+            )
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//a[contains(@href,' +
+                 '"https://accounts-qa.openstax.org/confirm?code=")]')
+            )
+        ).click()
+        verification_window = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(verification_window)
+        self.student.find(
+            By.XPATH,
+            "//div[contains(text()," +
+            "'Thank you for verifying your email address')]"
+        )
+        self.student.get('http://accounts-qa.openstax.org')
+        self.student.find_element(
+            By.XPATH, '//span[contains(text(),"' + self.google_account + '")]'
+        ).click()
+        self.student.driver.find_element(
+            By.XPATH, '//div[@class="email-entry"]' +
+            '//span[contains(@class,"trash")]').click()
+        self.student.driver.find_element(
+            By.XPATH, '//div[@class="popover-content"]' +
+            '//button[contains(text(),"OK")]').click()
+
+        self.ps.test_updates['passed'] = True
 
     # Case C8220 - 014 - User | Make an email address serachable
     @pytest.mark.skipif(str(8220) not in TESTS, reason='Excluded')  # NOQA
