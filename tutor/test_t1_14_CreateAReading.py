@@ -28,16 +28,18 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([
-        7992, 7993, 7994, 7995, 7996,
-        7997, 7998, 7999, 8000, 8001,
-        8002, 8003, 8004, 8005, 8006,
-        8007, 8008, 8009, 8010, 8011,
-        8012, 8013, 8014, 8015, 8016,
-        8017, 8018, 8019, 8020, 8021,
-        8022, 8023, 8024, 8025, 8026,
-        8027
-    ])
+    # str([
+    #     7992, 7993, 7994, 7995, 7996,
+    #     7997, 7998, 7999, 8000, 8001,
+    #     8002, 8003, 8004, 8005, 8006,
+    #     8007, 8008, 8009, 8010, 8011,
+    #     8012, 8013, 8014, 8015, 8016,
+    #     8017, 8018, 8019, 8020, 8021,
+    #     8022, 8023, 8024, 8025, 8026,
+    #     8027
+    # ])
+    str([7994])
+    # 7993 - calendar date
 )
 
 
@@ -206,7 +208,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(By.ID, "hide-periods-radio").click()
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"-due-date")]' +
@@ -226,7 +228,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"datepicker__day")' +
-            'and contains(text(),"' + (closes_on[3: 5]).lstrip('0') + '")]'
+            'and text()="' + (closes_on[3: 5]).lstrip('0') + '"]'
         ).click()
         self.teacher.sleep(0.5)
         self.teacher.find(
@@ -250,7 +252,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"datepicker__day")' +
-            'and contains(text(),"' + (opens_on[3: 5]).lstrip('0') + '")]'
+            'and text()="' + (opens_on[3: 5]).lstrip('0') + '"]'
         ).click()
         self.teacher.sleep(0.5)
         self.teacher.find(
@@ -374,7 +376,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH,
                 '//div[contains(@class,"datepicker__day")' +
-                'and contains(text(),"' + (closes_on[3: 5]).lstrip('0') + '")]'
+                'and text()="' + (closes_on[3: 5]).lstrip('0') + '"]'
             ).click()
             self.teacher.sleep(0.5)
             self.teacher.find(
@@ -399,7 +401,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH,
                 '//div[contains(@class,"datepicker__day")' +
-                'and contains(text(),"' + (opens_on[3: 5]).lstrip('0') + '")]'
+                'and text()="' + (opens_on[3: 5]).lstrip('0') + '"]'
             ).click()
             self.teacher.sleep(0.5)
         # add reading sections to the assignment
@@ -2984,7 +2986,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"datepicker__day")' +
-            'and contains(text(),"' + (closes_on[3: 5]).lstrip('0') + '")]'
+            'and text()="' + (closes_on[3: 5]).lstrip('0') + '"]'
         ).click()
         self.teacher.sleep(0.5)
         self.teacher.find(
