@@ -13,7 +13,6 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
-from selenium.webdriver.support.ui import WebDriverWait
 from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
@@ -28,18 +27,17 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    # str([
-    #     7992, 7993, 7994, 7995, 7996,
-    #     7997, 7998, 7999, 8000, 8001,
-    #     8002, 8003, 8004, 8005, 8006,
-    #     8007, 8008, 8009, 8010, 8011,
-    #     8012, 8013, 8014, 8015, 8016,
-    #     8017, 8018, 8019, 8020, 8021,
-    #     8022, 8023, 8024, 8025, 8026,
-    #     8027
-    # ])
-    str([7994])
-    # 7993 - calendar date
+    str([
+        7992, 7993, 7994, 7995, 7996,
+        7997, 7998, 7999, 8000, 8001,
+        8002, 8003, 8004, 8005, 8006,
+        8007, 8008, 8009, 8010, 8011,
+        8012, 8013, 8014, 8015, 8016,
+        8017, 8018, 8019, 8020, 8021,
+        8022, 8023, 8024, 8025, 8026,
+        8027
+    ])
+    # 7993 - calendar date still not working
 )
 
 
@@ -120,29 +118,32 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        # self.teacher.sleep(10)
-        calendar_dates = wait.until(
-            expect.presence_of_all_elements_located(
-                (By.CLASS_NAME, 'Day--upcoming')
-            )
+        # # self.teacher.sleep(10)
+        # calendar_dates = wait.until(
+        #     expect.presence_of_all_elements_located(
+        #         (By.CLASS_NAME, 'Day--upcoming')
+        #     )
+        # )
+        # if len(calendar_dates) == 1:
+        #     calendar_dates = [calendar_dates]
+        calendar_date = self.teacher.find(
+            By.XPATH, '//div[contains(@class,"Day--upcoming")]/span'
         )
-        if len(calendar_dates) == 1:
-            calendar_dates = [calendar_dates]
         self.teacher.driver.execute_script(
-            'return arguments[0].scrollIntoView();', calendar_dates[0])
+            'return arguments[0].scrollIntoView();', calendar_date)
         self.teacher.driver.execute_script('window.scrollBy(0, -80);')
         actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(calendar_dates[0])
+        actions.move_to_element(calendar_date)
         actions.click()
         # don't know how to add wait, just testing
         for _ in range(1000):
             actions.send_keys('slow')
+        self.teacher.sleep(3)
+
         # It just clicks that is behing the add assignement menu?
-        actions.move_by_offset(50, 15)
+        actions.move_by_offset(2, 15)
         actions.click()
         actions.perform()
-        self.teacher.sleep(3)
         self.teacher.sleep(1)
         # self.teacher.find(
         #     By.XPATH, '//a[contains(text(),"Add Reading")]').click()
@@ -182,7 +183,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading003'
+        assignment_name = 'reading003_' + str(randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
@@ -191,8 +192,7 @@ class TestCreateAReading(unittest.TestCase):
                 get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -259,7 +259,7 @@ class TestCreateAReading(unittest.TestCase):
             By.CLASS_NAME, 'assign-to-label').click()
         # add reading sections to the assignment
         self.teacher.find(By.ID, 'reading-select').click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"reading-plan")]')
             )
@@ -269,7 +269,7 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//button[text()="Add Readings"]'
         ).click()
         # publish
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"-publish")]')
             )
@@ -319,7 +319,7 @@ class TestCreateAReading(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment = Assignment()
-        assignment_name = 'reading004'
+        assignment_name = 'reading004_' + str(randint(100, 999))
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
         # if the Add Assignment menu is not open
@@ -327,8 +327,7 @@ class TestCreateAReading(unittest.TestCase):
                 get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -405,18 +404,19 @@ class TestCreateAReading(unittest.TestCase):
             ).click()
             self.teacher.sleep(0.5)
         # add reading sections to the assignment
+        self.teacher.driver.execute_script("window.scrollTo(0, 0);")
         self.teacher.find(By.ID, 'reading-select').click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"reading-plan")]')
             )
         )
-        assignment.select_sections(self.teacher.driver, ['4.1'])
+        assignment.select_sections(self.teacher.driver, ['1.1'])
         self.teacher.find(
             By.XPATH, '//button[text()="Add Readings"]'
         ).click()
         # publish
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class, "-publish")]')
             )
@@ -462,7 +462,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading005'
+        assignment_name = 'reading005_' + str(randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
@@ -471,8 +471,7 @@ class TestCreateAReading(unittest.TestCase):
                 get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -492,7 +491,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.driver, {'all': (opens_on, closes_on)})
         # add reading sections to the assignment
         self.teacher.find(By.ID, 'reading-select').click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"reading-plan")]')
             )
@@ -502,7 +501,7 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//button[text()="Add Readings"]'
         ).click()
         # publish
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"-save")]')
             )
@@ -548,7 +547,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading006'
+        assignment_name = 'reading006_' + str(randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
@@ -557,8 +556,7 @@ class TestCreateAReading(unittest.TestCase):
                 get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -578,7 +576,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.driver, {'all': (opens_on, closes_on)})
         # add reading sections to the assignment
         self.teacher.find(By.ID, 'reading-select').click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"reading-plan")]')
             )
@@ -587,7 +585,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(
             By.XPATH, '//button[text()="Add Readings"]').click()
         # publish
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"-publish")]')
             )
@@ -662,8 +660,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, '//label[contains(text(),"%s")]' % assignment_name
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"-publish")]')
             )
@@ -708,8 +705,7 @@ class TestCreateAReading(unittest.TestCase):
                 get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH,
                  '//button[@aria-role="close" and ' +
@@ -744,7 +740,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading009'
+        assignment_name = 'reading009_' + str(randint(100, 999))
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
         # if the Add Assignment menu is not open
@@ -752,8 +748,7 @@ class TestCreateAReading(unittest.TestCase):
                 get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -765,7 +760,7 @@ class TestCreateAReading(unittest.TestCase):
             '//button[@aria-role="close" and ' +
             '@type="button" and text()="Cancel"]'
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
@@ -803,8 +798,7 @@ class TestCreateAReading(unittest.TestCase):
                 get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH,
                  '//button[@aria-role="close" and contains(@class,"close-x")]')
@@ -838,7 +832,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading011'
+        assignment_name = 'reading011_' + str(randint(100, 999))
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
         # if the Add Assignment menu is not open
@@ -846,8 +840,7 @@ class TestCreateAReading(unittest.TestCase):
                 get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -858,7 +851,7 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH,
             '//button[@aria-role="close" and contains(@class,"close-x")]'
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
@@ -888,7 +881,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading012'
+        assignment_name = 'reading012_' + str(randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -923,8 +916,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//button[@aria-role="close" and ' +
@@ -959,7 +951,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading013'
+        assignment_name = 'reading013_' + str(randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -994,8 +986,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -1007,7 +998,7 @@ class TestCreateAReading(unittest.TestCase):
             '//button[@aria-role="close" and ' +
             '@type="button" and text()="Cancel"]'
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
@@ -1037,7 +1028,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading007'
+        assignment_name = 'reading007_' + str(randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -1074,8 +1065,7 @@ class TestCreateAReading(unittest.TestCase):
                 By.XPATH,
                 "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH,
                  '//button[@aria-role="close" and contains(@class,"close-x")]')
@@ -1108,7 +1098,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading015'
+        assignment_name = 'reading015_' + str(randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -1196,8 +1186,7 @@ class TestCreateAReading(unittest.TestCase):
                 get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//button[contains(@class,"-publish")]')
             )
@@ -1239,8 +1228,7 @@ class TestCreateAReading(unittest.TestCase):
                 get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//button[contains(@class,"-save")]')
             )
@@ -1273,9 +1261,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading' + str(randint(0, 999))
-        original_readings = self.teacher.find_all(
-            By.XPATH, '//label[@data-title="' + assignment_name + '"]')
+        assignment_name = 'reading018_' + str(randint(0, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -1312,13 +1298,12 @@ class TestCreateAReading(unittest.TestCase):
                 By.XPATH,
                 "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
             )
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//button[contains(@class,"delete-link")]')
             )
@@ -1327,12 +1312,17 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//button[contains(text(),"Yes")]').click()
         assert ('calendar' in self.teacher.current_url()), \
             'not returned to calendar after deleting an assignment'
-        self.teacher.sleep(4)
-        self.teacher.get(self.teacher.current_url())
-        deleted_reading = self.teacher.find_all(
-            By.XPATH, '//label[@data-title="' + assignment_name + '"]')
-        assert(len(deleted_reading) == len(original_readings)), \
-            'assignment not deleted'
+        counter = 0
+        while counter < 6:
+            self.teacher.get(self.teacher.current_url())
+            deleted_reading = self.teacher.find_all(
+                By.XPATH, '//label[@data-title="' + assignment_name + '"]')
+            if len(deleted_reading) == 0:
+                break
+            else:
+                counter += 1
+        # assert it broke out of loop before just maxing out
+        assert(counter < 6), "reading not deleted"
 
         self.ps.test_updates['passed'] = True
 
@@ -1354,9 +1344,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading' + str(randint(0, 999))
-        original_readings = self.teacher.find_all(
-            By.XPATH, '//label[@data-title="'+assignment_name+'"]')
+        assignment_name = 'reading019_' + str(randint(0, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -1393,13 +1381,12 @@ class TestCreateAReading(unittest.TestCase):
                 By.XPATH,
                 "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
             )
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//button[contains(@class,"delete-link")]')
             )
@@ -1408,12 +1395,17 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//button[contains(text(),"Yes")]').click()
         assert ('calendar' in self.teacher.current_url()), \
             'not returned to calendar after deleting an assignment'
-        self.teacher.sleep(4)
-        self.teacher.get(self.teacher.current_url())
-        deleted_reading = self.teacher.find_all(
-            By.XPATH, '//label[@data-title="' + assignment_name + '"]')
-        assert(len(deleted_reading) == len(original_readings)), \
-            'assignment not deleted'
+        counter = 0
+        while counter < 6:
+            self.teacher.get(self.teacher.current_url())
+            deleted_reading = self.teacher.find_all(
+                By.XPATH, '//label[@data-title="' + assignment_name + '"]')
+            if len(deleted_reading) == 0:
+                break
+            else:
+                counter += 1
+        # assert it broke out of loop before just maxing out
+        assert(counter < 6), "reading not deleted"
 
         self.ps.test_updates['passed'] = True
 
@@ -1437,7 +1429,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading' + str(randint(0, 999))
+        assignment_name = 'reading020_' + str(randint(0, 999))
         original_readings = self.teacher.find_all(
             By.XPATH, '//label[@data-title="'+assignment_name+'"]')
         today = datetime.date.today()
@@ -1476,8 +1468,7 @@ class TestCreateAReading(unittest.TestCase):
                 By.XPATH,
                 "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//button[contains(@class,"delete-link")]')
             )
@@ -1517,7 +1508,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading021'
+        assignment_name = 'reading021_' + str(randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
@@ -1526,8 +1517,7 @@ class TestCreateAReading(unittest.TestCase):
                 get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -1547,7 +1537,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.driver, {'all': (opens_on, closes_on)})
         # add reading sections to the assignment
         self.teacher.find(By.ID, 'reading-select').click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"reading-plan")]')
             )
@@ -1556,7 +1546,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(
             By.XPATH, '//button[text()="Add Readings"]').click()
         # publish
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"-publish")]')
             )
@@ -1596,7 +1586,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-022'
+        assignment_name = 'reading-022_' + str(randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -1633,8 +1623,7 @@ class TestCreateAReading(unittest.TestCase):
                 By.XPATH,
                 "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -1686,7 +1675,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-023'
+        assignment_name = 'reading-023_' + str(randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -1723,13 +1712,12 @@ class TestCreateAReading(unittest.TestCase):
                 By.XPATH,
                 "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
             )
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -1786,7 +1774,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading024'
+        assignment_name = 'reading024_' + str(randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
@@ -1795,8 +1783,7 @@ class TestCreateAReading(unittest.TestCase):
                 get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -1816,7 +1803,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.driver, {'all': (opens_on, closes_on)})
         # add reading sections to the assignment
         self.teacher.find(By.ID, 'reading-select').click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"reading-plan")]')
             )
@@ -1825,7 +1812,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(
             By.XPATH, '//button[text()="Add Readings"]').click()
         # publish
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"-publish")]')
             )
@@ -1866,7 +1853,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-025'
+        assignment_name = 'reading-025_' + str(randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -1903,8 +1890,7 @@ class TestCreateAReading(unittest.TestCase):
                 By.XPATH,
                 "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -1953,7 +1939,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-026'
+        assignment_name = 'reading-026_' + str(randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -1990,13 +1976,12 @@ class TestCreateAReading(unittest.TestCase):
                 By.XPATH,
                 "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
             )
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -2051,7 +2036,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-027'
+        assignment_name = 'reading-027_' + str(randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
@@ -2060,8 +2045,7 @@ class TestCreateAReading(unittest.TestCase):
                 get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -2082,7 +2066,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.driver, {'all': [opens_on, closes_on]})
         # add reading sections to the assignment
         self.teacher.find(By.ID, 'reading-select').click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"reading-plan")]')
             )
@@ -2095,8 +2079,7 @@ class TestCreateAReading(unittest.TestCase):
         )
         if data_chapter.get_attribute('aria-expanded') == 'false':
             data_chapter.click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        marked = wait.until(
+        marked = self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
                  ('//span[contains(@data-chapter-section' +
@@ -2110,7 +2093,7 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//button[text()="Add Readings"]'
         ).click()
         # publish
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"-publish")]')
             )
@@ -2133,7 +2116,7 @@ class TestCreateAReading(unittest.TestCase):
 
     # Case C8019 - 028 - Teacher | Add a complete chapter to a reading
     @pytest.mark.skipif(str(8019) not in TESTS, reason='Excluded')
-    def test_teacher_add_a_coplete_chapter_to_a_reading_8019(self):
+    def test_teacher_add_a_complete_chapter_to_a_reading_8019(self):
         """Add a complete chapter to a reading.
 
         Steps:
@@ -2157,7 +2140,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-028'
+        assignment_name = 'reading-028_' + str(randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
@@ -2166,8 +2149,7 @@ class TestCreateAReading(unittest.TestCase):
                 get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -2188,7 +2170,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.driver, {'all': [opens_on, closes_on]})
         # add reading sections to the assignment
         self.teacher.find(By.ID, 'reading-select').click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"reading-plan")]')
             )
@@ -2208,7 +2190,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.driver.execute_script('window.scrollBy(0, -80);')
         element.click()
         # publish
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"-publish")]')
             )
@@ -2251,7 +2233,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-029'
+        assignment_name = 'reading-029_' + str(randint(100, 999))
         section_to_remove = '1.2'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
@@ -2289,19 +2271,19 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.sleep(3)       # ##########
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
             )
         ).click()
         # remove section
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-select')
             )
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"reading-plan")]')
             )
@@ -2313,13 +2295,12 @@ class TestCreateAReading(unittest.TestCase):
         )
         if data_chapter.get_attribute('aria-expanded') == 'false':
             data_chapter.click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
-        marked = wait.until(
+        marked = self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
                  ('//span[contains(@data-chapter-section' +
                   ',"{s}") and text()="{s}"]').format(s=section_to_remove) +
-                 '/preceding-sibling::span/input')
+                  '/preceding-sibling::span/input')
             )
         )
         if marked.is_selected():
@@ -2334,7 +2315,7 @@ class TestCreateAReading(unittest.TestCase):
         assert(len(removed_sections) == 0), \
             'section has net been removed'
         # publish
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"-publish")]')
             )
@@ -2378,7 +2359,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-030'
+        assignment_name = 'reading-030_' + str(randint(100, 999))
         section_to_remove = 'ch2'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
@@ -2415,19 +2396,18 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
             )
         ).click()
         # remove section
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-select')
             )
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"reading-plan")]')
             )
@@ -2457,7 +2437,7 @@ class TestCreateAReading(unittest.TestCase):
         assert (len(removed_sections) == 0), \
             'section has net been removed'
         # publish
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"-publish")]')
             )
@@ -2506,7 +2486,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-031'
+        assignment_name = 'reading-031_' + str(randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
@@ -2515,8 +2495,7 @@ class TestCreateAReading(unittest.TestCase):
                 get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -2537,7 +2516,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.driver, {'all': [opens_on, closes_on]})
         # add reading sections to the assignment
         self.teacher.find(By.ID, 'reading-select').click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"reading-plan")]')
             )
@@ -2549,7 +2528,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.driver.execute_script('window.scrollBy(0, -80);')
         element.click()
         # publish
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"-publish")]')
             )
@@ -2598,7 +2577,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-032'
+        assignment_name = 'reading-032_' + str(randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -2609,7 +2588,7 @@ class TestCreateAReading(unittest.TestCase):
                                         'periods': {'all': (begin, end)},
                                         'reading_list': ['ch1'],
                                         'status': 'publish'
-                                     })
+                                        })
         try:
             self.teacher.wait.until(
                 expect.presence_of_element_located(
@@ -2633,13 +2612,12 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
             )
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -2701,7 +2679,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-033'
+        assignment_name = 'reading-033_' + str(randint(100, 999))
         assignment = Assignment()
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
@@ -2713,7 +2691,7 @@ class TestCreateAReading(unittest.TestCase):
                                         'periods': {'all': (begin, end)},
                                         'reading_list': ['1.1', '1.2'],
                                         'status': 'publish'
-                                     })
+                                    })
         try:
             self.teacher.wait.until(
                 expect.presence_of_element_located(
@@ -2737,13 +2715,12 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
             )
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -2808,7 +2785,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-034'
+        assignment_name = 'reading-034_' + str(randint(100, 999))
         assignment = Assignment()
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
@@ -2820,7 +2797,7 @@ class TestCreateAReading(unittest.TestCase):
                                         'periods': {'all': (begin, end)},
                                         'reading_list': ['1.1', '1.2'],
                                         'status': 'draft'
-                                     })
+                                    })
         try:
             self.teacher.wait.until(
                 expect.presence_of_element_located(
@@ -2844,8 +2821,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -2912,7 +2888,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-035'
+        assignment_name = 'reading-035_' + str(randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -2947,13 +2923,12 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
             )
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -3034,8 +3009,7 @@ class TestCreateAReading(unittest.TestCase):
                 get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
