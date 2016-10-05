@@ -32,14 +32,20 @@ TESTS = os.getenv(
     #      14680, 14681, 14682, 14683, 14801,
     #      14802, 14803, 14804, 14805, 14685,
     #      14686, 14687, 14688, 14689])  # NOQA
+
     # these test cases work
-    # str([14675, 14676, 14677, 14678, 14683,
-    #      14801, 14803, 14804, 14805, 14686,
-    #      14688])
+    str([14675, 14676, 14677, 14678, 14683,
+         14801, 14803, 14804, 14805, 14686,
+         14688])
+    # 14686 - being weird about finding hover elements, other things are working
+
     # thses have issues with scrolling in the table
-    str([14800, 14680, 14681])
+    # str([14800, 14680, 14681])
+
     # these are not implemented features
     # str([14682, 14802, 14685, 14689])
+    # 14802 has been implemented - other still haven't been
+
     # thses aren't tested because issues with the add hw helper
     # str([14687])
 )
@@ -491,9 +497,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         # create an open event
         self.teacher.login()
         self.teacher.select_course(appearance='physics')
-        assignment_name = "event_to_delete"
-        events = self.teacher.driver.find_elements(
-            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
+        assignment_name = "event_to_delete" + str(randint(0, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -504,24 +508,34 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                                         'periods': {'all': (begin, end)},
                                         'status': 'publish'
                                     })
-        # click on the assignment
         try:
-            self.teacher.driver.find_element(
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]'
+                "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
         except NoSuchElementException:
-            self.teacher.driver.find_element(
-                By.XPATH,
-                '//a[contains(@class,"calendar-header-control next")]'
+            self.teacher.find(
+                By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
-            self.teacher.driver.find_element(
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]'
+                "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"edit-assignment")]')
+                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
             )
         ).click()
         self.teacher.wait.until(
@@ -529,16 +543,22 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 (By.XPATH, '//button[contains(@class,"delete-link")]')
             )
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//button[contains(text(),"Yes")]').click()
-        assert('calendar' in self.teacher.current_url()),\
-            'not back at calendar after deleting an event'
-        self.teacher.driver.get(self.teacher.current_url())
-        self.teacher.page.wait_for_page_load()
-        events_new = self.teacher.driver.find_elements(
-            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
-        assert(len(events) == len(events_new)),\
-            'unopen event not deleted'
+        assert ('calendar' in self.teacher.current_url()), \
+            'not returned to calendar after deleting an assignment'
+        counter = 0
+        while counter < 6:
+            self.teacher.get(self.teacher.current_url())
+            deleted_reading = self.teacher.find_all(
+                By.XPATH, '//label[@data-title="' + assignment_name + '"]')
+            if len(deleted_reading) == 0:
+                break
+            else:
+                counter += 1
+        # assert it broke out of loop before just maxing out
+        assert(counter < 6), "assignment not deleted"
+
         self.ps.test_updates['passed'] = True
 
     # 14801 - 010 - Student | A deleted open assignment that the student has
@@ -563,7 +583,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         # create a homework assignement
         self.teacher.login()
         self.teacher.select_course(appearance='physics')
-        assignment_name = "event-010"
+        assignment_name = "event-010" + str(randint(0, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -576,22 +596,33 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                                     })
         # delete the assignment
         try:
-            self.teacher.driver.find_element(
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]'
+                "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
         except NoSuchElementException:
-            self.teacher.driver.find_element(
-                By.XPATH,
-                '//a[contains(@class,"calendar-header-control next")]'
+            self.teacher.find(
+                By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
-            self.teacher.driver.find_element(
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]'
+                "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"edit-assignment")]')
+                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
             )
         ).click()
         self.teacher.wait.until(
@@ -599,7 +630,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 (By.XPATH, '//button[contains(@class,"delete-link")]')
             )
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//button[contains(text(),"Yes")]').click()
         self.teacher.logout()
         # login as a student to view the assignment
@@ -608,9 +639,13 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.teacher.wait.until(
             expect.presence_of_element_located(
                 (By.XPATH,
-                 '//div[@class="task row event deleted"]' +
+                 '//a[@class="task row event deleted"]' +
                  '//span[contains(text(),"' + assignment_name + '")]')
             )
+        )
+        self.teacher.find(
+            By.XPATH,
+            '//a[@class="task row event deleted"]//span[text()="Withdrawn"]'
         )
         self.ps.test_updates['passed'] = True
 
@@ -660,7 +695,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         # create a homework assignement
         self.teacher.login()
         self.teacher.select_course(appearance='physics')
-        assignment_name = "event-010"
+        assignment_name = "event-012-" + str(randint(0, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -673,22 +708,33 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                                     })
         # delete the assignment
         try:
-            self.teacher.driver.find_element(
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
                 By.XPATH,
-                '//label[contains(@data-title,"' + assignment_name + '")]'
+                "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
         except NoSuchElementException:
-            self.teacher.driver.find_element(
-                By.XPATH,
-                '//a[contains(@class,"calendar-header-control next")]'
+            self.teacher.find(
+                By.XPATH, "//a[contains(@class, 'header-control next')]"
             ).click()
-            self.teacher.driver.find_element(
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
                 By.XPATH,
-                '//label[contains(@data-title,"' + assignment_name + '")]'
+                "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"edit-assignment")]')
+                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
             )
         ).click()
         self.teacher.wait.until(
@@ -696,24 +742,36 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 (By.XPATH, '//button[contains(@class,"delete-link")]')
             )
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//button[contains(text(),"Yes")]').click()
         self.teacher.logout()
         # login as a student to view the assignment
         self.student.login()
-        self.teacher.select_course(appearance='physics')
+        self.student.select_course(appearance='physics')
         # delete a deleted event (not necessarily the one just created)
-        initial_deleted = self.student.driver.find_elements(
-            By.XPATH, '//button[contains(@class,"-hide-button")]')
-        self.student.driver.find_element(
+        deleted_events = self.student.find_all(
+            By.XPATH, '//a[@class="task row event deleted"]'
+        )
+        print(len(deleted_events))
+        for event in deleted_events:
+            event_name = event.find_element(
+                By.XPATH, './div[contains(@class,"title")]/span').text
+            print(event_name)
+            if event_name == assignment_name:
+                event.find_element(
+                    By.XPATH, './/button[contains(@class,"hide-task")]'
+                ).click()
+                self.student.find(
+                    By.XPATH, '//div[@role="tooltip"]//button[text()="Yes"]'
+                ).click()
+                self.teacher.sleep(0.5)
+                break
+        should_be_deleted = self.student.find_all(
             By.XPATH,
-            '//button[contains(@class,"-hide-button")]'
-        ).click()
-        self.student.sleep(0.5)
-        final_deleted = self.student.driver.find_elements(
-            By.XPATH, '//button[contains(@class,"-hide-button")]')
-        assert(len(initial_deleted) == len(final_deleted) + 1), \
-            'withdrawn event not deleted'
+            '//a[@class="task row event deleted"]' +
+            '//span[contains(text(),"' + assignment_name + '")]')
+        assert(len(should_be_deleted) == 0), "event not deleted"
+
         self.ps.test_updates['passed'] = True
 
     # 14804 - 013 - Teacher | Move the due date to a later date for an open
@@ -966,7 +1024,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 self.teacher.driver.find_element(
                     By.XPATH,
                     '//div[@class="popover-content"]' +
-                    '//b[contains(text(),' +
+                    '//p/stong[contains(text(),' +
                     '"Why do you ask me to answer twice?")]')
                 break
         self.ps.test_updates['passed'] = True
@@ -1103,7 +1161,8 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         chapter = self.student.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
-                 '//a[@class="view-reference-guide"]//span[1]')
+                 '//a[@class="view-reference-guide"]' +
+                 '//span[@class="section"]//span[1]')
             )
         )
         chapter_num = chapter.text
