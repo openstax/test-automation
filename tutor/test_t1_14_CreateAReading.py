@@ -28,13 +28,13 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([
-        7992, 7993, 7994, 7995, 7996,
-        7997, 7998, 7999, 8000, 8001,
-        8002, 8003, 8004, 8005, 8006,
-        8007, 8008, 8009, 8010, 8011,
-        8012, 8013, 8014, 8015, 8016,
-        8017, 8018, 8019, 8020, 8021,
-        8022, 8023, 8024, 8025, 8026,
+        # 7992, 7993, 7994, 7995, 7996,
+        # 7997, 7998, 7999, 8000, 8001,
+        # 8002, 8003, 8004, 8005, 8006,
+        # 8007, 8008, 8009, 8010, 8011,
+        # 8012, 8013, 8014, 8015, 8016,
+        # 8017, 8018, 8019, 8020, 8021,
+        # 8022, 8023, 8024, 8025, 8026,
         8027
     ])
     # 7993 - calendar date still not working
@@ -3002,18 +3002,46 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
-            assignment_menu.click()
-        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
+        assignment_name = 'reading-035_' + str(randint(100, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='reading',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'reading_list': ['1.1'],
+                                        'status': 'publish'
+                                    })
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+            ).click()
+        except NoSuchElementException:
+            self.teacher.find(
+                By.XPATH, "//a[contains(@class, 'header-control next')]"
+            ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
+            ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.ID, 'reading-title')
+                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
             )
-        )
+        ).click()
         self.teacher.find(
             By.XPATH, '//button[contains(@class,"footer-instructions")]'
         ).click()
