@@ -34,7 +34,6 @@ TESTS = os.getenv(
     ])
 )
 
-
 @PastaDecorator.on_platforms(BROWSERS)
 class TestAccountManagement(unittest.TestCase):
     """T1.34 - Account mangement."""
@@ -46,8 +45,8 @@ class TestAccountManagement(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.student = Student(
             use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         self.google_account = os.getenv('GOOGLE_USER')
         self.google_password = os.getenv('GOOGLE_PASSWORD')
@@ -55,7 +54,7 @@ class TestAccountManagement(unittest.TestCase):
         self.facebook_password = os.getenv('FACEBOOK_PASSWORD')
         self.twitter_account = os.getenv('TWITTER_USER')
         self.twitter_password = os.getenv('TWITTER_PASSWORD')
-        self.student.driver.get("http://accounts-qa.openstax.org")
+        self.student.get("http://accounts-qa.openstax.org")
 
     def tearDown(self):
         """Test destructor."""
@@ -96,23 +95,24 @@ class TestAccountManagement(unittest.TestCase):
 
         # Test steps and verification assertions
         num = str(randint(0, 999))
-        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
-        self.student.driver.find_element(
+        self.student.find(By.LINK_TEXT, 'Sign up').click()
+        self.student.find(
             By.ID, 'identity-login-button').click()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_first_name').send_keys('first_name_001')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_last_name').send_keys('last_name_001')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_email_address').send_keys('email_001@test.com')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_username').send_keys('automated_34_'+num)
-        self.student.driver.find_element(
-            By.ID, 'signup_password').send_keys('password')
-        self.student.driver.find_element(
-            By.ID, 'signup_password_confirmation').send_keys('password')
-        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
-        self.student.driver.find_element(
+        self.student.find(
+            By.ID, 'signup_password').send_keys(self.student.password)
+        self.student.find(
+            By.ID, 'signup_password_confirmation'
+        ).send_keys(self.student.password)
+        self.student.find(By.ID, 'signup_i_agree').click()
+        self.student.find(
             By.ID, 'create_account_submit').click()
         self.student.wait.until(
             expect.visibility_of_element_located(
@@ -148,19 +148,19 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
-        self.student.driver.find_element(
+        self.student.find(By.LINK_TEXT, 'Sign up').click()
+        self.student.find(
             By.ID, 'facebook-login-button').click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'email').send_keys(self.facebook_account)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'pass').send_keys(self.facebook_password+Keys.RETURN)
         self.student.page.wait_for_page_load()
-        username = self.student.driver.find_element(
+        username = self.student.find(
             By.ID, 'signup_username').get_attribute('value')
-        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
-        self.student.driver.find_element(
+        self.student.find(By.ID, 'signup_i_agree').click()
+        self.student.find(
             By.ID, 'create_account_submit').click()
         self.student.wait.until(
             expect.visibility_of_element_located(
@@ -169,29 +169,30 @@ class TestAccountManagement(unittest.TestCase):
             )
         )
         # add password sign in, (and delete facebook so account can be reused)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'enable-other-sign-in').click()
         self.student.sleep(2)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@data-provider="identity"]//' +
             'span[contains(@class,"add mod")]').click()
         self.student.sleep(1)
-        self.student.driver.find_element(
-            By.XPATH, '//input[@name="password"]').send_keys('password')
-        self.student.driver.find_element(
+        self.student.find(
+            By.XPATH, '//input[@name="password"]'
+        ).send_keys(self.student.password)
+        self.student.find(
             By.XPATH, '//input[@name="password_confirmation"]'
-        ).send_keys('password')
-        self.student.driver.find_element(
+        ).send_keys(self.student.password)
+        self.student.find(
             By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
         self.student.sleep(1)
         # delete login option
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//div[contains(@class,"enabled-providers")]' +
             '//div[@data-provider="facebook"]//span[contains(@class,"trash")]'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
         ).click()
 
@@ -226,20 +227,20 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
-        self.student.driver.find_element(By.ID, 'google-login-button').click()
+        self.student.find(By.LINK_TEXT, 'Sign up').click()
+        self.student.find(By.ID, 'google-login-button').click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'Email').send_keys(self.google_account)
-        self.student.driver.find_element(By.ID, 'next').click()
-        self.student.driver.find_element(
+        self.student.find(By.ID, 'next').click()
+        self.student.find(
             By.ID, 'Passwd').send_keys(self.google_password)
-        self.student.driver.find_element(By.ID, 'signIn').click()
+        self.student.find(By.ID, 'signIn').click()
         self.student.page.wait_for_page_load()
-        username = self.student.driver.find_element(
+        username = self.student.find(
             By.ID, 'signup_username').get_attribute('value')
-        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
-        self.student.driver.find_element(
+        self.student.find(By.ID, 'signup_i_agree').click()
+        self.student.find(
             By.ID, 'create_account_submit').click()
         self.student.wait.until(
             expect.visibility_of_element_located(
@@ -248,30 +249,31 @@ class TestAccountManagement(unittest.TestCase):
             )
         )
         # add password sign in, (and delete google so account can be reused)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'enable-other-sign-in').click()
         self.student.sleep(2)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@data-provider="identity"]//' +
             'span[contains(@class,"add mod")]').click()
         self.student.sleep(1)
-        self.student.driver.find_element(
-            By.XPATH, '//input[@name="password"]').send_keys('password')
-        self.student.driver.find_element(
+        self.student.find(
+            By.XPATH, '//input[@name="password"]'
+        ).send_keys(self.student.password)
+        self.student.find(
             By.XPATH, '//input[@name="password_confirmation"]'
-        ).send_keys('password')
-        self.student.driver.find_element(
+        ).send_keys(self.student.password)
+        self.student.find(
             By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
         self.student.sleep(1)
         # delete login option
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//div[contains(@class,"enabled-providers")]' +
             '//div[@data-provider="google_oauth2"]//' +
             'span[contains(@class,"trash")]'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
         ).click()
 
@@ -300,23 +302,23 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
-        self.student.driver.find_element(By.ID, 'twitter-login-button').click()
+        self.student.find(By.LINK_TEXT, 'Sign up').click()
+        self.student.find(By.ID, 'twitter-login-button').click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'username_or_email').send_keys(self.twitter_account)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'password').send_keys(self.twitter_password)
-        self.student.driver.find_element(By.ID, 'allow').click()
+        self.student.find(By.ID, 'allow').click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_last_name').send_keys('last_name_004')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_email_address').send_keys('email_004@test.com')
-        username = self.student.driver.find_element(
+        username = self.student.find(
             By.ID, 'signup_username').get_attribute('value')
-        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
-        self.student.driver.find_element(
+        self.student.find(By.ID, 'signup_i_agree').click()
+        self.student.find(
             By.ID, 'create_account_submit').click()
         self.student.wait.until(
             expect.visibility_of_element_located(
@@ -325,29 +327,30 @@ class TestAccountManagement(unittest.TestCase):
             )
         )
         # add password sign in, (and delete twitter so account can be reused)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'enable-other-sign-in').click()
         self.student.sleep(2)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@data-provider="identity"]//' +
             'span[contains(@class,"add mod")]').click()
         self.student.sleep(1)
-        self.student.driver.find_element(
-            By.XPATH, '//input[@name="password"]').send_keys('password')
-        self.student.driver.find_element(
+        self.student.find(
+            By.XPATH, '//input[@name="password"]'
+        ).send_keys(self.student.password)
+        self.student.find(
             By.XPATH, '//input[@name="password_confirmation"]'
-        ).send_keys('password')
-        self.student.driver.find_element(
+        ).send_keys(self.student.password)
+        self.student.find(
             By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
         self.student.sleep(1)
         # delete login option
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//div[contains(@class,"enabled-providers")]' +
             '//div[@data-provider="twitter"]//span[contains(@class,"trash")]'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
         ).click()
 
@@ -372,23 +375,24 @@ class TestAccountManagement(unittest.TestCase):
 
         # Test steps and verification assertions
         num = str(randint(1000, 1999))
-        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
-        self.student.driver.find_element(
+        self.student.find(By.LINK_TEXT, 'Sign up').click()
+        self.student.find(
             By.ID, 'identity-login-button').click()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_first_name').send_keys('first_name_005')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_last_name').send_keys('last_name_005')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_email_address').send_keys('email_005@test.com')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_username').send_keys('automated_34_'+num)
-        self.student.driver.find_element(
-            By.ID, 'signup_password').send_keys('password')
-        self.student.driver.find_element(
-            By.ID, 'signup_password_confirmation').send_keys('password')
-        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
-        self.student.driver.find_element(
+        self.student.find(
+            By.ID, 'signup_password').send_keys(self.student.password)
+        self.student.find(
+            By.ID, 'signup_password_confirmation'
+        ).send_keys(self.student.password)
+        self.student.find(By.ID, 'signup_i_agree').click()
+        self.student.find(
             By.ID, 'create_account_submit').click()
 
         self.ps.test_updates['passed'] = True
@@ -411,23 +415,24 @@ class TestAccountManagement(unittest.TestCase):
 
         # Test steps and verification assertions
         num = str(randint(2000, 2999))
-        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
-        self.student.driver.find_element(
+        self.student.find(By.LINK_TEXT, 'Sign up').click()
+        self.student.find(
             By.ID, 'identity-login-button').click()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_first_name').send_keys('first_name_006')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_last_name').send_keys('last_name_006')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_email_address').send_keys('email_006@test.com')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'signup_username').send_keys('automated_34_'+num)
-        self.student.driver.find_element(
-            By.ID, 'signup_password').send_keys('password')
-        self.student.driver.find_element(
-            By.ID, 'signup_password_confirmation').send_keys('password')
-        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
-        self.student.driver.find_element(
+        self.student.find(
+            By.ID, 'signup_password').send_keys(self.student.password)
+        self.student.find(
+            By.ID, 'signup_password_confirmation'
+        ).send_keys(self.student.password)
+        self.student.find(By.ID, 'signup_i_agree').click()
+        self.student.find(
             By.ID, 'create_account_submit').click()
 
         self.ps.test_updates['passed'] = True
@@ -450,12 +455,12 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'auth_key').send_keys(self.student.username)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'password').send_keys(self.student.password)
         # click on the sign in button
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button[text()="Sign in"]'
         ).click()
         self.student.wait.until(
@@ -497,11 +502,11 @@ class TestAccountManagement(unittest.TestCase):
         first = name_original.text.split(' ')[0]
         last = name_original.text.split(' ')[1]
         name_original.click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@name="first_name"]').send_keys('_NEW')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@name="last_name"]').send_keys('_NEW')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
         name = self.student.wait.until(
@@ -514,13 +519,13 @@ class TestAccountManagement(unittest.TestCase):
         # change back
         name.click()
         for _ in range(len('_NEW')):
-            self.student.driver.find_element(
+            self.student.find(
                 By.XPATH, '//input[@name="first_name"]'
             ).send_keys(Keys.BACKSPACE)
-            self.student.driver.find_element(
+            self.student.find(
                 By.XPATH, '//input[@name="last_name"]'
             ).send_keys(Keys.BACKSPACE)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
 
@@ -555,11 +560,11 @@ class TestAccountManagement(unittest.TestCase):
         first = name_original.text.split(' ')[0]
         last = name_original.text.split(' ')[1]
         name_original.click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@name="first_name"]').send_keys('_NEW')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@name="last_name"]').send_keys('_NEW')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//button[@type="button"]//i[contains(@class,"remove")]'
         ).click()
@@ -598,9 +603,9 @@ class TestAccountManagement(unittest.TestCase):
         )
         username_original = original.text
         original.click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@type="text"]').send_keys('_NEW')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
@@ -612,9 +617,9 @@ class TestAccountManagement(unittest.TestCase):
         # change back
         username_edit.click()
         for _ in range(len('_NEW')):
-            self.student.driver.find_element(
+            self.student.find(
                 By.XPATH, '//input[@type="text"]').send_keys(Keys.BACKSPACE)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
@@ -648,9 +653,9 @@ class TestAccountManagement(unittest.TestCase):
         )
         username_original = original.text
         original.click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@type="text"]').send_keys('_NEW')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//button[@type="button"]//i[contains(@class,"remove")]'
         ).click()
@@ -686,19 +691,19 @@ class TestAccountManagement(unittest.TestCase):
         self.student.wait.until(
             expect.visibility_of_element_located((By.ID, 'add-an-email'))
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@type="text"]').send_keys('email_2@test.com')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
-        email = self.student.driver.find_element(
+        email = self.student.find(
             By.XPATH, '//span[contains(text(),"email_2@test.com")]')
         # delete the new email
         email.click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@class="email-entry"]' +
             '//span[contains(@class,"trash")]').click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@class="popover-content"]' +
             '//button[contains(text(),"OK")]').click()
 
@@ -726,7 +731,60 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.login(url='http://accounts-qa.openstax.org')
+        self.student.wait.until(
+            expect.visibility_of_element_located((By.ID, 'add-an-email'))
+        ).click()
+        self.student.find(
+            By.XPATH, '//input[@type="text"]').send_keys(self.google_account)
+        self.student.find(
+            By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
+        ).click()
+        verify = self.student.find(
+            By.XPATH,
+            '//div[not(@id="email-template")]' +
+            '//input[@value="Click to verify"]'
+        )
+        actions = ActionChains(self.student.driver)
+        actions.move_to_element(verify).click().perform()
+        self.student.get('https://www.google.com/gmail/')
+        self.student.find(
+            By.ID, 'Email').send_keys(self.google_account)
+        self.student.find(By.ID, 'next').click()
+        self.student.find(
+            By.ID, 'Passwd').send_keys(self.google_password)
+        self.student.find(By.ID, 'signIn').click()
+        self.student.page.wait_for_page_load()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//b[text()="[OpenStax] Verify your email address"]')
+            )
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//a[contains(@href,' +
+                 '"https://accounts-qa.openstax.org/confirm?code=")]')
+            )
+        ).click()
+        verification_window = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(verification_window)
+        self.student.find(
+            By.XPATH,
+            "//div[contains(text()," +
+            "'Thank you for verifying your email address')]"
+        )
+        self.student.get('http://accounts-qa.openstax.org')
+        self.student.find(
+            By.XPATH, '//span[contains(text(),"' + self.google_account + '")]'
+        ).click()
+        self.student.find(
+            By.XPATH, '//div[@class="email-entry"]' +
+            '//span[contains(@class,"trash")]').click()
+        self.student.find(
+            By.XPATH, '//div[@class="popover-content"]' +
+            '//button[contains(text(),"OK")]').click()
 
         self.ps.test_updates['passed'] = True
 
@@ -754,24 +812,24 @@ class TestAccountManagement(unittest.TestCase):
         self.student.wait.until(
             expect.visibility_of_element_located((By.ID, 'add-an-email'))
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@type="text"]').send_keys('email_2@test.com')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//span[contains(text(),"email_2@test.com")]').click()
         self.student.sleep(1)
-        boxes = self.student.driver.find_elements(
+        boxes = self.student.find_all(
             By.XPATH, '//input[@type="checkbox" and @class="searchable"]'
         )
         boxes[-1].click()
         # delete the new email
         self.student.sleep(1)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@class="email-entry"]' +
             '//span[contains(@class,"trash")]').click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@class="popover-content"]' +
             '//button[contains(text(),"OK")]').click()
 
@@ -802,20 +860,20 @@ class TestAccountManagement(unittest.TestCase):
         self.student.wait.until(
             expect.visibility_of_element_located((By.ID, 'add-an-email'))
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@type="text"]').send_keys('email_2@test.com')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
-        email = self.student.driver.find_element(
+        email = self.student.find(
             By.XPATH, '//span[contains(text(),"email_2@test.com")]')
         # delete the new email
         email.click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//div[@class="email-entry"]//span[contains(@class,"trash")]'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//div[@class="popover-content"]//button[contains(text(),"OK")]'
         ).click()
@@ -844,20 +902,20 @@ class TestAccountManagement(unittest.TestCase):
 
         # Test steps and verification assertions
         self.student.login(url='http://accounts-qa.openstax.org')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//div[@data-provider="identity"]//span[contains(@class,"pencil")]'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@name="password"]'
-        ).send_keys('password')
-        self.student.driver.find_element(
+        ).send_keys(self.student.password)
+        self.student.find(
             By.XPATH, '//input[@name="password_confirmation"]'
-        ).send_keys('password')
-        self.student.driver.find_element(
+        ).send_keys(self.student.password)
+        self.student.find(
             By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//span[contains(text(),"Password changed")]')
 
         self.ps.test_updates['passed'] = True
@@ -884,17 +942,18 @@ class TestAccountManagement(unittest.TestCase):
 
         # Test steps and verification assertions
         self.student.login(url='http://accounts-qa.openstax.org')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//div[@data-provider="identity"]//span[contains(@class,"pencil")]'
         ).click()
-        self.student.driver.find_element(
-            By.XPATH, '//input[@name="password"]').send_keys('password')
-        self.student.driver.find_element(
+        self.student.find(
+            By.XPATH, '//input[@name="password"]'
+        ).send_keys(self.student.password)
+        self.student.find(
             By.XPATH,
             '//input[@name="password_confirmation"]'
-        ).send_keys('password')
-        self.student.driver.find_element(
+        ).send_keys(self.student.password)
+        self.student.find(
             By.XPATH,
             '//button[@type="button"]//i[contains(@class,"remove")]'
         ).click()
@@ -924,20 +983,20 @@ class TestAccountManagement(unittest.TestCase):
 
         # Test steps and verification assertions
         # create a social login account
-        self.student.driver.find_element(By.LINK_TEXT, 'Sign up').click()
-        self.student.driver.find_element(By.ID, 'google-login-button').click()
+        self.student.find(By.LINK_TEXT, 'Sign up').click()
+        self.student.find(By.ID, 'google-login-button').click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'Email').send_keys(self.google_account)
-        self.student.driver.find_element(By.ID, 'next').click()
-        self.student.driver.find_element(
+        self.student.find(By.ID, 'next').click()
+        self.student.find(
             By.ID, 'Passwd').send_keys(self.google_password)
-        self.student.driver.find_element(By.ID, 'signIn').click()
+        self.student.find(By.ID, 'signIn').click()
         self.student.page.wait_for_page_load()
-        username = self.student.driver.find_element(
+        username = self.student.find(
             By.ID, 'signup_username').get_attribute('value')
-        self.student.driver.find_element(By.ID, 'signup_i_agree').click()
-        self.student.driver.find_element(
+        self.student.find(By.ID, 'signup_i_agree').click()
+        self.student.find(
             By.ID, 'create_account_submit').click()
         self.student.wait.until(
             expect.visibility_of_element_located(
@@ -946,32 +1005,33 @@ class TestAccountManagement(unittest.TestCase):
             )
         )
         # add password sign in
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'enable-other-sign-in').click()
         self.student.sleep(2)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@data-provider="identity"]//' +
             'span[contains(@class,"add mod")]').click()
         self.student.sleep(1)
-        self.student.driver.find_element(
-            By.XPATH, '//input[@name="password"]').send_keys('password')
-        self.student.driver.find_element(
+        self.student.find(
+            By.XPATH, '//input[@name="password"]'
+        ).send_keys(self.student.password)
+        self.student.find(
             By.XPATH,
             '//input[@name="password_confirmation"]'
-        ).send_keys('password')
-        self.student.driver.find_element(
+        ).send_keys(self.student.password)
+        self.student.find(
             By.XPATH,
             '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
         self.student.sleep(1)
         # delete social login option so it can be reused
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//div[contains(@class,"enabled-providers")]' +
             '//div[@data-provider="google_oauth2"]' +
             '//span[contains(@class,"trash")]'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
         ).click()
 
@@ -1000,34 +1060,34 @@ class TestAccountManagement(unittest.TestCase):
 
         # Test steps and verification assertions
         self.student.login(url='http://accounts-qa.openstax.org')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'enable-other-sign-in').click()
         self.student.sleep(2)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//div[@data-provider="facebook"]//' +
             'span[contains(@class,"add mod")]'
         ).click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'email').send_keys(self.facebook_account)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'pass').send_keys(self.facebook_password+Keys.RETURN)
-        # self.student.driver.find_element(
+        # self.student.find(
         #    By.XPATH, '//button[@name="login"]').click()
         self.student.page.wait_for_page_load()
         # check that it was added
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//div[contains(@class,"enabled-providers")]' +
             '//div[@class="authentication" and @data-provider="facebook"]')
         # delete login option
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//div[contains(@class,"enabled-providers")]' +
             '//div[@data-provider="facebook"]//span[contains(@class,"trash")]'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
         ).click()
 
@@ -1056,34 +1116,34 @@ class TestAccountManagement(unittest.TestCase):
 
         # Test steps and verification assertions
         self.student.login(url='http://accounts-qa.openstax.org')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'enable-other-sign-in').click()
         self.student.sleep(2)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@data-provider="google_oauth2"]//' +
             'span[contains(@class,"add mod")]').click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'Email').send_keys(self.google_account)
-        self.student.driver.find_element(By.ID, 'next').click()
-        self.student.driver.find_element(
+        self.student.find(By.ID, 'next').click()
+        self.student.find(
             By.ID, 'Passwd').send_keys(self.google_password)
-        self.student.driver.find_element(By.ID, 'signIn').click()
+        self.student.find(By.ID, 'signIn').click()
         self.student.page.wait_for_page_load()
         # check that it was added
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//div[contains(@class,"enabled-providers")]' +
             '//div[@class="authentication" and ' +
             '@data-provider="google_oauth2"]')
         # delete login option
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//div[contains(@class,"enabled-providers")]' +
             '//div[@data-provider="google_oauth2"]' +
             '//span[contains(@class,"trash")]'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
         ).click()
 
@@ -1112,30 +1172,30 @@ class TestAccountManagement(unittest.TestCase):
 
         # Test steps and verification assertions
         self.student.login(url='http://accounts-qa.openstax.org')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'enable-other-sign-in').click()
         self.student.sleep(2)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@data-provider="twitter"]//' +
             'span[contains(@class,"add mod")]').click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'username_or_email').send_keys(self.twitter_account)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'password').send_keys(self.twitter_password)
-        self.student.driver.find_element(By.ID, 'allow').click()
+        self.student.find(By.ID, 'allow').click()
         self.student.page.wait_for_page_load()
         # check that it was added
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[contains(@class,"enabled-providers")]' +
             '//div[@class="authentication" and @data-provider="twitter"]')
         # delete login option
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//div[contains(@class,"enabled-providers")]' +
             '//div[@data-provider="twitter"]//span[contains(@class,"trash")]'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
         ).click()
 
@@ -1161,31 +1221,31 @@ class TestAccountManagement(unittest.TestCase):
 
         # Test steps and verification assertions
         self.student.login(url='http://accounts-qa.openstax.org')
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'enable-other-sign-in').click()
         self.student.sleep(2)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@data-provider="twitter"]//' +
             'span[contains(@class,"add mod")]').click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'username_or_email').send_keys(self.twitter_account)
-        self.student.driver.find_element(
+        self.student.find(
             By.ID, 'password').send_keys(self.twitter_password)
-        self.student.driver.find_element(By.ID, 'allow').click()
+        self.student.find(By.ID, 'allow').click()
         self.student.page.wait_for_page_load()
         # check that it was added
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//div[contains(@class,"enabled-providers")]' +
             '//div[@class="authentication" and @data-provider="twitter"]')
         # delete login option
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//div[contains(@class,"enabled-providers")]' +
             '//div[@data-provider="twitter"]//span[contains(@class,"trash")]'
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
         ).click()
 
@@ -1215,31 +1275,31 @@ class TestAccountManagement(unittest.TestCase):
         self.student.wait.until(
             expect.visibility_of_element_located((By.ID, 'add-an-email'))
         ).click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//input[@type="text"]').send_keys('email_2@test.com')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
         ).click()
         self.student.sleep(1)
         # check info icon (must reload page to work)
-        self.student.driver.get('https://accounts-qa.openstax.org/profile')
+        self.student.get('https://accounts-qa.openstax.org/profile')
         self.student.page.wait_for_page_load()
-        email = self.student.driver.find_element(
+        email = self.student.find(
             By.XPATH, '//span[contains(text(),"email_2@test.com")]')
         email.click()
-        info_icon = self.student.driver.find_element(
+        info_icon = self.student.find(
             By.XPATH, '//input[@type="checkbox" and @class="searchable"]')
         actions = ActionChains(self.student.driver)
         actions.move_to_element(info_icon).perform()
         self.student.sleep(1)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//i[@data-toggle="tooltip"]')
         # delete the new email
         self.student.sleep(1)
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@class="email-entry"]' +
             '//span[contains(@class,"trash")]').click()
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//div[@class="popover-content"]' +
             '//button[contains(text(),"OK")]').click()
 
