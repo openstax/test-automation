@@ -2,11 +2,16 @@
 *.pyc
 webserver.py
 result*.xml
+result*.html
 *.cache
 .cache/*
 tmp/
 webserver*.py
 .DS_Store
+res.txt
+res
+result*.xml
+*.sublime*
 
 .bashrc
 .zshrc
