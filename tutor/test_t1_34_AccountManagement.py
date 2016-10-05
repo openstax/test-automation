@@ -7,14 +7,14 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
+from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Student  # NOQA
+from staxing.helper import Student
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -25,11 +25,13 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8207, 8208, 8209, 8210, 8211,
-         8212, 8213, 8214, 8215, 8216,
-         8217, 8218, 8219, 8220, 8221,
-         8222, 8223, 8224, 8225, 8226,
-         8227, 8387, 8388])
+    str([
+        8207, 8208, 8209, 8210, 8211,
+        8212, 8213, 8214, 8215, 8216,
+        8217, 8218, 8219, 8220, 8221,
+        8222, 8223, 8224, 8225, 8226,
+        8227, 8387, 8388
+    ])
 )
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -64,7 +66,7 @@ class TestAccountManagement(unittest.TestCase):
             pass
 
     # Case C8207 - 001 - User | Create a new Account with username and password
-    @pytest.mark.skipif(str(8207) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8207) not in TESTS, reason='Excluded')
     def test_user_create_a_new_account_with_a_username_and_password_8207(self):
         """ Create a new Account with a username and password
 
@@ -119,7 +121,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8208 - 002 - User | Create a new Account with Facebook
-    @pytest.mark.skipif(str(8208) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8208) not in TESTS, reason='Excluded')
     def test_user_create_a_new_account_with_facebook_8208(self):
         """ Create a new Account with Facebook
 
@@ -131,7 +133,7 @@ class TestAccountManagement(unittest.TestCase):
         -enter email and password for facebook, then click the "Log In" button
         Click on the "okay" button
 
-        [redirects back to accounts-qa.openstax.org]
+        [redirects back to Accounts]
         Click the checkbox to agree to the Terms of Use and Privacy Policy
         Click the "Create Account Button"
 
@@ -194,7 +196,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8209 - 003 - User | Create a new Account with Google
-    @pytest.mark.skipif(str(8209) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8209) not in TESTS, reason='Excluded')
     def test_user_create_a_new_account_with_google_8209(self):
         """ Create a new Account with Google
 
@@ -275,7 +277,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8210 - 004 - User | Create a new Account with Twitter
-    @pytest.mark.skipif(str(8210) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8210) not in TESTS, reason='Excluded')
     def test_user_create_a_new_account_with_twitter_8210(self):
         """ Create a new Account with Twitter
 
@@ -351,7 +353,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8211 - 005 - User | Accept the terms of service
-    @pytest.mark.skipif(str(8211) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8211) not in TESTS, reason='Excluded')
     def test_user_accept_the_terms_of_service_8211(self):
         """ Accept the terms of service
 
@@ -391,7 +393,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8212 - 006 - User | Accept the privacy policy
-    @pytest.mark.skipif(str(8212) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8212) not in TESTS, reason='Excluded')
     def test_user_accept_the_privacy_policy_8212(self):
         """ Accept the privacy policy
 
@@ -430,7 +432,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8213 - 007 - User | Log into Accounts
-    @pytest.mark.skipif(str(8213) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8213) not in TESTS, reason='Excluded')
     def test_user_log_into_accounts_8213(self):
         """ Log into Accounts
 
@@ -465,7 +467,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8214 - 008 - User | Edit account name
-    @pytest.mark.skipif(str(8214) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8214) not in TESTS, reason='Excluded')
     def test_user_edit_account_name_8214(self):
         """ Edit account name
 
@@ -522,7 +524,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8215 - 009 - User | Cancel editing the account name
-    @pytest.mark.skipif(str(8215) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8215) not in TESTS, reason='Excluded')
     def test_user_canel_editing_the_account_name_8215(self):
         """ Cancel editing the account name
 
@@ -567,7 +569,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8216 - 010 - User | Edit the username
-    @pytest.mark.skipif(str(8216) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8216) not in TESTS, reason='Excluded')
     def test_user_edit_the_username_8216(self):
         """ Edit the username
 
@@ -616,7 +618,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8217 - 011 - User | Cancel editing the username
-    @pytest.mark.skipif(str(8217) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8217) not in TESTS, reason='Excluded')
     def test_user_canel_editing_the_username_8217(self):
         """ Cancel editing the username
 
@@ -654,7 +656,7 @@ class TestAccountManagement(unittest.TestCase):
         assert(username_edit.text == username_original), 'username not changed'
 
     # Case C8218 - 012 - User | Add an email address
-    @pytest.mark.skipif(str(8218) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8218) not in TESTS, reason='Excluded')
     def test_user_add_an_email_address_8218(self):
         """ Add an email address
 
@@ -696,7 +698,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8219 - 013 - User | Verify an email address
-    @pytest.mark.skipif(str(8219) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8219) not in TESTS, reason='Excluded')
     def test_user_verify_an_email_address_8219(self):
         """ Verify an email address
 
@@ -774,7 +776,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8220 - 014 - User | Make an email address serachable
-    @pytest.mark.skipif(str(8220) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8220) not in TESTS, reason='Excluded')
     def test_user_make_an_email_adress_searchable_8220(self):
         """ Make an email address searchable
 
@@ -820,7 +822,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8221 - 015 - User | Delete an email address
-    @pytest.mark.skipif(str(8221) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8221) not in TESTS, reason='Excluded')
     def test_user_delete_an_email_adress_8221(self):
         """ Delete an email address
 
@@ -864,7 +866,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8222 - 016 - User | Edit the account password
-    @pytest.mark.skipif(str(8222) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8222) not in TESTS, reason='Excluded')
     def test_user_edit_the_account_password_8222(self):
         """ Edit the account password
 
@@ -903,7 +905,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8223 - 017 - User | Cancel editing the account password
-    @pytest.mark.skipif(str(8223) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8223) not in TESTS, reason='Excluded')
     def test_user_cancel_editing_the_account_password_8223(self):
         """ Cancel editing the account password
 
@@ -942,7 +944,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8224 - 018 - User | Enable login with username and password
-    @pytest.mark.skipif(str(8224) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8224) not in TESTS, reason='Excluded')
     def test_user_enable_standard_login_with_username_and_password_8224(self):
         """ Enable standard login with username and password
 
@@ -1018,7 +1020,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8225 - 019 - User | Enable Facebook login
-    @pytest.mark.skipif(str(8225) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8225) not in TESTS, reason='Excluded')
     def test_user_enable_facebook_login_8225(self):
         """ Enable Facebook login
 
@@ -1073,7 +1075,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8226 - 020 - User | Enable Google login
-    @pytest.mark.skipif(str(8226) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8226) not in TESTS, reason='Excluded')
     def test_user_enable_google_login_8226(self):
         """ Enable Google login
 
@@ -1128,7 +1130,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8227 - 021 - User | Enable Twitter login
-    @pytest.mark.skipif(str(8227) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8227) not in TESTS, reason='Excluded')
     def test_user_enable_twitter_login_8227(self):
         """ Enable Twitter login
 
@@ -1179,7 +1181,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8387 - 022 - User | Delete login option
-    @pytest.mark.skipif(str(8387) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8387) not in TESTS, reason='Excluded')
     def test_user_delete_login_option_8387(self):
         """ Delete login option
 
@@ -1228,7 +1230,7 @@ class TestAccountManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8388 - 023 - User | Info Icon shows definiton for searchable option
-    @pytest.mark.skipif(str(8388) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8388) not in TESTS, reason='Excluded')
     def test_user_info_icon_shows_definition_for_searchable_option_8388(self):
         """ Info Icon shows definiton for searchable option
 
