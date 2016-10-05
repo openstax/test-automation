@@ -30,12 +30,12 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([
-        # 8085, 8086, 8087, 8088, 8089,
-        # 8090, 8091, 8092, 8093, 8094,
-        # 8095, 8096, 8097, 8098, 8099,
-        # 8100, 8101, 8102, 8103, 8104,
-        # 8105, 8106, 8107, 8108, 8109,
-        # 8110, 8111, 8112, 8113, 8114,
+        8085, 8086, 8087, 8088, 8089,
+        8090, 8091, 8092, 8093, 8094,
+        8095, 8096, 8097, 8098, 8099,
+        8100, 8101, 8102, 8103, 8104,
+        8105, 8106, 8107, 8108, 8109,
+        8110, 8111, 8112, 8113, 8114,
         8115, 8116
     ])
 )
@@ -52,8 +52,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
@@ -87,44 +87,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.001', '8085']
         self.ps.test_updates['passed'] = False
 
-        # assignment_menu = self.teacher.driver.find_element(
-        #     By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
-        # # if the Add Assignment menu is not open
-        # if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-        #         get_attribute('class'):
-        #     assignment_menu.click()
-        # self.teacher.driver.find_element(
-        #     By.LINK_TEXT, 'Add External Assignment').click()
-        # assert('externals/new' in self.teacher.current_url()),\
-        #     'not at Add External Assignemnt page'
-
-        while True:
-            self.teacher.wait.until(
-                expect.presence_of_element_located(
-                    (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
-                )
-            )
-            self.teacher.find(
-                By.XPATH, '//div/label[contains(text(),"%s")]' % "reading-0"
-            ).click()
-            self.teacher.wait.until(
-                expect.element_to_be_clickable(
-                    (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
-                )
-            ).click()
-            self.teacher.page.wait_for_page_load()
-            self.teacher.wait.until(
-                expect.element_to_be_clickable(
-                    (By.XPATH, '//button[contains(@class,"delete-link")]')
-                )
-            ).click()
-            self.teacher.find(
-                By.XPATH, '//button[contains(text(),"Yes")]').click()
-            assert ('calendar' in self.teacher.current_url()), \
-                'not returned to calendar after deleting an assignment'
-            self.teacher.sleep(0.5)
-
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
+                get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Add External Assignment').click()
+        assert('externals/new' in self.teacher.current_url()),\
+            'not at Add External Assignemnt page'
 
         self.ps.test_updates['passed'] = True
 
@@ -148,7 +120,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # click on calendar date
         # click on add external assignemnt
-
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
         day = self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
