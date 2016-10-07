@@ -8,16 +8,17 @@ import unittest
 import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+from staxing.assignment import Assignment
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementNotVisibleException
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.action_chains import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher, Student  # NOQA
+from staxing.helper import Teacher, Student
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -31,23 +32,11 @@ TESTS = os.getenv(
     # str([14675, 14676, 14677, 14678, 14800,
     #      14680, 14681, 14682, 14683, 14801,
     #      14802, 14803, 14804, 14805, 14685,
-    #      14686, 14687, 14688, 14689])  # NOQA
+    #      14686, 14687, 14688, 14689])
 
-    # these test cases work
-    str([14675, 14676, 14677, 14678, 14683,
-         14801, 14803, 14804, 14805, 14686,
-         14688])
-    # 14686 - being weird about finding hover elements, other things are working
+    # these are not implemented features - 14682, 14685, 14689
 
-    # thses have issues with scrolling in the table
-    # str([14800, 14680, 14681])
-
-    # these are not implemented features
-    # str([14682, 14802, 14685, 14689])
-    # 14802 has been implemented - other still haven't been
-
-    # thses aren't tested because issues with the add hw helper
-    # str([14687])
+    # issues with the add hw helper - 14687
 )
 
 
@@ -83,7 +72,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             pass
 
     # 14675 - 001 - Teacher | Set when feedback is available
-    @pytest.mark.skipif(str(14675) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14675) not in TESTS, reason='Excluded')
     def test_teacher_set_when_feedback_is_available_14675(self):
         """Set when feedback is available.
 
@@ -123,7 +112,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # 14676 - 002 - Teacher | Set open and due times for a reading assignment
-    @pytest.mark.skipif(str(14676) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14676) not in TESTS, reason='Excluded')
     def test_teacher_set_open_and_due_times_for_reading_assignment_14676(self):
         """Set open and due times for a reading assignment.
 
@@ -173,7 +162,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # 14677 - 003 - Teacher | Set open and due times for a homework assignment
-    @pytest.mark.skipif(str(14677) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14677) not in TESTS, reason='Excluded')
     def test_teacher_set_open_and_due_times_for_hw_assignment_14677(self):
         """Set open and due times for a homework assignment.
 
@@ -223,7 +212,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # 14678 - 004 - Teacher | Set open and due times for an external assignment
-    @pytest.mark.skipif(str(14678) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14678) not in TESTS, reason='Excluded')
     def test_teacher_set_open_and_due_time_for_external_assignment_14678(self):
         """Set open and due times for an external assignment.
 
@@ -273,10 +262,8 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         close_time.send_keys('5:67p')
         self.ps.test_updates['passed'] = True
 
-    # element doesn't exist until scrolled into view.
-    # But scrolling is messing up the table
     # 14800 - 005 - Teacher | Make an assignment on time for a specific student
-    @pytest.mark.skipif(str(14800) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14800) not in TESTS, reason='Excluded')
     def test_teacher_make_assignment_on_time_for_specific_student_14800(self):
         """Make an assignment on time for a specific student.
 
@@ -335,9 +322,8 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 actions.perform()
         self.ps.test_updates['passed'] = True
 
-    # scrolling is messing up the table
     # 14680 - 006 - Teacher | View score at due date
-    @pytest.mark.skipif(str(14680) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14680) not in TESTS, reason='Excluded')
     def test_teacher_view_score_at_due_date_14680(self):
         """View score at due date.
 
@@ -396,9 +382,8 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 actions.perform()
         self.ps.test_updates['passed'] = True
 
-    # scrolling is messing up the table
     # 14681 - 007 - Teacher | View current score
-    @pytest.mark.skipif(str(14681) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14681) not in TESTS, reason='Excluded')
     def test_teacher_view_current_score_14681(self):
         """View current score.
 
@@ -458,7 +443,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # 14682 - 008 - Teacher | Set points per problem based on difficulty
-    @pytest.mark.skipif(str(14682) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14682) not in TESTS, reason='Excluded')
     def test_teacher_set_points_per_problem_based_on_difficulty_14682(self):
         """Set points per problem based on difficulty.
 
@@ -474,7 +459,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # 14683 - 009 - Teacher | Delete an open assignment
-    @pytest.mark.skipif(str(14683) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14683) not in TESTS, reason='Excluded')
     def test_teacher_delete_an_open_assignment_14683(self):
         """Delete an open assignment.
 
@@ -563,7 +548,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
     # 14801 - 010 - Student | A deleted open assignment that the student has
     # not worked on is grayed out and is marked "Withdrawn"
-    @pytest.mark.skipif(str(14801) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14801) not in TESTS, reason='Excluded')
     def test_student_deleted_open_assignment_that_student_has_not_14801(self):
         """Deleted open assignment is grayed out and is marked "Withdrawn".
 
@@ -635,24 +620,23 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.teacher.logout()
         # login as a student to view the assignment
         self.student.login()
-        self.teacher.select_course(appearance='physics')
-        self.teacher.wait.until(
+        self.student.select_course(appearance='physics')
+        self.student.wait.until(
             expect.presence_of_element_located(
                 (By.XPATH,
                  '//a[@class="task row event deleted"]' +
                  '//span[contains(text(),"' + assignment_name + '")]')
             )
         )
-        self.teacher.find(
+        self.student.find(
             By.XPATH,
             '//a[@class="task row event deleted"]//span[text()="Withdrawn"]'
         )
         self.ps.test_updates['passed'] = True
 
-    # this case is not an implemented feature?
     # 14802 - 011 - Student | A deleted open assignment that the student has
     # worked on is not grayed out but is marked "Withdrawn"
-    @pytest.mark.skipif(str(14802) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14802) not in TESTS, reason='Excluded')
     def test_student_deleted_open_assignment_that_student_has_work_14802(self):
         """Deleted open assignment is not grayed out but is marked "Withdrawn".
 
@@ -669,13 +653,111 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         # self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.011', '14802']
         self.ps.test_updates['passed'] = False
 
-        # # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # Test steps and verification assertions
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        assignment_name = "external-011-" + str(randint(1000, 1999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='external',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'url': 'google.com',
+                                        'status': 'publish'
+                                    })
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, '//div[contains(@class, "calendar")]')
+            )
+        )
+        self.teacher.logout()
+        # login as student and click on assignemnt
+        self.student.login()
+        self.student.select_course(appearance='physics')
+        self.student.page.wait_for_page_load()
+        external = self.student.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 '//a[@class="task row external workable"]' +
+                 '//span[contains(text(),"' + assignment_name + '")]')
+            )
+        )
+        Assignment.scroll_to(self.student.driver, external)
+        self.student.driver.execute_script('window.scrollBy(0, -150);')
+        external.click()
+        self.student.page.wait_for_page_load()
+        self.student.find(
+            By.XPATH, "//h1//a[@href = 'http://google.com']"
+        ).click()
+        self.student.sleep(0.5)
+        self.student.find(
+            By.XPATH, "//a[text()='Back to Dashboard']"
+        ).click()
+        self.student.logout()
+        # logback in as teacher to delete assignemnt
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
+            ).click()
+        except NoSuchElementException:
+            self.teacher.find(
+                By.XPATH, "//a[contains(@class, 'header-control next')]"
+            ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
+            ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button[contains(@class,"delete-link")]')
+            )
+        ).click()
+        self.teacher.find(
+            By.XPATH, '//button[contains(text(),"Yes")]').click()
+        self.teacher.logout()
+        # login as a student to view the assignment
+        self.student.login()
+        self.student.select_course(appearance='physics')
+        self.student.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 '//a[@class="task row external workable deleted"]' +
+                 '//span[contains(text(),"' + assignment_name + '")]')
+            )
+        )
+        self.student.find(
+            By.XPATH,
+            '//a[@class="task row external workable deleted"]' +
+            '//span[text()="Withdrawn"]'
+        )
 
         self.ps.test_updates['passed'] = True
 
     # 14803 - 012 - Student | Delete withdrawn assignments
-    @pytest.mark.skipif(str(14803) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14803) not in TESTS, reason='Excluded')
     def test_student_delete_withdrawn_assignments_14803(self):
         """Delete withdrawn assignments.
 
@@ -752,11 +834,9 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         deleted_events = self.student.find_all(
             By.XPATH, '//a[@class="task row event deleted"]'
         )
-        print(len(deleted_events))
         for event in deleted_events:
             event_name = event.find_element(
                 By.XPATH, './div[contains(@class,"title")]/span').text
-            print(event_name)
             if event_name == assignment_name:
                 event.find_element(
                     By.XPATH, './/button[contains(@class,"hide-task")]'
@@ -776,7 +856,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
     # 14804 - 013 - Teacher | Move the due date to a later date for an open
     # assignment
-    @pytest.mark.skipif(str(14804) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14804) not in TESTS, reason='Excluded')
     def test_teacher_move_the_due_date_to_a_later_date_for_an_open_14804(self):
         """Move the due date to a later date for an open assignment.
 
@@ -855,7 +935,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
     # 14805 - 014 - Teacher | Move the due date to an earlier date for an open
     # assignment
-    @pytest.mark.skipif(str(14805) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14805) not in TESTS, reason='Excluded')
     def test_teacher_move_the_due_date_to_an_earlier_date_for_open_14805(self):
         """Move the due date to an earlier date for an open assignment.
 
@@ -933,7 +1013,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
     # 14685 - 015 - Student | View inital quiz about 2-step questions and
     # spaced practice
-    @pytest.mark.skipif(str(14685) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14685) not in TESTS, reason='Excluded')
     def test_student_view_initial_quiz_about_2_step_questions_and_14685(self):
         """View inital quiz about 2-step questions and spaced practice.
 
@@ -949,7 +1029,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # 14686 - 016 - Student | A help link explains why two-step problems
-    @pytest.mark.skipif(str(14686) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14686) not in TESTS, reason='Excluded')
     def test_student_a_help_link_explains_why_two_step_problems_14686(self):
         """A help link explains why two-step problems.
 
@@ -1023,16 +1103,17 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 actions.perform()
                 self.teacher.driver.find_element(
                     By.XPATH,
-                    '//div[@class="popover-content"]' +
-                    '//p/stong[contains(text(),' +
-                    '"Why do you ask me to answer twice?")]')
+                    '//div[@class="popover-content"]//p' +
+                    '//strong[contains(text(),' +
+                    '"Why do you ask me to answer twice?")]'
+                    )
                 break
         self.ps.test_updates['passed'] = True
 
     # NOT DONE
     # 14687 - 017 - System | Include info about two step problems and spaced
     # practice
-    @pytest.mark.skipif(str(14687) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14687) not in TESTS, reason='Excluded')
     def test_system_include_info_about_two_step_problems_and_space_14687(self):
         """Include information about two step problems and spaced practice.
 
@@ -1062,6 +1143,8 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # create a homework
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.teacher.login()
         self.teacher.select_course(appearance='physics')
         assignment_name = "homework-017"
@@ -1130,7 +1213,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
     # 14688 - 018 - Student | When working a question there is a link back to
     # the content for help
-    @pytest.mark.skipif(str(14688) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14688) not in TESTS, reason='Excluded')
     def test_student_when_working_a_question_there_is_a_link_back_14688(self):
         """When working a question there is a link back to the content for help.
 
@@ -1184,7 +1267,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # 14689 - 019 - Student | Ask for credit for late work
-    @pytest.mark.skipif(str(14689) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(14689) not in TESTS, reason='Excluded')
     def test_student_ask_for_credit_for_late_work_14689(self):
         """Ask for credit for late work.
 
