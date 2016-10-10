@@ -29,13 +29,12 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    # str([14675, 14676, 14677, 14678, 14800,
-    #      14680, 14681, 14682, 14683, 14801,
-    #      14802, 14803, 14804, 14805, 14685,
-    #      14686, 14687, 14688, 14689])
+    str([14675, 14676, 14677, 14678, 14800,
+         14680, 14681, 14682, 14683, 14801,
+         14802, 14803, 14804, 14805, 14685,
+         14686, 14687, 14688, 14689])
 
     # these are not implemented features - 14682, 14685, 14689
-
     # issues with the add hw helper - 14687
 )
 
@@ -94,9 +93,9 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//button[contains(@class,"dropdown-toggle")]').click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
+        self.teacher.find(By.LINK_TEXT, 'Add Homework').click()
         self.teacher.sleep(1)
         feedback_option = self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -104,10 +103,10 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             )
         )
         feedback_option.click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//select/option[@value="immediate"]').click()
         feedback_option.click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//select/option[@value="due_at"]').click()
         self.ps.test_updates['passed'] = True
 
@@ -136,23 +135,23 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//button[contains(@class,"dropdown-toggle")]').click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Reading').click()
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.sleep(1)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
         )
-        open_time = self.teacher.driver.find_element(
+        open_time = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"-assignment-open-time")]' +
             '//input[@name="time"]'
         )
         open_time.clear()
         open_time.send_keys('12:34a')
-        close_time = self.teacher.driver.find_element(
+        close_time = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"-assignment-due-time")]' +
             '//input[@name="time"]'
@@ -186,23 +185,23 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//button[contains(@class,"dropdown-toggle")]').click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
+        self.teacher.find(By.LINK_TEXT, 'Add Homework').click()
         self.teacher.sleep(1)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
         )
-        open_time = self.teacher.driver.find_element(
+        open_time = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"-assignment-open-time")]' +
             '//input[@name="time"]'
         )
         open_time.clear()
         open_time.send_keys('12:34a')
-        close_time = self.teacher.driver.find_element(
+        close_time = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"-assignment-due-time")]' +
             '//input[@name="time"]'
@@ -236,9 +235,9 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//button[contains(@class,"dropdown-toggle")]').click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
         self.teacher.sleep(1)
         self.teacher.wait.until(
@@ -246,14 +245,14 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 (By.ID, 'reading-title')
             )
         )
-        open_time = self.teacher.driver.find_element(
+        open_time = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"-assignment-open-time")]' +
             '//input[@name="time"]'
         )
         open_time.clear()
         open_time.send_keys('12:34a')
-        close_time = self.teacher.driver.find_element(
+        close_time = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"-assignment-due-time")]' +
             '//input[@name="time"]'
@@ -286,22 +285,22 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.select_course(appearance='college_physics')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.LINK_TEXT, 'Student Scores').click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[@class="course-scores-container"]')
             )
         )
-        assignments = self.teacher.driver.find_elements(
+        assignments = self.teacher.find_all(
             By.XPATH,
             "//span[contains(@aria-describedby,'header-cell-title')]")
         for i in range(len(assignments)//4):
             try:
-                self.teacher.driver.find_element(
+                self.teacher.find(
                     By.XPATH, '//div[@class="late-caret"]'
                 ).click()
-                self.teacher.driver.find_element(
+                self.teacher.find(
                     By.XPATH,
                     '//button[contains(text(),"Accept late score")]'
                 ).click()
@@ -311,7 +310,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                     print("No Late assignments for this class :(")
                     raise Exception
                 # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.driver.find_element(
+                scroll_bar = self.teacher.find(
                     By.XPATH,
                     '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
                 actions = ActionChains(self.teacher.driver)
@@ -345,22 +344,22 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.select_course(appearance='college_physics')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.LINK_TEXT, 'Student Scores').click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[@class="course-scores-container"]')
             )
         )
-        assignments = self.teacher.driver.find_elements(
+        assignments = self.teacher.find_all(
             By.XPATH,
             "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)//4): ##########
+        for i in range(len(assignments)//4):
             try:
-                self.teacher.driver.find_element(
+                self.teacher.find(
                     By.XPATH, '//div[@class="late-caret accepted"]'
                 ).click()
-                self.teacher.driver.find_element(
+                self.teacher.find(
                     By.XPATH,
                     '//div[contains(@class,"late-status")]' +
                     '//span[contains(text(),"due date")]'
@@ -371,7 +370,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                     print("No Late assignments for this class :(")
                     raise Exception
                 # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.driver.find_element(
+                scroll_bar = self.teacher.find(
                     By.XPATH,
                     '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
                 actions = ActionChains(self.teacher.driver)
@@ -411,19 +410,19 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.select_course(appearance='college_physics')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.LINK_TEXT, 'Student Scores').click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[@class="course-scores-container"]')
             )
         )
-        assignments = self.teacher.driver.find_elements(
+        assignments = self.teacher.find_all(
             By.XPATH,
             "//span[contains(@aria-describedby,'header-cell-title')]")
         for i in range(len(assignments)//4):
             try:
-                self.teacher.driver.find_element(
+                self.teacher.find(
                     By.XPATH, '//div[@class="score"]')
                 break
             except (NoSuchElementException):
@@ -431,7 +430,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                     print("No Late assignments for this class :(")
                     raise Exception
                 # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.driver.find_element(
+                scroll_bar = self.teacher.find(
                     By.XPATH,
                     '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
                 actions = ActionChains(self.teacher.driver)
@@ -892,16 +891,16 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                                     })
         # click on the assignment
         try:
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH,
                 '//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         except NoSuchElementException:
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH,
                 '//a[contains(@class,"calendar-header-control next")]'
             ).click()
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH,
                 '//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
@@ -913,21 +912,21 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         # change date
         today = datetime.date.today()
         closes_on = (today + datetime.timedelta(days=10)).strftime('%m/%d/%Y')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[contains(@class,"-due-date")]' +
             '//div[contains(@class,"datepicker__input")]').click()
         # get calendar to correct month
         month = today.month
         year = today.year
         while month != int(closes_on[:2]) or year != int(closes_on[6:]):
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH, '//a[contains(@class,"navigation--next")]').click()
             if month != 12:
                 month += 1
             else:
                 month = 1
                 year += 1
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[contains(@class,"datepicker__day")' +
             'and contains(text(),"' + (closes_on[3:5]).lstrip('0') + '")]'
         ).click()
@@ -970,16 +969,16 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                                     })
         # click on the assignment
         try:
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH,
                 '//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         except NoSuchElementException:
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH,
                 '//a[contains(@class,"calendar-header-control next")]'
             ).click()
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH,
                 '//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
@@ -991,21 +990,21 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         # change date
         today = datetime.date.today()
         closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[contains(@class,"-due-date")]' +
             '//div[contains(@class,"datepicker__input")]').click()
         # get calendar to correct month
         month = today.month
         year = today.year
         while month != int(closes_on[:2]) or year != int(closes_on[6:]):
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH, '//a[contains(@class,"navigation--next")]').click()
             if month != 12:
                 month += 1
             else:
                 month = 1
                 year += 1
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[contains(@class,"datepicker__day")' +
             'and contains(text(),"' + (closes_on[3:5]).lstrip('0') + '")]'
         ).click()
@@ -1067,13 +1066,13 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             )
         )
         # work homework until a free response problem is found.
-        sections = self.student.driver.find_elements(
+        sections = self.student.find_all(
             By.XPATH, '//span[contains(@class,"openstax-breadcrumbs-step")]'
         )
         for i in range(len(sections)):
             try:
                 # if the question is two part must answer free response first
-                element = self.student.driver.find_element(
+                element = self.student.find(
                     By.TAG_NAME, 'textarea')
             except NoSuchElementException:
                 # click on the next breadcrumb
@@ -1081,7 +1080,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                     print("no two part questions in the homework")
                     raise Exception
                 else:
-                    sections_new = self.student.driver.find_elements(
+                    sections_new = self.student.find_all(
                         By.XPATH, '//div[@class="openstax-breadcrumbs-step"]')
                     sections_new[i+1].click()
             else:
@@ -1094,14 +1093,14 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                     )
                 ).click()
                 actions = ActionChains(self.student.driver)
-                why = self.teacher.driver.find_element(
+                why = self.teacher.find(
                     By.XPATH, '//span[@class="text-info"]')
                 self.teacher.driver.execute_script(
                     'return arguments[0].scrollIntoView();', why)
                 self.teacher.driver.execute_script('window.scrollBy(0, -80);')
                 actions.move_to_element(why)
                 actions.perform()
-                self.teacher.driver.find_element(
+                self.teacher.find(
                     By.XPATH,
                     '//div[@class="popover-content"]//p' +
                     '//strong[contains(text(),' +
@@ -1164,17 +1163,17 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         # login as student to work the homework
         self.student.login()
         self.student.select_course(appearance='physics')
-        self.student.driver.find_element(
+        self.student.find(
             By.XPATH, '//span[contains(text(), "'+assignment_name+'")]'
         ).click()
         # work problems untill a free response question is found
-        sections = self.student.driver.find_elements(
+        sections = self.student.find_all(
             By.XPATH, '//span[contains(@class,"openstax-breadcrumbs-step")]'
         )
         for i in range(len(sections)):
             try:
                 # if the question is two part must answer free response first
-                element = self.student.driver.find_element(
+                element = self.student.find(
                     By.TAG_NAME, 'textarea')
                 answer_text = "answer"
                 for i in answer_text:
@@ -1185,7 +1184,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                     )
                 ).click()
                 actions = ActionChains(self.student.driver)
-                why = self.teacher.driver.find_element(
+                why = self.teacher.find(
                     By.XPATH, '//span[@class="text-info"]')
                 actions.move_to_element(why)
                 actions.perform()
@@ -1200,11 +1199,11 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 if i == len(sections):
                     print("no two part questions in the homework")
                     raise Exception
-                sections_new = self.student.driver.find_elements(
+                sections_new = self.student.find_all(
                     By.XPATH, '//div[@class="openstax-breadcrumbs-step"]')
                 sections_new[i+1].click()
         # click on the last problems to find a spaced practice
-        sections = self.student.driver.find_elements(
+        sections = self.student.find_all(
             By.XPATH, '//div[@class="openstax-breadcrumbs-step"]'
         )
         sections[-2].click()
