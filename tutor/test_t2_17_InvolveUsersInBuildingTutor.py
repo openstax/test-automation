@@ -3,7 +3,7 @@
 import inspect
 import json
 import os
-import pytest
+# import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
@@ -17,10 +17,10 @@ from staxing.helper import Teacher
 
 # for template command line testing only
 # - replace list_of_cases on line 31 with all test case IDs in this file
-# - replace CaseID on line 52 with the actual cass ID
+# - replace CaseID on line 52 with the actual case ID
 # - delete lines 17 - 22
 list_of_cases = None
-CaseID = 0
+CaseID = 'skip'
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -41,9 +41,11 @@ class TestInvolveUsersInBuildingTutor(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
+        self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
@@ -58,8 +60,8 @@ class TestInvolveUsersInBuildingTutor(unittest.TestCase):
         except:
             pass
 
-    # Case CaseID - Story# - UserType
-    @pytest.mark.skipif(str(CaseID) not in TESTS, reason='Excluded')
+    # Case CaseID - Story# - UserType | StoryText
+    '''@pytest.mark.skipif(str(CaseID) not in TESTS, reason='Excluded')
     def test_usertype_storytext_CaseID(self):
         """Story Text.
 
@@ -82,4 +84,4 @@ class TestInvolveUsersInBuildingTutor(unittest.TestCase):
         # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
-        self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True'''

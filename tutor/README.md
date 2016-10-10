@@ -70,3 +70,24 @@ Finished?|Verified?|Epic|Epic Name|Started|Total Cases|Notes
  ||T2.18|Guide, Monitor, Support &amp; Train Users|0|5|
 &#x2611;|&#x2611;|T2.19|Create Tutor Business Model|0|0|No user cases
                                     |||**Total Cases:**|**306**|**640**|*47.81% Done*
+
+Templater:
+----------
+Build the structure for a new test epic
+
+    python3 build_template.py <arguments>
+
+Available options:||
+:--------|---------
+`-h` / `--help` | Display help text
+`-o` / `--ofile` | Output file name if different from camel-case "epic-name"
+ | `-o test_t2_25_EpicName.py`
+`-p` / `--product` | Product type (t1, t2, cc1, cc2, ...)
+ | `-p t2`
+`-e` / `--epic` | Epic number
+ | `-e 25`
+`-n` / `--epic-name` | Full epic text in quotes
+ | `-n "Epic name"`
+`-c` / `--case_list` | A comma-separated list of TestRail case IDs
+ | `-c 1,2,3,4,5`
+`-v` | verbose / debugging output

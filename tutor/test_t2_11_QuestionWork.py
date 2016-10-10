@@ -11,12 +11,13 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
+from selenium.webdriver.common.by import By
 # from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver import ActionChains
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher
+from staxing.helper import Teacher, ContentQA, Student
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -49,10 +50,22 @@ class TestQuestionWork(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
+        self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
+        )
+        self.content = ContentQA(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities,
+            existing_driver=self.teacher.driver
+        )
+        self.student = Student(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities,
+            existing_driver=self.teacher.driver
         )
 
     def tearDown(self):
@@ -72,7 +85,7 @@ class TestQuestionWork(unittest.TestCase):
         """Review all questions.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the teacher user account in the username and password text boxes
         Click on the 'Sign in' button
@@ -95,7 +108,27 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        self.teacher.sleep(5)
+
+        self.teacher.open_user_menu()
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Question Library').click()
+        self.teacher.sleep(5)
+
+        # Open the assessment cards
+        self.teacher.find(
+            By.XPATH,
+            "//span[@class='chapter-checkbox']/span[@class='tri-state-check" +
+            "box unchecked']/i[@class='tutor-icon fa fa-square-o']").click()
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
+        self.teacher.sleep(5)
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='openstax-exercise-preview exercise-card has-acti" +
+            "ons non-interactive is-vertically-truncated panel panel-defau" +
+            "lt']/div[@class='panel-body']")
 
         self.ps.test_updates['passed'] = True
 
@@ -125,7 +158,34 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        self.teacher.sleep(5)
+
+        self.teacher.open_user_menu()
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Question Library').click()
+        self.teacher.sleep(5)
+
+        # Open the assessment cards
+        self.teacher.find(
+            By.XPATH,
+            "//span[@class='chapter-checkbox']/span[@class='tri-state-check" +
+            "box unchecked']/i[@class='tutor-icon fa fa-square-o']").click()
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
+        self.teacher.sleep(5)
+
+        # Click the exclude question button, then click include question button
+        element = self.teacher.find(
+            By.XPATH, "//div[@class = 'controls-overlay'][1]")
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(element)
+        actions.perform()
+        self.teacher.sleep(2)
+        self.teacher.find(By.XPATH, "//div[@class = 'action exclude']").click()
+        self.teacher.sleep(2)
+        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
+        self.teacher.sleep(2)
 
         self.ps.test_updates['passed'] = True
 
@@ -155,7 +215,43 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        self.teacher.sleep(5)
+
+        self.teacher.open_user_menu()
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Question Library').click()
+        self.teacher.sleep(5)
+
+        # Open the assessment cards
+        self.teacher.find(
+            By.XPATH,
+            "//span[@class='chapter-checkbox']/span[@class='tri-state-check" +
+            "box unchecked']/i[@class='tutor-icon fa fa-square-o']").click()
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
+        self.teacher.sleep(5)
+
+        # Count the total number of cards
+        total = len(self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='openstax-exercise-preview exercise-card has-acti" +
+            "ons non-interactive is-vertically-truncated panel panel-defaul" +
+            "t']/div[@class='panel-body']"))
+        self.teacher.sleep(2)
+
+        # Limit assessments to reading, count the total number of cards
+        self.teacher.find(
+            By.XPATH, "//button[@class='reading btn btn-default']").click()
+        self.teacher.sleep(1)
+        reading = len(self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='openstax-exercise-preview exercise-card has-ac" +
+            "tions non-interactive is-vertically-truncated panel panel-de" +
+            "fault']/div[@class='panel-body']"))
+        self.teacher.sleep(2)
+
+        # Reading assessments should not outnumber total assessments
+        assert(total >= reading), \
+            'More reading assessments than total assessments'
 
         self.ps.test_updates['passed'] = True
 
@@ -185,7 +281,43 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        self.teacher.sleep(5)
+
+        self.teacher.open_user_menu()
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Question Library').click()
+        self.teacher.sleep(5)
+
+        # Open the assessment cards
+        self.teacher.find(
+            By.XPATH,
+            "//span[@class='chapter-checkbox']/span[@class='tri-state-check" +
+            "box unchecked']/i[@class='tutor-icon fa fa-square-o']").click()
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
+        self.teacher.sleep(5)
+
+        # Count the total number of cards
+        total = len(self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='openstax-exercise-preview exercise-card has-act" +
+            "ions non-interactive is-vertically-truncated panel panel-defa" +
+            "ult']/div[@class='panel-body']"))
+        self.teacher.sleep(2)
+
+        # Limit assessments to practice, count the total number of cards
+        self.teacher.find(
+            By.XPATH, "//button[@class='homework btn btn-default']").click()
+        self.teacher.sleep(1)
+        practice = len(self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='openstax-exercise-preview exercise-card has-act" +
+            "ions non-interactive is-vertically-truncated panel panel-defa" +
+            "ult']/div[@class='panel-body']"))
+        self.teacher.sleep(2)
+
+        # Practice assessments should not outnumber total assessments
+        assert(total >= practice), \
+            'More practice assessments than total assessments'
 
         self.ps.test_updates['passed'] = True
 
@@ -215,7 +347,34 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        self.teacher.sleep(5)
+
+        self.teacher.open_user_menu()
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Question Library').click()
+        self.teacher.sleep(5)
+
+        # Open the assessment cards
+        self.teacher.find(
+            By.XPATH,
+            "//span[@class='chapter-checkbox']/span[@class='tri-state-check" +
+            "box unchecked']/i[@class='tutor-icon fa fa-square-o']").click()
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
+        self.teacher.sleep(10)
+
+        # Scroll to bottom of page and verify that the tabs are still visible
+        self.teacher.driver.execute_script("window.scrollTo(0, 0);")
+        self.teacher.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+        self.teacher.sleep(3)
+        self.teacher.find(By.XPATH, "//div[@class='section active']")
+        self.teacher.find(
+            By.XPATH, "//button[@class='homework btn btn-default']")
+        self.teacher.find(
+            By.XPATH, "//button[@class='reading btn btn-default']")
+        self.teacher.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -245,7 +404,48 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        self.teacher.sleep(5)
+
+        self.teacher.open_user_menu()
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Question Library').click()
+        self.teacher.sleep(5)
+
+        # Open the assessment cards
+        self.teacher.find(
+            By.XPATH,
+            "//span[@class='chapter-checkbox']/span[@class='tri-" +
+            "state-checkbox unchecked']/i[@class='tutor-icon fa fa-square-o']"
+        ).click()
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
+        self.teacher.sleep(10)
+
+        sections = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='exercise-sections']/label[@class='exercises-secti" +
+            "on-label']/span[3]")
+        sections.pop(0)
+
+        jumps = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='sectionizer']/div[@class='section']")
+
+        assert(len(sections) == len(jumps)), \
+            'Number of section jumps does not equal number of section titles'
+
+        # Click the section links and verify the page is scrolled
+        position = self.teacher.driver.execute_script("return window.scrollY;")
+        for button in jumps:
+            button.click()
+            self.teacher.sleep(2)
+            assert(position < self.teacher.driver.execute_script(
+                "return window.scrollY;")), \
+                'Section link did not jump to next section'
+
+            position = self.teacher.driver.execute_script(
+                "return window.scrollY;")
+
+        self.teacher.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -277,7 +477,40 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        self.teacher.sleep(5)
+
+        self.teacher.open_user_menu()
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Question Library').click()
+        self.teacher.sleep(5)
+
+        # Open the assessment cards
+        self.teacher.find(
+            By.XPATH,
+            "//span[@class='chapter-checkbox']/span[@class='tri-state-check" +
+            "box unchecked']/i[@class='tutor-icon fa fa-square-o']").click()
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
+        self.teacher.sleep(5)
+
+        # Click the question detail button, then click report an error button
+        element = self.teacher.find(
+            By.XPATH, "//div[@class = 'controls-overlay'][1]")
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(element)
+        actions.perform()
+        self.teacher.sleep(2)
+        self.teacher.find(By.XPATH, "//div[@class='action details']").click()
+        self.teacher.sleep(2)
+        self.teacher.find(
+            By.XPATH, "//div[@class='action report-error']").click()
+        self.teacher.sleep(3)
+        self.teacher.driver.switch_to_window(
+            self.teacher.driver.window_handles[-1])
+
+        assert('docs.google' in self.teacher.current_url()), \
+            'Not viewing the errata page'
 
         self.ps.test_updates['passed'] = True
 
@@ -307,7 +540,31 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.login()
+        self.student.select_course(appearance='physics')
+        self.student.sleep(5)
+
+        # Find a homework from past work
+        self.student.find(
+            By.XPATH, "//ul[@class='nav nav-tabs']/li[2]/a").click()
+        self.student.find(
+            By.XPATH,
+            "//div[@class='-weeks-events panel panel-default']/div[@class" +
+            "='panel-body']/div[@class='task row homework workable']").click()
+        self.student.sleep(3)
+
+        # Go to the errata form
+        self.student.driver.execute_script("window.scrollTo(0, 0);")
+        self.student.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+        self.student.find(
+            By.XPATH, "//span[@class='exercise-identifier-link']/a").click()
+        self.student.sleep(3)
+        self.student.driver.switch_to_window(
+            self.student.driver.window_handles[-1])
+
+        assert('docs.google' in self.student.current_url()), \
+            'Not viewing the errata page'
 
         self.ps.test_updates['passed'] = True
 
@@ -348,7 +605,7 @@ class TestQuestionWork(unittest.TestCase):
         """Create a brand new multiple choice question.
 
         Steps:
-        Go to https://exercises-qa.openstax.org/
+        Go to Exercises
         Click on the 'Login' button
         Enter the content analyst account
         Click on the 'Sign in' button
@@ -373,7 +630,60 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.content.sleep(5)
+
+        # Select Multiple Choice radio if not already selected
+        if not self.content.find(
+            By.XPATH, "//div[@class='form-group'][1]/div[@class='radio']"
+        ).is_selected():
+            self.content.find(
+                By.XPATH,
+                "//div[@class='form-group'][1]/div[@class='radio']" +
+                "/label/span").click()
+
+        self.content.sleep(3)
+
+        # Fill in required fields
+        self.content.find(By.XPATH, "//div[4]/textarea").send_keys('Stem')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[2]").send_keys('Feedback')
+        self.content.find(By.XPATH, "//div[6]/textarea").send_keys('Solution')
+
+        # Save draft and publish
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.content.sleep(3)
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button publish btn btn-primary']").click()
+        self.content.find(
+            By.XPATH,
+            "//div[@class='popover-content']/div[@class='controls']/button" +
+            "[@class='btn btn-primary']").click()
+        self.content.sleep(3)
+
+        # Verify
+        page = self.content.driver.page_source
+        assert('has published successfully' in page), \
+            'Exercise not successfully published'
+
+        self.content.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
+
+        self.content.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -401,9 +711,25 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.content.sleep(5)
 
-        self.ps.test_updates['passed'] = True
+        # Select the Order Matters checkbox
+        checkbox = self.content.find(
+            By.XPATH,
+            "//div[@class='question']/div[@class='form-group']/div[@class" +
+            "='checkbox']/label/span")
+        checkbox.click()
+        self.content.sleep(5)
+
+        if checkbox.is_selected():
+            self.ps.test_updates['passed'] = True
 
     # 14717 - 012 - Content Analyst | Edit detailed solutions
     @pytest.mark.skipif(str(14717) not in TESTS, reason='Excluded')
@@ -432,7 +758,66 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.content.sleep(5)
+
+        # Select Multiple Choice radio if not already selected
+        if not self.content.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/div[@class='radio']"
+        ).is_selected():
+            self.content.find(
+                By.XPATH,
+                "//div[@class='form-group'][1]/div[@class='radio']/label/span"
+            ).click()
+
+        self.content.sleep(3)
+
+        # Fill in required fields
+        self.content.find(By.XPATH, "//div[4]/textarea").send_keys('Stem')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[2]").send_keys('Feedback')
+        self.content.find(By.XPATH, "//div[6]/textarea").send_keys('Solution')
+
+        # Save draft and publish
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.content.sleep(3)
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button publish btn btn-primary']").click()
+        self.content.find(
+            By.XPATH,
+            "//div[@class='popover-content']/div[@class='controls']/butt" +
+            "on[@class='btn btn-primary']").click()
+        self.content.sleep(3)
+
+        # Verify
+        page = self.content.driver.page_source
+        assert('has published successfully' in page), \
+            'Exercise not successfully published'
+
+        self.content.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
+
+        self.content.sleep(3)
+
+        detailed = self.content.find(
+            By.XPATH, "//div[@class='openstax-has-html solution']")
+        assert(detailed.text == 'Solution'), \
+            'Detailed solution text is not what is expected'
 
         self.ps.test_updates['passed'] = True
 
@@ -459,7 +844,69 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.content.sleep(5)
+
+        # Select Multiple Choice radio if not already selected
+        if not self.content.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/div[@class='radio']"
+        ).is_selected():
+            self.content.find(
+                By.XPATH,
+                "//div[@class='form-group'][1]/div[@class='radio']/label/span"
+            ).click()
+
+        self.content.sleep(3)
+
+        # Fill in required fields
+        vid = '<iframe width="420" height="315" src="https://www.youtube.com'
+        vid += '/embed/jNQXAC9IVRw" frameborder="0" allowfullscreen></iframe>'
+        self.content.find(By.XPATH, "//div[4]/textarea").send_keys(vid)
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[2]").send_keys('Feedback')
+        self.content.find(By.XPATH, "//div[6]/textarea").send_keys('Solution')
+
+        # Save draft and publish
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.content.sleep(3)
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button publish btn btn-primary']").click()
+        self.content.find(
+            By.XPATH,
+            "//div[@class='popover-content']/div[@class='controls']/butt" +
+            "on[@class='btn btn-primary']").click()
+        self.content.sleep(3)
+
+        # Verify
+        page = self.content.driver.page_source
+        assert('has published successfully' in page), \
+            'Exercise not successfully published'
+
+        self.content.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
+
+        self.content.sleep(3)
+
+        # Find the embedded video
+        self.content.find(
+            By.XPATH,
+            "//div[@class='frame-wrapper embed-responsive embed-responsive-" +
+            "4by3']/iframe")
 
         self.ps.test_updates['passed'] = True
 
@@ -487,7 +934,30 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.content.sleep(5)
+
+        # Switch to Tags tab and find the dropdown elements
+        self.content.find(
+            By.XPATH, "//ul[@class='nav nav-tabs']/li[2]/a").click()
+        self.content.sleep(1)
+        dropdowns = self.content.driver.find_elements_by_xpath(
+            "//select[@class='form-control']")
+        self.content.sleep(1)
+
+        # Select values for the dropdown menus
+        dropdowns[0].send_keys('Con')
+        dropdowns[1].send_keys('1')
+        dropdowns[2].send_keys('3')
+        dropdowns[3].send_keys('Long')
+
+        self.content.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -517,7 +987,30 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.content.sleep(5)
+
+        # Switch to Tags tab and find the dropdown elements
+        self.content.find(
+            By.XPATH, "//ul[@class='nav nav-tabs']/li[2]/a").click()
+        self.content.sleep(1)
+        dropdowns = self.content.driver.find_elements_by_xpath(
+            "//select[@class='form-control']")
+        self.content.sleep(1)
+
+        # Select values for the dropdown menus
+        dropdowns[0].send_keys('Con')
+        dropdowns[1].send_keys('1')
+        dropdowns[2].send_keys('3')
+        dropdowns[3].send_keys('Long')
+
+        self.content.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -546,9 +1039,26 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.content.sleep(5)
 
-        self.ps.test_updates['passed'] = True
+        # Switch to Tags tab and check Requires Context
+        self.content.find(
+            By.XPATH, "//ul[@class='nav nav-tabs']/li[2]/a").click()
+        self.content.sleep(1)
+        self.content.find(By.XPATH, "//div[@class='tag']/input").click()
+        self.content.sleep(3)
+
+        if self.content.find(
+            By.XPATH, "//div[@class='tag']/input"
+        ).is_selected():
+            self.ps.test_updates['passed'] = True
 
     # 14722 - 017 - Content Analyst | Add context to a question
     @pytest.mark.skipif(str(14722) not in TESTS, reason='Excluded')
@@ -576,7 +1086,24 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.content.sleep(5)
+
+        # Switch to Tags tab and click CNX Module
+        self.content.find(
+            By.XPATH, "//ul[@class='nav nav-tabs']/li[2]/a").click()
+        self.content.sleep(1)
+        self.content.driver.find_elements_by_xpath(
+            "//i[@class='fa fa-plus-circle']")[2].click()
+        self.content.sleep(3)
+
+        self.content.find(By.XPATH, "//input[@class='form-control']")
 
         self.ps.test_updates['passed'] = True
 
@@ -608,7 +1135,58 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.content.sleep(5)
+
+        # Select Multiple Choice radio if not already selected
+        if not self.content.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/div[@class='radio']"
+        ).is_selected():
+            self.content.find(
+                By.XPATH,
+                "//div[@class='form-group'][1]/div[@class='radio']/label/span"
+            ).click()
+
+        self.content.sleep(3)
+
+        # Fill in required fields
+        self.content.find(By.XPATH, "//div[4]/textarea").send_keys('Stem')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[2]").send_keys('Feedback')
+        self.content.find(By.XPATH, "//div[6]/textarea").send_keys('Solution')
+
+        # Save draft and publish
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.content.sleep(3)
+
+        # Move to Assets and upload image
+        self.content.find(
+            By.XPATH, "//ul[@class='nav nav-tabs']/li[3]/a").click()
+        self.content.sleep(3)
+        self.content.find(
+            By.ID, "file"
+        ).send_keys(
+            "/Users/openstaxii/desktop/Screen Shot 2016-06-17 at 1.15.39 PM" +
+            ".png")
+        self.content.sleep(5)
+
+        # Find the Upload and Choose different image buttons
+        self.content.find(By.XPATH, "//label[@class='selector']")
+        self.content.find(By.XPATH, "//button[@class='btn btn-default']")
 
         self.ps.test_updates['passed'] = True
 
@@ -640,7 +1218,62 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.content.sleep(5)
+
+        # Select Multiple Choice radio if not already selected
+        if not self.content.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/div[@class='radio']"
+        ).is_selected():
+            self.content.find(
+                By.XPATH,
+                "//div[@class='form-group'][1]/div[@class='radio']/label/span"
+            ).click()
+
+        self.content.sleep(3)
+
+        # Fill in required fields
+        self.content.find(By.XPATH, "//div[4]/textarea").send_keys('Stem')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[2]").send_keys('Feedback')
+        self.content.find(By.XPATH, "//div[6]/textarea").send_keys('Solution')
+
+        # Save draft and publish
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.content.sleep(3)
+
+        # Move to Assets and upload image
+        self.content.find(
+            By.XPATH, "//ul[@class='nav nav-tabs']/li[3]/a").click()
+        self.content.sleep(3)
+        self.content.find(
+            By.ID, "file"
+        ).send_keys(
+            "/Users/openstaxii/desktop/Screen Shot 2016-06-17 at 1.15.39 PM" +
+            ".png")
+        self.content.sleep(5)
+        self.content.find(
+            By.XPATH, "//button[@class='btn btn-default']").click()
+
+        # Wait for upload and find the Delete button
+        self.content.sleep(30)
+        self.content.find(
+            By.XPATH, "//button[@class='btn btn-default']").click()
+        self.content.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -672,7 +1305,63 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.content.sleep(5)
+
+        # Select Multiple Choice radio if not already selected
+        if not self.content.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/div[@class='radio']"
+        ).is_selected():
+            self.content.find(
+                By.XPATH,
+                "//div[@class='form-group'][1]/div[@class='radio']/label/span"
+            ).click()
+
+        self.content.sleep(3)
+
+        # Fill in required fields
+        self.content.find(By.XPATH, "//div[4]/textarea").send_keys('Stem')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[2]").send_keys('Feedback')
+        self.content.find(By.XPATH, "//div[6]/textarea").send_keys('Solution')
+
+        # Save draft and publish
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.content.sleep(3)
+
+        # Move to Assets and upload image
+        self.content.find(
+            By.XPATH, "//ul[@class='nav nav-tabs']/li[3]/a").click()
+        self.content.sleep(3)
+        self.content.find(
+            By.ID, "file"
+        ).send_keys(
+            "/Users/openstaxii/desktop/Screen Shot 2016-06-17 at 1.15.39 PM" +
+            ".png")
+        self.content.sleep(5)
+        self.content.find(
+            By.XPATH, "//button[@class='btn btn-default']").click()
+
+        # Wait for upload and find URL snippet
+        self.content.sleep(30)
+        self.content.find(By.XPATH, "//textarea[@class='copypaste']")
+        self.content.find(
+            By.XPATH, "//button[@class='btn btn-default']").click()
+        self.content.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -705,7 +1394,67 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.content.sleep(5)
+
+        # Select Multiple Choice radio if not already selected
+        if not self.content.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/div[@class='radio']"
+        ).is_selected():
+            self.content.find(
+                By.XPATH,
+                "//div[@class='form-group'][1]/div[@class='radio']/label/span"
+            ).click()
+
+        self.content.sleep(3)
+
+        # Fill in required fields
+        self.content.find(By.XPATH, "//div[4]/textarea").send_keys('Stem')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[2]").send_keys('Feedback')
+        self.content.find(By.XPATH, "//div[6]/textarea").send_keys('Solution')
+
+        # Save draft and publish
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.content.sleep(3)
+
+        # Move to Assets and upload image
+        self.content.find(
+            By.XPATH, "//ul[@class='nav nav-tabs']/li[3]/a").click()
+        self.content.sleep(3)
+        self.content.find(
+            By.ID, "file"
+        ).send_keys(
+            "/Users/openstaxii/desktop/Screen Shot 2016-06-17 at 1.15.39 PM" +
+            ".png")
+        self.content.sleep(5)
+        self.content.find(
+            By.XPATH, "//button[@class='btn btn-default']").click()
+
+        # Wait for upload and find the Delete button
+        self.content.sleep(30)
+        self.content.find(
+            By.XPATH, "//button[@class='btn btn-default']").click()
+        self.content.sleep(5)
+
+        # Verify image is deleted
+        assert len(self.content.driver.find_elements_by_xpath(
+            "//button[@class='btn btn-default']")) == 0, \
+            'Image not deleted'
 
         self.ps.test_updates['passed'] = True
 
@@ -715,8 +1464,7 @@ class TestQuestionWork(unittest.TestCase):
         """Create a brand new multiple choice question.
 
         Steps:
-
-        Go to https://exercises-qa.openstax.org/
+        Go to Exercises
         Click on the 'Login' button
         Enter the teacher account in the username and password text boxes
         Click on the 'Sign in' button
@@ -741,7 +1489,61 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.sleep(2)
+        self.teacher.driver.get("https://exercises-qa.openstax.org/")
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.teacher.sleep(5)
+
+        # Select Multiple Choice radio if not already selected
+        if not self.teacher.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/div[@class='radio']"
+        ).is_selected():
+            self.teacher.find(
+                By.XPATH,
+                "//div[@class='form-group'][1]/div[@class='radio']/label/span"
+            ).click()
+
+        self.teacher.sleep(3)
+
+        # Fill in required fields
+        self.teacher.find(By.XPATH, "//div[4]/textarea").send_keys('Stem')
+        self.teacher.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.teacher.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[2]").send_keys('Feedback')
+        self.teacher.find(By.XPATH, "//div[6]/textarea").send_keys('Solution')
+
+        # Save draft and publish
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.teacher.sleep(3)
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button publish btn btn-primary']").click()
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='popover-content']/div[@class='controls']/butt" +
+            "on[@class='btn btn-primary']").click()
+        self.teacher.sleep(3)
+
+        # Verify
+        page = self.teacher.driver.page_source
+        assert('has published successfully' in page), \
+            'Exercise not successfully published'
+
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
+
+        self.teacher.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -769,9 +1571,25 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.sleep(2)
+        self.teacher.driver.get("https://exercises-qa.openstax.org/")
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.teacher.sleep(5)
 
-        self.ps.test_updates['passed'] = True
+        # Select the Order Matters checkbox
+        checkbox = self.teacher.find(
+            By.XPATH,
+            "//div[@class='question']/div[@class='form-group']/div[@class" +
+            "='checkbox']/label/span")
+        checkbox.click()
+        self.teacher.sleep(5)
+
+        if checkbox.is_selected():
+            self.ps.test_updates['passed'] = True
 
     # 14716 - 024 - Teacher | Edit detailed solutions
     @pytest.mark.skipif(str(14716) not in TESTS, reason='Excluded')
@@ -800,7 +1618,66 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.sleep(2)
+        self.teacher.driver.get("https://exercises-qa.openstax.org/")
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.teacher.sleep(5)
+
+        # Select Multiple Choice radio if not already selected
+        if not self.teacher.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/div[@class='radio']"
+        ).is_selected():
+            self.teacher.find(
+                By.XPATH,
+                "//div[@class='form-group'][1]/div[@class='radio']/label/span"
+            ).click()
+
+        self.teacher.sleep(3)
+
+        # Fill in required fields
+        self.teacher.find(By.XPATH, "//div[4]/textarea").send_keys('Stem')
+        self.teacher.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.teacher.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[2]").send_keys('Feedback')
+        self.teacher.find(By.XPATH, "//div[6]/textarea").send_keys('Solution')
+
+        # Save draft and publish
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.teacher.sleep(3)
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button publish btn btn-primary']").click()
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='popover-content']/div[@class='controls']/butt" +
+            "on[@class='btn btn-primary']").click()
+        self.teacher.sleep(3)
+
+        # Verify
+        page = self.teacher.driver.page_source
+        assert('has published successfully' in page), \
+            'Exercise not successfully published'
+
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
+
+        self.teacher.sleep(3)
+
+        detailed = self.teacher.find(
+            By.XPATH, "//div[@class='openstax-has-html solution']")
+        assert(detailed.text == 'Solution'), \
+            'Detailed solution text is not what is expected'
 
         self.ps.test_updates['passed'] = True
 
@@ -831,7 +1708,69 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.sleep(2)
+        self.teacher.driver.get("https://exercises-qa.openstax.org/")
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.teacher.sleep(5)
+
+        # Select Multiple Choice radio if not already selected
+        if not self.teacher.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/div[@class='radio']"
+        ).is_selected():
+            self.teacher.find(
+                By.XPATH,
+                "//div[@class='form-group'][1]/div[@class='radio']/label/span"
+            ).click()
+
+        self.teacher.sleep(3)
+
+        # Fill in required fields
+        vid = '<iframe width="420" height="315" src="https://www.youtube.com'
+        vid += '/embed/jNQXAC9IVRw" frameborder="0" allowfullscreen></iframe>'
+        self.teacher.find(By.XPATH, "//div[4]/textarea").send_keys(vid)
+        self.teacher.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.teacher.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[2]").send_keys('Feedback')
+        self.teacher.find(By.XPATH, "//div[6]/textarea").send_keys('Solution')
+
+        # Save draft and publish
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.teacher.sleep(3)
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button publish btn btn-primary']").click()
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='popover-content']/div[@class='controls']/butt" +
+            "on[@class='btn btn-primary']").click()
+        self.teacher.sleep(3)
+
+        # Verify
+        page = self.teacher.driver.page_source
+        assert('has published successfully' in page), \
+            'Exercise not successfully published'
+
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
+
+        self.teacher.sleep(3)
+
+        # Find the embedded video
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='frame-wrapper embed-responsive embed-responsive-" +
+            "4by3']/iframe")
 
         self.ps.test_updates['passed'] = True
 
@@ -861,7 +1800,30 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.sleep(2)
+        self.teacher.driver.get("https://exercises-qa.openstax.org/")
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.teacher.sleep(5)
+
+        # Switch to Tags tab and find the dropdown elements
+        self.teacher.find(
+            By.XPATH, "//ul[@class='nav nav-tabs']/li[2]/a").click()
+        self.teacher.sleep(1)
+        dropdowns = self.teacher.driver.find_elements_by_xpath(
+            "//select[@class='form-control']")
+        self.teacher.sleep(1)
+
+        # Select values for the dropdown menus
+        dropdowns[0].send_keys('Con')
+        dropdowns[1].send_keys('1')
+        dropdowns[2].send_keys('3')
+        dropdowns[3].send_keys('Long')
+
+        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -890,9 +1852,26 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.sleep(2)
+        self.teacher.driver.get("https://exercises-qa.openstax.org/")
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.teacher.sleep(5)
 
-        self.ps.test_updates['passed'] = True
+        # Switch to Tags tab and check Requires Context
+        self.teacher.find(
+            By.XPATH, "//ul[@class='nav nav-tabs']/li[2]/a").click()
+        self.teacher.sleep(1)
+        self.teacher.find(By.XPATH, "//div[@class='tag']/input").click()
+        self.teacher.sleep(3)
+
+        if self.teacher.find(
+            By.XPATH, "//div[@class='tag']/input"
+        ).is_selected():
+            self.ps.test_updates['passed'] = True
 
     # 14720 - 028 - Teacher | Add context to a question
     @pytest.mark.skipif(str(14720) not in TESTS, reason='Excluded')
@@ -920,7 +1899,24 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.sleep(2)
+        self.teacher.driver.get("https://exercises-qa.openstax.org/")
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.teacher.sleep(5)
+
+        # Switch to Tags tab and click CNX Module
+        self.teacher.find(
+            By.XPATH, "//ul[@class='nav nav-tabs']/li[2]/a").click()
+        self.teacher.sleep(1)
+        self.teacher.driver.find_elements_by_xpath(
+            "//i[@class='fa fa-plus-circle']")[2].click()
+        self.teacher.sleep(3)
+
+        self.teacher.find(By.XPATH, "//input[@class='form-control']")
 
         self.ps.test_updates['passed'] = True
 
@@ -952,7 +1948,58 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.sleep(2)
+        self.teacher.driver.get("https://exercises-qa.openstax.org/")
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.teacher.sleep(5)
+
+        # Select Multiple Choice radio if not already selected
+        if not self.teacher.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/div[@class='radio']"
+        ).is_selected():
+            self.teacher.find(
+                By.XPATH,
+                "//div[@class='form-group'][1]/div[@class='radio']/label/span"
+            ).click()
+
+        self.teacher.sleep(3)
+
+        # Fill in required fields
+        self.teacher.find(By.XPATH, "//div[4]/textarea").send_keys('Stem')
+        self.teacher.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.teacher.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[2]").send_keys('Feedback')
+        self.teacher.find(By.XPATH, "//div[6]/textarea").send_keys('Solution')
+
+        # Save draft and publish
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.teacher.sleep(3)
+
+        # Move to Assets and upload image
+        self.teacher.find(
+            By.XPATH, "//ul[@class='nav nav-tabs']/li[3]/a").click()
+        self.teacher.sleep(3)
+        self.teacher.find(
+            By.ID, "file"
+        ).send_keys(
+            "/Users/openstaxii/desktop/Screen Shot 2016-06-17 at 1.15.39 PM" +
+            ".png")
+        self.teacher.sleep(5)
+
+        # Find the Upload and Choose different image buttons
+        self.teacher.find(By.XPATH, "//label[@class='selector']")
+        self.teacher.find(By.XPATH, "//button[@class='btn btn-default']")
 
         self.ps.test_updates['passed'] = True
 
@@ -984,7 +2031,62 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.sleep(2)
+        self.teacher.driver.get("https://exercises-qa.openstax.org/")
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.teacher.sleep(5)
+
+        # Select Multiple Choice radio if not already selected
+        if not self.teacher.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/div[@class='radio']"
+        ).is_selected():
+            self.teacher.find(
+                By.XPATH,
+                "//div[@class='form-group'][1]/div[@class='radio']/label/span"
+            ).click()
+
+        self.teacher.sleep(3)
+
+        # Fill in required fields
+        self.teacher.find(By.XPATH, "//div[4]/textarea").send_keys('Stem')
+        self.teacher.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.teacher.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[2]").send_keys('Feedback')
+        self.teacher.find(By.XPATH, "//div[6]/textarea").send_keys('Solution')
+
+        # Save draft and publish
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.teacher.sleep(3)
+
+        # Move to Assets and upload image
+        self.teacher.find(
+            By.XPATH, "//ul[@class='nav nav-tabs']/li[3]/a").click()
+        self.teacher.sleep(3)
+        self.teacher.find(
+            By.ID, "file"
+        ).send_keys(
+            "/Users/openstaxii/desktop/Screen Shot 2016-06-17 at 1.15.39 PM" +
+            ".png")
+        self.teacher.sleep(5)
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-default']").click()
+
+        # Wait for upload and find the Delete button
+        self.teacher.sleep(30)
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-default']").click()
+        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -1017,7 +2119,67 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.sleep(2)
+        self.teacher.driver.get("https://exercises-qa.openstax.org/")
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.teacher.sleep(5)
+
+        # Select Multiple Choice radio if not already selected
+        if not self.teacher.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/div[@class='radio']"
+        ).is_selected():
+            self.teacher.find(
+                By.XPATH,
+                "//div[@class='form-group'][1]/div[@class='radio']/label/span"
+            ).click()
+
+        self.teacher.sleep(3)
+
+        # Fill in required fields
+        self.teacher.find(By.XPATH, "//div[4]/textarea").send_keys('Stem')
+        self.teacher.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.teacher.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[2]").send_keys('Feedback')
+        self.teacher.find(By.XPATH, "//div[6]/textarea").send_keys('Solution')
+
+        # Save draft and publish
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.teacher.sleep(3)
+
+        # Move to Assets and upload image
+        self.teacher.find(
+            By.XPATH, "//ul[@class='nav nav-tabs']/li[3]/a").click()
+        self.teacher.sleep(3)
+        self.teacher.find(
+            By.ID, "file"
+        ).send_keys(
+            "/Users/openstaxii/desktop/Screen Shot 2016-06-17 at 1.15.39 PM" +
+            ".png")
+        self.teacher.sleep(5)
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-default']").click()
+
+        # Wait for upload and find the Delete button
+        self.teacher.sleep(30)
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-default']").click()
+        self.teacher.sleep(5)
+
+        # Verify image is deleted
+        assert len(self.teacher.driver.find_elements_by_xpath(
+            "//button[@class='btn btn-default']")) == 0, \
+            'Image not deleted'
 
         self.ps.test_updates['passed'] = True
 
@@ -1048,7 +2210,43 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.content.sleep(5)
+
+        # Fill in required fields
+        self.content.find(
+            By.XPATH, "//a[@class='btn btn-success vocabulary blank']").click()
+        self.content.sleep(1)
+        self.content.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/input[@class='form-control']"
+        ).send_keys('term')
+        self.content.find(
+            By.XPATH, "//div[@class='values']/input[@class='form-control']"
+        ).send_keys('distractor')
+        self.content.find(
+            By.XPATH, "//textarea[@class='form-control']"
+        ).send_keys('definition')
+
+        # Save draft and publish
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.content.sleep(3)
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button publish btn btn-primary']").click()
+        self.content.find(
+            By.XPATH,
+            "//div[@class='popover-content']/div[@class='controls']/butt" +
+            "on[@class='btn btn-primary']").click()
+        self.content.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -1085,7 +2283,86 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.content.sleep(5)
+
+        # Fill in required fields
+        self.content.find(
+            By.XPATH, "//a[@class='btn btn-success vocabulary blank']").click()
+        self.content.sleep(2)
+        self.content.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/input[@class='form-control']"
+        ).send_keys('term')
+        self.content.sleep(2)
+        self.content.find(
+            By.XPATH,
+            "//div[@class='values']/input[@class='form-control']"
+        ).send_keys('distractor')
+        self.content.find(
+            By.XPATH, "//textarea[@class='form-control']"
+        ).send_keys('definition')
+
+        # Save draft and publish
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.content.sleep(3)
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button publish btn btn-primary']").click()
+        self.content.find(
+            By.XPATH,
+            "//div[@class='popover-content']/div[@class='controls']/butt" +
+            "on[@class='btn btn-primary']").click()
+        self.content.sleep(3)
+
+        # Get exercise ID
+        exercise = self.content.current_url().split('/')[-1].split('@')[0]
+
+        # Go back and search for the exercise
+        self.content.find(
+            By.XPATH, "//a[@class='btn btn-danger back']").click()
+        self.content.sleep(3)
+        self.content.find(
+            By.XPATH, "//input[@class='form-control']").send_keys(exercise)
+        self.content.find(
+            By.XPATH, "//button[@class='btn btn-default load']").click()
+        self.content.sleep(5)
+
+        # Edit
+        self.content.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/input[@class='form-control']"
+        ).send_keys('term')
+        self.content.sleep(2)
+        self.content.find(
+            By.XPATH,
+            "//div[@class='values']/input[@class='form-control']"
+        ).send_keys('distractor')
+        self.content.find(
+            By.XPATH, "//textarea[@class='form-control']"
+        ).send_keys('definition')
+
+        # Save draft and publish
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.content.sleep(3)
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button publish btn btn-primary']").click()
+        self.content.find(
+            By.XPATH,
+            "//div[@class='popover-content']/div[@class='controls']/butt" +
+            "on[@class='btn btn-primary']").click()
+        self.content.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -1112,7 +2389,29 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/search")
+        self.content.sleep(5)
+
+        # Search for a vocabulary exercise
+        self.content.sleep(3)
+        self.content.find(
+            By.XPATH, "//input[@class='form-control']").send_keys('16535')
+        self.content.find(
+            By.XPATH, "//button[@class='btn btn-default load']").click()
+        self.content.sleep(5)
+
+        # Verify
+        stem = self.content.find(
+            By.XPATH, "//div[@class='openstax-has-html question-stem']/strong")
+
+        assert(stem.text == 'v'), \
+            'Question stem not as expected'
 
         self.ps.test_updates['passed'] = True
 
@@ -1122,7 +2421,7 @@ class TestQuestionWork(unittest.TestCase):
         """Add vocabulary question.
 
         Steps:
-        Go to https://exercises-qa.openstax.org/
+        Go to Exercises
         Click on the 'Login' button
         Enter the teacher account in the username and password text boxes
         Click on the 'Sign in' button
@@ -1147,7 +2446,43 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.sleep(2)
+        self.teacher.driver.get("https://exercises-qa.openstax.org/")
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.teacher.sleep(5)
+
+        # Fill in required fields
+        self.teacher.find(
+            By.XPATH, "//a[@class='btn btn-success vocabulary blank']").click()
+        self.teacher.sleep(1)
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/input[@class='form-control']"
+        ).send_keys('term')
+        self.teacher.find(
+            By.XPATH, "//div[@class='values']/input[@class='form-control']"
+        ).send_keys('distractor')
+        self.teacher.find(
+            By.XPATH, "//textarea[@class='form-control']"
+        ).send_keys('definition')
+
+        # Save draft and publish
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.teacher.sleep(3)
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button publish btn btn-primary']").click()
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='popover-content']/div[@class='controls']/butt" +
+            "on[@class='btn btn-primary']").click()
+        self.teacher.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -1184,7 +2519,86 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.sleep(2)
+        self.teacher.driver.get("https://exercises-qa.openstax.org/")
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.teacher.sleep(5)
+
+        # Fill in required fields
+        self.teacher.find(
+            By.XPATH, "//a[@class='btn btn-success vocabulary blank']").click()
+        self.teacher.sleep(2)
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/input[@class='form-control']"
+        ).send_keys('term')
+        self.teacher.sleep(2)
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='values']/input[@class='form-control']"
+        ).send_keys('distractor')
+        self.teacher.find(
+            By.XPATH, "//textarea[@class='form-control']"
+        ).send_keys('definition')
+
+        # Save draft and publish
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.teacher.sleep(3)
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button publish btn btn-primary']").click()
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='popover-content']/div[@class='controls']/butt" +
+            "on[@class='btn btn-primary']").click()
+        self.teacher.sleep(3)
+
+        # Get exercise ID
+        exercise = self.teacher.current_url().split('/')[-1].split('@')[0]
+
+        # Go back and search for the exercise
+        self.teacher.find(
+            By.XPATH, "//a[@class='btn btn-danger back']").click()
+        self.teacher.sleep(3)
+        self.teacher.find(
+            By.XPATH, "//input[@class='form-control']").send_keys(exercise)
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-default load']").click()
+        self.teacher.sleep(5)
+
+        # Edit
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/input[@class='form-control']"
+        ).send_keys('term')
+        self.teacher.sleep(2)
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='values']/input[@class='form-control']"
+        ).send_keys('distractor')
+        self.teacher.find(
+            By.XPATH, "//textarea[@class='form-control']"
+        ).send_keys('definition')
+
+        # Save draft and publish
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.teacher.sleep(3)
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button publish btn btn-primary']").click()
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='popover-content']/div[@class='controls']/butt" +
+            "on[@class='btn btn-primary']").click()
+        self.teacher.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -1211,7 +2625,29 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.sleep(2)
+        self.teacher.driver.get("https://exercises-qa.openstax.org/")
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.teacher.sleep(2)
+        self.teacher.driver.get("https://exercises-qa.openstax.org/search")
+        self.teacher.sleep(5)
+
+        # Search for a vocabulary exercise
+        self.teacher.sleep(3)
+        self.teacher.find(
+            By.XPATH, "//input[@class='form-control']").send_keys('16535')
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-default load']").click()
+        self.teacher.sleep(5)
+
+        # Verify
+        stem = self.teacher.find(
+            By.XPATH, "//div[@class='openstax-has-html question-stem']/strong")
+
+        assert(stem.text == 'v'), \
+            'Question stem not as expected'
 
         self.ps.test_updates['passed'] = True
 
@@ -1222,7 +2658,7 @@ class TestQuestionWork(unittest.TestCase):
         """Review vocabulary questions.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the content analyst user account in the username and password
             text boxes
@@ -1246,7 +2682,21 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.find(By.PARTIAL_LINK_TEXT, "QA Content").click()
+        self.content.sleep(8)
+
+        # Click the 2 step preview checkbox, find the free response text box
+        self.content.find(
+            By.XPATH,
+            "//ul[@class='section'][1]/li[3]/ul[@class='section']/li/a"
+        ).click()
+        self.content.find(
+            By.XPATH, "//div[@class='heading']/label/span").click()
+        self.content.find(
+            By.XPATH, "//div[@class='exercise-free-response-preview']")
+        self.content.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -1277,7 +2727,29 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # //div[@class='exercise-free-response-preview']
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.find(By.PARTIAL_LINK_TEXT, "QA Content").click()
+        self.content.sleep(8)
+
+        # Click the 2 step preview checkbox
+        self.content.find(
+            By.XPATH,
+            "//ul[@class='section'][1]/li[3]/ul[@class='section']/li/a"
+        ).click()
+        self.content.find(
+            By.XPATH, "//div[@class='heading']/label/span").click()
+
+        # Count the number of free responses and total questions
+        free = self.content.driver.find_elements_by_xpath(
+            "//div[@class='exercise-free-response-preview']")
+        q = self.content.driver.find_elements_by_xpath(
+            "//div[@class='detailed-solution']/div[@class='header']")
+        self.content.sleep(3)
+
+        assert(len(free) < len(q)), \
+            'No MC questions to check against'
 
         self.ps.test_updates['passed'] = True
 
@@ -1306,7 +2778,32 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.find(By.PARTIAL_LINK_TEXT, "QA Content").click()
+        self.content.sleep(8)
+
+        # Uncheck all of the exercise types
+        self.content.find(
+            By.XPATH,
+            "//ul[@class='section'][1]/li[3]/ul[@class='section']/li/a"
+        ).click()
+
+        for index, num in enumerate(range(5)):
+            self.content.find(By.XPATH, "//button[@id='multi-select']").click()
+            check = self.content.driver.find_elements_by_xpath(
+                "//a/span[@class='title']")
+            check[index].click()
+            self.content.sleep(2)
+
+        # Zero exercises should be visible
+        q = self.content.driver.find_elements_by_xpath(
+            "//div[@class='detailed-solution']/div[@class='header']")
+
+        assert(len(q) == 0), \
+            'Exercises should not be visible'
+
+        self.content.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -1357,7 +2854,6 @@ class TestQuestionWork(unittest.TestCase):
         Expected Result:
         The assessment in the teacher view should not have the tags that the
         assessment has in QA Content view
-
         """
         self.ps.test_updates['name'] = 't2.11.042' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1370,7 +2866,92 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.find(By.PARTIAL_LINK_TEXT, "QA Content").click()
+        self.content.sleep(8)
+
+        # Go to a non introductory section
+        self.content.find(
+            By.XPATH,
+            "//ul[@class='section'][1]/li[3]/ul[@class='section']/li/a"
+        ).click()
+        self.content.sleep(10)
+
+        # Verify the book is physics
+        title = self.content.find(By.XPATH, "//li[@class='title']").text
+        if title.find('Physics') < 0:
+            self.content.find(
+                By.XPATH, "//a[@id='available-books']/span[1]").click()
+            books = self.content.driver.find_elements_by_xpath(
+                "//a[@class='book']/div[@class='title-version']")
+            for book in books:
+                if book.text.find('Physics') >= 0:
+                    book.click()
+                    self.content.sleep(10)
+                    self.content.find(
+                        By.XPATH,
+                        "//ul[@class='section'][1]/li[3]/ul" +
+                        "[@class='section']/li/a"
+                    ).click()
+                    break
+
+        qa_tags = len(self.content.driver.find_elements_by_xpath(
+            "//span[@class='exercise-tag']"))
+        qa_tags += len(self.content.driver.find_elements_by_xpath(
+            "//span[@class='lo-tag']"))
+        self.content.sleep(3)
+
+        # Login as teacher and go to question library
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        self.teacher.sleep(5)
+
+        self.teacher.open_user_menu()
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Question Library').click()
+        self.teacher.sleep(5)
+
+        # Open the assessment cards
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='panel-group'][1]" +
+            "/div[@class='panel panel-default']" +
+            "/div[@class='panel-collapse collapse in']" +
+            "/div[@class='panel-body']/div[@class='section'][2]" +
+            "/span[@class='section-checkbox']").click()
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
+        self.teacher.sleep(5)
+
+        # Go to question details
+        element = self.teacher.find(
+            By.XPATH, "//div[@class = 'controls-overlay'][1]")
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(element)
+        actions.perform()
+        self.teacher.sleep(2)
+        self.teacher.find(By.XPATH, "//div[@class='action details']").click()
+        self.teacher.sleep(2)
+
+        tags = 0
+        # Ensure looking at the first question card
+        while "fa fa-angle-left" in self.teacher.driver.page_source:
+            self.teacher.find(
+                By.XPATH, "//i[@class='tutor-icon fa fa-angle-left']").click()
+
+        # Go through each assessment card and count the tags
+        while "fa fa-angle-right" in self.teacher.driver.page_source:
+            tags += len(self.teacher.driver.find_elements_by_xpath(
+                "//span[@class='exercise-tag']"))
+            tags += len(self.teacher.driver.find_elements_by_xpath(
+                "//span[@class='lo-tag']"))
+            self.teacher.find(
+                By.XPATH, "//i[@class='tutor-icon fa fa-angle-right']").click()
+
+        self.teacher.sleep(5)
+
+        assert(qa_tags > tags), \
+            'There should be more visible tags for content'
 
         self.ps.test_updates['passed'] = True
 
@@ -1398,7 +2979,44 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.find(By.PARTIAL_LINK_TEXT, "QA Content").click()
+        self.content.sleep(8)
+
+        # Go to a non introductory section
+        self.content.find(
+            By.XPATH,
+            "//ul[@class='section'][1]/li[3]/ul[@class='section']/li/a"
+        ).click()
+        self.content.sleep(10)
+
+        # Verify the book is physics
+        title = self.content.find(By.XPATH, "//li[@class='title']").text
+        if title.find('Physics') < 0:
+            self.content.find(
+                By.XPATH, "//a[@id='available-books']/span[1]").click()
+            books = self.content.driver.find_elements_by_xpath(
+                "//a[@class='book']/div[@class='title-version']")
+            for book in books:
+                if book.text.find('Physics') >= 0:
+                    book.click()
+                    self.content.sleep(10)
+                    self.content.find(
+                        By.XPATH,
+                        "//ul[@class='section'][1]/li[3]/ul" +
+                        "[@class='section']/li/a"
+                    ).click()
+                    break
+
+        qa_tags = len(self.content.driver.find_elements_by_xpath(
+            "//span[@class='exercise-tag']"))
+        qa_tags += len(self.content.driver.find_elements_by_xpath(
+            "//span[@class='lo-tag']"))
+        self.content.sleep(3)
+
+        assert(qa_tags > 0), \
+            'No tags found'
 
         self.ps.test_updates['passed'] = True
 
@@ -1429,7 +3047,83 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.content.sleep(5)
+
+        # Select Multiple Choice radio if not already selected
+        if not self.content.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/div[@class='radio']"
+        ).is_selected():
+            self.content.find(
+                By.XPATH,
+                "//div[@class='form-group'][1]/div[@class='radio']/label/span"
+            ).click()
+
+        self.content.sleep(3)
+
+        # Fill in required fields
+        self.content.find(By.XPATH, "//div[4]/textarea").send_keys('Stem')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[2]").send_keys('Feedback')
+        self.content.find(By.XPATH, "//div[6]/textarea").send_keys('Solution')
+        self.content.sleep(2)
+
+        # Check multiple parts box, move to Question 2 tab
+        self.content.find(
+            By.XPATH,
+            "//div[@class='mpq-toggle']/div[@class='checkbox']/label/span"
+        ).click()
+        self.content.find(By.XPATH, "//li[3]/a").click()
+        self.content.sleep(2)
+
+        # Fill in the required fields
+        self.content.find(By.XPATH, "//div[5]/textarea").send_keys('Stem')
+        self.content.find(
+            By.XPATH,
+            "//div[6]/ol/li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.content.find(
+            By.XPATH,
+            "//div[6]/ol/li[@class='correct-answer']/textarea[2]"
+        ).send_keys('Feedback')
+        self.content.find(By.XPATH, "//div[7]/textarea").send_keys('Solution')
+        self.content.sleep(2)
+
+        # Save draft and publish
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.content.sleep(3)
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button publish btn btn-primary']").click()
+        self.content.find(
+            By.XPATH,
+            "//div[@class='popover-content']/div[@class='controls']/butt" +
+            "on[@class='btn btn-primary']").click()
+        self.content.sleep(3)
+
+        # Verify
+        page = self.content.driver.page_source
+        assert('has published successfully' in page), \
+            'Exercise not successfully published'
+
+        self.content.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
+
+        self.content.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -1439,7 +3133,7 @@ class TestQuestionWork(unittest.TestCase):
         """Create a new multi-part question.
 
         Steps:
-        Go to https://exercises-qa.openstax.org/
+        Go to Exercises
         Click on the 'Login' button
         Enter the teacher account in the username and password text boxes
         Click on the 'Sign in' button
@@ -1451,7 +3145,6 @@ class TestQuestionWork(unittest.TestCase):
         Expected Result:
         The user gets a confirmation that says "Exercise [exercise ID] has
         published successfully"
-
         """
         self.ps.test_updates['name'] = 't2.11.045' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1464,6 +3157,82 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.sleep(2)
+        self.teacher.driver.get("https://exercises-qa.openstax.org/")
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.teacher.sleep(2)
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.teacher.sleep(5)
+
+        # Select Multiple Choice radio if not already selected
+        if not self.teacher.find(
+            By.XPATH,
+            "//div[@class='form-group'][1]/div[@class='radio']"
+        ).is_selected():
+            self.teacher.find(
+                By.XPATH,
+                "//div[@class='form-group'][1]/div[@class='radio']/label/span"
+            ).click()
+
+        self.teacher.sleep(3)
+
+        # Fill in required fields
+        self.teacher.find(By.XPATH, "//div[4]/textarea").send_keys('Stem')
+        self.teacher.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.teacher.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[2]").send_keys('Feedback')
+        self.teacher.find(By.XPATH, "//div[6]/textarea").send_keys('Solution')
+        self.teacher.sleep(2)
+
+        # Check multiple parts box, move to Question 2 tab
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='mpq-toggle']/div[@class='checkbox']/label/span"
+        ).click()
+        self.teacher.find(By.XPATH, "//li[3]/a").click()
+        self.teacher.sleep(2)
+
+        # Fill in the required fields
+        self.teacher.find(By.XPATH, "//div[5]/textarea").send_keys('Stem')
+        self.teacher.find(
+            By.XPATH,
+            "//div[6]/ol/li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.teacher.find(
+            By.XPATH,
+            "//div[6]/ol/li[@class='correct-answer']/textarea[2]"
+        ).send_keys('Feedback')
+        self.teacher.find(By.XPATH, "//div[7]/textarea").send_keys('Solution')
+        self.teacher.sleep(2)
+
+        # Save draft and publish
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.teacher.sleep(3)
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button publish btn btn-primary']").click()
+        self.teacher.find(
+            By.XPATH,
+            "//div[@class='popover-content']/div[@class='controls']/butt" +
+            "on[@class='btn btn-primary']").click()
+        self.teacher.sleep(3)
+
+        # Verify
+        page = self.teacher.driver.page_source
+        assert('has published successfully' in page), \
+            'Exercise not successfully published'
+
+        self.teacher.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
+
+        self.teacher.sleep(3)
 
         self.ps.test_updates['passed'] = True

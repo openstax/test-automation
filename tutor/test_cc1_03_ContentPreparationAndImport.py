@@ -5,15 +5,16 @@ import json
 import os
 import pytest
 import unittest
+import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+# from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Admin, ContentQA, Teacher  # NOQA
+from staxing.helper import ContentQA, Teacher, Admin
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -24,8 +25,10 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7603, 7604, 7962, 7963, 7964,
-         7965, 7966, 7967, 7968, 7969])  # NOQA
+    str([
+        7603, 7604, 7962, 7963, 7964,
+        7965, 7966, 7967, 7968, 7969
+    ])
 )
 
 
@@ -37,30 +40,32 @@ class TestContentPreparationAndImport(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
+        self.content = ContentQA(
             use_env_vars=True,
             pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            capabilities=self.desired_capabilities,
         )
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.content.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
-            self.teacher.delete()
+            self.content.delete()
         except:
             pass
 
     # Case C7603 - 001 - Content Analyst | Import content into Tutor
-    @pytest.mark.skipif(str(7603) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7603) not in TESTS, reason='Excluded')
     def test_content_analyst_import_content_into_tutor_7603(self):
         """Import content into Tutor.
 
         Steps:
         Go to tutor-qa
         login as content
-        Select Customer Analyst from the dropdown menu on the name
+        Select Content Analyst from the dropdown menu on the name
         Click on Ecosystems in the header
         Click "Download Manifest" for the desired course
         Scroll down and click Import a new Ecosystem button.
@@ -71,9 +76,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
         Now wait for at most 5 mins.
 
         Expected Result:
-
         The message "Ecosystem import job queued" appears at the top
-
         """
         self.ps.test_updates['name'] = 'cc1.03.001' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -86,16 +89,65 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.LINK_TEXT, "Content Analyst"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.LINK_TEXT, "Ecosystems"
+        ).click()
+        # download a manifest to test with
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, "Download Manifest")
+            )
+        ).click()
+        # import a new ecosystem
+        self.content.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+        self.content.driver.find_element(
+            By.LINK_TEXT, "Import a new Ecosystem"
+        ).click()
+        # find a downloaded manifest
+        home = os.getenv("HOME")
+        files = os.listdir(home + '/Downloads')
+        file = ''
+        for i in range(len(files)):
+            if (files[i][-4:] == '.yml'):
+                file = files[i]
+                break
+            else:
+                if i == len(files)-1:
+                    print('no .yml file found in downloads')
+                    raise Exception
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, "ecosystem_manifest")
+            )
+        ).send_keys(home + '/Downloads/' + file)
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, "ecosystem_comments")
+            )
+        ).send_keys(str(datetime.date.today()) + ' automated-contentqa')
+        self.content.driver.find_element(
+            By.XPATH, "//input[@type='submit']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"alert-info")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7604 - 002 - Admin | Import content into Tutor
-    @pytest.mark.skipif(str(7604) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7604) not in TESTS, reason='Excluded')
     def test_admin_import_content_into_tutor_7604(self):
         """Import content into Tutor.
 
         Steps:
-
         Select Customer Analyst from the dropdown menu on the name
         Click on Ecosystems in the header
         Click "Download Manifest" for the desired course
@@ -107,9 +159,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
         Now wait for at most 5 mins.
 
         Expected Result:
-
         The message "Ecosystem import job queued" appears at the top
-
         """
         self.ps.test_updates['name'] = 'cc1.03.002' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -122,26 +172,81 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        admin = Admin(
+            existing_driver=self.content.driver,
+            username=os.getenv('ADMIN_USER'),
+            password=os.getenv('ADMIN_PASSWORD'),
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities,
+        )
+        admin.login()
+        admin.open_user_menu()
+        admin.driver.find_element(
+            By.LINK_TEXT, "Content Analyst"
+        ).click()
+        admin.page.wait_for_page_load()
+        admin.driver.find_element(
+            By.LINK_TEXT, "Ecosystems"
+        ).click()
+        # download a manifest to test with
+        admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, "Download Manifest")
+            )
+        ).click()
+        # import a new ecosystem
+        admin.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+        admin.driver.find_element(
+            By.LINK_TEXT, "Import a new Ecosystem"
+        ).click()
+        # find a downloaded manifest
+        home = os.getenv("HOME")
+        files = os.listdir(home + '/Downloads')
+        file = ''
+        for i in range(len(files)):
+            if (files[i][-4:] == '.yml'):
+                file = files[i]
+                break
+            else:
+                if i == len(files)-1:
+                    print('no .yml file found in downloads')
+                    raise Exception
+        admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, "ecosystem_manifest")
+            )
+        ).send_keys(home + '/Downloads/' + file)
+        admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, "ecosystem_comments")
+            )
+        ).send_keys(str(datetime.date.today()) + ' automated-admin')
+        admin.driver.find_element(
+            By.XPATH, "//input[@type='submit']"
+        ).click()
+        admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"alert-info")]')
+            )
+        )
+        admin.delete()
         self.ps.test_updates['passed'] = True
 
     # Case C7962 - 003 - Content Analyst| Verify question availability for
     # CC-Derived Biology
-    @pytest.mark.skipif(str(7962) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7962) not in TESTS, reason='Excluded')
     def test_content_analyst_verify_question_availability_for_bio_7962(self):
         """Verify question availability for CC-Derived Biology.
 
         Steps:
-
         Click QA content
         Click Available Books
         Select CC-Derived Biology
         Click on a section in the table of contents
 
         Expected Result:
-
         Questions are available
-
         """
         self.ps.test_updates['name'] = 'cc1.03.003' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -154,27 +259,49 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "QA Content"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.ID, "available-books"
+        ).click()
+        element = self.content.driver.find_element(
+            By.XPATH, "//span[contains(text(),'Biology with Concept Coach')]"
+        )
+        self.content.sleep(0.5)
+        self.content.driver.execute_script(
+            'return arguments[0].scrollIntoView();', element)
+        self.content.driver.execute_script('window.scrollBy(0, -80);')
+        element.click()
+        self.content.sleep(0.5)
+        self.content.driver.find_element(
+            By.XPATH, "//span[@class='section-number' and text()='1.1']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'openstax-exercise-preview')]")
+            )
+        ).click()
         self.ps.test_updates['passed'] = True
 
     # Case C7963 - 004 - Content Analyst| Verify question availability for
     # CC-Derived College Physics
-    @pytest.mark.skipif(str(7963) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7963) not in TESTS, reason='Excluded')
     def test_content_analyst_verify_question_availability_for_phys_7963(self):
         """Verify question availability for CC-Derived College Physics.
 
         Steps:
-
         Click QA content
         Click Available Books
         Select CC-Derived College Physics
         Click on a section in the table of contents
 
-
         Expected Result:
-
         Questions are available
-
         """
         self.ps.test_updates['name'] = 'cc1.03.004' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -187,27 +314,49 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "QA Content"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.ID, "available-books"
+        ).click()
+        element = self.content.driver.find_element(
+            By.XPATH, "//span[contains(text(),'Physics with Concept Coach')]"
+        )
+        self.content.sleep(0.5)
+        self.content.driver.execute_script(
+            'return arguments[0].scrollIntoView();', element)
+        self.content.driver.execute_script('window.scrollBy(0, -80);')
+        element.click()
+        self.content.sleep(0.5)
+        self.content.driver.find_element(
+            By.XPATH, "//span[@class='section-number' and text()='1.1']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'openstax-exercise-preview')]")
+            )
+        ).click()
         self.ps.test_updates['passed'] = True
 
     # Case C7964 - 005 - Content Analyst| Verify question availability for
     # CC-Derived Concepts of Biology
-    @pytest.mark.skipif(str(7964) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7964) not in TESTS, reason='Excluded')
     def test_content_analyst_verify_question_avilability_for_concep_7964(self):
         """Verify question availability for CC-Derived Concepts of Biology.
 
         Steps:
-
         Click QA content
         Click Available Books
         Select CC-Derived Concepts of Biology
         Click on a section in the table of contents
 
-
         Expected Result:
-
         Questions are available
-
         """
         self.ps.test_updates['name'] = 'cc1.03.005' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -220,27 +369,51 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "QA Content"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.ID, "available-books"
+        ).click()
+        element = self.content.driver.find_element(
+            By.XPATH,
+            "//span[contains(text(),'Concepts of Biology with Concept Coach')]"
+        )
+        self.content.sleep(0.5)
+        self.content.driver.execute_script(
+            'return arguments[0].scrollIntoView();', element)
+        self.content.driver.execute_script('window.scrollBy(0, -80);')
+        element.click()
+        self.content.sleep(0.5)
+        self.content.driver.find_element(
+            By.XPATH, "//span[@class='section-number' and text()='1.1']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'openstax-exercise-preview')]")
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
     # Case C7965 - 006 - Content Analyst| Verify question availability for
     # CC-Derived Anatomy & Physiology
-    @pytest.mark.skipif(str(7965) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7965) not in TESTS, reason='Excluded')
     def test_content_analyst_verify_question_availability_for_ap_7965(self):
         """Verify question availability for CC-Derived Anatomy & Physiology.
 
         Steps:
-
         Click QA content
         Click Available Books
         Select CC-Derived Anatomy and Physiology
         Click on a section in the table of contents
 
-
         Expected Result:
-
         Questions are available
-
         """
         self.ps.test_updates['name'] = 'cc1.03.006' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -253,27 +426,52 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "QA Content"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.ID, "available-books"
+        ).click()
+        element = self.content.driver.find_element(
+            By.XPATH,
+            "//span[contains(text()," +
+            "'Anatomy & Physiology with Concept Coach')]"
+        )
+        self.content.sleep(0.5)
+        self.content.driver.execute_script(
+            'return arguments[0].scrollIntoView();', element)
+        self.content.driver.execute_script('window.scrollBy(0, -80);')
+        element.click()
+        self.content.sleep(0.5)
+        self.content.driver.find_element(
+            By.XPATH, "//span[@class='section-number' and text()='1.1']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'openstax-exercise-preview')]")
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
     # Case C7966 - 007 - Content Analyst| Verify question availability for
     # CC-Derived Macroeconomics
-    @pytest.mark.skipif(str(7966) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7966) not in TESTS, reason='Excluded')
     def test_content_analyst_verify_question_availability_for_macro_7966(self):
         """Verify question availability for CC-Derived Macroeconomics.
 
         Steps:
-
         Click QA content
         Click Available Books
         Select CC-Derived Macroeconomics
         Click on a section in the table of contents
 
-
         Expected Result:
-
         Questions are available
-
         """
         self.ps.test_updates['name'] = 'cc1.03.007' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -286,27 +484,51 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "QA Content"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.ID, "available-books"
+        ).click()
+        element = self.content.driver.find_element(
+            By.XPATH,
+            "//span[contains(text(),'Macroeconomics with Concept Coach')]"
+        )
+        self.content.sleep(0.5)
+        self.content.driver.execute_script(
+            'return arguments[0].scrollIntoView();', element)
+        self.content.driver.execute_script('window.scrollBy(0, -80);')
+        element.click()
+        self.content.sleep(0.5)
+        self.content.driver.find_element(
+            By.XPATH, "//span[@class='section-number' and text()='1.1']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'openstax-exercise-preview')]")
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
     # Case C7967 - 008 - Content Analyst| Verify question availability for
     # CC-Derived Microeconomics
-    @pytest.mark.skipif(str(7967) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7967) not in TESTS, reason='Excluded')
     def test_content_analyst_verify_question_availability_for_micro_7967(self):
         """Verify question availability for CC-Derived Microeconomics.
 
         Steps:
-
         Click QA content
         Click Available Books
         Select CC-Derived Microeconomics
         Click on a section in the table of contents
 
-
         Expected Result:
-
         Questions are available
-
         """
         self.ps.test_updates['name'] = 'cc1.03.008' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -319,27 +541,51 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "QA Content"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.ID, "available-books"
+        ).click()
+        element = self.content.driver.find_element(
+            By.XPATH,
+            "//span[contains(text(),'Microeconomics with Concept Coach')]"
+        )
+        self.content.sleep(0.5)
+        self.content.driver.execute_script(
+            'return arguments[0].scrollIntoView();', element)
+        self.content.driver.execute_script('window.scrollBy(0, -80);')
+        element.click()
+        self.content.sleep(0.5)
+        self.content.driver.find_element(
+            By.XPATH, "//span[@class='section-number' and text()='1.1']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'openstax-exercise-preview')]")
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
     # Case C7968 - 009 - Content Analyst| Verify question availability for
     # CC-Derived Principles of Economics
-    @pytest.mark.skipif(str(7968) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7968) not in TESTS, reason='Excluded')
     def test_content_analyst_verify_question_availability_for_princ_7968(self):
         """Verify question availability for CC-Derived Principles of Economics.
 
         Steps:
-
         Click QA content
         Click Available Books
         Select CC-Derived Principles of Economics
         Click on a section in the table of contents
 
-
         Expected Result:
-
         Questions are available
-
         """
         self.ps.test_updates['name'] = 'cc1.03.009' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -352,27 +598,52 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "QA Content"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.ID, "available-books"
+        ).click()
+        element = self.content.driver.find_element(
+            By.XPATH,
+            "//span[contains(text()," +
+            "'Principles of Economics with Concept Coach')]"
+        )
+        self.content.sleep(0.5)
+        self.content.driver.execute_script(
+            'return arguments[0].scrollIntoView();', element)
+        self.content.driver.execute_script('window.scrollBy(0, -80);')
+        element.click()
+        self.content.sleep(0.5)
+        self.content.driver.find_element(
+            By.XPATH, "//span[@class='section-number' and text()='1.1']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'openstax-exercise-preview')]")
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
     # Case C7969 - 010 - Content Analyst| Verify question availability for
     # CC-Derived Introduction to Sociology
-    @pytest.mark.skipif(str(7969) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(7969) not in TESTS, reason='Excluded')
     def test_content_analyst_verify_question_availability_for_soci_7969(self):
-        """Verify question availability for CC-Derived Introduction to Sociology.
+        """Verify question availability for CC-Der Introduction to Sociology.
 
         Steps:
-
         Click QA content
         Click Available Books
         Select CC-Derived Introcution to Sociology
         Click on a section in the table of contents
 
-
         Expected Result:
-
         Questions are available
-
         """
         self.ps.test_updates['name'] = 'cc1.03.010' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -385,5 +656,34 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "QA Content"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.ID, "available-books"
+        ).click()
+        element = self.content.driver.find_element(
+            By.XPATH,
+            "//span[contains(text()," +
+            "'Introduction to Sociology 2e with Concept Coach')]"
+        )
+        self.content.sleep(0.5)
+        self.content.driver.execute_script(
+            'return arguments[0].scrollIntoView();', element)
+        self.content.driver.execute_script('window.scrollBy(0, -80);')
+        element.click()
+        self.content.sleep(0.5)
+        self.content.driver.find_element(
+            By.XPATH, "//span[@class='section-number' and text()='1.1']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'openstax-exercise-preview')]")
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True

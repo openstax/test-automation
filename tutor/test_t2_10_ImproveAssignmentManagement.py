@@ -45,6 +45,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
+
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
@@ -63,12 +64,19 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
         except:
             pass
+        try:
+            self.student.delete()
+        except:
+            pass
+
 
     # 14675 - 001 - Teacher | Set when feedback is available
     @pytest.mark.skipif(str(14675) not in TESTS, reason='Excluded')
@@ -271,7 +279,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         If the user has more than one course, click on a Tutor course name
         Click "Student Scores" from calendar dashboard
         Click on the orange triangle in the upper right corner of a progress
-        cell
+            cell
         Click "Accept late score"
 
         Expected Result:
@@ -402,12 +410,6 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.ps.test_updates['name'] = 't2.10.006' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.006', '14680']
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
         self.teacher.login()
         self.teacher.select_course(appearance='college_physics')
         self.teacher.find(
@@ -450,9 +452,12 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         Expected Result:
         """
+        self.ps.test_updates['name'] = 't2.10.008' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.008', '14682']
         self.ps.test_updates['passed'] = False
 
-        # # Test steps and verification assertions
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
@@ -647,9 +652,9 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         On the student dashboard, a deleted open assignment that the student
         has worked on is not grayed out but is marked "Withdrawn"
         """
-        # self.ps.test_updates['name'] = 't2.10.011' \
-        #     + inspect.currentframe().f_code.co_name[4:]
-        # self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.011', '14802']
+        self.ps.test_updates['name'] = 't2.10.011' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.011', '14802']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -1020,9 +1025,12 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         Expected Result:
         """
+        self.ps.test_updates['name'] = 't2.10.015' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.015', '14685']
         self.ps.test_updates['passed'] = False
 
-        # # Test steps and verification assertions
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
@@ -1274,9 +1282,12 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         Expected Result:
         """
+        self.ps.test_updates['name'] = 't2.10.019' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.019', '14689']
         self.ps.test_updates['passed'] = False
 
-        # # Test steps and verification assertions
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
