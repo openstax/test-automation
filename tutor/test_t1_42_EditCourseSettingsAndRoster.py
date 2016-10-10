@@ -91,7 +91,6 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
             By.XPATH,
             '//div[@class="course-settings-title"]/span'
         ).text
-        print(course_name)
         self.teacher.find(
             By.XPATH, '//button[contains(@class,"edit-course")]' +
             '//span[contains(text(),"Rename Course")]'
@@ -159,7 +158,9 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         # add extra instructor through admin first
         admin = Admin(
             use_env_vars=True,
-            existing_driver=self.teacher.driver
+            existing_driver=self.teacher.driver,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         admin.login()
         admin.get('https://tutor-qa.openstax.org/admin/courses/1/edit')
@@ -242,7 +243,9 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         # add extra instructor through admin first
         admin = Admin(
             use_env_vars=True,
-            existing_driver=self.teacher.driver
+            existing_driver=self.teacher.driver,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         admin.login()
         admin.get('https://tutor-qa.openstax.org/admin/courses/1/edit')
@@ -562,7 +565,6 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
             By.XPATH, '//div[@class="popover-content"]//button').click()
         self.teacher.sleep(1)
         # check that student was droped
-        print(student_name)
         self.teacher.find(
             By.XPATH, '//div[contains(@class,"dropped-students")]' +
             '//td[contains(text(),"%s")]' % student_name
@@ -637,7 +639,56 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.42', 't1.42.011', '58356']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # create a period
+        period_name = 'automated_011_' + str(randint(0, 999))
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class,"add-period")]//button').click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//input[contains(@class,"form-control")]')
+            )
+        ).send_keys(period_name)
+        self.teacher.find(
+            By.XPATH,
+            '//button[contains(@class,"edit-period-confirm")]'
+        ).click()
+        self.teacher.sleep(1)
+        # archive the period
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(text(),"'+period_name+'")]')
+            )
+        ).click()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@class,"archive-period")]').click()
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class,"popover-content")]' +
+            '//button[contains(@class,"archive")]').click()
+        self.teacher.sleep(2)
+        archived_period = self.teacher.find_all(
+            By.XPATH, '//a[contains(text(),"'+period_name+'")]')
+        assert(len(archived_period) == 0), 'period not archived'
+        # unarchive the period
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class,"view-archived-periods")]//button'
+        ).click()
+        self.teacher.sleep(1)
+        rows = self.teacher.find_all(
+            By.XPATH, '//div[@class="modal-content"]//tbody/tr')
+        for row in rows:
+            temp_name = row.find_element(By.XPATH, "./td[1]").text
+            if temp_name == period_name:
+                row.find_element(
+                    By.XPATH,
+                    "./td[3]//button[contains(@class,'unarchive-section')]"
+                ).click()
+                self.teacher.find(
+                    By.XPATH,
+                    '//div[@class="modal-content"]//button[@class="close"]'
+                ).click()
+                break
+        # check that period is no longer archived
+        self.teacher.find(
+            By.XPATH, '//a[contains(text(),"'+period_name+'")]')
 
         self.ps.test_updates['passed'] = True
