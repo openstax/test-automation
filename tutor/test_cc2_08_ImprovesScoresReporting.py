@@ -7,11 +7,12 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
+# from random import randint  # NOQA
 from selenium.webdriver.common.by import By  # NOQA
 from selenium.webdriver.support import expected_conditions as expect  # NOQA
 from selenium.common.exceptions import NoSuchElementException
-from staxing.assignment import Assignment  # NOQA
+from selenium.common.exceptions import ElementNotVisibleException
+# from staxing.assignment import Assignment  # NOQA
 from selenium.webdriver.common.action_chains import ActionChains
 from openpyxl import load_workbook, Workbook
 
@@ -28,11 +29,12 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([14806, 14807, 14808, 14810,
-         14811, 14668, 14670, 14669,
-         14812, 14813, 14814, 14815,
-         14816])  # NOQA
-    # str([14813, ])
+    # str([14806, 14807, 14808, 14810,
+    #      14811, 14668, 14670, 14669,
+    #      14812, 14813, 14814, 14815,
+    #      14816])  # NOQA
+    # str([, 14670, 14812, 14813])
+    str([14670, 14668])
 )
 
 
@@ -204,12 +206,12 @@ class TestImprovesScoresReporting(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"sortable")]//div[text()="Score"]'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"is-descending")]//div[text()="Score"]'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"is-ascending")]//div[text()="Score"]'
@@ -249,12 +251,12 @@ class TestImprovesScoresReporting(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"sortable")]//div[text()="Progress"]'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"is-descending")]//div[text()="Progress"]'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"is-ascending")]//div[text()="Progress"]'
@@ -290,62 +292,62 @@ class TestImprovesScoresReporting(unittest.TestCase):
             By.XPATH,
             '//button//span[contains(text(),"Rename Course")]'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         # course timezone
         self.teacher.driver.find_element(
             By.XPATH,
             '//button//span[contains(text(),"Change Course Timezone")]'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(1)
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         # add period/section
         self.teacher.driver.find_element(
             By.XPATH,
-            '//li//button//span[contains(text(),"Add")]'
+            '//div[contains(@class,"add-period")]//button'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         # rename period
         self.teacher.driver.find_element(
             By.XPATH,
             '//span[contains(@class,"rename-period")]//button'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         # student enrollemnt code
         self.teacher.driver.find_element(
             By.XPATH,
             '//button//span[contains(text(),"Your student enrollment code")]'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         # View Archived periods
         self.teacher.driver.find_element(
             By.XPATH,
             '//button//span[contains(text(),"View Archived ")]'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
@@ -386,7 +388,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
             By.XPATH,
             '//button//span[contains(text(),"Rename Course")]'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
@@ -400,7 +402,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
             By.XPATH,
             '//button//span[contains(text(),"Change Course Timezone")]'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(1)
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
@@ -412,9 +414,9 @@ class TestImprovesScoresReporting(unittest.TestCase):
         # add period/section
         self.teacher.driver.find_element(
             By.XPATH,
-            '//li//button//span[contains(text(),"Add")]'
+            '//div[contains(@class,"add-period")]//button'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
@@ -428,7 +430,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
             By.XPATH,
             '//span[contains(@class,"rename-period")]//button'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
@@ -442,7 +444,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
             By.XPATH,
             '//button//span[contains(text(),"Your student enrollment code")]'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
@@ -456,7 +458,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
             By.XPATH,
             '//button//span[contains(text(),"View Archived")]'
         ).click()
-        self.teacher.sleep(0.5)
+        self.teacher.sleep(0.75)
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
@@ -582,7 +584,6 @@ class TestImprovesScoresReporting(unittest.TestCase):
         files = os.listdir(home + '/Downloads')
         file_name = ''
         for i in range(len(files)):
-            print(files[i])
             if (coursename in files[i]) and (files[i][-5:] == '.xlsx'):
                 file_name = files[i]
                 break
@@ -608,8 +609,6 @@ class TestImprovesScoresReporting(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE - sideways scrolling is messed up.
-    # if green check is in starting screen it works though
     # 14814 - 011 - Teacher | Green check icon is displayed for completed
     # assignments
     @pytest.mark.skipif(str(14814) not in TESTS, reason='Excluded')  # NOQA
@@ -643,21 +642,28 @@ class TestImprovesScoresReporting(unittest.TestCase):
         assignments = self.teacher.driver.find_elements(
             By.XPATH,
             "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)):
+
+        for i in range(len(assignments)//4):
             try:
                 self.teacher.driver.find_element(
                     By.XPATH,
                     '//span[contains(@class,"trig")]' +
                     '//*[contains(@class,"finished")]')
                 break
-            except NoSuchElementException:
-                print("here")
-                if i >= len(assignments)-4:
-                    print("No Green Checkmarks for this class :(")
+            except (NoSuchElementException, ElementNotVisibleException):
+                if i >= (len(assignments)//4)-1:
+                    print("completed assignments for this period")
                     raise Exception
-                self.teacher.driver.execute_script(
-                   'return arguments[0].scrollIntoView();',
-                   assignments[i+3])
+                # try to drag scroll bar instead of scrolling
+                scroll_bar = self.teacher.find(
+                    By.XPATH,
+                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                actions = ActionChains(self.teacher.driver)
+                actions.move_to_element(scroll_bar)
+                actions.click_and_hold()
+                actions.move_by_offset(50, 0)
+                actions.release()
+                actions.perform()
         self.ps.test_updates['passed'] = True
 
     # 14815 - 012 - Teacher | The class average info icon displays a definition
