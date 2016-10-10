@@ -7,7 +7,7 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-# from random import randint
+from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.common.keys import Keys
