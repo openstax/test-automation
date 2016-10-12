@@ -29,12 +29,11 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    # str([14806, 14807, 14808, 14810,
-    #      14811, 14668, 14670, 14669,
-    #      14812, 14813, 14814, 14815,
-    #      14816])  # NOQA
-    # str([, 14670, 14812, 14813])
-    str([14670, 14668])
+    str([14806, 14807, 14808, 14810,
+         14811, 14668, 14670, 14669,
+         14812, 14813, 14814, 14815,
+         14816])  # NOQA
+    # 14812 - feature not implemented in Concept Coach
 )
 
 
@@ -48,8 +47,8 @@ class TestImprovesScoresReporting(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities,
         )
         self.teacher.login()
         self.teacher.driver.find_element(
@@ -384,14 +383,16 @@ class TestImprovesScoresReporting(unittest.TestCase):
         ).click()
         self.teacher.sleep(1)
         # rename couse
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//button//span[contains(text(),"Rename Course")]'
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button//span[contains(text(),"Rename Course")]')
+            )
         ).click()
-        self.teacher.sleep(0.75)
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[@class="modal-content"]//button[@class="close"]'
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="modal-content"]//button[@class="close"]')
+            )
         ).click()
         self.teacher.sleep(1)
         with self.assertRaises(NoSuchElementException):
@@ -402,10 +403,11 @@ class TestImprovesScoresReporting(unittest.TestCase):
             By.XPATH,
             '//button//span[contains(text(),"Change Course Timezone")]'
         ).click()
-        self.teacher.sleep(1)
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[@class="modal-content"]//button[@class="close"]'
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="modal-content"]//button[@class="close"]')
+            )
         ).click()
         self.teacher.sleep(1)
         with self.assertRaises(NoSuchElementException):
@@ -416,10 +418,11 @@ class TestImprovesScoresReporting(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"add-period")]//button'
         ).click()
-        self.teacher.sleep(0.75)
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[@class="modal-content"]//button[@class="close"]'
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="modal-content"]//button[@class="close"]')
+            )
         ).click()
         self.teacher.sleep(1)
         with self.assertRaises(NoSuchElementException):
@@ -430,10 +433,11 @@ class TestImprovesScoresReporting(unittest.TestCase):
             By.XPATH,
             '//span[contains(@class,"rename-period")]//button'
         ).click()
-        self.teacher.sleep(0.75)
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[@class="modal-content"]//button[@class="close"]'
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="modal-content"]//button[@class="close"]')
+            )
         ).click()
         self.teacher.sleep(1)
         with self.assertRaises(NoSuchElementException):
@@ -444,10 +448,11 @@ class TestImprovesScoresReporting(unittest.TestCase):
             By.XPATH,
             '//button//span[contains(text(),"Your student enrollment code")]'
         ).click()
-        self.teacher.sleep(0.75)
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[@class="modal-content"]//button[@class="close"]'
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="modal-content"]//button[@class="close"]')
+            )
         ).click()
         self.teacher.sleep(1)
         with self.assertRaises(NoSuchElementException):
@@ -458,10 +463,11 @@ class TestImprovesScoresReporting(unittest.TestCase):
             By.XPATH,
             '//button//span[contains(text(),"View Archived")]'
         ).click()
-        self.teacher.sleep(0.75)
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[@class="modal-content"]//button[@class="close"]'
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="modal-content"]//button[@class="close"]')
+            )
         ).click()
         self.teacher.sleep(1)
         with self.assertRaises(NoSuchElementException):
@@ -569,6 +575,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
         self.teacher.driver.find_element(
             By.XPATH, '//div[@class="export-button"]//button'
         ).click()
+        # wait until button return and no longer is loading
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
@@ -576,7 +583,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
                  '/span[text()="Export"]')
             )
         )
-        self.teacher.sleep(1)
+        self.teacher.sleep(2)
         coursename = self.teacher.driver.find_element(
              By.XPATH, '//div[@class="course-name"]').text
         coursename = coursename.replace(' ', '_') + "_Scores"
@@ -603,10 +610,9 @@ class TestImprovesScoresReporting(unittest.TestCase):
                 if rows[i][4].value == 0:
                     # found that 0% is being used istead of blanks
                     break
-                elif rows[i+1][4].value == None:
+                elif rows[i+1][4].value is None:
                     print('empty cell instead of 0%')
                     raise Exception
-
         self.ps.test_updates['passed'] = True
 
     # 14814 - 011 - Teacher | Green check icon is displayed for completed
