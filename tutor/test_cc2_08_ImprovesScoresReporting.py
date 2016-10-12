@@ -53,7 +53,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
             capabilities=self.desired_capabilities,
         )
         self.teacher.login()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
         ).click()
 
@@ -101,10 +101,10 @@ class TestImprovesScoresReporting(unittest.TestCase):
                 (By.XPATH, '//span[contains(text(),"Student Scores")]')
             )
         )
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//button[contains(text(),"percentage")]'
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"score")]//a[contains(text(),"%")]')
         self.ps.test_updates['passed'] = True
@@ -138,10 +138,10 @@ class TestImprovesScoresReporting(unittest.TestCase):
                 (By.XPATH, '//span[contains(text(),"Student Scores")]')
             )
         )
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//button[contains(text(),"number")]'
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"score")]//a[contains(text()," of ")]')
 
@@ -175,9 +175,9 @@ class TestImprovesScoresReporting(unittest.TestCase):
                 (By.XPATH, '//span[contains(text(),"Student Scores")]')
             )
         )
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//i[@type="info-circle"]').click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//h3[@class="popover-title" and ' +
             'contains(text(), "Class and Overall Averages")]')
@@ -212,17 +212,17 @@ class TestImprovesScoresReporting(unittest.TestCase):
                 (By.XPATH, '//span[contains(text(),"Student Scores")]')
             )
         )
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"sortable")]//div[text()="Score"]'
         ).click()
         self.teacher.sleep(0.75)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"is-descending")]//div[text()="Score"]'
         ).click()
         self.teacher.sleep(0.75)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"is-ascending")]//div[text()="Score"]'
         )
@@ -257,17 +257,17 @@ class TestImprovesScoresReporting(unittest.TestCase):
                 (By.XPATH, '//span[contains(text(),"Student Scores")]')
             )
         )
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"sortable")]//div[text()="Progress"]'
         ).click()
         self.teacher.sleep(0.75)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"is-descending")]//div[text()="Progress"]'
         ).click()
         self.teacher.sleep(0.75)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"is-ascending")]//div[text()="Progress"]'
         )
@@ -295,72 +295,72 @@ class TestImprovesScoresReporting(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.open_user_menu()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[text()="Course Settings and Roster"]'
         ).click()
         self.teacher.sleep(1)
         # rename couse
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//button//span[contains(text(),"Rename Course")]'
         ).click()
         self.teacher.sleep(0.75)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
         ).click()
         self.teacher.sleep(0.75)
         # course timezone
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//button//span[contains(text(),"Change Course Timezone")]'
         ).click()
         self.teacher.sleep(1)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
         ).click()
         self.teacher.sleep(0.75)
         # add period/section
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"add-period")]//button'
         ).click()
         self.teacher.sleep(0.75)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
         ).click()
         self.teacher.sleep(0.75)
         # rename period
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//span[contains(@class,"rename-period")]//button'
         ).click()
         self.teacher.sleep(0.75)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
         ).click()
         self.teacher.sleep(0.75)
         # student enrollemnt code
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//button//span[contains(text(),"Your student enrollment code")]'
         ).click()
         self.teacher.sleep(0.75)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
         ).click()
         self.teacher.sleep(0.75)
         # View Archived periods
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//button//span[contains(text(),"View Archived ")]'
         ).click()
         self.teacher.sleep(0.75)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[@class="modal-content"]//button[@class="close"]'
         ).click()
@@ -393,7 +393,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.open_user_menu()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[text()="Course Settings and Roster"]'
         ).click()
         self.teacher.sleep(1)
@@ -411,10 +411,10 @@ class TestImprovesScoresReporting(unittest.TestCase):
         ).click()
         self.teacher.sleep(1)
         with self.assertRaises(NoSuchElementException):
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH, '//div[@class="modal-content"]')
         # course timezone
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//button//span[contains(text(),"Change Course Timezone")]'
         ).click()
@@ -426,10 +426,10 @@ class TestImprovesScoresReporting(unittest.TestCase):
         ).click()
         self.teacher.sleep(1)
         with self.assertRaises(NoSuchElementException):
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH, '//div[@class="modal-content"]')
         # add period/section
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"add-period")]//button'
         ).click()
@@ -441,10 +441,10 @@ class TestImprovesScoresReporting(unittest.TestCase):
         ).click()
         self.teacher.sleep(1)
         with self.assertRaises(NoSuchElementException):
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH, '//div[@class="modal-content"]')
         # rename period
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//span[contains(@class,"rename-period")]//button'
         ).click()
@@ -456,10 +456,10 @@ class TestImprovesScoresReporting(unittest.TestCase):
         ).click()
         self.teacher.sleep(1)
         with self.assertRaises(NoSuchElementException):
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH, '//div[@class="modal-content"]')
         # student enrollemnt code
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//button//span[contains(text(),"Your student enrollment code")]'
         ).click()
@@ -471,10 +471,10 @@ class TestImprovesScoresReporting(unittest.TestCase):
         ).click()
         self.teacher.sleep(1)
         with self.assertRaises(NoSuchElementException):
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH, '//div[@class="modal-content"]')
         # View Archived Periods
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//button//span[contains(text(),"View Archived")]'
         ).click()
@@ -486,7 +486,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
         ).click()
         self.teacher.sleep(1)
         with self.assertRaises(NoSuchElementException):
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH, '//div[@class="modal-content"]')
 
         self.ps.test_updates['passed'] = True
@@ -523,7 +523,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
                 (By.XPATH, '//span[contains(text(),"Student Scores")]')
             )
         )
-        icon = self.teacher.driver.find_element(
+        icon = self.teacher.find(
             By.XPATH,
             '//span[contains(@aria-describedby,"scores-cell-info-popover")]')
         actions = ActionChains(self.teacher.driver)
@@ -589,7 +589,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
                 (By.XPATH, '//span[contains(text(),"Student Scores")]')
             )
         )
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[@class="export-button"]//button'
         ).click()
         # wait until button return and no longer is loading
@@ -601,7 +601,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
             )
         )
         self.teacher.sleep(2)
-        coursename = self.teacher.driver.find_element(
+        coursename = self.teacher.find(
              By.XPATH, '//div[@class="course-name"]').text
         coursename = coursename.replace(' ', '_') + "_Scores"
         home = os.getenv("HOME")
@@ -614,7 +614,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
             else:
                 if i == len(files)-1:
                     raise Exception
-        period = self.teacher.driver.find_element(
+        period = self.teacher.find(
             By.XPATH, '//span[contains(@class,"tab-item-period-name")]').text
         wb = load_workbook(str(home + '/Downloads/' + file_name))
         sheet = wb[period + ' - %']
@@ -662,13 +662,13 @@ class TestImprovesScoresReporting(unittest.TestCase):
             )
         )
         # scroll to find a green checkmark
-        assignments = self.teacher.driver.find_elements(
+        assignments = self.teacher.find_all(
             By.XPATH,
             "//span[contains(@aria-describedby,'header-cell-title')]")
 
         for i in range(len(assignments)//4):
             try:
-                self.teacher.driver.find_element(
+                self.teacher.find(
                     By.XPATH,
                     '//span[contains(@class,"trig")]' +
                     '//*[contains(@class,"finished")]')
@@ -721,9 +721,9 @@ class TestImprovesScoresReporting(unittest.TestCase):
                 (By.XPATH, '//span[contains(text(),"Student Scores")]')
             )
         )
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//i[@type="info-circle"]').click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//h3[@class="popover-title" and ' +
             'contains(text(), "Class and Overall Averages")]')
@@ -758,7 +758,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
                 (By.XPATH, '//span[contains(text(),"Student Scores")]')
             )
         )
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[contains(@class,"overall-header-cell")]')
 
         self.ps.test_updates['passed'] = True
