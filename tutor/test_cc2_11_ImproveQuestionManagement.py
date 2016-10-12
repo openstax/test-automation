@@ -88,7 +88,30 @@ class TestIImproveQuestionManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Question Library'
+        ).click()
+        self.teacher.find(
+            By.XPATH,
+            '//div[@class="Section"]//span[@class="chapter-section" ' +
+            'and @data-chapter-section="1.1"]'
+        ).click()
+        self.teacher.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+        self.teacher.find(
+            By.XPATH, '//button[text()="Show Questions"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="exercises"]')
+            )
+        )
+
 
         self.ps.test_updates['passed'] = True
 
