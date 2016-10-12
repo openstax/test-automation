@@ -12,8 +12,6 @@ try:
 except ImportError:
     from testrail import TestRailAPI
 
-DEBUG = os.getenv('DEBUG', False)
-
 
 class Result(object):
     """Test Result Control."""
@@ -24,11 +22,7 @@ class Result(object):
         """Result class constructor."""
         self.debugging = debug
         self.file = ''.join([path, '/', data])
-        if self.debugging:
-            print('File', self.file)
         self.run_id = os.getenv('RUNID')
-        if self.debugging:
-            print('RunID', self.run_id)
         self.tree, self.root = self.get_tree()
         self.test_rail = TestRailAPI(url=url)
         self.test_set = self.test_rail.get_tests(run_id=int(self.run_id))
@@ -45,6 +39,7 @@ class Result(object):
 
     def find_test_id(self, case_id, tests):
         """Return a test ID."""
+        # print('Test ID:', case_id)
         try:
             case = int(case_id)
         except ValueError:
@@ -90,34 +85,29 @@ class Result(object):
                 return to_string[:-1]
         return to_string + '%ss' % seconds
 
-    @classmethod
-    def print_xml_tree(cls, root):
-        """Print all tags and attributes."""
-        print(root.tag, root.attrib)
-        for node in root.iter():
-            print(node.tag, node.attrib)
-
     def retrieve_test_results(self):
         """Split the tree."""
         for child in self.root:
-            child.attrib['case'] = child.attrib['name'].split('_')[-1]
-            child.attrib['test'] = self.find_test_id(child.attrib['case'],
-                                                     self.test_set)
+            child.set(
+                'case',
+                child.get('name').split('_')[-1]
+            )
+            child.set(
+                'test',
+                self.find_test_id(child.get('case'), self.test_set)
+            )
             sub = list(child.iter())
             if len(sub) >= 2:
-                child.attrib['status'] = sub[1].tag
-                if DEBUG:
-                    print(child.attrib)
-                message = sub[1].attrib['message'] if 'message' in \
+                if sub[1].tag == 'system-out':
+                    child.set('status', 'passed')
+                else:
+                    child.set('status', sub[1].tag)
+                message = sub[1].get('message') if 'message' in \
                     sub[1].attrib else ''
                 parts = message.split(
                     '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ' +
                     '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _'
                 )
-                if self.debugging:
-                    for i, x in enumerate(parts):
-                        print(Result.NEW_LINE + '====================', i, x,
-                              Result.NEW_LINE + '====================')
                 reorder = 'Break Point:' + Result.NEW_LINE + \
                           parts[0] + Result.NEW_LINE
                 if len(parts) > 1:
@@ -127,14 +117,12 @@ class Result(object):
                     reorder = reorder + \
                         final[:-operator.floordiv(len(final), 4)]
                     reorder = reorder + Result.NEW_LINE
-                child.attrib['message'] = reorder
-                if self.debugging:
-                    print(reorder)
-                child.attrib['text'] = sub[1].text
+                child.set('message', reorder)
+                child.set('text', sub[1].text)
             else:
-                child.attrib['status'] = 'passed'
-                child.attrib['message'] = ''
-                child.attrib['text'] = ''
+                child.set('status', 'passed')
+                child.set('message', '')
+                child.set('text', '')
 
 
 def main(argv):
@@ -158,50 +146,45 @@ def main(argv):
             sys.exit()
         elif option in ('-i', '--input'):
             path, file_name = os.path.split(argument)
-            if DEBUG:
-                print('Path:', path)
-                print('File:', file_name)
         elif option in ('-u', '--url'):
             server = argument
-            if DEBUG:
-                print('URL: ', server)
-    # Break up the XML file
+    print('Break up the XML file')
     runner = Result(path=path, data=file_name, url=server)
-    # Process the tests
+    print('Process the tests')
     runner.retrieve_test_results()
-    # Build the data results for load
+    print('Build the data results for load')
     results = []
     for child in runner.root:
-        if DEBUG:
-            print(Result.NEW_LINE)
-            for key in child.attrib:
-                print(key, ':', child.attrib[key])
         if 'status' not in child.attrib:
-            child.attrib['status'] = 'skipped'
-        if child.attrib['status'] != 'skipped':
-            if 'test_id' in child.attrib and child.attrib['test_id'] != -1:
-                results.append({
-                    'test_id': child.attrib['test'],
-                    'status_id': runner.get_status(child.attrib['status']),
-                    'comment': child.attrib['message'],
-                    'version': '',
-                    'elapsed': runner.get_time_string(child.attrib['time']),
-                    'defects': '',
-                    'assignedto_id': '',
-                })
-    if DEBUG:
-        print(' ')
-        print('Run:', int(runner.run_id))
-        print('Results:')
-    if len(results) < 2:
+            child.set('status', 'skipped')
+        if child.get('status') != 'skipped':
+            if 'test' in child.attrib and child.get('test') != -1:
+                case_status = runner.get_status(child.get('status'))
+                if case_status == TestRailAPI.PASSED or \
+                        case_status == TestRailAPI.FAILED:
+                    results.append({
+                        'test_id': child.get('test'),
+                        'status_id': case_status,
+                        'comment': child.get('message'),
+                        'version': '',
+                        'elapsed': runner.get_time_string(child.get('time')),
+                        'defects': '',
+                        'assignedto_id': '',
+                    })
+    if len(results) == 1:
         results = [results]
-    if DEBUG:
-        for result in results:
-            print('\t', result)
-    package = runner.test_rail.add_results(run_id=int(runner.run_id),
-                                           data={'results': results})
-    if DEBUG:
-        print(package)
+    if len(results) > 0:
+        package = runner.test_rail.add_results(
+            run_id=int(runner.run_id),
+            data={'results': results}
+        )
+        out = ''
+        for index, line in enumerate(package):
+            out = out + str(index) + ':' + Result.NEW_LINE
+            for key in line:
+                value = str(line[key]).replace('    ', ' ')[-60:]
+                out = out + '    ' + str(key) + ': ' + value + Result.NEW_LINE
+        print(out)
 
 
 if __name__ == '__main__':

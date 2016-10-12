@@ -3,7 +3,7 @@
 import inspect
 import json
 import os
-import pytest
+# import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
@@ -31,7 +31,9 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([list_of_cases])
+    str([
+        list_of_cases
+    ])
 )
 
 
@@ -41,6 +43,8 @@ class TestConceptCoachPilots(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
@@ -61,7 +65,7 @@ class TestConceptCoachPilots(unittest.TestCase):
             pass
 
     # Case CaseID - Story# - UserType | StoryText
-    @pytest.mark.skipif(str(CaseID) not in TESTS, reason='Excluded')
+    '''@pytest.mark.skipif(str(CaseID) not in TESTS, reason='Excluded')
     def test_usertype_storytext_CaseID(self):
         """Story Text.
 
@@ -84,4 +88,4 @@ class TestConceptCoachPilots(unittest.TestCase):
         # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
-        self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True'''

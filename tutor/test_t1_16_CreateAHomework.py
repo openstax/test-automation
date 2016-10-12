@@ -1,4 +1,3 @@
-
 """Tutor v1, Epic 16 - Create A Homework."""
 
 import inspect
@@ -40,19 +39,6 @@ TESTS = os.getenv(
         8083, 8084
     ])
 )
-# 8029, 8030-8034, 8039-8042
-
-# start on 8035 when qa is back up
-# pick up on 8058
-# 8068, currently only looks at the first assessment for a chapter/section,
-# make it go through all
-# 8066 chooses a random chapter/section to load problems from, use that for the
-# other cases that require problems to be selected
-# Not all chapters are available for physics, will leave as choosing chapter 1
-# Good - Replace textarea assertions with self.find(textarea)
-# Good - 8081 is a repeat of 8079
-# Good - For collective setting (almost all the cases), click the all periods
-# radio in case the radio defaults to individual
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -128,6 +114,7 @@ class TestCreateAHomework(unittest.TestCase):
         Steps:
         Click on a date at least one day later than current date on calendar
         From the menu that appears, click on 'Add Homework'
+
         Expected Result:
         The teacher is taken to a page where they create the assignment.
         """
@@ -184,12 +171,12 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         Click on the Add Assignment drop down menu on the user dashboard, OR
-        click a calendar date that is at least one day later than current date
-
+        Click a calendar date that is at least one day later than current date
         Click on the 'Add Homework' button
         Select the 'All Periods' radio button if it is not selected by default
         Select an open date for the assignment using the calendar element
         Select a due date for the assignment using the calendar element
+
         Expected Result:
         A due date is assigned for all periods collectively.
         """
@@ -252,7 +239,6 @@ class TestCreateAHomework(unittest.TestCase):
                 due = day
                 due.click()
                 break
-        self.teacher.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -264,11 +250,11 @@ class TestCreateAHomework(unittest.TestCase):
         Steps:
         Click on the Add Assignment drop down menu on the user dashboard, OR
         click a calendar date that's at least one day later than current date
-
         Click on the 'Add Homework' button
         Select the 'Individual Periods' radio button
         Select the periods that should be required to complete the assignment
         Select open and due dates for each section using the calendar element
+
         Expected Result:
         Each section that is assigned the homework has an individual open and
         due date.
@@ -337,7 +323,6 @@ class TestCreateAHomework(unittest.TestCase):
                         due.click()
                         odd = True
                         break
-        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -348,8 +333,7 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         Click on the 'Add Assignment' button, OR
-        click on a calendar date at least one day later than the current date
-
+        Click on a calendar date at least one day later than the current date
         From the drop down menu, click on the 'Add Homework' option
         Enter a name in the 'Assignment name' text box
         Choose a due date for the assignment using the calendar element
@@ -359,6 +343,7 @@ class TestCreateAHomework(unittest.TestCase):
         Click on at least one problem to be used for My Selections
         Click the 'Next' button
         Click 'Save As Draft'
+
         Expected Result:
         The teacher is returned to the dashboard where the draft assignment is
         now displayed on the calendar.
@@ -502,10 +487,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
-
-        self.teacher.sleep(5)
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8033 - 006 - Teacher | Publish a new homework
     @pytest.mark.skipif(str(8033) not in TESTS, reason='Excluded')
@@ -515,18 +498,17 @@ class TestCreateAHomework(unittest.TestCase):
         Steps:
         Click on the Add Assignment drop down menu on the user dashboard, OR
         click on a calendar date at least one day later than the current date
-
         Click on the 'Add Homework' button
         Give the homework a name in the 'Assignment name' text box
         Select a due date (individually or collectively) for the assignment
-        using the calendar element
-
+            using the calendar element
         Click the '+ Select Problems' button
         Select at least one chapter or section to use for the homework
         Click the 'Show Problems' button
         Click at least one problem to be used for My Selections
         Click the 'Next' button
         Click the 'Publish' button
+
         Expected Result:
         The teacher is returned to dashboard where new assignment is displayed.
         """
@@ -665,10 +647,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
-
-        self.teacher.sleep(5)
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8034 - 007 - Teacher | Publish a draft homework
     @pytest.mark.skipif(str(8034) not in TESTS, reason='Excluded')
@@ -678,6 +658,7 @@ class TestCreateAHomework(unittest.TestCase):
         Steps:
         From the user dashboard, click on a draft assignment
         Click the 'Publish' button
+
         Expected Result:
         A draft homework is published.
         """
@@ -717,7 +698,7 @@ class TestCreateAHomework(unittest.TestCase):
         while(self.teacher.find(
                 By.XPATH,
                 "//span[@class = 'datepicker__current-month']"
-                ).text != 'December 2016'):
+        ).text != 'December 2016'):
             self.teacher.find(
                 By.XPATH,
                 "//a[@class = 'datepicker__navigation datepicker__" +
@@ -858,16 +839,14 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
-
-        self.teacher.sleep(5)
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8035 - 008 - Teacher | Cancel a new homework before making any
     # changes using the Cancel button
     @pytest.mark.skipif(str(8035) not in TESTS, reason='Excluded')
     def test_teacher_cancel_new_hw_before_change_using_cancel_btn_8035(self):
-        """Cancel a new homework before making any changes using the Cancel button
+        """Cancel new homework before making changes using the Cancel button.
 
         Steps:
         Click on the Add Assignment drop down menu on the user dashboard, OR
@@ -1044,10 +1023,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
-
-        self.teacher.sleep(5)
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8035 - 008 - Teacher | Cancel hw before making changes w/ Cancel
     @pytest.mark.skipif(str(8035) not in TESTS, reason='Excluded')
@@ -1057,9 +1034,9 @@ class TestCreateAHomework(unittest.TestCase):
         Steps:
         Click on the Add Assignment drop down menu on the user dashboard, OR
         click on a calendar date at least one day later than the current date
-
         Click on the 'Add Homework' button
         Click on the 'Cancel' button
+
         Expected Result:
         The teacher is returned to the dashboard.
         """
@@ -1105,12 +1082,10 @@ class TestCreateAHomework(unittest.TestCase):
         Steps:
         Click on the Add Assignment drop down menu on the user dashboard, OR
         click on a calendar date at least one day later than the current date
-
         Click on the 'Add Homework' button
         Give the homework a name in the 'Assignment name' text box
         Select a due date (individually or collectively) for the assignment
-        using the calendar element
-
+            using the calendar element
         Click the '+ Select Problems' button
         Select at least one chapter or section to use for the homework
         Click the 'Show Problems' button
@@ -1118,6 +1093,7 @@ class TestCreateAHomework(unittest.TestCase):
         Click the 'Next' button
         Click the 'Cancel' button
         Click the 'OK' button
+
         Expected Result:
         The tracher is returned to the dashboard.
         """
@@ -1167,9 +1143,9 @@ class TestCreateAHomework(unittest.TestCase):
         Steps:
         Click on the Add Assignment drop down menu on the user dashboard, OR
         click on a calendar date at least one day later than the current date
-
         Click on the 'Add Homework' button
         Click on the X button
+
         Expected Result:
         The teacher is returned to the dashboard.
         """
@@ -1215,12 +1191,10 @@ class TestCreateAHomework(unittest.TestCase):
         Steps:
         Click on the Add Assignment drop down menu on the user dashboard, OR
         click on a calendar date at least one day later than the current date
-
         Click on the 'Add Homework' button
         Give the homework a name in the 'Assignment name' text box
         Select a due date (individually or collectively) for the assignment
-        using the calendar element
-
+            using the calendar element
         Click the '+ Select Problems' button
         Select at least one chapter or section to use for the homework
         Click the 'Show Problems' button
@@ -1228,6 +1202,7 @@ class TestCreateAHomework(unittest.TestCase):
         Click the 'Next' button
         Click the X button
         Click the 'OK' button
+
         Expected Result:
         The teacher is returned to the dashboard.
         """
@@ -1280,6 +1255,7 @@ class TestCreateAHomework(unittest.TestCase):
         From the user dashboard, click on a draft assignment
         Click on the 'Cancel' button
         Click on the 'OK' button
+
         Expected Result:
         The teacher is returned to the dashboard.
         """
@@ -1442,52 +1418,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
-
-        self.teacher.sleep(5)
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the draft and delete it
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-12':
-                assignment.click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='async-button delete-link " +
-                    "pull-right btn btn-default']").click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='btn btn-primary']").click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-12':
-                deleted = False
-                break
-
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
         self.teacher.sleep(5)
 
@@ -1502,6 +1434,7 @@ class TestCreateAHomework(unittest.TestCase):
         Change the homework name in the 'Assignment name' text box
         Click on the 'Cancel' button
         Click on the 'OK' button
+
         Expected Result:
         The teacher is returned to the dashboard.
         """
@@ -1665,10 +1598,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
-
-        self.teacher.sleep(5)
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8041 - 014 - Teacher | Cancel a draft hw before changes using the X
     @pytest.mark.skipif(str(8041) not in TESTS, reason='Excluded')
@@ -1839,10 +1770,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
-
-        self.teacher.sleep(5)
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8042 - 015 - Teacher | Cancel a draft homework after making
     # changes using the X
@@ -1856,6 +1785,7 @@ class TestCreateAHomework(unittest.TestCase):
         Edit the homework's name in the 'Assignment name' text box
         Click on the X button
         Click on the 'OK' button
+
         Expected Result:
         The teacher is returned to the dashboard.
         """
@@ -2021,10 +1951,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
-
-        self.teacher.sleep(5)
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8043 - 016 - Teacher | Attempt to publish a homework with blank
     # required fields
@@ -2035,9 +1963,9 @@ class TestCreateAHomework(unittest.TestCase):
         Steps:
         Click on the Add Assignment drop down menu on the user dashboard, OR
         click on a calendar date at least one day later than the current date
-
         Click on the 'Add Homework' button
         Click on the 'Publish' button
+
         Expected Result:
         Red text appears next to every blank required field.
         """
@@ -2087,10 +2015,10 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         Click on the Add Assignment drop down menu on the user dashboard, OR
-        click on a calendar date at least one day later than the current date
-
+        Click on a calendar date at least one day later than the current date
         Click on the 'Add Homework' button
         Click on the 'Save As Draft' button
+
         Expected Result:
         Red text appears next to every blank required field.
         """
@@ -2142,6 +2070,7 @@ class TestCreateAHomework(unittest.TestCase):
         Click on the 'Edit Assignment' button
         Click on the 'Delete Assignment' button
         Click 'OK' on the dialog box that pops up
+
         Expected Result:
         The teacher is returned to the dashboard and the assignment is removed
         from the calendar.
@@ -2280,8 +2209,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8046 - 019 - Teacher | Attempt to delete an open homework
     @pytest.mark.skipif(str(8046) not in TESTS, reason='Excluded')
@@ -2291,6 +2220,7 @@ class TestCreateAHomework(unittest.TestCase):
         Steps:
         Click on an assignment on the calendar that is open for student to work
         Click on the 'Edit Assignment' button
+
         Expected Result:
         The 'Delete Assignment' button should not appear on the page.
         """
@@ -2436,13 +2366,13 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8047 - 020 - Teacher | Delete a draft homework
     @pytest.mark.skipif(str(8047) not in TESTS, reason='Excluded')
     def test_teacher_delete_a_draft_homework_8047(self):
-        """Delete a draft homework
+        """Delete a draft homework.
 
         Steps:
         Click on a draft assignment on the calendar
@@ -2493,7 +2423,7 @@ class TestCreateAHomework(unittest.TestCase):
         while(self.teacher.find(
                 By.XPATH,
                 "//span[@class = 'datepicker__current-month']"
-             ).text != 'December 2016'):
+        ).text != 'December 2016'):
             self.teacher.find(
                 By.XPATH,
                 "//a[@class = 'datepicker__navigation datepicker__" +
@@ -2604,13 +2534,13 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8048 - 021 - Teacher | Add a description to a homework
     @pytest.mark.skipif(str(8048) not in TESTS, reason='Excluded')
     def test_teacher_add_a_description_to_the_homework_8048(self):
-        """Add a description to a homework
+        """Add a description to a homework.
 
         Steps:
         From the dashboard, click on the 'Add assignment' drop down menu
@@ -2658,7 +2588,7 @@ class TestCreateAHomework(unittest.TestCase):
     # Case C8049 - 022 - Teacher | Change a description for a draft homework
     @pytest.mark.skipif(str(8049) not in TESTS, reason='Excluded')
     def test_teacher_change_a_description_for_a_draft_homework_8049(self):
-        """Change a description for a draft homework
+        """Change a description for a draft homework.
 
         Steps:
         From the dashboard, click on a draft assignment displayed on the
@@ -2802,8 +2732,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8050 - 023 - Teacher | Change a description for an open homework
     @pytest.mark.skipif(str(8050) not in TESTS, reason='Excluded')
@@ -2815,6 +2745,7 @@ class TestCreateAHomework(unittest.TestCase):
         Click the 'Edit Assignment' button
         Edit the text box labeled 'Description or special instructions'
         Click on the 'Publish' button
+
         Expected Result:
         The teacher is returned to the dashboard.
         The open assignment's description has changed.
@@ -2981,8 +2912,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8051 - 024 - Teacher | Add a name to a homework
     @pytest.mark.skipif(str(8051) not in TESTS, reason='Excluded')
@@ -3212,8 +3143,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8053 - 026 - Teacher | Change a name for an open homework
     @pytest.mark.skipif(str(8053) not in TESTS, reason='Excluded')
@@ -3225,6 +3156,7 @@ class TestCreateAHomework(unittest.TestCase):
         Click the 'Edit Assignment' button
         Edit the text box labeled 'Assignment name'
         Click on the 'Publish' button
+
         Expected Result:
         The name of an open homework is changed
         """
@@ -3390,8 +3322,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8054 - 027 - Teacher | Select when to show feedback to a student
     @pytest.mark.skipif(str(8054) not in TESTS, reason='Excluded')
@@ -3436,8 +3368,6 @@ class TestCreateAHomework(unittest.TestCase):
             "//select").send_keys(
             'instantly after the student answers each question' + Keys.RETURN)
 
-        self.teacher.sleep(2)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8055 - 028 - Teacher | Change when to show feedback for draft hw
@@ -3449,6 +3379,7 @@ class TestCreateAHomework(unittest.TestCase):
         From the dashboard, click on a draft assignment displayed on calendar
         On the drop down menu named 'Show feedback' change the selected option
         Click on the 'Save As Draft' button
+
         Expected Result:
         The teacher is returned to the dashboard.
         The draft assignment's feedback settings have changed.
@@ -3614,8 +3545,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8056 - 029 - Teacher | Change when to show feedback for unopened hw
     @pytest.mark.skipif(str(8056) not in TESTS, reason='Excluded')
@@ -3628,6 +3559,7 @@ class TestCreateAHomework(unittest.TestCase):
         Click the 'Edit Assignment' button
         On the drop down menu named 'Show feedback' change the selected option
         Click on the 'Publish' button
+
         Expected Result:
         The teacher is returned to the dashboard.
         The unopened assignment's show feedback settings are changed.
@@ -3785,8 +3717,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8057 - 030 - Teacher | Change when to show feedback for opened hw
     @pytest.mark.skipif(str(8057) not in TESTS, reason='Excluded')
@@ -3798,6 +3730,7 @@ class TestCreateAHomework(unittest.TestCase):
         Click the 'Edit Assignment' button
         On the drop down menu named 'Show feedback' change the selected option
         Click on the 'Publish' button
+
         Expected Result:
         The teacher is returned to the dashboard.
         The open assignment's show feedback setting have changed.
@@ -3959,8 +3892,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8058 - 031 - Teacher | Info icon defines Add Hw status bar buttons
     @pytest.mark.skipif(str(8058) not in TESTS, reason='Excluded')
@@ -3971,6 +3904,7 @@ class TestCreateAHomework(unittest.TestCase):
         From the dashboard, click on an (open, unopen, or draft) assignment
         displayed on the calendar, OR create a new assignment
         Click on the info icon
+
         Expected Result:
         Definitions for the status bar buttons are displayed.
         """
@@ -4011,12 +3945,13 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the sections in one chapter that is not an introduction
-        section
+            section
         Click the 'Show Problems' button
+
         Expected Result:
         The problems for the selected section are displayed.
         """
@@ -4073,10 +4008,11 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Select one of the chapters
         Click the 'Show Problems' button
+
         Expected Result:
         Problems for the whole chapter are displayed.
         """
@@ -4134,11 +4070,12 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select the introduction section of the chapter
         Click the 'Show Problems' button
+
         Expected Result:
         No problems are displayed. The text 'The sections you selected have no
         exercises. Please select more sections.'
@@ -4193,14 +4130,14 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the sections in one chapter that is not an introduction
             section
         Click the 'Show Problems' button
         On the section marked 'Tutor Selections', change the number of
-        assignments by clicking on the up or down arrow
+            assignments by clicking on the up or down arrow
 
         Expected Result:
         The problems for the selected section are displayed.
@@ -4257,12 +4194,13 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
         Click the 'Show Problems' button
         Click at least one of the displayed problems
+
         Expected Result:
         Number of total problems and the number of my selections increases.
         """
@@ -4327,8 +4265,6 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//div[@class = 'num mine']/h2").text), \
             'my selections does not equal 1'
 
-        self.teacher.sleep(2)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8064 - 037 - Teacher | Deselect assessments
@@ -4338,13 +4274,14 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
         Click the 'Show Problems' button
         Click at least one of the displayed problems
         Click at least one of the problems that have been selected
+
         Expected Result:
         The number of my selections and total problems decreases.
         """
@@ -4421,8 +4358,6 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, "//div[@class = 'num mine']/h2").text), \
             'my selections does not equal 0'
 
-        self.teacher.sleep(3)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8065 - 038 - Teacher | View feedback by marking Feedback checkbox
@@ -4432,12 +4367,13 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
         Click the 'Show Problems' button
         Select the 'Preview Feedback' checkbox for at least one problem
+
         Expected Result:
         Explanations for each answer are displayed as well as a detailed
         solution.
@@ -4501,15 +4437,16 @@ class TestCreateAHomework(unittest.TestCase):
     # Case C8066 - 039 - Teacher | Assessments show their exercise ID + version
     @pytest.mark.skipif(str(8066) not in TESTS, reason='Excluded')
     def test_teacher_assessment_shows_their_exercise_id_and_version_8066(self):
-        """Assessments show their exercise ID and exercise version.
+        """Assessment show their exercise ID and exercise version.
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
         Click the 'Show Problems' button
+
         Expected Result:
         For every displayed problem the ID# is displayed as ID#@Version
         """
@@ -4577,12 +4514,13 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
         Click the 'Show Problems' button
         Click the 'Report an error' link on one of the questions.
+
         Expected Result:
         A new tab is opened to a Google form for reporting errors.
         """
@@ -4640,8 +4578,6 @@ class TestCreateAHomework(unittest.TestCase):
         assert('docs.google' in self.teacher.current_url()), \
             'Not viewing the errata report form'
 
-        self.teacher.sleep(3)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8068 - 041 - Teacher | Assessment tags are visible
@@ -4651,11 +4587,12 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
         Click the 'Show Problems' button
+
         Expected Result:
         Tags for each displayed problem exist.
         """
@@ -4705,8 +4642,6 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.teacher.find(By.XPATH, "//div[@class='exercise-tags']")
 
-        self.teacher.sleep(2)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8069 - 042 - Teacher | Cancel assessment selection before
@@ -4717,13 +4652,14 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
         Click the 'Show Problems' button
         Click the 'Cancel' button
         Click the 'OK' button
+
         Expected Result:
         User is taken back to the page where assignment name, description, and
         open/due dates can be set.
@@ -4788,16 +4724,17 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
         Click the 'Show Problems' button
         Select at least one of the displayed problems
         Click the 'Cancel' button adjacent to the 'Next' button, OR click the
-        'Cancel' button adjacent to the 'Show Problems' button and then hit
-        the 'OK' button
+            'Cancel' button adjacent to the 'Show Problems' button and then hit
+            the 'OK' button
         Click the 'OK' button
+
         Expected Result:
         User is taken back to the page where the assignment name, description,
         and open/due dates can be set.
@@ -4889,13 +4826,14 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
         Click the 'Show Problems' button
         Click the X button
         Click the 'OK' button
+
         Expected Result:
         The user is returned to the page where the assignment name,
         description, and open/due dates are set.
@@ -4961,7 +4899,7 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
@@ -4969,6 +4907,7 @@ class TestCreateAHomework(unittest.TestCase):
         Select at least one of the displayed problems
         Click the X button
         Click the 'OK' button
+
         Expected Result:
         User is taken back to the page where the assignment name, description,
         and open/due dates are set.
@@ -5061,13 +5000,14 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
         Click the 'Show Problems' button
         Select at least one of the displayed problems
         Click the 'Cancel' button adjacent to the 'Next' button
+
         Expected Result:
         The user is taken back to the page where the assignment date,
         description, and open/due dates are set.
@@ -5151,13 +5091,14 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
         Click the 'Show Problems' button
         Select at least one of the displayed problems
         Click the 'Next' button
+
         Expected Result:
         User is returned to the page where assignment name, description
         and open/due dates are set. Selected problems are displayed in the
@@ -5242,7 +5183,7 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
@@ -5250,6 +5191,7 @@ class TestCreateAHomework(unittest.TestCase):
         Select at least two of the displayed problems
         Click the 'Next' button
         Click one of the arrows on at least one problem
+
         Expected Result:
         The ordering of the problems changes.
         """
@@ -5373,7 +5315,7 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
@@ -5381,6 +5323,7 @@ class TestCreateAHomework(unittest.TestCase):
         Select at least two of the displayed problems
         Click the 'Next' button
         Click one of the arrows on at least one problem
+
         Expected Result:
         The Problem Question list reflects the change the problem ordering.
         """
@@ -5489,8 +5432,6 @@ class TestCreateAHomework(unittest.TestCase):
         assert(elem_1_text == rows[1].text), \
             'Assessment order was not changed'
 
-        self.teacher.sleep(2)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8077 - 050 - Teacher | Add more assessments using the Add More...
@@ -5501,7 +5442,7 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
@@ -5512,6 +5453,7 @@ class TestCreateAHomework(unittest.TestCase):
         Click the 'Show Problems' button
         Select at least one more problem
         Click the 'Next' button
+
         Expected Result:
         User is returned to the page where the assignment name, description,
         and open/due dates can be set. More selected problems are displayed.
@@ -5614,7 +5556,6 @@ class TestCreateAHomework(unittest.TestCase):
             "ally-truncated panel panel-default']/div[@class='panel-head" +
             "ing']/span[@class='panel-title -exercise-header']/span[@clas" +
             "s='exercise-number']")
-        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -5626,13 +5567,14 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
-        select 'Add Homework'
+            select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
         Click the 'Show Problems' button
         Select at least one of the displayed problems
         Click the 'Next' button
+
         Expected Result:
         The number of total problems, my selections, and tutor selections
         in the Tutor Selection bar matches what the Problem Question
@@ -5724,7 +5666,7 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu
-        and select 'Add Homework'
+            and select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
@@ -5733,6 +5675,7 @@ class TestCreateAHomework(unittest.TestCase):
         Click the 'Next' button
         Scroll down to the ordered list of assessments
         Click the X in the upper right corner of the card
+
         Expected Result:
         An assessment is removed from the order list
         """
@@ -5835,7 +5778,7 @@ class TestCreateAHomework(unittest.TestCase):
 
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu
-        and select 'Add Homework'
+            and select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
@@ -5846,6 +5789,7 @@ class TestCreateAHomework(unittest.TestCase):
         Click the 'Show Problems' button
         Click one of the selected problems
         Click the 'Next' button
+
         Expected Result:
         Fewer problems are displayed.
         """
@@ -5955,11 +5899,11 @@ class TestCreateAHomework(unittest.TestCase):
     # the Add Homework Assignment pane
     @pytest.mark.skipif(str(8081) not in TESTS, reason='Excluded')
     def test_teacher_remove_assessment_from_hw_add_homework_pane_8081(self):
-        r"""Remove assessment from homework with Add Homework Assignment pane.
+        """Remove assessment from homework with Add Homework Assignment pane.
 
         Steps:
         From the dashboard, click on the 'Add Assignment'
-        drop down menu and select 'Add Homework'
+            drop down menu and select 'Add Homework'
         Click the '+ Select Problems' button
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
@@ -5968,11 +5912,12 @@ class TestCreateAHomework(unittest.TestCase):
         Click the 'Next' button
         Click the X button on at least one of the problems
         Click 'OK' on the dialog box that appears
+
         Expected Result:
         Changes are reflected on the page. If all problems are deleted,
         the Problem Question list disappears. Otherwise, the question
         is removed and the Problem Question list reflects the change.
-
+        """
         self.ps.test_updates['name'] = 't1.16.054' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -5982,10 +5927,11 @@ class TestCreateAHomework(unittest.TestCase):
             '8081'
         ]
         self.ps.test_updates['passed'] = False
+
         # Test steps and verification assertions
-        self.ps.test_updates['passed'] = True
-        """
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # Case C8082 - 055 - Teacher | Change all fields in an unopened,
     # published homework
@@ -6001,6 +5947,7 @@ class TestCreateAHomework(unittest.TestCase):
         Edit the open and due dates for the assignment
         Edit the 'Show feedback' drop down menu option
         Click the 'Publish' button
+
         Expected Result:
         The user is returned to the dashboard. Changes to homework are seen.
         """
@@ -6227,10 +6174,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
-
-        self.teacher.sleep(5)
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8083 - 056 - Teacher | Change all fields in a draft homework
     @pytest.mark.skipif(str(8083) not in TESTS, reason='Excluded')
@@ -6244,6 +6189,7 @@ class TestCreateAHomework(unittest.TestCase):
         Edit the open and due dates for the assignment
         Edit the 'Show feedback' drop down menu option
         Click the 'Save As Draft' button
+
         Expected Result:
         The user is returned to the dashboard. Changes to the draft are seen.
         """
@@ -6462,10 +6408,8 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
-
-        self.teacher.sleep(5)
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
 
     # Case C8084 - 057 - Teacher | Change the name, description, due dtaes,
     # and feedback timing in an opened homework
@@ -6695,7 +6639,5 @@ class TestCreateAHomework(unittest.TestCase):
                 deleted = False
                 break
 
-        if deleted:
-            self.ps.test_updates['passed'] = True
-
-        self.teacher.sleep(5)
+        assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True

@@ -20,7 +20,7 @@ from staxing.helper import Admin
 # - replace list_of_cases on line 31 with all test case IDs in this file
 # - replace CaseID on line 52 with the actual cass ID
 # - delete lines 17 - 22
-list_of_cases = 0
+list_of_cases = None
 CaseID = 'skip'
 
 basic_test_env = json.dumps([{
@@ -43,18 +43,19 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestManageEcosystems(unittest.TestCase):
     """T1.58 - Manage ecosystems."""
 
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.admin = Admin(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        # self.admin = Admin(
+        #    use_env_vars=True,
+        #    pasta_user=self.ps,
+        #    capabilities=self.desired_capabilities
+        # )
+        self.admin = Admin(use_env_vars=True)
         self.admin.login()
 
     def tearDown(self):
@@ -75,7 +76,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link containing
-        the user's name
+            the user's name
         Click on the 'Admin' button
         Open the drop down menu by clicking 'Course Organization'
         Click the 'Catalog Offerings' button
@@ -130,14 +131,16 @@ class TestEpicName(unittest.TestCase):
         assert('catalog_offerings/new' in self.admin.current_url()), \
             'Not in catalog offerings'
 
-        self.admin.find(By.NAME, 'offering[salesforce_book_name]').send_keys(
-            'TestAutomation')
+        # Create the new course offering
+        self.admin.find(
+            By.XPATH,
+            "//select[@id='offering_salesforce_book_name']").send_keys('O')
         self.admin.find(By.NAME, 'offering[appearance_code]').send_keys(
             'TestAutomation')
         self.admin.find(By.NAME, 'offering[description]').send_keys(
             'TestAutomation')
         self.admin.find(By.NAME, 'offering[content_ecosystem_id]').send_keys(
-            'Sociology 2e (02040312-72c8-441e-a685-20e9333f3e1d)')
+            'P')
         self.admin.find(By.ID, 'offering_is_tutor').click()
         self.admin.find(By.ID, 'offering_is_concept_coach').click()
         self.admin.find(By.NAME, 'offering[pdf_url]').send_keys(
@@ -146,10 +149,16 @@ class TestEpicName(unittest.TestCase):
             'TestAutomation.com')
         self.admin.find(By.NAME, 'offering[default_course_name]').send_keys(
             'TestAutomation')
-        self.admin.find(By.NAME, 'commit').click()
+        self.admin.sleep(5)
+        self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
 
         assert('catalog_offerings' in self.admin.current_url()), \
             'Not in catalog offerings'
+
+        assert('new' not in self.admin.current_url()), \
+            'Not in catalog offerings'
+
+        self.admin.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -160,7 +169,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link
-        containing the user's name
+            containing the user's name
         Click on the 'Admin' button
         Open the drop down menu by clicking 'Course Organization'
         Click the 'Catalog Offerings' button
@@ -225,7 +234,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link
-        containing the user's name
+            containing the user's name
         Click on the 'Admin' button
         Open the drop down menu by clicking 'Course Organization'
         Click the 'Catalog Offerings' button
@@ -299,7 +308,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link
-        containing the user's name
+            containing the user's name
         Click on the 'Admin' button
         Open the drop down menu by clicking 'Course Organization'
         Click the 'Catalog Offerings' button
@@ -357,7 +366,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link
-        containing the user's name
+            containing the user's name
         Click on the 'Admin' button
         Open the drop down menu by clicking 'Course Organization'
         Click the 'Catalog Offerings' button
@@ -420,7 +429,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link
-        containing the user's name
+            containing the user's name
         Click on the 'Admin' button
         Open the drop down menu by clicking 'Course Organization'
         Click the 'Catalog Offerings' button
@@ -479,7 +488,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link
-        containing the user's name
+            containing the user's name
         Click on the 'Admin' button
         Open the drop down menu by clicking 'Content'
         Click the 'Ecosystems' button
@@ -556,7 +565,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link containing
-        the user's name
+            the user's name
         Click on the 'Customer Analyst' button
         Click the 'Ecosystems' button
         Click the 'Import a new Ecosystem' button
@@ -642,7 +651,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu
-        link containing the user's name
+            link containing the user's name
         Click on the 'Admin' button
         Open the drop down menu by clicking 'Content'
         Click the 'Ecosystems' button
@@ -691,7 +700,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link
-        containing the user's name
+            containing the user's name
         Click on the 'Customer Analyst' button
         Click the 'Ecosystems' button
         Edit the 'Comments' text box for an ecosystem
@@ -752,7 +761,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu
-        link containing the user's name
+            link containing the user's name
         Click on the 'Admin' button
         Open the drop down menu by clicking 'Content'
         Click the 'Ecosystems' button
@@ -804,7 +813,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link
-        containing the user's name
+            containing the user's name
         Click on the 'Customer Analyst' button
         Click the 'Ecosystems' button
         Click the 'Archive' button for a particular book
@@ -860,8 +869,6 @@ class TestEpicName(unittest.TestCase):
         assert('/contents/' in self.admin.current_url()), \
             'Not in archive'
 
-        self.admin.sleep(10)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8328 - 013 - Admin | Display the book UUID
@@ -871,7 +878,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu
-        link containing the user's name
+            link containing the user's name
         Click on the 'Admin' button
         Open the drop down menu by clicking 'Content'
         Click the 'Ecosystems' button
@@ -919,7 +926,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link containing
-        the user's name
+            the user's name
         Click on the 'Customer Analyst' button
         Click the 'Ecosystems' button
         Click the 'Show UUID' link for a particular book
@@ -980,7 +987,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link
-        containing the user's name
+            containing the user's name
         Click on the 'Admin' button
         Open the drop down menu by clicking 'Content'
         Click the 'Ecosystems' button
@@ -1035,7 +1042,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link
-        containing the user's name
+            containing the user's name
         Click on the 'Customer Analyst' button
         Click the 'Ecosystems' button
         Click the 'Download Manifest' link for a book
@@ -1103,7 +1110,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link
-        containing the user's name
+            containing the user's name
         Click on the 'Admin' button
         Open the drop down menu by clicking 'Content'
         Click the 'Ecosystems' button
@@ -1167,7 +1174,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link containing
-        the user's name
+            the user's name
         Click on the 'Customer Analyst' button
         Click the 'Ecosystems' button
         Click the 'Delete' button for a particular ecosystem
@@ -1235,7 +1242,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link containing
-        the user's name
+            the user's name
         Click on the 'Admin' button
         Open the drop down menu by clicking 'Content'
         Click the 'Tags' button
@@ -1286,7 +1293,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link
-        containing the user's name
+            containing the user's name
         Click on the 'Admin' button
         Open the drop down menu by clicking 'Content'
         Click the 'Tags' button
@@ -1361,7 +1368,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link
-        containing the user's name
+            containing the user's name
         Click on the 'Admin' button
         Click the 'Jobs' button
         Enter a job ID into the text box labeled
@@ -1405,7 +1412,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu
-        link containing the user's name
+            link containing the user's name
         Click on the 'Admin' button
         Click the 'Jobs' button
         Enter a job status into the text box labeled
@@ -1455,7 +1462,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link
-        containing the user's name
+            containing the user's name
         Click on the 'Admin' button
         Click the 'Jobs' button
         Enter a job progress percentage into the text box labeled
@@ -1515,7 +1522,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link
-        containing the user's name
+            containing the user's name
         Click on the 'Admin' button
         Click the 'Jobs' button
         Click one of the status tabs to filter jobs
@@ -1592,7 +1599,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Open the drop down menu by clicking on the user menu link containing
-        the user's name
+            the user's name
         Click on the 'Admin' button
         Click the 'Jobs' button
         Click on a Job ID

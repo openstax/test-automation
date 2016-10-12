@@ -9,18 +9,18 @@ import unittest
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
 from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Student
+from staxing.helper import Student, Teacher
 
 # for template command line testing only
 # - replace list_of_cases on line 31 with all test case IDs in this file
 # - replace CaseID on line 52 with the actual cass ID
 # - delete lines 17 - 22
-list_of_cases = 0
-CaseID = 0
+list_of_cases = None
+CaseID = 'skip'
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -39,7 +39,7 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestWorkAnExternalAssignment(unittest.TestCase):
     """T1.48 - Work an external assignment."""
 
     def setUp(self):
@@ -51,7 +51,71 @@ class TestEpicName(unittest.TestCase):
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
+        self.teacher = Teacher(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
         self.student.login()
+        self.teacher.login()
+
+        # Create an external assignment for the student to work
+        self.teacher.select_course(appearance='physics')
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'add-assignment')
+            )
+        ).click()
+        self.teacher.find(
+            By.PARTIAL_LINK_TEXT, 'Add External Assignment').click()
+        assert('externals/new' in self.teacher.current_url()), \
+            'Not on the add an external assignment page'
+
+        self.teacher.find(
+            By.XPATH, "//input[@id = 'reading-title']").send_keys('Epic 48')
+        self.teacher.find(
+            By.XPATH, "//textarea[@class='form-control empty']").send_keys(
+            "instructions go here")
+        self.teacher.find(
+            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
+
+        # Choose the first date calendar[0], second is calendar[1]
+        # and set the open date to today
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[0].click()
+        self.teacher.driver.find_element_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--today']").click()
+
+        # Choose the second date calendar[1], first is calendar[0]
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
+
+        # Choose the due date of December 31, 2016
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
+        for day in weekends:
+            if day.text == '31':
+                due = day
+                due.click()
+                break
+
+        self.teacher.find(By.XPATH, "//input[@id='external-url']").send_keys(
+            "google.com")
+        self.teacher.sleep(5)
+
+        # Publish the assignment
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button -publish btn btn-primary']").click()
+        self.teacher.sleep(60)
 
     def tearDown(self):
         """Test destructor."""
@@ -60,7 +124,46 @@ class TestEpicName(unittest.TestCase):
             **self.ps.test_updates
         )
         try:
+
+            # Delete the assignment
+            assert('calendar' in self.teacher.current_url()), \
+                'Not viewing the calendar dashboard'
+
+            spans = self.teacher.driver.find_elements_by_tag_name('span')
+            for element in spans:
+                if element.text.endswith('2016'):
+                    month = element
+
+            # Change the calendar date if necessary
+            while (month.text != 'December 2016'):
+                self.teacher.find(
+                    By.XPATH,
+                    "//a[@class = 'calendar-header-control next']").click()
+
+            # Select the newly created assignment and delete it
+            assignments = self.teacher.driver.find_elements_by_tag_name(
+                'label')
+            for assignment in assignments:
+                if assignment.text == 'Epic 48':
+                    assignment.click()
+                    self.teacher.find(
+                        By.XPATH,
+                        "//a[@class='btn btn-default -edit-assignment']"
+                    ).click()
+                    self.teacher.find(
+                        By.XPATH,
+                        "//button[@class='async-button delete-link " +
+                        "pull-right btn btn-default']").click()
+                    self.teacher.find(
+                        By.XPATH, "//button[@class='btn btn-primary']").click()
+                    self.teacher.sleep(5)
+                    break
+
+            self.teacher.driver.refresh()
+            self.teacher.sleep(5)
+
             self.student.delete()
+            self.teacher.delete()
         except:
             pass
 
@@ -91,9 +194,10 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row external workable']")
         for assignment in assignments:
-            if (assignment.text == 'Jun 05, 2:34am'):
+            if (assignment.text.find('Epic 48') >= 0):
                 assignment.click()
                 break
 
@@ -102,6 +206,8 @@ class TestEpicName(unittest.TestCase):
 
         assert('steps' in self.student.current_url()), \
             'Not viewing assignment page'
+
+        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -113,7 +219,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on an external assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Hover the cursor over the info icon in the footer
 
         Expected Result:
@@ -134,9 +240,10 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row external workable']")
         for assignment in assignments:
-            if (assignment.text == 'Jun 05, 2:34am'):
+            if (assignment.text.find('Epic 48') >= 0):
                 assignment.click()
                 break
 
@@ -165,7 +272,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on an external assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click on the link to the external assignment
 
         Expected Result:
@@ -186,9 +293,10 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row external workable']")
         for assignment in assignments:
-            if (assignment.text == 'Jun 05, 2:34am'):
+            if (assignment.text.find('Epic 48') >= 0):
                 assignment.click()
                 break
 
@@ -199,7 +307,7 @@ class TestEpicName(unittest.TestCase):
             'Not viewing assignment page'
 
         link = self.student.driver.find_element_by_link_text(
-            'due in a long time')
+            'Epic 48')
         original = self.student.current_url()
         self.student.driver.get(link.get_attribute("href"))
 
@@ -224,7 +332,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on an external assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click on the link to the external assignment
         Close the assignment tab
 
@@ -247,9 +355,10 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row external workable']")
         for assignment in assignments:
-            if (assignment.text == 'Jun 05, 2:34am'):
+            if (assignment.text.find('Epic 48') >= 0):
                 assignment.click()
                 break
 
@@ -260,7 +369,7 @@ class TestEpicName(unittest.TestCase):
             'Not viewing assignment page'
 
         link = self.student.driver.find_element_by_link_text(
-            'due in a long time')
+            'Epic 48')
         original = self.student.current_url()
         self.student.driver.get(link.get_attribute("href"))
 
@@ -286,7 +395,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on an external assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click on the link to the external assignment
         Close the assignment tab
         Click "Back To Dashboard"
@@ -309,9 +418,10 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row external workable']")
         for assignment in assignments:
-            if (assignment.text == 'Jun 05, 2:34am'):
+            if (assignment.text.find('Epic 48') >= 0):
                 assignment.click()
                 break
 
@@ -322,7 +432,7 @@ class TestEpicName(unittest.TestCase):
             'Not viewing assignment page'
 
         link = self.student.driver.find_element_by_link_text(
-            'due in a long time')
+            'Epic 48')
         original = self.student.current_url()
         self.student.driver.get(link.get_attribute("href"))
 
@@ -343,8 +453,6 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        self.student.sleep(5)
-
         self.ps.test_updates['passed'] = True
 
     # Case C8286 - 006 - Student | Verify the assignment status as Clicked
@@ -354,7 +462,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on an external assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click on the link to the external assignment
         Close the assignment tab
         Click "Back To Dashboard"
@@ -378,9 +486,10 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row external workable']")
         for assignment in assignments:
-            if (assignment.text == 'Jun 05, 2:34am'):
+            if (assignment.text.find('Epic 48') >= 0):
                 assignment.click()
                 break
 
@@ -391,7 +500,7 @@ class TestEpicName(unittest.TestCase):
             'Not viewing assignment page'
 
         link = self.student.driver.find_element_by_link_text(
-            'due in a long time')
+            'Epic 48')
         original = self.student.current_url()
         self.student.driver.get(link.get_attribute("href"))
 
@@ -417,6 +526,6 @@ class TestEpicName(unittest.TestCase):
 
         for assignment in externals:
             if assignment.text.find("Clicked") >= 0 \
-                    and assignment.text.find("Jun 05, 2:34am") >= 0:
+                    and assignment.text.find("Epic 48") >= 0:
                 self.ps.test_updates['passed'] = True
                 break

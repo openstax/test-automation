@@ -5,15 +5,16 @@ import json
 import os
 import pytest
 import unittest
+import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import ContentQA
+from staxing.helper import ContentQA, Teacher, Admin
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -42,7 +43,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.content = ContentQA(
             use_env_vars=True,
             pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            capabilities=self.desired_capabilities,
         )
 
     def tearDown(self):
@@ -52,7 +53,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
             **self.ps.test_updates
         )
         try:
-            self.teacher.delete()
+            self.content.delete()
         except:
             pass
 
@@ -64,7 +65,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
         Steps:
         Go to tutor-qa
         login as content
-        Select Customer Analyst from the dropdown menu on the name
+        Select Content Analyst from the dropdown menu on the name
         Click on Ecosystems in the header
         Click "Download Manifest" for the desired course
         Scroll down and click Import a new Ecosystem button.
@@ -88,8 +89,57 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.LINK_TEXT, "Content Analyst"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.LINK_TEXT, "Ecosystems"
+        ).click()
+        # download a manifest to test with
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, "Download Manifest")
+            )
+        ).click()
+        # import a new ecosystem
+        self.content.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+        self.content.driver.find_element(
+            By.LINK_TEXT, "Import a new Ecosystem"
+        ).click()
+        # find a downloaded manifest
+        home = os.getenv("HOME")
+        files = os.listdir(home + '/Downloads')
+        file = ''
+        for i in range(len(files)):
+            if (files[i][-4:] == '.yml'):
+                file = files[i]
+                break
+            else:
+                if i == len(files)-1:
+                    print('no .yml file found in downloads')
+                    raise Exception
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, "ecosystem_manifest")
+            )
+        ).send_keys(home + '/Downloads/' + file)
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, "ecosystem_comments")
+            )
+        ).send_keys(str(datetime.date.today()) + ' automated-contentqa')
+        self.content.driver.find_element(
+            By.XPATH, "//input[@type='submit']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"alert-info")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7604 - 002 - Admin | Import content into Tutor
@@ -122,8 +172,65 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        admin = Admin(
+            existing_driver=self.content.driver,
+            username=os.getenv('ADMIN_USER'),
+            password=os.getenv('ADMIN_PASSWORD'),
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities,
+        )
+        admin.login()
+        admin.open_user_menu()
+        admin.driver.find_element(
+            By.LINK_TEXT, "Content Analyst"
+        ).click()
+        admin.page.wait_for_page_load()
+        admin.driver.find_element(
+            By.LINK_TEXT, "Ecosystems"
+        ).click()
+        # download a manifest to test with
+        admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, "Download Manifest")
+            )
+        ).click()
+        # import a new ecosystem
+        admin.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+        admin.driver.find_element(
+            By.LINK_TEXT, "Import a new Ecosystem"
+        ).click()
+        # find a downloaded manifest
+        home = os.getenv("HOME")
+        files = os.listdir(home + '/Downloads')
+        file = ''
+        for i in range(len(files)):
+            if (files[i][-4:] == '.yml'):
+                file = files[i]
+                break
+            else:
+                if i == len(files)-1:
+                    print('no .yml file found in downloads')
+                    raise Exception
+        admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, "ecosystem_manifest")
+            )
+        ).send_keys(home + '/Downloads/' + file)
+        admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, "ecosystem_comments")
+            )
+        ).send_keys(str(datetime.date.today()) + ' automated-admin')
+        admin.driver.find_element(
+            By.XPATH, "//input[@type='submit']"
+        ).click()
+        admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"alert-info")]')
+            )
+        )
+        admin.delete()
         self.ps.test_updates['passed'] = True
 
     # Case C7962 - 003 - Content Analyst| Verify question availability for
@@ -152,8 +259,33 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "QA Content"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.ID, "available-books"
+        ).click()
+        element = self.content.driver.find_element(
+            By.XPATH, "//span[contains(text(),'Biology with Concept Coach')]"
+        )
+        self.content.sleep(0.5)
+        self.content.driver.execute_script(
+            'return arguments[0].scrollIntoView();', element)
+        self.content.driver.execute_script('window.scrollBy(0, -80);')
+        element.click()
+        self.content.sleep(0.5)
+        self.content.driver.find_element(
+            By.XPATH, "//span[@class='section-number' and text()='1.1']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'openstax-exercise-preview')]")
+            )
+        ).click()
         self.ps.test_updates['passed'] = True
 
     # Case C7963 - 004 - Content Analyst| Verify question availability for
@@ -182,8 +314,33 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "QA Content"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.ID, "available-books"
+        ).click()
+        element = self.content.driver.find_element(
+            By.XPATH, "//span[contains(text(),'Physics with Concept Coach')]"
+        )
+        self.content.sleep(0.5)
+        self.content.driver.execute_script(
+            'return arguments[0].scrollIntoView();', element)
+        self.content.driver.execute_script('window.scrollBy(0, -80);')
+        element.click()
+        self.content.sleep(0.5)
+        self.content.driver.find_element(
+            By.XPATH, "//span[@class='section-number' and text()='1.1']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'openstax-exercise-preview')]")
+            )
+        ).click()
         self.ps.test_updates['passed'] = True
 
     # Case C7964 - 005 - Content Analyst| Verify question availability for
@@ -212,7 +369,34 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "QA Content"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.ID, "available-books"
+        ).click()
+        element = self.content.driver.find_element(
+            By.XPATH,
+            "//span[contains(text(),'Concepts of Biology with Concept Coach')]"
+        )
+        self.content.sleep(0.5)
+        self.content.driver.execute_script(
+            'return arguments[0].scrollIntoView();', element)
+        self.content.driver.execute_script('window.scrollBy(0, -80);')
+        element.click()
+        self.content.sleep(0.5)
+        self.content.driver.find_element(
+            By.XPATH, "//span[@class='section-number' and text()='1.1']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'openstax-exercise-preview')]")
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
@@ -242,7 +426,35 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "QA Content"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.ID, "available-books"
+        ).click()
+        element = self.content.driver.find_element(
+            By.XPATH,
+            "//span[contains(text()," +
+            "'Anatomy & Physiology with Concept Coach')]"
+        )
+        self.content.sleep(0.5)
+        self.content.driver.execute_script(
+            'return arguments[0].scrollIntoView();', element)
+        self.content.driver.execute_script('window.scrollBy(0, -80);')
+        element.click()
+        self.content.sleep(0.5)
+        self.content.driver.find_element(
+            By.XPATH, "//span[@class='section-number' and text()='1.1']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'openstax-exercise-preview')]")
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
@@ -272,7 +484,34 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "QA Content"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.ID, "available-books"
+        ).click()
+        element = self.content.driver.find_element(
+            By.XPATH,
+            "//span[contains(text(),'Macroeconomics with Concept Coach')]"
+        )
+        self.content.sleep(0.5)
+        self.content.driver.execute_script(
+            'return arguments[0].scrollIntoView();', element)
+        self.content.driver.execute_script('window.scrollBy(0, -80);')
+        element.click()
+        self.content.sleep(0.5)
+        self.content.driver.find_element(
+            By.XPATH, "//span[@class='section-number' and text()='1.1']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'openstax-exercise-preview')]")
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
@@ -302,7 +541,34 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "QA Content"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.ID, "available-books"
+        ).click()
+        element = self.content.driver.find_element(
+            By.XPATH,
+            "//span[contains(text(),'Microeconomics with Concept Coach')]"
+        )
+        self.content.sleep(0.5)
+        self.content.driver.execute_script(
+            'return arguments[0].scrollIntoView();', element)
+        self.content.driver.execute_script('window.scrollBy(0, -80);')
+        element.click()
+        self.content.sleep(0.5)
+        self.content.driver.find_element(
+            By.XPATH, "//span[@class='section-number' and text()='1.1']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'openstax-exercise-preview')]")
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
@@ -332,7 +598,35 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "QA Content"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.ID, "available-books"
+        ).click()
+        element = self.content.driver.find_element(
+            By.XPATH,
+            "//span[contains(text()," +
+            "'Principles of Economics with Concept Coach')]"
+        )
+        self.content.sleep(0.5)
+        self.content.driver.execute_script(
+            'return arguments[0].scrollIntoView();', element)
+        self.content.driver.execute_script('window.scrollBy(0, -80);')
+        element.click()
+        self.content.sleep(0.5)
+        self.content.driver.find_element(
+            By.XPATH, "//span[@class='section-number' and text()='1.1']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'openstax-exercise-preview')]")
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
@@ -362,6 +656,34 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.driver.find_element(
+            By.PARTIAL_LINK_TEXT, "QA Content"
+        ).click()
+        self.content.page.wait_for_page_load()
+        self.content.driver.find_element(
+            By.ID, "available-books"
+        ).click()
+        element = self.content.driver.find_element(
+            By.XPATH,
+            "//span[contains(text()," +
+            "'Introduction to Sociology 2e with Concept Coach')]"
+        )
+        self.content.sleep(0.5)
+        self.content.driver.execute_script(
+            'return arguments[0].scrollIntoView();', element)
+        self.content.driver.execute_script('window.scrollBy(0, -80);')
+        element.click()
+        self.content.sleep(0.5)
+        self.content.driver.find_element(
+            By.XPATH, "//span[@class='section-number' and text()='1.1']"
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'openstax-exercise-preview')]")
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True

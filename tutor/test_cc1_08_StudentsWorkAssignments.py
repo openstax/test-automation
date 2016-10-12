@@ -6,6 +6,7 @@ import os
 import pytest
 import unittest
 
+from autochomsky import chomsky
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint
 from selenium.webdriver.common.by import By
@@ -14,10 +15,10 @@ from staxing.assignment import Assignment
 from staxing.helper import Teacher, Student
 
 basic_test_env = json.dumps([{
-    'platform': 'OS X 10.11',
+    'platform': 'Windows 10',
     'browserName': 'chrome',
-    'version': '48.0',
-    'screenResolution': "1024x768",
+    'version': '50.0',
+    'screenResolution': "1280x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
@@ -37,43 +38,53 @@ class TestStudentsWorkAssignments(unittest.TestCase):
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
-        teacher = Teacher(username='teacher100', password='password',
-                          site='https://tutor-qa.openstax.org/',
-                          pasta_user=self.ps)
-        teacher.login()
-        courses = teacher.find_all(By.CLASS_NAME,
-                                   'tutor-booksplash-course-item')
-        assert(courses), 'No courses found.'
-        if not isinstance(courses, list):
-            courses = [courses]
-        course_id = randint(0, len(courses) - 1)
-        self.course = courses[course_id].get_attribute('data-title')
-        teacher.select_course(title=self.course)
-        teacher.goto_course_roster()
-        section = '%s' % randint(100, 999)
-        try:
-            wait = teacher.wait_time
-            teacher.change_wait_time(3)
-            teacher.find(By.CLASS_NAME, '-no-periods-text')
-            teacher.add_course_section(section)
-        except:
-            sections = teacher.find_all(
-                By.XPATH,
-                '//span[@class="tab-item-period-name"]'
+        self.desired_capabilities['name'] = self.id()
+        self.teacher = Teacher(
+            username=os.getenv('TEACHER_USER_CC'),
+            password=os.getenv('TEACHER_PASSWORD'),
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities)
+        self.teacher.login()
+        if 'cc-dashboard' not in self.teacher.current_url():
+            courses = self.teacher.find_all(
+                By.CLASS_NAME,
+                'tutor-booksplash-course-item'
             )
-            section = sections[randint(0, len(sections) - 1)].text
-        finally:
-            teacher.change_wait_time(wait)
-        self.code = teacher.get_enrollment_code(section)
+            assert(courses), 'No courses found.'
+            if not isinstance(courses, list):
+                courses = [courses]
+            course_id = randint(0, len(courses) - 1)
+            self.course = courses[course_id].get_attribute('data-title')
+            self.teacher.select_course(title=self.course)
+        self.teacher.goto_course_roster()
+        try:
+            section = self.teacher.find_all(
+                By.XPATH,
+                '//*[contains(@class,"nav-tabs")]//a'
+            )
+            if isinstance(section, list):
+                section = '%s' % section[randint(0, len(section) - 1)].text
+            else:
+                section = '%s' % section.text
+        except Exception:
+            section = '%s' % randint(100, 999)
+            self.teacher.add_course_section(section)
+        self.code = self.teacher.get_enrollment_code(section)
         print('Course Phrase: ' + self.code)
-        self.book_url = teacher.find(
-            By.XPATH, '//a[span[text()="Online Book "]]'
+        self.book_url = self.teacher.find(
+            By.XPATH, '//a[span[contains(text(),"Online Book")]]'
         ).get_attribute('href')
-        self.student = Student(existing_driver=self.teacher.driver)
+        self.teacher.find(By.CSS_SELECTOR, 'button.close').click()
+        self.teacher.sleep(0.5)
+        self.teacher.logout()
+        self.teacher.sleep(1)
+        self.student = Student(use_env_vars=True,
+                               existing_driver=self.teacher.driver)
         self.first_name = Assignment.rword(6)
         self.last_name = Assignment.rword(8)
-        self.email = self.first_name + '.' + self.last_name + \
-            '@tutor.openstax.org'
+        self.email = self.first_name + '.' \
+            + self.last_name \
+            + '@tutor.openstax.org'
 
     def tearDown(self):
         """Test destructor."""
@@ -123,110 +134,70 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         Assignment.scroll_to(self.student.driver, widget)
         self.student.find(
             By.XPATH,
-            '//button[contains(text(),"Launch Concept Coach")]'
+            '//button[span[contains(text(),"Launch Concept Coach")]]'
         ).click()
         self.student.sleep(1.5)
-        self.student.find(
-            By.XPATH,
-            '//input[contains(@label,"Enter the two-word enrollment code")]'
-        ).send_keys(self.code)
-        self.student.sleep(5)
-        self.student.find(
-            By.XPATH,
-            '//div[contains(@class,"concept-coach")]' +
-            '//button[contains(@class,"async-button")]'
-        ).click()
-        main_window = self.student.driver.window_handles[0]
-        self.student.wait.until(
-            expect.element_to_be_clickable(
-                (By.LINK_TEXT, 'click to begin login.')
-            )
-        ).click()
-        accounts_window = self.student.driver.window_handles[1]
+        base_window = self.student.driver.window_handles[0]
+        self.student.find(By.CSS_SELECTOR, 'div.sign-up').click()
         self.student.sleep(3)
-        self.student.driver.switch_to_window(accounts_window)
-        self.student.sleep(2)
-        self.student.wait.until(
-            expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Sign up')
-            )
-        ).click()
-        self.student.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'signup_first_name')
-            )
+        popup = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(popup)
+        self.student.find(By.LINK_TEXT, 'Sign up').click()
+        self.student.find(By.ID, 'identity-login-button').click()
+        self.student.find(
+            By.ID,
+            'signup_first_name'
         ).send_keys(self.first_name)
-        self.student.find(
-            By.ID,
-            'signup_last_name'
-        ).send_keys(self.last_name)
-        self.student.find(
-            By.ID,
-            'signup_email_address'
-        ).send_keys(self.email)
-        self.student.find(
-            By.ID,
-            'signup_username'
-        ).send_keys(self.last_name)
+        self.student.find(By.ID, 'signup_last_name').send_keys(self.last_name)
+        self.student.find(By.ID, 'signup_email_address').send_keys(self.email)
+        self.student.find(By.ID, 'signup_username').send_keys(self.last_name)
         self.student.find(
             By.ID,
             'signup_password'
-        ).send_keys(self.last_name)
+        ).send_keys(self.student.password)
         self.student.find(
             By.ID,
             'signup_password_confirmation'
-        ).send_keys(self.last_name)
+        ).send_keys(self.student.password)
         self.student.find(By.ID, 'create_account_submit').click()
-        self.student.page.wait_for_page_load()
-        self.student.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'i_agree')
-            )
-        ).click()
-        self.student.sleep(1)
+        self.student.find(By.ID, 'i_agree').click()
         self.student.find(By.ID, 'agreement_submit').click()
-        self.student.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'i_agree')
-            )
-        ).click()
-        self.student.sleep(1)
+        self.student.find(By.ID, 'i_agree').click()
         self.student.find(By.ID, 'agreement_submit').click()
-        self.student.driver.switch_to_window(main_window)
-        try:
-            self.student.find(
-                By.XPATH,
-                '//input[contains(@label,"Enter the two-word")]'
-            ).send_keys(self.code)
-            self.student.find(
-                By.XPATH,
-                '//div[contains(@class,"concept-coach")]' +
-                '//button[contains(@class,"async-button")]'
-            ).click()
-        except:
-            pass
+        self.student.driver.switch_to_window(base_window)
         self.student.find(
             By.XPATH,
-            '//input[contains(@label,"Enter your school issued ID:")]'
+            '//input[contains(@label,"Enter the enrollment code")]'
+        ).send_keys(self.code)
+        self.student.sleep(2)
+        self.student.find(By.CSS_SELECTOR, 'button.enroll').click()
+        self.student.sleep(2)
+        self.student.find(
+            By.CSS_SELECTOR,
+            'div.field input.form-control'
         ).send_keys(self.last_name)
-        self.student.find(
-            By.XPATH,
-            '//button[span[text()="Confirm"]]'
-        ).click()
+        self.student.find(By.CSS_SELECTOR, 'button.async-button').click()
         self.student.sleep(5)
+        try:
+            self.student.find(By.XPATH, '//button[text()="Continue"]').click()
+        except:
+            print('Two-step message not seen.')
         self.student.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH,
                  '//div[@class="openstax-question"]//textarea')
             )
-        ).send_keys(Assignment.rword(20))
-        self.student.find(By.XPATH, '//button[span[text()="Answer"]]').click()
+        ).send_keys(chomsky())
+        self.student.find(By.CSS_SELECTOR, 'button.async-button').click()
         self.student.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '(//div[@class="answer-letter"])[1]')
+                (By.XPATH, '//div[@class="answer-letter"]')
             )
-        ).click()
-        self.student.find(By.XPATH, '//button[span[text()="Submit"]]').click()
+        )
+        answers = self.student.find_all(By.CSS_SELECTOR, 'div.answer-letter')
+        answers[randint(0, len(answers) - 1)].click()
+        self.student.find(By.CSS_SELECTOR, 'button.async-button').click()
+        self.student.find(By.CSS_SELECTOR, 'button.async-button').click()
 
         self.ps.test_updates['passed'] = True
 
@@ -237,7 +208,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """View section completion report.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the teacher user account in the username and password text boxes
         Click on the 'Sign in' button
@@ -301,7 +272,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Spaced practice assessments are from previousy worked modules.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the student user account
         Click on the 'Sign in' button
@@ -337,7 +308,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Module without assessments does not display the CC widget.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
         Click on the 'Sign in' button
@@ -369,7 +340,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Assignment is assistive technology friendly.
 
         Steps:
-        Go to tutor-qa
+        Go to Tutor
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
         Click on the 'Sign in' button
@@ -407,7 +378,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Display the assignment summary after completing the assignment.
 
         Steps:
-        Go to tutor-qa
+        Go to Tutor
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
         Click on the 'Sign in' button
@@ -446,7 +417,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """The exercise ID is visible within the assessment pane.
 
         Steps:
-        Go to tutor-qa
+        Go to Tutor
         Click on the 'Login' button
         Enter the student account in the username and password text boxes
         Click on the 'Sign in' button

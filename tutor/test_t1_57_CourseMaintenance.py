@@ -50,8 +50,10 @@ class TestCourseMaintenance(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.admin.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.admin.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.admin.delete()
         except:
@@ -71,7 +73,15 @@ class TestCourseMaintenance(unittest.TestCase):
         Expected Result:
 
         """
+        self.ps.test_updates['name'] = 't1.57.001' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.57', 't1.57.001', '8311']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # Case C8312 - 002 - Admin | Update Salesforce Staistics
     @pytest.mark.skipif(str(8312) not in TESTS, reason='Excluded')
@@ -87,7 +97,15 @@ class TestCourseMaintenance(unittest.TestCase):
         Expected Result:
 
         """
+        self.ps.test_updates['name'] = 't1.57.002' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.57', 't1.57.002', '8312']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # Case C8313 - 003 - Admin | Exclude assesments from all courses
     @pytest.mark.skipif(str(8313) not in TESTS, reason='Excluded')
@@ -98,7 +116,15 @@ class TestCourseMaintenance(unittest.TestCase):
 
         Expected Result:
         """
+        self.ps.test_updates['name'] = 't1.57.003' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.57', 't1.57.003', '8313']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # Case C8314 - 004 - Admin | Add a system notification
     @pytest.mark.skipif(str(8314) not in TESTS, reason='Excluded')

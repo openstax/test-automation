@@ -1,9 +1,9 @@
 """Tutor v2, Epic 1 - Generate & Import Content for College Phys, Bio, Soc."""
 
-import inspect
+# import inspect
 import json
 import os
-import pytest
+# import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
@@ -31,7 +31,9 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([list_of_cases])
+    str([
+        list_of_cases
+    ])
 )
 
 
@@ -61,7 +63,7 @@ class TestGenerateAndImportContentForCollegePhysBioSoc(unittest.TestCase):
             pass
 
     # Case CaseID - Story# - UserType | StoryText
-    @pytest.mark.skipif(str(CaseID) not in TESTS, reason='Excluded')
+    '''@pytest.mark.skipif(str(CaseID) not in TESTS, reason='Excluded')
     def test_usertype_storytext_CaseID(self):
         """Story Text.
 
@@ -84,4 +86,4 @@ class TestGenerateAndImportContentForCollegePhysBioSoc(unittest.TestCase):
         # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
-        self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True'''

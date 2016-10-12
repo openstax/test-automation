@@ -6,6 +6,7 @@ import os
 import pytest
 import unittest
 
+from autochomsky import chomsky
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint
 from selenium.webdriver.common.by import By
@@ -25,7 +26,7 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([
-        7732, 7733, 7735, 7736, 7737
+        7732, 7733, 7735, 7737  # 7736,
     ])
 )
 
@@ -43,7 +44,9 @@ class TestStudentProgressViews(unittest.TestCase):
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
+        self.student.username = os.getenv('STUDENT_USER_CC')
         self.student.login()
+        self.student.sleep(5)  # for CNX redirect
 
     def tearDown(self):
         """Test destructor."""
@@ -62,7 +65,7 @@ class TestStudentProgressViews(unittest.TestCase):
         """View section completion report.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
         Click on the 'Sign in' button
@@ -93,8 +96,6 @@ class TestStudentProgressViews(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.find(
-            By.PARTIAL_LINK_TEXT, "Macro Econ").click()
         self.student.sleep(5)
         self.student.find(By.XPATH, "//button[@class='toggle btn']").click()
         self.student.sleep(3)
@@ -114,67 +115,32 @@ class TestStudentProgressViews(unittest.TestCase):
 
         # Work through Concept Coach
         while 'or review your work below.' not in page:
-            action = False
-
             # Free response
-            if self.student.find(
-                    By.XPATH,
-                    "//button[@class='async-button continue btn btn-primary']"
-                    ).text == 'Answer':
-                self.student.find(
-                    By.XPATH,
-                    "//textarea"
-                ).send_keys('An answer for this textarea')
-                self.student.find(
-                    By.XPATH,
-                    "//button[@class='async-button continue btn btn-primary']"
-                ).click()
-                self.student.sleep(3)
-                action = True
-
-            # Multiple Choice
-            elif self.student.find(
-                    By.XPATH,
-                    "//button[@class='async-button continue btn btn-primary']"
-                    ).text == 'Submit':
-                answers = self.student.driver.find_elements(
-                    By.CLASS_NAME,
-                    'answer-letter'
-                )
-                self.student.sleep(0.8)
-                rand = randint(0, len(answers) - 1)
-                answer = chr(ord('a') + rand)
-                Assignment.scroll_to(self.student.driver, answers[0])
-                if answer == 'a':
-                    self.student.driver.execute_script(
-                        'window.scrollBy(0, -160);')
-                elif answer == 'd':
-                    self.student.driver.execute_script(
-                        'window.scrollBy(0, 160);')
-                answers[rand].click()
-
-                self.student.find(
-                    By.XPATH,
-                    "//button[@class='async-button continue btn btn-primary']"
-                ).click()
-                self.student.sleep(3)
-                self.student.find(
-                    By.XPATH,
-                    "//button[@class='async-button continue btn btn-primary']"
-                ).click()
-                action = True
-
-            # Advance to next page
-            if not action:
-                self.student.find(
-                    By.XPATH,
-                    "//button[@class='async-button continue btn btn-primary']"
-                ).click()
-                self.student.sleep(3)
-
+            try:
+                self.student.find(By.TAG, 'textarea').send_keys(chomsky())
+                self.student.find(By.CSS_SELECTOR, 'button.continue').click()
+                self.student.sleep(0.3)
+            except:
+                pass
+            # Multiple choice
+            try:
+                answers = self.student.find_all(By.CSS_SELECTOR,
+                                                'div.answer-letter')
+                if not isinstance(answers, list):
+                    Assignment.scroll_to(self.student.driver, answers)
+                    answers.click()
+                else:
+                    Assignment.scroll_to(self.student.driver, answers[0])
+                    answers[randint(0, len(answers) - 1)].click()
+                self.student.sleep(0.2)
+                self.student.find(By.CSS_SELECTOR, 'button.continue').click()
+                self.student.sleep(0.3)
+                self.student.find(By.CSS_SELECTOR, 'button.continue').click()
+                self.student.sleep(0.3)
+            except:
+                pass
             self.student.sleep(2)
             page = self.student.driver.page_source
-        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -211,113 +177,63 @@ class TestStudentProgressViews(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.find(
-            By.PARTIAL_LINK_TEXT, "Macro Econ").click()
-        self.student.sleep(5)
-        self.student.find(By.XPATH, "//button[@class='toggle btn']").click()
-        self.student.sleep(3)
-        self.student.find(
-            By.XPATH,
-            "//div/ul/li[2]/ul/li[2]/div/span[@class='name-wrapper']" +
-            "/a/span[@class='title']"
-        ).click()
+        self.student.find(By.CSS_SELECTOR, 'div.media-nav button').click()
         self.student.sleep(1)
-        self.student.find(
-            By.XPATH,
-            "//div[@class='jump-to-cc']/a[@class='btn']"
-        ).click()
+        self.student.find(By.XPATH, '//a[span[text()="1.2"]]').click()
         self.student.sleep(1)
+        self.student.find(By.CSS_SELECTOR, 'div.jump-to-cc a').click()
+        self.student.sleep(0.5)
         self.student.find(
-            By.XPATH,
-            "//button[@class='btn btn-lg btn-primary']"
+            By.CSS_SELECTOR,
+            'div.concept-coach-launcher button'
         ).click()
-        self.student.sleep(5)
-
-        page = self.student.driver.page_source
+        try:
+            self.student.find(By.XPATH, '//button[text()="Continue"]').click()
+        except:
+            print('Two-step message not seen.')
 
         # Work through Concept Coach
+        page = self.student.driver.page_source
         while 'or review your work below.' not in page:
-
-            action = False
-
             # Free response
-            if self.student.find(
-                    By.XPATH,
-                    "//button[@class='async-button continue btn btn-primary']"
-                    ).text == 'Answer':
-                self.student.find(
-                    By.XPATH,
-                    "//textarea"
-                ).send_keys('An answer for this textarea')
-                self.student.find(
-                    By.XPATH,
-                    "//button[@class='async-button continue btn btn-primary']"
-                ).click()
-                self.student.sleep(3)
-                action = True
-
+            try:
+                self.student.find(By.TAG, 'textarea').send_keys(chomsky())
+                self.student.find(By.CSS_SELECTOR, 'button.continue').click()
+                self.student.sleep(0.3)
+            except:
+                pass
             # Multiple choice
-            elif self.student.find(
-                    By.XPATH,
-                    "//button[@class='async-button continue btn btn-primary']"
-                    ).text == 'Submit':
-                answers = self.student.driver.find_elements(
-                    By.CLASS_NAME,
-                    'answer-letter'
-                )
-                self.student.sleep(0.8)
-                rand = randint(0, len(answers) - 1)
-                answer = chr(ord('a') + rand)
-                Assignment.scroll_to(self.student.driver, answers[0])
-                if answer == 'a':
-                    self.student.driver.execute_script(
-                        'window.scrollBy(0, -160);'
-                    )
-                elif answer == 'd':
-                    self.student.driver.execute_script(
-                        'window.scrollBy(0, 160);'
-                    )
-                answers[rand].click()
-
-                self.student.find(
-                    By.XPATH,
-                    "//button[@class='async-button continue btn btn-primary']"
-                ).click()
-                self.student.sleep(3)
-                self.student.find(
-                    By.XPATH,
-                    "//button[@class='async-button continue btn btn-primary']"
-                ).click()
-                action = True
-
-            # Go to next page
-            if not action:
-                self.student.find(
-                    By.XPATH,
-                    "//button[@class='async-button continue btn btn-primary']"
-                ).click()
-                self.student.sleep(3)
-
+            try:
+                answers = self.student.find_all(By.CSS_SELECTOR,
+                                                'div.answer-letter')
+                if not isinstance(answers, list):
+                    Assignment.scroll_to(self.student.driver, answers)
+                    answers.click()
+                else:
+                    Assignment.scroll_to(self.student.driver, answers[0])
+                    answers[randint(0, len(answers) - 1)].click()
+                self.student.sleep(0.2)
+                self.student.find(By.CSS_SELECTOR, 'button.continue').click()
+                self.student.sleep(0.3)
+                self.student.find(By.CSS_SELECTOR, 'button.continue').click()
+                self.student.sleep(0.3)
+            except:
+                pass
             self.student.sleep(2)
             page = self.student.driver.page_source
         self.student.sleep(5)
 
-        crumbs = len(self.student.driver.find_elements_by_xpath(
-            "//i[@class='icon-lg icon-correct']"))
-        crumbs += len(self.student.driver.find_elements_by_xpath(
-            "//i[@class='icon-lg icon-incorrect']"))
+        section_id = self.student.find(
+            By.CSS_SELECTOR,
+            'h3.chapter-section-prefix'
+        ).get_attribute('data-section')
+        problem_id = self.student.find(
+            By.XPATH,
+            '//span[contains(@data-reactid,"help-links.1")]'
+        ).text
 
-        ids = len(
-            self.student.driver.find_elements_by_xpath(
-                "//div[@class='reactive reactive-loaded']/div[@class='exerci" +
-                "se-wrapper']/div[@class='card-body openstax-multipart-exerc" +
-                "ise-card']/div[@class='card-body task-step openstax-exerci" +
-                "se-card']/div/span[@class='exercise-identifier-link']/span[2]"
-            )
-        )
-
-        assert(crumbs == ids), \
-            'IDs do not match number of answered questions'
+        assert(section_id == problem_id), \
+            'Section ID does not match the problem ID'
 
         self.ps.test_updates['passed'] = True
 
@@ -347,25 +263,22 @@ class TestStudentProgressViews(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.find(
-            By.PARTIAL_LINK_TEXT, "Macro Econ").click()
-        self.student.sleep(5)
-        self.student.find(By.XPATH, "//button[@class='toggle btn']").click()
-        self.student.sleep(3)
-        self.student.find(
-            By.XPATH,
-            "//div/ul/li[2]/ul/li[2]/div/span[@class='name-wrapper']" +
-            "/a/span[@class='title']").click()
+        self.student.find(By.CSS_SELECTOR, 'div.media-nav button').click()
         self.student.sleep(1)
-        self.student.find(
-            By.XPATH, "//div[@class='jump-to-cc']/a[@class='btn']").click()
+        self.student.find(By.XPATH, '//a[span[text()="1.2"]]').click()
         self.student.sleep(1)
+        self.student.find(By.CSS_SELECTOR, 'div.jump-to-cc a').click()
+        self.student.sleep(0.5)
         self.student.find(
-            By.XPATH, "//button[@class='btn btn-lg btn-primary']").click()
-
-        self.student.find(
-            By.XPATH,
-            "//li[@class='concept-coach-dashboard-nav -progress']/a").click()
+            By.CSS_SELECTOR,
+            'div.concept-coach-launcher button'
+        ).click()
+        self.student.sleep(2)
+        try:
+            self.student.find(By.XPATH, '//button[text()="Continue"]').click()
+        except:
+            print('Two-step message not seen.')
+        self.student.find(By.LINK_TEXT, 'My Progress').click()
 
         assert('progress' in self.student.current_url()), \
             'Not viewing the My Progress page'
@@ -373,7 +286,7 @@ class TestStudentProgressViews(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C7736 - 004 - Student | Return to current position in an assignment
-    @pytest.mark.skipif(str(7736) not in TESTS, reason='Excluded')
+    '''@pytest.mark.skipif(str(7736) not in TESTS, reason='Excluded')
     def test_student_return_to_current_position_in_an_assignment_7736(self):
         """Return to current position in an assignment.
 
@@ -407,6 +320,7 @@ class TestStudentProgressViews(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C7737 - 005 - Student | Able to review previous modules
     @pytest.mark.skipif(str(7737) not in TESTS, reason='Excluded')
@@ -435,40 +349,36 @@ class TestStudentProgressViews(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.find(
-            By.PARTIAL_LINK_TEXT, "Macro Econ").click()
-        self.student.sleep(5)
-        self.student.find(By.XPATH, "//button[@class='toggle btn']").click()
-        self.student.sleep(3)
-        self.student.find(
-            By.XPATH,
-            "//div/ul/li[2]/ul/li[2]/div/span[@class='name-wrapper']" +
-            "/a/span[@class='title']").click()
+        self.student.find(By.CSS_SELECTOR, 'div.media-nav button').click()
         self.student.sleep(1)
-        self.student.find(
-            By.XPATH, "//div[@class='jump-to-cc']/a[@class='btn']").click()
+        self.student.find(By.XPATH, '//a[span[text()="1.2"]]').click()
         self.student.sleep(1)
+        self.student.find(By.CSS_SELECTOR, 'div.jump-to-cc a').click()
+        self.student.sleep(0.5)
         self.student.find(
-            By.XPATH, "//button[@class='btn btn-lg btn-primary']").click()
-
+            By.CSS_SELECTOR,
+            'div.concept-coach-launcher button'
+        ).click()
+        self.student.sleep(2)
+        try:
+            self.student.find(By.XPATH, '//button[text()="Continue"]').click()
+        except:
+            print('Two-step message not seen.')
         first = self.student.find(
-            By.XPATH, "//h3[@class='chapter-section-prefix']").text
-
-        self.student.find(
-            By.XPATH,
-            "//li[@class='concept-coach-dashboard-nav -progress']/a").click()
+            By.CSS_SELECTOR,
+            'h3.chapter-section-prefix'
+        ).text
+        self.student.find(By.LINK_TEXT, 'My Progress').click()
 
         assert('progress' in self.student.current_url()), \
             'Not viewing the My Progress page'
 
-        self.student.sleep(5)
-
-        self.student.driver.find_elements_by_xpath(
-            "//div[@class='chapter-section-prefix']")[1].click()
+        self.student.sleep(3)
+        self.student.find(By.XPATH, '//div[@data-section="1.1"]').click()
+        self.student.sleep(0.5)
         second = self.student.find(
             By.XPATH, "//h3[@class='chapter-section-prefix']").text
 
-        assert(first != second), \
-            'Not at new section'
+        assert(first != second), 'Not at new section'
 
         self.ps.test_updates['passed'] = True

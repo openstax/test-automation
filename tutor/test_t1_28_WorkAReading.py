@@ -15,7 +15,7 @@ from selenium.webdriver.support import expected_conditions as expect
 from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Student
+from staxing.helper import Student, Teacher
 
 # for template command line testing only
 # - replace list_of_cases on line 31 with all test case IDs in this file
@@ -44,19 +44,93 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestWorkAReading(unittest.TestCase):
     """T1.28 - Work a reading."""
 
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
+        """
         self.student = Student(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
+        self.teacher = Teacher(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
+        """
+        self.teacher = Teacher(use_env_vars=True)
+        self.student = Student(use_env_vars=True)
         self.student.login()
+        self.teacher.login()
+
+        # Create a reading for the student to work
+        self.teacher.select_course(appearance='physics')
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'add-assignment')
+            )
+        ).click()
+        self.teacher.find(
+            By.PARTIAL_LINK_TEXT, 'Add Reading').click()
+        assert('readings/new' in self.teacher.current_url()), \
+            'Not on the add a reading page'
+
+        self.teacher.find(
+            By.XPATH, "//input[@id = 'reading-title']").send_keys('Epic 28')
+        self.teacher.find(
+            By.XPATH, "//textarea[@class='form-control empty']").send_keys(
+            "instructions go here")
+        self.teacher.find(
+            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
+
+        # Choose the first date calendar[0], second is calendar[1]
+        # and set the open date to today
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[0].click()
+        self.teacher.driver.find_element_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--today']").click()
+
+        # Choose the second date calendar[1], first is calendar[0]
+        self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__input-container']")[1].click()
+        while(self.teacher.find(
+            By.XPATH,
+            "//span[@class = 'datepicker__current-month']"
+        ).text != 'December 2016'):
+            self.teacher.find(
+                By.XPATH,
+                "//a[@class = 'datepicker__navigation datepicker__" +
+                "navigation--next']").click()
+
+        # Choose the due date of December 31, 2016
+        weekends = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class = 'datepicker__day datepicker__day--weekend']")
+        for day in weekends:
+            if day.text == '31':
+                due = day
+                due.click()
+                break
+
+        # Choose reading sections, pick physics chapter 6 since it has a video
+        self.teacher.find(
+            By.XPATH, "//button[@id='reading-select']").click()
+        self.teacher.driver.find_elements_by_xpath(
+            "//span[@class='chapter-checkbox']")[5].click()
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='-show-problems btn btn-primary']").click()
+        self.teacher.sleep(10)
+
+        # Publish the assignment
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button -publish btn btn-primary']").click()
+        self.teacher.sleep(60)
 
     def tearDown(self):
         """Test destructor."""
@@ -65,7 +139,45 @@ class TestEpicName(unittest.TestCase):
             **self.ps.test_updates
         )
         try:
+            # Delete the assignment
+            assert('calendar' in self.teacher.current_url()), \
+                'Not viewing the calendar dashboard'
+
+            spans = self.teacher.driver.find_elements_by_tag_name('span')
+            for element in spans:
+                if element.text.endswith('2016'):
+                    month = element
+
+            # Change the calendar date if necessary
+            while (month.text != 'December 2016'):
+                self.teacher.find(
+                    By.XPATH,
+                    "//a[@class = 'calendar-header-control next']").click()
+
+            # Select the newly created assignment and delete it
+            assignments = self.teacher.driver.find_elements_by_tag_name(
+                'label')
+            for assignment in assignments:
+                if assignment.text == 'Epic 28':
+                    assignment.click()
+                    self.teacher.find(
+                        By.XPATH,
+                        "//a[@class='btn btn-default -edit-assignment']"
+                    ).click()
+                    self.teacher.find(
+                        By.XPATH,
+                        "//button[@class='async-button delete-link " +
+                        "pull-right btn btn-default']").click()
+                    self.teacher.find(
+                        By.XPATH, "//button[@class='btn btn-primary']").click()
+                    self.teacher.sleep(5)
+                    break
+
+            self.teacher.driver.refresh()
+            self.teacher.sleep(5)
+
             self.student.delete()
+            self.teacher.delete()
         except:
             pass
 
@@ -96,15 +208,16 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row reading workable']")
         for assignment in assignments:
-            if (assignment.text == 'Dec 31, 8:54am'):
+            if (assignment.text.find('Epic 28') >= 0):
                 assignment.click()
                 break
 
         name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
 
-        assert('December Reading' in name.text), \
+        assert('Epic 28' in name.text), \
             'Not viewing the reading'
 
         self.ps.test_updates['passed'] = True
@@ -222,25 +335,28 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row reading workable']")
         for assignment in assignments:
-            if (assignment.text == 'Dec 31, 8:54am'):
+            if (assignment.text.find('Epic 28') >= 0):
                 assignment.click()
                 break
 
         name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
 
-        assert('December Reading' in name.text), \
+        assert('Epic 28' in name.text), \
             'Not viewing the reading'
 
-        assert('/steps/1/' in self.student.current_url()), \
+        assert('steps/1' in self.student.current_url()), \
             'Not on the first page of the reading'
 
+        self.student.sleep(5)
         self.student.find(By.XPATH, "//a[contains(@class,'arrow') and " +
                           "contains(@class,'right')]").click()
+        self.student.sleep(5)
 
-        assert('/steps/2/' in self.student.current_url()), \
-            'Not on the first page of the reading'
+        assert('steps/2' in self.student.current_url()), \
+            'Not on the second page of the reading'
 
         self.ps.test_updates['passed'] = True
 
@@ -275,15 +391,16 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row reading workable']")
         for assignment in assignments:
-            if (assignment.text == 'Dec 31, 8:54am'):
+            if (assignment.text.find('Epic 28') >= 0):
                 assignment.click()
                 break
 
         name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
 
-        assert('December Reading' in name.text), \
+        assert('Epic 28' in name.text), \
             'Not viewing the reading'
 
         while (1):
@@ -343,10 +460,10 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on a reading assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click the "Continue" button
         On a card with a free response assessment, enter a free response into
-        the free response assessment text box
+            the free response assessment text box
         Click the "Continue" button
 
         Expected Result:
@@ -368,15 +485,16 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row reading workable']")
         for assignment in assignments:
-            if (assignment.text == 'Dec 31, 8:54am'):
+            if (assignment.text.find('Epic 28') >= 0):
                 assignment.click()
                 break
 
         name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
 
-        assert('December Reading' in name.text), \
+        assert('Epic 28' in name.text), \
             'Not viewing the reading'
 
         while(1):
@@ -434,6 +552,8 @@ class TestEpicName(unittest.TestCase):
                 self.student.sleep(2)
                 break
 
+            self.student.sleep(2)
+
         self.ps.test_updates['passed'] = True
 
     # Case C8191 - 008 - Student | Selecting a multiple choice answer
@@ -447,7 +567,7 @@ class TestEpicName(unittest.TestCase):
         "This Week" on the dashboard
         Click the "Continue" button
         On a card with a free response assessment, enter a free response
-        into the free response assessment text box
+            into the free response assessment text box
         Click the "Continue" button
         Select a multiple choice answer
 
@@ -469,15 +589,16 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row reading workable']")
         for assignment in assignments:
-            if (assignment.text == 'Dec 31, 8:54am'):
+            if (assignment.text.find('Epic 28') >= 0):
                 assignment.click()
                 break
 
         name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
 
-        assert('December Reading' in name.text), \
+        assert('Epic 28' in name.text), \
             'Not viewing the reading'
 
         while(1):
@@ -532,6 +653,8 @@ class TestEpicName(unittest.TestCase):
 
                 self.student.sleep(2)
 
+            self.student.sleep(2)
+
         self.ps.test_updates['passed'] = True
 
     # Case C8192 - 009 - Student | Submit a multiple choice answer
@@ -544,7 +667,7 @@ class TestEpicName(unittest.TestCase):
         "This Week" on the dashboard
         Click the "Continue" button
         On a card with a free response assessment, enter a free
-        response into the free response assessment text box
+            response into the free response assessment text box
         Click the "Continue" button
         Select a multiple choice answer
         Click the "Continue" button in the left corner of the footer
@@ -567,15 +690,16 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row reading workable']")
         for assignment in assignments:
-            if (assignment.text == 'Dec 31, 8:54am'):
+            if (assignment.text.find('Epic 28') >= 0):
                 assignment.click()
                 break
 
         name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
 
-        assert('December Reading' in name.text), \
+        assert('Epic 28' in name.text), \
             'Not viewing the reading'
 
         while(1):
@@ -634,6 +758,8 @@ class TestEpicName(unittest.TestCase):
 
                 self.student.sleep(2)
 
+            self.student.sleep(2)
+
         self.ps.test_updates['passed'] = True
 
     # Case C8193 - 010 - Student | Answer feedback is presented
@@ -646,7 +772,7 @@ class TestEpicName(unittest.TestCase):
         "This Week" on the dashboard
         Click the "Continue" button
         On a card with a free response assessment, enter a free
-        response into the free response assessment text box
+            response into the free response assessment text box
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button in the left corner of the footer
@@ -669,15 +795,16 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row reading workable']")
         for assignment in assignments:
-            if (assignment.text == 'Dec 31, 8:54am'):
+            if (assignment.text.find('Epic 28') >= 0):
                 assignment.click()
                 break
 
         name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
 
-        assert('December Reading' in name.text), \
+        assert('Epic 28' in name.text), \
             'Not viewing the reading'
 
         while(1):
@@ -736,6 +863,8 @@ class TestEpicName(unittest.TestCase):
 
                 self.student.sleep(2)
 
+            self.student.sleep(2)
+
         self.ps.test_updates['passed'] = True
 
     # Case C8194 - 011 - Student | Correctness for a completed
@@ -749,7 +878,7 @@ class TestEpicName(unittest.TestCase):
         "This Week" on the dashboard
         Click the "Continue" button
         On a card with a free response assessment, enter a free
-        response into the free response assessment text box
+            response into the free response assessment text box
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button
@@ -783,7 +912,7 @@ class TestEpicName(unittest.TestCase):
         "This Week" on the dashboard
         Click the "Continue" button
         On a card with a free response assessment that follows a Grasp Check,
-        enter a free response into the free response assessment text box
+            enter a free response into the free response assessment text box
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button
@@ -817,7 +946,7 @@ class TestEpicName(unittest.TestCase):
         "This Week" on the dashboard
         Click the "Continue" button
         On a card with a free response assessment that follows a Grasp Check,
-        enter a free response into the free response assessment text box
+            enter a free response into the free response assessment text box
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button
@@ -851,7 +980,7 @@ class TestEpicName(unittest.TestCase):
         "This Week" on the dashboard
         Click the "Continue" button
         On a card with a free response assessment that follows a Grasp Check,
-        enter a free response into the free response assessment text box
+            enter a free response into the free response assessment text box
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button
@@ -885,7 +1014,7 @@ class TestEpicName(unittest.TestCase):
         "This Week" on the dashboard
         Click the "Continue" button
         On a card with a free response assessment that follows a Grasp Check,
-        enter a free response into the free response assessment text box
+            enter a free response into the free response assessment text box
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button
@@ -938,15 +1067,16 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row reading workable']")
         for assignment in assignments:
-            if (assignment.text == 'Dec 31, 8:54am'):
+            if (assignment.text.find('Epic 28') >= 0):
                 assignment.click()
                 break
 
         name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
 
-        assert('December Reading' in name.text), \
+        assert('Epic 28' in name.text), \
             'Not viewing the reading'
 
         while(1):
@@ -1022,7 +1152,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on a reading assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click the forward arrow
 
         Expected Result:
@@ -1044,15 +1174,16 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row reading workable']")
         for assignment in assignments:
-            if (assignment.text == 'Dec 31, 8:54am'):
+            if (assignment.text.find('Epic 28') >= 0):
                 assignment.click()
                 break
 
         name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
 
-        assert('December Reading' in name.text), \
+        assert('Epic 28' in name.text), \
             'Not viewing the reading'
 
         while(1):
@@ -1119,6 +1250,8 @@ class TestEpicName(unittest.TestCase):
                 self.student.sleep(5)
                 break
 
+            self.student.sleep(2)
+
         self.ps.test_updates['passed'] = True
 
     # Case C8201 - 018 - Student | A reading may have a Review assessment
@@ -1150,15 +1283,16 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row reading workable']")
         for assignment in assignments:
-            if (assignment.text == 'Dec 31, 8:54am'):
+            if (assignment.text.find('Epic 28') >= 0):
                 assignment.click()
                 break
 
         name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
 
-        assert('December Reading' in name.text), \
+        assert('Epic 28' in name.text), \
             'Not viewing the reading'
 
         flag = False
@@ -1169,7 +1303,8 @@ class TestEpicName(unittest.TestCase):
                 if 'openstax-step-group-label' in page:
                     if self.student.find(
                             By.CLASS_NAME,
-                            'openstax-step-group-label').text == 'Review':
+                            'openstax-step-group-label'
+                    ).text == 'Spaced Practice':
                         flag = True
                         break
                 self.student.find(By.XPATH, "//a[contains(@class,'arrow') " +
@@ -1184,7 +1319,8 @@ class TestEpicName(unittest.TestCase):
                 if 'openstax-step-group-label' in page:
                     if self.student.find(
                             By.CLASS_NAME,
-                            'openstax-step-group-label').text == 'Review':
+                            'openstax-step-group-label'
+                    ).text == 'Spaced Practice':
                         break
 
                 answers = self.student.driver.find_elements(
@@ -1218,7 +1354,8 @@ class TestEpicName(unittest.TestCase):
                 if 'openstax-step-group-label' in page:
                     if self.student.find(
                             By.CLASS_NAME,
-                            'openstax-step-group-label').text == 'Review':
+                            'openstax-step-group-label'
+                    ).text == 'Spaced Practice':
                         break
 
                 self.student.find(By.TAG_NAME, 'textarea').send_keys(
@@ -1238,6 +1375,8 @@ class TestEpicName(unittest.TestCase):
                 )
 
                 self.student.sleep(2)
+
+            self.student.sleep(2)
 
         self.ps.test_updates['passed'] = True
 
@@ -1270,15 +1409,16 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row reading workable']")
         for assignment in assignments:
-            if (assignment.text == 'Dec 31, 8:54am'):
+            if (assignment.text.find('Epic 28') >= 0):
                 assignment.click()
                 break
 
         name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
 
-        assert('December Reading' in name.text), \
+        assert('Epic 28' in name.text), \
             'Not viewing the reading'
 
         flag = False
@@ -1364,6 +1504,8 @@ class TestEpicName(unittest.TestCase):
 
                 self.student.sleep(2)
 
+            self.student.sleep(2)
+
         self.ps.test_updates['passed'] = True
 
     # Case C8203 - 020 - Student | View the completion report and click the
@@ -1374,7 +1516,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on a reading assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click the forward arrow
         At the end of the reading, click the "Back to Dashboard" button
 
@@ -1396,21 +1538,23 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row reading workable']")
         for assignment in assignments:
-            if (assignment.text == 'Dec 31, 8:54am'):
+            if (assignment.text.find('Epic 28') >= 0):
                 assignment.click()
                 break
 
         name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
 
-        assert('December Reading' in name.text), \
+        assert('Epic 28' in name.text), \
             'Not viewing the reading'
 
         while(1):
             while ('arrow right' in self.student.driver.page_source):
                 self.student.find(By.XPATH, "//a[contains(@class,'arrow') " +
                                   "and contains(@class,'right')]").click()
+                self.student.sleep(0.3)
 
             # multiple choice case
             if('exercise-multiple-choice' in self.student.driver.page_source):
@@ -1474,23 +1618,25 @@ class TestEpicName(unittest.TestCase):
                 self.student.sleep(2)
                 break
 
+            self.student.sleep(2)
+
         self.ps.test_updates['passed'] = True
 
     # Case C8204 - 021 - Student | A completed reading should show
-    # You are done. in the completion report
+    # 'You are done.' in the completion report
     @pytest.mark.skipif(str(8204) not in TESTS, reason='Excluded')
     def test_student_completed_reading_shows_you_are_done_8204(self):
         """A completed reading should show You are done. in completion report.
 
         Steps:
         Click on a reading assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click the forward arrow
         Keep clicking the "Continue" button until the reading is over
 
         Expected Result:
         Once finished with the reading, the user is presented with the
-        completion report that shows "You are done"
+        completion report that shows 'You are done'
         """
         self.ps.test_updates['name'] = 't1.28.021' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1507,21 +1653,23 @@ class TestEpicName(unittest.TestCase):
         assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
-        assignments = self.student.driver.find_elements_by_tag_name("time")
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row reading workable']")
         for assignment in assignments:
-            if (assignment.text == 'Dec 31, 8:54am'):
+            if (assignment.text.find('Epic 28') >= 0):
                 assignment.click()
                 break
 
         name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
 
-        assert('December Reading' in name.text), \
+        assert('Epic 28' in name.text), \
             'Not viewing the reading'
 
         while(1):
             while ('arrow right' in self.student.driver.page_source):
                 self.student.find(By.XPATH, "//a[contains(@class,'arrow') " +
                                   "and contains(@class,'right')]").click()
+                self.student.sleep(0.3)
 
             # multiple choice case
             if('exercise-multiple-choice' in self.student.driver.page_source):
@@ -1588,6 +1736,8 @@ class TestEpicName(unittest.TestCase):
                 self.student.sleep(2)
                 break
 
+            self.student.sleep(2)
+
         self.ps.test_updates['passed'] = True
 
     # Case C8205 - 022 - Student | A completed reading should show Complete
@@ -1598,7 +1748,7 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on a reading assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click the forward arrow
         At the end of the reading, click the "Back to Dashboard" button
 
@@ -1621,15 +1771,101 @@ class TestEpicName(unittest.TestCase):
             'Not viewing the calendar dashboard'
 
         assignments = self.student.driver.find_elements_by_xpath(
-            "//div[@class='-upcoming panel panel-default']" +
-            "/div[@class='panel-body']/div[@class='task row reading workable']"
-        )
+            "//div[@class='task row reading workable']")
         for assignment in assignments:
-            if (assignment.text.find('Dec 31, 8:54am') >= 0 and
-                    assignment.text.find('December Reading') >= 0 and
-                    assignment.text.find("Complete") >= 0):
-                self.ps.test_updates['passed'] = True
+            if (assignment.text.find('Epic 28') >= 0):
+                assignment.click()
                 break
+
+        name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
+
+        assert('Epic 28' in name.text), \
+            'Not viewing the reading'
+
+        while(1):
+            while ('arrow right' in self.student.driver.page_source):
+                self.student.find(By.XPATH, "//a[contains(@class,'arrow') " +
+                                  "and contains(@class,'right')]").click()
+                self.student.sleep(0.3)
+
+            # multiple choice case
+            if('exercise-multiple-choice' in self.student.driver.page_source):
+
+                answers = self.student.driver.find_elements(
+                    By.CLASS_NAME, 'answer-letter')
+                self.student.sleep(0.8)
+                rand = randint(0, len(answers) - 1)
+                answer = chr(ord('a') + rand)
+                Assignment.scroll_to(self.student.driver, answers[0])
+                if answer == 'a':
+                    self.student.driver.execute_script(
+                        'window.scrollBy(0, -160);')
+                elif answer == 'd':
+                    self.student.driver.execute_script(
+                        'window.scrollBy(0, 160);')
+                answers[rand].click()
+
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button")' +
+                            ' and contains(@class,"continue")]')
+                    )
+                ).click()
+                self.student.sleep(5)
+                page = self.student.driver.page_source
+                assert('question-feedback bottom' in page), \
+                    'Did not submit MC'
+
+            # free response case
+            elif('textarea' in self.student.driver.page_source):
+
+                self.student.find(
+                    By.TAG_NAME, 'textarea').send_keys(
+                    'An answer for this textarea')
+                self.student.sleep(2)
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button")' +
+                            ' and contains(@class,"continue")]')
+                    )
+                ).click()
+
+                self.student.wait.until(
+                    expect.visibility_of_element_located(
+                        (By.CLASS_NAME, 'exercise-multiple-choice')
+                    )
+                )
+
+                self.student.sleep(2)
+
+            # Reached the end of the reading assignment
+            elif('task task-completed' in self.student.driver.page_source):
+                self.student.sleep(2)
+
+                # May need to change 'to' to 'To'
+                self.student.find(By.LINK_TEXT, 'Back To Dashboard').click()
+                assert('list' in self.student.current_url()), \
+                    'Not at the dashboard'
+
+                self.student.sleep(2)
+                break
+
+            self.student.sleep(2)
+
+        complete = False
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row reading workable']")
+        for assignment in assignments:
+            if(assignment.text.find('Epic 28') >= 0 and assignment.text.find(
+                'Completed'
+            ) >= 0):
+                complete = True
+                break
+
+        assert(complete), \
+            'Reading not displayed as complete'
+
+        self.ps.test_updates['passed'] = True
 
     # Case C8206 - 023 - Student | Answer an assessment, return to the
     # dashboard and verify the assignment progress is In progress
@@ -1639,10 +1875,10 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         Click on a reading assignment under the tab "This Week"
-        on the dashboard
+            on the dashboard
         Click the forward arrow
         On a card with a free response assessment, enter a free response
-        into the free response assessment text box
+            into the free response assessment text box
         Click the "Answer" button
         Select a multiple choice answer
         Click the "Submit" button in the left corner of the footer
@@ -1672,94 +1908,90 @@ class TestEpicName(unittest.TestCase):
         home = self.student.current_url()
 
         assignments = self.student.driver.find_elements_by_xpath(
-            "//div[@class='-upcoming panel panel-default']/div[@class" +
-            "='panel-body']/div[@class='task row reading workable']")
+            "//div[@class='task row reading workable']")
         for assignment in assignments:
-            if (assignment.text.find('Dec 29, 8:42am') >= 0 and
-                    assignment.text.find('Long Automation Reading') >= 0 and
-                    assignment.text.find("In progress") >= 0):
-                self.ps.test_updates['passed'] = True
+            if (assignment.text.find('Epic 28') >= 0):
+                assignment.click()
                 break
 
-            elif (assignment.text.find('Dec 29, 8:42am') >= 0 and
-                    assignment.text.find('Long Automation Reading') >= 0 and
-                    assignment.text.find("Not started") >= 0):
-                assignment.click()
-                name = self.student.find(
-                    By.CLASS_NAME, 'center-control-assignment')
+        name = self.student.find(By.CLASS_NAME, 'center-control-assignment')
 
-                assert('Long Automation Reading' in name.text), \
-                    'Not viewing the reading'
+        assert('Epic 28' in name.text), \
+            'Not viewing the reading'
 
-                while(1):
-                    while ('arrow right' in self.student.driver.page_source):
-                        self.student.find(
-                            By.XPATH, "//a[contains(@class,'arrow') " +
-                            "and contains(@class,'right')]").click()
+        while(1):
+            while ('arrow right' in self.student.driver.page_source):
+                self.student.find(By.XPATH, "//a[contains(@class,'arrow') " +
+                                  "and contains(@class,'right')]").click()
+                self.student.sleep(0.3)
 
-                    # multiple choice case
-                    page = self.student.driver.page_source
-                    if('exercise-multiple-choice' in page):
+            # multiple choice case
+            if('exercise-multiple-choice' in self.student.driver.page_source):
 
-                        answers = self.student.driver.find_elements(
-                            By.CLASS_NAME, 'answer-letter')
-                        self.student.sleep(0.8)
-                        rand = randint(0, len(answers) - 1)
-                        answer = chr(ord('a') + rand)
-                        Assignment.scroll_to(self.student.driver, answers[0])
-                        if answer == 'a':
-                            self.student.driver.execute_script(
-                                'window.scrollBy(0, -160);')
-                        elif answer == 'd':
-                            self.student.driver.execute_script(
-                                'window.scrollBy(0, 160);')
-                        answers[rand].click()
+                answers = self.student.driver.find_elements(
+                    By.CLASS_NAME, 'answer-letter')
+                self.student.sleep(0.8)
+                rand = randint(0, len(answers) - 1)
+                answer = chr(ord('a') + rand)
+                Assignment.scroll_to(self.student.driver, answers[0])
+                if answer == 'a':
+                    self.student.driver.execute_script(
+                        'window.scrollBy(0, -160);')
+                elif answer == 'd':
+                    self.student.driver.execute_script(
+                        'window.scrollBy(0, 160);')
+                answers[rand].click()
 
-                        self.student.wait.until(
-                            expect.element_to_be_clickable(
-                                (By.XPATH,
-                                    '//button[contains(@class,"async-b' +
-                                    'utton") and contains(@class,"continue")]')
-                            )
-                        ).click()
-                        self.student.sleep(5)
-                        page = self.student.driver.page_source
-                        assert('question-feedback bottom' in page), \
-                            'Did not submit MC'
-                        break
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button")' +
+                            ' and contains(@class,"continue")]')
+                    )
+                ).click()
+                self.student.sleep(5)
+                page = self.student.driver.page_source
+                assert('question-feedback bottom' in page), \
+                    'Did not submit MC'
 
-                    # free response case
-                    elif('textarea' in self.student.driver.page_source):
-                        self.student.find(
-                            By.TAG_NAME, 'textarea').send_keys(
-                            'An answer for this textarea')
-                        self.student.sleep(2)
-                        self.student.wait.until(
-                            expect.element_to_be_clickable(
-                                (By.XPATH,
-                                    '//button[contains(@class,"async-b' +
-                                    'utton") and contains(@class,"continue")]')
-                            )
-                        ).click()
+                break
 
-                        self.student.wait.until(
-                            expect.visibility_of_element_located(
-                                (By.CLASS_NAME, 'exercise-multiple-choice')
-                            )
-                        )
+            # free response case
+            elif('textarea' in self.student.driver.page_source):
+                self.student.find(
+                    By.TAG_NAME, 'textarea').send_keys(
+                    'An answer for this textarea')
+                self.student.sleep(2)
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button")' +
+                            ' and contains(@class,"continue")]')
+                    )
+                ).click()
 
-                        self.student.sleep(2)
+                self.student.wait.until(
+                    expect.visibility_of_element_located(
+                        (By.CLASS_NAME, 'exercise-multiple-choice')
+                    )
+                )
 
-                self.student.sleep(20)
-                self.student.driver.get(home)
+                self.student.sleep(2)
 
-                assignments = self.student.driver.find_elements_by_xpath(
-                    "//div[@class='-upcoming panel panel-default']/div[@clas" +
-                    "s='panel-body']/div[@class='task row reading workable']")
-                for assignment in assignments:
-                    if (assignment.text.find('Dec 29, 8:42am') >= 0 and
-                            assignment.text.find(
-                                'Long Automation Reading') >= 0 and
-                            assignment.text.find("In progress") >= 0):
-                        self.ps.test_updates['passed'] = True
-                        break
+            self.student.sleep(2)
+
+        self.student.driver.get(home)
+        self.student.driver.switch_to_alert().accept()
+
+        in_progress = False
+        assignments = self.student.driver.find_elements_by_xpath(
+            "//div[@class='task row reading workable']")
+        for assignment in assignments:
+            if(assignment.text.find('Epic 28') >= 0 and assignment.text.find(
+                'In progress'
+            ) >= 0):
+                in_progress = True
+                break
+
+        assert(in_progress), \
+            'Reading not displayed as in progress'
+
+        self.ps.test_updates['passed'] = True

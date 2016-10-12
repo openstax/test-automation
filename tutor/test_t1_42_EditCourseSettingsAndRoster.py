@@ -7,7 +7,7 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-# from random import randint
+from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.common.keys import Keys
@@ -26,7 +26,8 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         8258, 8259, 8260, 8261, 8262,
-        8263, 8264, 8265, 8266, 8267
+        8263, 8264, 8265, 8266, 8267,
+        58356
     ])
 )
 
@@ -90,8 +91,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
             By.XPATH,
             '//div[@class="course-settings-title"]/span'
         ).text
-        print(course_name)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//button[contains(@class,"edit-course")]' +
             '//span[contains(text(),"Rename Course")]'
         ).click()
@@ -100,7 +100,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
                 (By.XPATH, '//input[contains(@class,"form-control")]')
             )
         ).send_keys('_EDIT')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//button[contains(@class,"edit-course-confirm")]'
         ).click()
@@ -124,7 +124,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
                     (By.XPATH, '//input[contains(@class,"form-control")]')
                 )
             ).send_keys(Keys.BACK_SPACE)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//button[contains(@class,"edit-course-confirm")]'
         ).click()
@@ -158,15 +158,17 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         # add extra instructor through admin first
         admin = Admin(
             use_env_vars=True,
-            existing_driver=self.teacher.driver
+            existing_driver=self.teacher.driver,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         admin.login()
-        admin.driver.get('https://tutor-qa.openstax.org/admin/courses/1/edit')
+        admin.get('https://tutor-qa.openstax.org/admin/courses/1/edit')
         admin.page.wait_for_page_load()
         teacher_name = 'Trent'
-        admin.driver.find_element(
+        admin.find(
             By.XPATH, '//a[contains(text(),"Teachers")]').click()
-        admin.driver.find_element(
+        admin.find(
             By.ID, 'course_teacher').send_keys(teacher_name)
         admin.wait.until(
             expect.visibility_of_element_located(
@@ -174,13 +176,13 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
             )
         ).click()
         admin.sleep(1)
-        admin.driver.find_element(
+        admin.find(
             By.LINK_TEXT, 'Main Dashboard').click()
         admin.page.wait_for_page_load()
         admin.logout()
         # redo set-up, but make sure to go to course 1
         self.teacher.login()
-        self.teacher.driver.get('https://tutor-qa.openstax.org/courses/1')
+        self.teacher.get('https://tutor-qa.openstax.org/courses/1')
         self.teacher.open_user_menu()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -189,22 +191,22 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         ).click()
         self.teacher.page.wait_for_page_load()
         # delete teacher
-        teachers_list = self.teacher.driver.find_elements(
+        teachers_list = self.teacher.find_all(
             By.XPATH, '//div[@class="teachers-table"]//tbody//tr')
         for x in range(len(teachers_list)):
-            temp_first = self.teacher.driver.find_element(
+            temp_first = self.teacher.find(
                 By.XPATH,
                 '//div[@class="teachers-table"]//tbody//tr[' +
                 str(x + 1) + ']/td'
             ).text
             if temp_first == teacher_name:
-                self.teacher.driver.find_element(
+                self.teacher.find(
                     By.XPATH,
                     '//div[@class="teachers-table"]//tbody//tr[' +
                     str(x + 1) + ']//td//span[contains(text(),"Remove")]'
                 ).click()
                 self.teacher.sleep(1)
-                self.teacher.driver.find_element(
+                self.teacher.find(
                     By.XPATH, '//div[@class="popover-content"]//button'
                 ).click()
                 break
@@ -223,7 +225,6 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         """Remove the last instructor from the course.
 
         Steps:
-        (Assuming last means last added to the course)
         Click on the user menu in the upper right corner of the page
         Click "Course Roster"
         Click "Remove" for an instructor under the Instructors section
@@ -237,19 +238,22 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.42', 't1.42.003', '8260']
         self.ps.test_updates['passed'] = False
 
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
         self.teacher.logout()
         # add extra instructor through admin first
         admin = Admin(
             use_env_vars=True,
-            existing_driver=self.teacher.driver
+            existing_driver=self.teacher.driver,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         admin.login()
-        admin.driver.get('https://tutor-qa.openstax.org/admin/courses/1/edit')
+        admin.get('https://tutor-qa.openstax.org/admin/courses/1/edit')
         admin.page.wait_for_page_load()
         teacher_name = 'Trent'
-        admin.driver.find_element(
+        admin.find(
             By.XPATH, '//a[contains(text(),"Teachers")]').click()
-        admin.driver.find_element(
+        admin.find(
             By.ID, 'course_teacher').send_keys(teacher_name)
         admin.wait.until(
             expect.visibility_of_element_located(
@@ -257,13 +261,13 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
             )
         ).click()
         admin.sleep(1)
-        admin.driver.find_element(
+        admin.find(
             By.LINK_TEXT, 'Main Dashboard').click()
         admin.page.wait_for_page_load()
         admin.logout()
         # redo set-up, but make sure to go to course 1
         self.teacher.login()
-        self.teacher.driver.get('https://tutor-qa.openstax.org/courses/1')
+        self.teacher.get('https://tutor-qa.openstax.org/courses/1')
         self.teacher.open_user_menu()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -272,22 +276,22 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         ).click()
         self.teacher.page.wait_for_page_load()
         # delete teacher
-        teachers_list = self.teacher.driver.find_elements(
+        teachers_list = self.teacher.find_all(
             By.XPATH, '//div[@class="teachers-table"]//tbody//tr')
         for x in range(len(teachers_list)):
-            temp_first = self.teacher.driver.find_element(
+            temp_first = self.teacher.find(
                 By.XPATH,
                 '//div[@class="teachers-table"]//tbody//tr[' +
                 str(x + 1) + ']/td'
             ).text
             if temp_first == teacher_name:
-                self.teacher.driver.find_element(
+                self.teacher.find(
                     By.XPATH,
                     '//div[@class="teachers-table"]//tbody//tr[' +
                     str(x + 1) + ']//td//span[contains(text(),"Remove")]'
                 ).click()
                 self.teacher.sleep(1)
-                self.teacher.driver.find_element(
+                self.teacher.find(
                     By.XPATH, '//div[@class="popover-content"]//button'
                 ).click()
                 break
@@ -319,20 +323,20 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        period_name = 'automated_4'
-        self.teacher.driver.find_element(
-            By.XPATH, '//li[contains(@class,"add-period")]//button').click()
+        period_name = 'automated_' + str(randint(0, 999))
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class,"add-period")]//button').click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//input[contains(@class,"form-control")]')
             )
         ).send_keys(period_name)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//button[contains(@class,"edit-period-confirm")]'
         ).click()
         self.teacher.sleep(1)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[contains(text(),"'+period_name+'")]')
 
         self.ps.test_updates['passed'] = True
@@ -356,15 +360,15 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # create a period
-        period_name = 'automated_5'
-        self.teacher.driver.find_element(
-            By.XPATH, '//li[contains(@class,"add-period")]//button').click()
+        period_name = 'automated_' + str(randint(0, 999))
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class,"add-period")]//button').click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//input[contains(@class,"form-control")]')
             )
         ).send_keys(period_name)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//button[contains(@class,"edit-period-confirm")]'
         ).click()
@@ -375,7 +379,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
                 (By.XPATH, '//a[contains(text(),"'+period_name+'")]')
             )
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//span[contains(@class,"rename-period")]/button'
         ).click()
         self.teacher.wait.until(
@@ -383,12 +387,12 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
                 (By.XPATH, '//input[contains(@class,"form-control")]')
             )
         ).send_keys('_EDIT')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//button[contains(@class,"edit-period-confirm")]'
         ).click()
         self.teacher.sleep(1)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[contains(text(),"'+period_name+'_EDIT")]')
 
         self.ps.test_updates['passed'] = True
@@ -412,15 +416,15 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # create a period
-        period_name = 'automated_006'
-        self.teacher.driver.find_element(
-            By.XPATH, '//li[contains(@class,"add-period")]//button').click()
+        period_name = 'automated_' + str(randint(0, 999))
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class,"add-period")]//button').click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//input[contains(@class,"form-control")]')
             )
         ).send_keys(period_name)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//button[contains(@class,"edit-period-confirm")]'
         ).click()
@@ -431,13 +435,13 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
                 (By.XPATH, '//a[contains(text(),"'+period_name+'")]')
             )
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[contains(@class,"archive-period")]').click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[contains(@class,"popover-content")]' +
             '//button[contains(@class,"archive")]').click()
         self.teacher.sleep(2)
-        archived_period = self.teacher.driver.find_elements(
+        archived_period = self.teacher.find_all(
             By.XPATH, '//a[contains(text(),"'+period_name+'")]')
         assert(len(archived_period) == 0), 'period not archived'
 
@@ -454,7 +458,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         Click Archive
 
         Expected Result:
-        period is archived
+        Period is archived
         """
         self.ps.test_updates['name'] = 't1.42.007' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -462,32 +466,32 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        period_name = self.teacher.driver.find_element(
+        period_name = self.teacher.find(
             By.XPATH, '//ul[@role="tablist"]//a[@role="tab"]').text
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(text(),"'+period_name+'")]')
             )
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[contains(@class,"archive-period")]').click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[contains(@class,"popover-content")]' +
             '//button[contains(@class,"archive")]').click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//span[contains(text(),"View Archived")]').click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[@class="modal-body"]//td[contains(text(),"' +
             period_name + '")]')
         # add the section back
-        periods = self.teacher.driver.find_elements(
+        periods = self.teacher.find_all(
             By.XPATH, '//div[@class="modal-body"]//table//tbody//tr')
         for x in range(len(periods)):
-            temp_period = self.teacher.driver.find_element(
+            temp_period = self.teacher.find(
                 By.XPATH, '//div[@class="modal-body"]//table//tbody' +
                 '//tr['+str(x+1)+']/td').text
             if temp_period == period_name:
-                self.teacher.driver.find_element(
+                self.teacher.find(
                     By.XPATH,
                     '//div[@class="modal-body"]//table//tbody//tr[' +
                     str(x+1) + ']//button//span[contains(text(),"Unarchive")]'
@@ -516,16 +520,16 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[@aria-describedby="change-period"]').click()
-        student_name = self.teacher.driver.find_element(
+        student_name = self.teacher.find(
             By.XPATH, '//div[@class="roster"]//td').text
-        element = self.teacher.driver.find_element(
+        element = self.teacher.find(
             By.XPATH, '//div[@class="popover-content"]//a')
         period_name = element.text
         element.click()
         self.teacher.sleep(1)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//li/a[contains(text(),"'+period_name+'")]').click()
         self.teacher.driver.find_element(
             By.XPATH, '//td[contains(text(),"%s")]' % student_name)
@@ -553,16 +557,15 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        student_name = self.teacher.driver.find_element(
+        student_name = self.teacher.find(
             By.XPATH, '//div[@class="roster"]//td').text
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[@aria-describedby="drop-student"]').click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[@class="popover-content"]//button').click()
         self.teacher.sleep(1)
         # check that student was droped
-        print(student_name)
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[contains(@class,"dropped-students")]' +
             '//td[contains(text(),"%s")]' % student_name
         )
@@ -576,7 +579,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
 
         Steps:
         Click "Add Back to Active Roster" for a student under
-        the Dropped Students section
+            the Dropped Students section
         Click "Add" on the box that pops up
 
         Expected Result:
@@ -588,26 +591,104 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # drop a student (to make sure there is someone to add back)
-        student_name = self.teacher.driver.find_element(
+        student_name = self.teacher.find(
             By.XPATH, '//div[@class="roster"]//td').text
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a[@aria-describedby="drop-student"]').click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[@class="popover-content"]//button').click()
         self.teacher.sleep(1)
         # add a student back (not necessarily the same student)
-        element = self.teacher.driver.find_element(
+        element = self.teacher.find(
             By.XPATH, '//div[contains(@class,"dropped-students")]' +
             '//span[contains(text(),"Add Back to Active Roster")]')
         self.teacher.driver.execute_script(
             'return arguments[0].scrollIntoView();', element)
         self.teacher.driver.execute_script('window.scrollBy(0, -80);')
         element.click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[@class="popover-content"]//button').click()
         # check that student was added back
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//div[@class="roster"]//td[contains(text(),"%s")]' % student_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C58356 - 011 - Teacher | Unarchive an empty period
+    @pytest.mark.skipif(str(58356) not in TESTS, reason='Excluded')
+    def test_teacher_unarchive_an_empty_period_58356(self):
+        """Unarchive an empty period.
+
+        Steps:
+        Go to Tutor
+        Click on the 'Login' button
+        Enter the teacher user account [ teacher001 ] and password in the boxes
+        Click on the 'Sign in' button
+        If the user has more than one course, click on a Tutor course name
+        Click on the user menu in the upper right corner of the page
+        Click "Course Settings and Roster"
+        Click "View Archived Period(s)"
+        Click Unarchived period next to selected course
+
+        Expected Result:
+        Period is made active.
+        """
+        self.ps.test_updates['name'] = 't1.42.011' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.42', 't1.42.011', '58356']
+        self.ps.test_updates['passed'] = False
+
+        # create a period
+        period_name = 'automated_011_' + str(randint(0, 999))
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class,"add-period")]//button').click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//input[contains(@class,"form-control")]')
+            )
+        ).send_keys(period_name)
+        self.teacher.find(
+            By.XPATH,
+            '//button[contains(@class,"edit-period-confirm")]'
+        ).click()
+        self.teacher.sleep(1)
+        # archive the period
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(text(),"'+period_name+'")]')
+            )
+        ).click()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@class,"archive-period")]').click()
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class,"popover-content")]' +
+            '//button[contains(@class,"archive")]').click()
+        self.teacher.sleep(2)
+        archived_period = self.teacher.find_all(
+            By.XPATH, '//a[contains(text(),"'+period_name+'")]')
+        assert(len(archived_period) == 0), 'period not archived'
+        # unarchive the period
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class,"view-archived-periods")]//button'
+        ).click()
+        self.teacher.sleep(1)
+        rows = self.teacher.find_all(
+            By.XPATH, '//div[@class="modal-content"]//tbody/tr')
+        for row in rows:
+            temp_name = row.find_element(By.XPATH, "./td[1]").text
+            if temp_name == period_name:
+                row.find_element(
+                    By.XPATH,
+                    "./td[3]//button[contains(@class,'unarchive-section')]"
+                ).click()
+                self.teacher.find(
+                    By.XPATH,
+                    '//div[@class="modal-content"]//button[@class="close"]'
+                ).click()
+                break
+        # check that period is no longer archived
+        self.teacher.find(
+            By.XPATH, '//a[contains(text(),"'+period_name+'")]')
 
         self.ps.test_updates['passed'] = True

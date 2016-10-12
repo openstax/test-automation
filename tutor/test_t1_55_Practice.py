@@ -166,7 +166,8 @@ class TestPractice(unittest.TestCase):
 
         Steps:
         If there is a text box: input text
-        otherwise click on the next breadcrumb until a textbox is available
+            OR
+        Click on the next breadcrumb until a textbox is available
 
         Expected Result:
         The "Answer" button is click-able.
@@ -544,6 +545,7 @@ class TestPractice(unittest.TestCase):
             By.XPATH, '//input[contains(@aria-label,"Example:")]')
         assert(text_box.get_attribute('value') == id_num), \
             'form not prefilled correctly'
+
         self.ps.test_updates['passed'] = True
 
     # Case C8308 - 012 - Student | Submit the Assessment Errata Form

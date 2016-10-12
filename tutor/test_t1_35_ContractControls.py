@@ -543,7 +543,7 @@ class TestContractControls(unittest.TestCase):
     # Case C8237 - 010 - Admin | Delete a targeted contract
     @pytest.mark.skipif(str(8237) not in TESTS, reason='Excluded')
     def test_admin_delete_a_targeted_contract_8237(self):
-        """Delete a targetd contract.
+        """Delete a targeted contract.
 
         Steps:
         Click on the user's name in the top right corner to open drop down menu

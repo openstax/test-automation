@@ -488,7 +488,7 @@ class TestWorkAHomework(unittest.TestCase):
         Steps:
         Click on a homework assignment on the list dashboard
         If the assessment has a free response text box,
-        enter a free response into the free response text box
+            enter a free response into the free response text box
         Click "Answer"
         Select a multiple choice answer
         Click "Submit"
@@ -583,7 +583,7 @@ class TestWorkAHomework(unittest.TestCase):
 
         Steps:
         If the assessment has a free response text box,
-        enter a free response into the free response text box
+            enter a free response into the free response text box
         Click on the next breadcrumb to get to the next assessment
         Click back to the original assessment
 
@@ -858,7 +858,7 @@ class TestWorkAHomework(unittest.TestCase):
         """Answer all of the assessments in an assignment.
 
         Steps:
-        answer all assesments in an assignment
+        Answer all assesments in an assignment
 
         Expected Result:
         The user is presented with the completion report at the end of the
@@ -954,7 +954,7 @@ class TestWorkAHomework(unittest.TestCase):
         Click on a homework assignment on the list dashboard (that does not
             have instant feedback)
         If the assessment has a free response text box,
-        enter a free response into the free response text box
+            enter a free response into the free response text box
         Click "Answer"
         If the assessment has multiple choices, select a multiple choice answer
         Click "Submit"
@@ -1318,7 +1318,7 @@ class TestWorkAHomework(unittest.TestCase):
     # Case C8377 - 016 - Student | A homework may have a Review assessment
     @pytest.mark.skipif(str(8377) not in TESTS, reason='Excluded')
     def test_student_a_homework_may_have_a_review_assesment_8377(self):
-        """ A homework may have a Review assessment.
+        """A homework may have a Review assessment.
 
         Steps:
         Click on a homework assignment on the list dashboard

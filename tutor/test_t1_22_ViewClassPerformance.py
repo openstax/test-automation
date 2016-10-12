@@ -19,8 +19,8 @@ from staxing.helper import Teacher
 # - replace list_of_cases on line 31 with all test case IDs in this file
 # - replace CaseID on line 52 with the actual cass ID
 # - delete lines 17 - 22
-list_of_cases = 0
-CaseID = 0
+list_of_cases = None
+CaseID = 'skip'
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -39,14 +39,14 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestViewClassPerformance(unittest.TestCase):
     """T1.22 - View Class Performance."""
 
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
+        self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
@@ -107,8 +107,9 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         On the calendar dashboard, click on the "Performance Forecast" button
-        on the upper right corner of the calendar OR
-        click on the user drop down menu then click on the
+            on the upper right corner of the calendar
+            OR
+        Click on the user drop down menu then click on the
         "Performance Forecast" button
         Hover the cursor over the info icon that is next to the
         "Performance Forecast" header
@@ -277,9 +278,9 @@ class TestEpicName(unittest.TestCase):
 
         Steps:
         On the calendar dashboard, click on the "Performance Forecast"
-        button on the upper right corner of the calendar OR
-        click on the user drop down menu
-        click on the "Performance Forecast" button
+            button on the upper right corner of the calendar OR
+        Click on the user drop down menu
+        Click on the "Performance Forecast" button
         Click on the period with zero answers
 
         Expected Result:
@@ -297,22 +298,59 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get(
-            "https://tutor-qa.openstax.org/courses/2/t/calendar/")
+        self.teacher.select_course(appearance='physics')
         assert('calendar' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
+        # Create an empty period to use for the test
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.PARTIAL_LINK_TEXT, 'Course Settings and Roster').click()
+        self.teacher.sleep(5)
+
+        self.teacher.find(
+            By.XPATH, "//li[@class='control add-period']/button").click()
+        self.teacher.find(
+            By.XPATH,
+            "//input[@class='form-control empty']").send_keys("Epic 22")
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button " +
+            "-edit-period-confirm btn btn-default']").click()
+        self.teacher.sleep(5)
+
+        # Check the new empty period in Performance Forecast
+        self.teacher.open_user_menu()
         self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing performance forecast'
 
         self.teacher.wait.until(
             expect.visibility_of_element_located((
-                By.LINK_TEXT, '8th'))).click()
+                By.LINK_TEXT, 'Epic 22'))).click()
 
         self.teacher.wait.until(
             expect.visibility_of_element_located((
                 By.CLASS_NAME, 'no-data-message')))
+        self.teacher.sleep(5)
+
+        # Archive the new period
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.PARTIAL_LINK_TEXT, 'Course Settings and Roster').click()
+        self.teacher.sleep(5)
+
+        self.teacher.wait.until(
+            expect.visibility_of_element_located((
+                By.LINK_TEXT, 'Epic 22'))).click()
+
+        self.teacher.find(
+            By.XPATH, "//a[@class='control archive-period']").click()
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='async-button archive-section btn btn-default']"
+        ).click()
+        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -343,8 +381,7 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.get(
-            "https://tutor-qa.openstax.org/courses/2/t/calendar/")
+        self.teacher.select_course(appearance='physics')
         assert('calendar' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
@@ -352,57 +389,13 @@ class TestEpicName(unittest.TestCase):
         assert('guide' in self.teacher.current_url()), \
             'Not viewing performance forecast'
 
-        self.teacher.driver.get(
-            "https://tutor-qa.openstax.org/courses/1/t/guide")
-        self.teacher.page.wait_for_page_load()
-        self.teacher.wait.until(
-            expect.visibility_of_element_located((
-                By.LINK_TEXT, '1st'))).click()
+        weak = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='chapter-panel weaker']/div[@class='sections']/div")
 
-        self.teacher.find(By.CLASS_NAME, 'lacking-data')
+        assert(len(weak) <= 4), \
+            'Not viewing performance forecast'
 
         self.teacher.sleep(5)
-
-        self.teacher.driver.get(
-            "https://tutor-qa.openstax.org/courses/2/t/guide")
-        self.teacher.page.wait_for_page_load()
-        self.teacher.wait.until(
-            expect.visibility_of_element_located((
-                By.LINK_TEXT, '2nd'))).click()
-
-        self.teacher.find(
-            By.XPATH,
-            "/html/body/div[@id='react-root-container']" +
-            "/div[@class='tutor-app openstax-wrapper']" +
-            "/div[@class='openstax-debug-content']" +
-            "/div[@class='performance-forecast teacher panel panel-default']" +
-            "/div[@class='panel-body']" +
-            "/div[@class='guide-container']" +
-            "/div[@class='guide-group']" +
-            "/div[@class='chapter-panel weaker']" +
-            "/div[@class='sections']" +
-            "/div[@class='section'][2]"
-        )
-
-        self.teacher.sleep(5)
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located((
-                By.LINK_TEXT, '4th'))).click()
-
-        self.teacher.find(
-            By.XPATH,
-            "/html/body/div[@id='react-root-container']" +
-            "/div[@class='tutor-app openstax-wrapper']" +
-            "/div[@class='openstax-debug-content']" +
-            "/div[@class='performance-forecast teacher panel panel-default']" +
-            "/div[@class='panel-body']" +
-            "/div[@class='guide-container']" +
-            "/div[@class='guide-group']" +
-            "/div[@class='chapter-panel weaker']" +
-            "/div[@class='sections']" +
-            "/div[@class='section'][3]"
-        )
 
         self.ps.test_updates['passed'] = True
 
@@ -410,13 +403,14 @@ class TestEpicName(unittest.TestCase):
     # their sections to the right
     @pytest.mark.skipif(str(8155) not in TESTS, reason='Excluded')
     def test_teacher_chapters_listed_on_left_w_sections_on_right_8155(self):
-        """Chapters are listed on the left with their sections to the right.
+        """Chapter are listed on the left with their sections to the right.
 
         Steps:
         On the calendar dashboard, click on the "Performance Forecast"
-        button on the upper right corner of the calendar OR
-        click on the user drop down menu
-        click on the "Performance Forecast" button
+            button on the upper right corner of the calendar
+            OR
+        Click on the user drop down menu
+        Click on the "Performance Forecast" button
         Click on the desired period
         Scroll to the "Individual Chapters" section
 

@@ -8,19 +8,19 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-from selenium.webdriver.common.by import By
+# from selenium.webdriver.common.by import By
 # from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher, User
+from staxing.helper import Student, Teacher
 
 # for template command line testing only
 # - replace list_of_cases on line 31 with all test case IDs in this file
 # - replace CaseID on line 52 with the actual cass ID
 # - delete lines 17 - 22
-list_of_cases = 0
-CaseID = 0
+list_of_cases = None
+CaseID = 'skip'
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -45,21 +45,14 @@ class TestChooseCourse(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        # self.Teacher = Teacher(
-        #    use_env_vars=True,
-        #    pasta_user=self.ps,
-        #    capabilities=self.desired_capabilities
-        # )
-        # = Teacher(use_env_vars=True)
-        # self.user.login()
-        # self.student = Student(use_env_vars=True)
-        # self.student.login()
+        self.user = None
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.user.driver.session_id),
-                           **self.ps.test_updates)
-
+        self.ps.update_job(
+            job_id=str(self.user.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.user.delete()
         except:
@@ -87,11 +80,15 @@ class TestChooseCourse(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.user = User(use_env_vars=True)
+        self.user = Student(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
         self.user.login()
-        self.user.find(By.PARTIAL_LINK_TEXT, 'AP Physics').click()
+        self.user.select_course(appearance='physics')
 
-        assert('courses/1/list/' in self.user.current_url()), \
+        assert('list' in self.user.current_url()), \
             'Not in a course'
 
         self.ps.test_updates['passed'] = True
@@ -102,10 +99,9 @@ class TestChooseCourse(unittest.TestCase):
         """Bypass the course picker.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
-        Enter the student user account [ qas_01 | password ] in the username
-        and password text boxes
+        Enter the student user account qas_01
         Click on the 'Sign in' button
 
         Expected Result:
@@ -123,14 +119,15 @@ class TestChooseCourse(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
-        self.user = User(username='qas_04', password='password',
-                         site='https://tutor-qa.openstax.org/')
-        self.user.login()
-        assert('courses/75/list/' in self.user.current_url()), \
+        self.user = Student(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
+        self.user.login(username="qas_01")
+        assert('list' in self.user.current_url()), \
             'Not in a course'
 
-        self.user.sleep(5)
         self.ps.test_updates['passed'] = True
 
     # Case C8256 - 003 - Teacher | Select a course
@@ -155,12 +152,15 @@ class TestChooseCourse(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.user = Teacher(use_env_vars=True)
+        self.user = Teacher(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
         self.user.login()
-        self.user.find(By.PARTIAL_LINK_TEXT, 'AP Physics').click()
+        self.user.select_course(appearance='physics')
         assert('calendar' in self.user.current_url()), \
             'Not in a course'
-        self.user.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -170,10 +170,10 @@ class TestChooseCourse(unittest.TestCase):
         """Bypass the course picker.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the teacher user account [ qateacher | password ] in the
-        username and password text boxes
+            username and password text boxes
         Click on the 'Sign in' button
 
         Expected Result:
@@ -191,12 +191,13 @@ class TestChooseCourse(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.user = User(username='qateacher', password='password',
-                         site='https://tutor-qa.openstax.org/')
-        self.user.login()
+        self.user = Teacher(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
+        self.user.login(username="qateacher")
         assert('calendar' in self.user.current_url()), \
             'Not in a course'
-
-        self.user.sleep(5)
 
         self.ps.test_updates['passed'] = True
