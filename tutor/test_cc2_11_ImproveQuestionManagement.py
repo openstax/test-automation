@@ -8,8 +8,8 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
@@ -48,7 +48,9 @@ class TestIImproveQuestionManagement(unittest.TestCase):
         )
         self.student = Student(
             use_env_vars=True,
-            existing_driver=self.teacher.driver
+            existing_driver=self.teacher.driver,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
 
     def tearDown(self):
@@ -82,12 +84,7 @@ class TestIImproveQuestionManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.11.001' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.11',
-            'cc2.11.001',
-            '14851'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.11', 'cc2.11.001', '14851']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -112,12 +109,7 @@ class TestIImproveQuestionManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.11.002' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.11',
-            'cc2.11.002',
-            '14852'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.11', 'cc2.11.002', '14852']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -142,12 +134,7 @@ class TestIImproveQuestionManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.11.003' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.11',
-            'cc2.11.003',
-            '14855'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.11', 'cc2.11.003', '14855']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -172,12 +159,7 @@ class TestIImproveQuestionManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.11.004' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.11',
-            'cc2.11.004',
-            '14856'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.11', 'cc2.11.004', '14856']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -204,12 +186,7 @@ class TestIImproveQuestionManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.11.005' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.11',
-            'cc2.11.005',
-            '14858'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.11', 'cc2.11.005', '14858']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -235,12 +212,7 @@ class TestIImproveQuestionManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.11.006' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.11',
-            'cc2.11.006',
-            '14859'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.11', 'cc2.11.006', '14859']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
