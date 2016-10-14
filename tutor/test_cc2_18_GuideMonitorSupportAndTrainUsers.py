@@ -41,8 +41,6 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
@@ -82,12 +80,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.001' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.001',
-            '58276'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.001', '58276']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -108,12 +101,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.002' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.002',
-            '58277'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.002', '58277']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -139,12 +127,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.003' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.003',
-            '58273'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.003', '58273']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -168,12 +151,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.004' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.004',
-            '58282'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.004', '58282']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -199,12 +177,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.005' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.005',
-            '58350'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.005', '58350']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -229,12 +202,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.006' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.006',
-            '58286'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.006', '58286']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -261,12 +229,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.007' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.007',
-            '58290'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.007', '58290']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -294,12 +257,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.008' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.008',
-            '58291'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.008', '58291']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -328,12 +286,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.009' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.009',
-            '58292'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.009', '58292']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -365,12 +318,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.010' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.010',
-            '58320'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.010', '58320']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -399,12 +347,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.011' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.011',
-            '58293'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.011', '58293']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -431,12 +374,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.012' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.012',
-            '58295'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.012', '58295']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -466,12 +404,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.013' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.013',
-            '58296'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.013', '58296']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -492,12 +425,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.014' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.014',
-            '14823'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.014', '14823']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -524,12 +452,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.015' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.015',
-            '14825'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.015', '14825']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -553,12 +476,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.016' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.016',
-            '58275'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.016', '58275']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -579,12 +497,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.017' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.017',
-            '58311'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.017', '58311']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -610,12 +523,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.018' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.018',
-            '58274'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.018', '58274']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -639,12 +547,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.019' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.019',
-            '58283'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.019', '58283']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -670,12 +573,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.020' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.020',
-            '58351'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.020', '58351']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -701,12 +599,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.021' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.021',
-            '58326'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.021', '58326']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -733,12 +626,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.022' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.022',
-            '58327'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.022', '58327']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -766,12 +654,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.023' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.023',
-            '58328'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.023', '58328']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -800,12 +683,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.024' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.024',
-            '58329'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.024', '58329']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -837,12 +715,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.025' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.025',
-            '58330'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.025', '58330']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -871,12 +744,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.026' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.026',
-            '58331'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.026', '58331']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -903,12 +771,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.027' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.027',
-            '58333'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.027', '58333']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -938,12 +801,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.028' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.028',
-            '58334'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.028', '58334']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -958,18 +816,11 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         Steps:
 
-
         Expected Result:
-
         """
         self.ps.test_updates['name'] = 'cc2.18.029' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.029',
-            '58335'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.029', '58335']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
