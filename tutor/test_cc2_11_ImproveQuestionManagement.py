@@ -25,11 +25,10 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    # str([
-    #     14851, 14852, 14855, 14856, 14858,
-    #     14859
-    # ])
-    str([14859])
+    str([
+        14851, 14852, 14855, 14856, 14858,
+        14859
+    ])
 )
 
 
@@ -44,14 +43,14 @@ class TestIImproveQuestionManagement(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.student = Student(
             use_env_vars=True,
             existing_driver=self.teacher.driver,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
 
     def tearDown(self):
@@ -451,10 +450,9 @@ class TestIImproveQuestionManagement(unittest.TestCase):
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//span[@class="exercise-identifier-link"]' +
-                 '/span[not(contains(text(),"@"))]')
+                 '/span[contains(text(),"@")]')
             )
         ).text
-        print(exercise_id)  # ###########
         self.teacher.find(By.LINK_TEXT, 'Report an error').click()
         window_with_form = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_form)
@@ -465,7 +463,4 @@ class TestIImproveQuestionManagement(unittest.TestCase):
         )
         self.teacher.find(
             By.XPATH, '//input[@value="' + exercise_id + '"]')
-
-
-
         self.ps.test_updates['passed'] = True
