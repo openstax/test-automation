@@ -10,7 +10,7 @@ import unittest
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.action_chains import ActionChains
+# from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.support.ui import WebDriverWait
@@ -99,7 +99,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8086 - 002 - Teacher | Add an external assignment using the
     # calendar date
-    @pytest.mark.skipif(str(8086) not in TESTS, reason='Excluded')
+    # @pytest.mark.skipif(str(8086) not in TESTS, reason='Excluded')
     @pytest.mark.skipif(True, reason='Manual testing only')
     def test_teacher_add_external_assignment_using_calendar_date_8086(self):
         """Add an external assignment using the calendar date.
@@ -180,13 +180,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 (By.ID, 'reading-title')
             )
         )
-        self.teacher.driver.find_element(
-            By.ID, 'reading-title').send_keys('reading-%s' % randint(100, 999))
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[contains(@class,"assignment-description")]//textarea' +
-            '[contains(@class,"form-control")]'). \
-            send_keys('external Assignment description')
         # set date
         self.teacher.driver.find_element(By.ID, 'hide-periods-radio').click()
         today = datetime.date.today()
@@ -240,18 +233,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.sleep(0.5)
         self.teacher.driver.find_element(
             By.CLASS_NAME, 'assign-to-label').click()
-        self.teacher.driver.find_element(
-            By.ID, 'external-url').send_keys('website.com')
-        self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
-        try:
-            self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), 'ext003')]")
-        except NoSuchElementException:
-            self.teacher.driver.find_element(
-                By.XPATH, '//a[@class="calendar-header-control next"]').click()
-            self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), 'ext003')]")
+        dates = self.teacher.find_all(
+            By.CSS_SELECTOR,
+            'div.datepicker__input-container input'
+        )
+        if not isinstance(dates, list):
+            dates = [dates]
+        for date in dates:
+            assert(date.get_attribute('value') == opens_on or
+                   date.get_attribute('value') == closes_on), \
+                'Dates not set correctly'
 
         self.ps.test_updates['passed'] = True
 
@@ -297,13 +288,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 (By.ID, 'reading-title')
             )
         )
-        self.teacher.driver.find_element(
-            By.ID, 'reading-title').send_keys('ext004')
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[contains(@class,"assignment-description")]//textarea' +
-            '[contains(@class,"form-control")]'). \
-            send_keys('external Assignment description')
         # assign to periods individually
         self.teacher.driver.find_element(By.ID, 'show-periods-radio').click()
         periods = self.teacher.driver.find_elements(
@@ -364,18 +348,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 'and contains(text(),"' + (opens_on[3:5]).lstrip('0') + '")]'
             ).click()
             self.teacher.sleep(0.5)
-        self.teacher.driver.find_element(
-            By.ID, 'external-url').send_keys('website.com')
-        self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
-        try:
-            self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), 'ext004')]")
-        except NoSuchElementException:
-            self.teacher.driver.find_element(
-                By.XPATH, '//a[@class="calendar-header-control next"]').click()
-            self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), 'ext004')]")
+        dates = self.teacher.find_all(
+            By.CSS_SELECTOR,
+            'div.datepicker__input-container input'
+        )
+        if not isinstance(dates, list):
+            dates = [dates]
+        for date in dates:
+            assert(date.get_attribute('value') == opens_on or
+                   date.get_attribute('value') == closes_on), \
+                'Dates not set correctly'
 
         self.ps.test_updates['passed'] = True
 
@@ -420,7 +402,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
         )
         self.teacher.driver.find_element(
-            By.ID, 'reading-title').send_keys('ext005')
+            By.ID, 'reading-title').send_keys(Assignment.rword(6))
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
@@ -435,6 +417,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.ID, 'external-url').send_keys('website.com')
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(@class,"-save")]').click()
+        self.teacher.sleep(4)
         try:
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), 'ext005')]")
@@ -502,6 +485,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.ID, 'external-url').send_keys('website.com')
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(@class,"-publish")]').click()
+        self.teacher.sleep(4)
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
@@ -540,7 +524,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = "ext007"
+        assignment_name = 't1.18.007 external-%s' % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
