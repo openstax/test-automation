@@ -1,4 +1,4 @@
-"""Concept Coach v1, Epic 08 - StudentsWorkAssignments."""
+"""Concept Coach v1, Epic 08 - Students Work Assignments."""
 
 import inspect
 import json
@@ -6,6 +6,7 @@ import os
 import pytest
 import unittest
 
+from autochomsky import chomsky
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint
 from selenium.webdriver.common.by import By
@@ -14,17 +15,19 @@ from staxing.assignment import Assignment
 from staxing.helper import Teacher, Student
 
 basic_test_env = json.dumps([{
-    'platform': 'OS X 10.11',
+    'platform': 'Windows 10',
     'browserName': 'chrome',
-    'version': '48.0',
-    'screenResolution': "1024x768",
+    'version': '50.0',
+    'screenResolution': "1280x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7691, 7692, 7693, 7694, 7695,
-         7696, 7697, 7698, 7699, 7700,
-         7701, 7702, 7703])
+    str([
+        7691, 7692, 7693, 7694, 7695,
+        7696, 7697, 7698, 7699, 7700,
+        7701, 7702, 7703
+    ])
 )
 
 
@@ -35,51 +38,62 @@ class TestStudentsWorkAssignments(unittest.TestCase):
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
-        teacher = Teacher(username='teacher100', password='password',
-                          site='https://tutor-qa.openstax.org/')
-        teacher.login()
-        courses = teacher.find_all(By.CLASS_NAME,
-                                   'tutor-booksplash-course-item')
-        assert(courses), 'No courses found.'
-        if not isinstance(courses, list):
-            courses = [courses]
-        course_id = randint(0, len(courses) - 1)
-        self.course = courses[course_id].get_attribute('data-title')
-        teacher.select_course(title=self.course)
-        teacher.goto_course_roster()
-        section = '%s' % randint(100, 999)
-        try:
-            wait = teacher.wait_time
-            teacher.change_wait_time(3)
-            teacher.find(By.CLASS_NAME, '-no-periods-text')
-            teacher.add_course_section(section)
-        except:
-            sections = teacher.find_all(
-                By.XPATH,
-                '//span[@class="tab-item-period-name"]'
+        self.desired_capabilities['name'] = self.id()
+        self.teacher = Teacher(
+            username=os.getenv('TEACHER_USER_CC'),
+            password=os.getenv('TEACHER_PASSWORD'),
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities)
+        self.teacher.login()
+        if 'cc-dashboard' not in self.teacher.current_url():
+            courses = self.teacher.find_all(
+                By.CLASS_NAME,
+                'tutor-booksplash-course-item'
             )
-            section = sections[randint(0, len(sections) - 1)].text
-        finally:
-            teacher.change_wait_time(wait)
-        self.code = teacher.get_enrollment_code(section)
+            assert(courses), 'No courses found.'
+            if not isinstance(courses, list):
+                courses = [courses]
+            course_id = randint(0, len(courses) - 1)
+            self.course = courses[course_id].get_attribute('data-title')
+            self.teacher.select_course(title=self.course)
+        self.teacher.goto_course_roster()
+        try:
+            section = self.teacher.find_all(
+                By.XPATH,
+                '//*[contains(@class,"nav-tabs")]//a'
+            )
+            if isinstance(section, list):
+                section = '%s' % section[randint(0, len(section) - 1)].text
+            else:
+                section = '%s' % section.text
+        except Exception:
+            section = '%s' % randint(100, 999)
+            self.teacher.add_course_section(section)
+        self.code = self.teacher.get_enrollment_code(section)
         print('Course Phrase: ' + self.code)
-        self.book_url = teacher.find(
-            By.XPATH, '//a[span[text()="Online Book "]]'
+        self.book_url = self.teacher.find(
+            By.XPATH, '//a[span[contains(text(),"Online Book")]]'
         ).get_attribute('href')
-        self.student = Student()
+        self.teacher.find(By.CSS_SELECTOR, 'button.close').click()
+        self.teacher.sleep(0.5)
+        self.teacher.logout()
+        self.teacher.sleep(1)
+        self.student = Student(use_env_vars=True,
+                               existing_driver=self.teacher.driver)
         self.first_name = Assignment.rword(6)
         self.last_name = Assignment.rword(8)
-        self.email = self.first_name + '.' + self.last_name + \
-            '@tutor.openstax.org'
+        self.email = self.first_name + '.' \
+            + self.last_name \
+            + '@tutor.openstax.org'
 
     def tearDown(self):
         """Test destructor."""
+        self.ps.update_job(
+            job_id=str(self.teacher.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.teacher.delete()
-        except:
-            pass
-        try:
-            self.student.delete()
         except:
             pass
 
@@ -87,6 +101,17 @@ class TestStudentsWorkAssignments(unittest.TestCase):
     @pytest.mark.skipif(str(7691) not in TESTS, reason='Excluded')
     def test_student_select_an_exercise_answer_7691(self):
         """Select an exercise answer."""
+        self.ps.test_updates['name'] = 'cc1.08.001' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.08',
+            'cc1.08.001',
+            '7691'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         self.student.get(self.book_url)
         self.student.sleep(2)
         self.student.find_all(By.XPATH, '//a[@class="nav next"]')[0].click()
@@ -109,110 +134,72 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         Assignment.scroll_to(self.student.driver, widget)
         self.student.find(
             By.XPATH,
-            '//button[contains(text(),"Launch Concept Coach")]'
+            '//button[span[contains(text(),"Launch Concept Coach")]]'
         ).click()
         self.student.sleep(1.5)
-        self.student.find(
-            By.XPATH,
-            '//input[contains(@label,"Enter the two-word enrollment code")]'
-        ).send_keys(self.code)
-        self.student.sleep(5)
-        self.student.find(
-            By.XPATH,
-            '//div[contains(@class,"concept-coach")]' +
-            '//button[contains(@class,"async-button")]'
-        ).click()
-        main_window = self.student.driver.window_handles[0]
-        self.student.wait.until(
-            expect.element_to_be_clickable(
-                (By.LINK_TEXT, 'click to begin login.')
-            )
-        ).click()
-        accounts_window = self.student.driver.window_handles[1]
+        base_window = self.student.driver.window_handles[0]
+        self.student.find(By.CSS_SELECTOR, 'div.sign-up').click()
         self.student.sleep(3)
-        self.student.driver.switch_to_window(accounts_window)
-        self.student.sleep(2)
-        self.student.wait.until(
-            expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Sign up')
-            )
-        ).click()
-        self.student.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'signup_first_name')
-            )
+        popup = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(popup)
+        self.student.find(By.LINK_TEXT, 'Sign up').click()
+        self.student.find(By.ID, 'identity-login-button').click()
+        self.student.find(
+            By.ID,
+            'signup_first_name'
         ).send_keys(self.first_name)
-        self.student.find(
-            By.ID,
-            'signup_last_name'
-        ).send_keys(self.last_name)
-        self.student.find(
-            By.ID,
-            'signup_email_address'
-        ).send_keys(self.email)
-        self.student.find(
-            By.ID,
-            'signup_username'
-        ).send_keys(self.last_name)
+        self.student.find(By.ID, 'signup_last_name').send_keys(self.last_name)
+        self.student.find(By.ID, 'signup_email_address').send_keys(self.email)
+        self.student.find(By.ID, 'signup_username').send_keys(self.last_name)
         self.student.find(
             By.ID,
             'signup_password'
-        ).send_keys(self.last_name)
+        ).send_keys(self.student.password)
         self.student.find(
             By.ID,
             'signup_password_confirmation'
-        ).send_keys(self.last_name)
+        ).send_keys(self.student.password)
         self.student.find(By.ID, 'create_account_submit').click()
-        self.student.page.wait_for_page_load()
-        self.student.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'i_agree')
-            )
-        ).click()
-        self.student.sleep(1)
+        self.student.find(By.ID, 'i_agree').click()
         self.student.find(By.ID, 'agreement_submit').click()
-        self.student.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'i_agree')
-            )
-        ).click()
-        self.student.sleep(1)
+        self.student.find(By.ID, 'i_agree').click()
         self.student.find(By.ID, 'agreement_submit').click()
-        self.student.driver.switch_to_window(main_window)
-        try:
-            self.student.find(
-                By.XPATH,
-                '//input[contains(@label,"Enter the two-word")]'
-            ).send_keys(self.code)
-            self.student.find(
-                By.XPATH,
-                '//div[contains(@class,"concept-coach")]' +
-                '//button[contains(@class,"async-button")]'
-            ).click()
-        except:
-            pass
+        self.student.driver.switch_to_window(base_window)
         self.student.find(
             By.XPATH,
-            '//input[contains(@label,"Enter your school issued ID:")]'
+            '//input[contains(@label,"Enter the enrollment code")]'
+        ).send_keys(self.code)
+        self.student.sleep(2)
+        self.student.find(By.CSS_SELECTOR, 'button.enroll').click()
+        self.student.sleep(2)
+        self.student.find(
+            By.CSS_SELECTOR,
+            'div.field input.form-control'
         ).send_keys(self.last_name)
-        self.student.find(
-            By.XPATH,
-            '//button[span[text()="Confirm"]]'
-        ).click()
+        self.student.find(By.CSS_SELECTOR, 'button.async-button').click()
         self.student.sleep(5)
+        try:
+            self.student.find(By.XPATH, '//button[text()="Continue"]').click()
+        except:
+            print('Two-step message not seen.')
         self.student.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH,
                  '//div[@class="openstax-question"]//textarea')
             )
-        ).send_keys(Assignment.rword(20))
-        self.student.find(By.XPATH, '//button[span[text()="Answer"]]').click()
+        ).send_keys(chomsky())
+        self.student.find(By.CSS_SELECTOR, 'button.async-button').click()
         self.student.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '(//div[@class="answer-letter"])[1]')
+                (By.XPATH, '//div[@class="answer-letter"]')
             )
-        ).click()
-        self.student.find(By.XPATH, '//button[span[text()="Submit"]]').click()
+        )
+        answers = self.student.find_all(By.CSS_SELECTOR, 'div.answer-letter')
+        answers[randint(0, len(answers) - 1)].click()
+        self.student.find(By.CSS_SELECTOR, 'button.async-button').click()
+        self.student.find(By.CSS_SELECTOR, 'button.async-button').click()
+
+        self.ps.test_updates['passed'] = True
 
     # Case C7692 - 002 - Student | After answering an exercise feedback
     # is presented
@@ -221,13 +208,11 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """View section completion report.
 
         Steps:
-
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the teacher user account in the username and password text boxes
         Click on the 'Sign in' button
         If the user has more than one course, click on a CC course name
-
         Click the 'Contents' button to open the table of contents
         Click on a chapter
         Click on a non-introductory section
@@ -237,11 +222,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         Click a multiple choice answer
         Click the 'Submit' button
 
-
         Expected Result:
-
         The correct answer is displayed and feedback is given.
-
         """
         self.ps.test_updates['name'] = 'cc1.08.002' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -254,6 +236,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -264,48 +247,59 @@ class TestStudentsWorkAssignments(unittest.TestCase):
 
         Steps:
 
+
+        Expected Result:
         """
+        self.ps.test_updates['name'] = 'cc1.08.003' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.08',
+            'cc1.08.003',
+            '7693'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
 
     # Case C7694 - 004 - System | Spaced practice assessments are from
     # previously worked modules
-        @pytest.mark.skipif(str(7694) not in TESTS, reason='Excluded')  # NOQA
-        def test_system_spaced_practice_assessments_are_from_previo_7694(self):
-            """Spaced practice assessments are from previousy worked modules.
+    @pytest.mark.skipif(str(7694) not in TESTS, reason='Excluded')  # NOQA
+    def test_system_spaced_practice_assessments_are_from_previo_7694(self):
+        """Spaced practice assessments are from previousy worked modules.
 
-            Steps:
+        Steps:
+        Go to Tutor
+        Click on the 'Login' button
+        Enter the student user account
+        Click on the 'Sign in' button
+        If the user has more than one course, click on a CC course name
+        Click the 'Contents' button to open the table of contents
+        Select a non-introductory section
+        Click Jump to Concept Coach
+        Click Launch Concept Coach
+        Go through the assessments until you get to the Spaced Practice
 
-            Go to https://tutor-qa.openstax.org/
-            Click on the 'Login' button
-            Enter the student user account
-            Click on the 'Sign in' button
-            If the user has more than one course, click on a CC course name
-            Click the 'Contents' button to open the table of contents
-            Select a non-introductory section
-            Click Jump to Concept Coach
-            Click Launch Concept Coach
+        Expected Result:
+        The section number beneath the text box is from a previous section
+        """
+        self.ps.test_updates['name'] = 'cc1.08.004' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.08',
+            'cc1.08.004',
+            '7694'
+        ]
+        self.ps.test_updates['passed'] = False
 
-            Go through the assessments until you get to the Spaced Practice
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
-
-            Expected Result:
-
-            The section number beneath the text box is from a previous section
-
-            """
-            self.ps.test_updates['name'] = 'cc1.08.004' \
-                + inspect.currentframe().f_code.co_name[4:]
-            self.ps.test_updates['tags'] = [
-                'cc1',
-                'cc1.08',
-                'cc1.08.004',
-                '7694'
-            ]
-            self.ps.test_updates['passed'] = False
-
-            # Test steps and verification assertions
-
-            self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True
 
     # Case C7695 - 005 - System | Modules without assessments do not display
     # the Concept Coach widget
@@ -314,8 +308,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Module without assessments does not display the CC widget.
 
         Steps:
-
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
         Click on the 'Sign in' button
@@ -323,11 +316,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         Click the 'Contents' button to open the table of contents
         Click on an introductory section
 
-
         Expected Result:
-
         The Concept Coach widget does not appear.
-
         """
         self.ps.test_updates['name'] = 'cc1.08.005' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -340,6 +330,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -349,13 +340,11 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Assignment is assistive technology friendly.
 
         Steps:
-
-        Go to tutor-qa
+        Go to Tutor
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
         Click on the 'Sign in' button
         If the user has more than one course, click on a CC course name
-
         Click the 'Contents' button to open the table of contents
         Click on a chapter
         Click on a non-introductory section
@@ -364,13 +353,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         Click the 'Answer' button
         Type a, b, c, or d
 
-
-
         Expected Result:
-
         A multiple choice answer matching the letter typed should be selected.
-
-
         """
         self.ps.test_updates['name'] = 'cc1.08.006' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -383,6 +367,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -393,13 +378,11 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Display the assignment summary after completing the assignment.
 
         Steps:
-
-        Go to tutor-qa
+        Go to Tutor
         Click on the 'Login' button
         Enter the student user account in the username and password text boxes
         Click on the 'Sign in' button
         If the user has more than one course, click on a CC course name
-
         Click the 'Contents' button to open the table of contents
         Click on a chapter
         Click on a non-introductory section
@@ -409,13 +392,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         Click the 'Submit' button
         After answering the last question, click the 'Next Question' button
 
-
-
         Expected Result:
-
         The summary is displayed
-
-
         """
         self.ps.test_updates['name'] = 'cc1.08.007' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -428,6 +406,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -438,25 +417,18 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """The exercise ID is visible within the assessment pane.
 
         Steps:
-
-        Go to tutor-qa
+        Go to Tutor
         Click on the 'Login' button
         Enter the student account in the username and password text boxes
         Click on the 'Sign in' button
         If the user has more than one course, click on a CC course name
-
         Click the 'Contents' button to open the table of contents
         Click on a chapter
         Click on a non-introductory section
         Click the 'Launch Concept Coach' button at the bottom of the page
 
-
-
         Expected Result:
-
         The exercise ID is visivle on the exercise.
-
-
         """
         self.ps.test_updates['name'] = 'cc1.08.008' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -469,6 +441,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -479,20 +452,14 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Able to refer to an assessment to OpenStax via Errata form.
 
         Steps:
-
         Click the 'Contents' button to open the table of contents
         Click on a chapter
         Click on a non-introductory section
         Click the 'Launch Concept Coach' button at the bottom of the page
         Click the 'Report an error' link
 
-
-
         Expected Result:
-
         User is taken to the Errata form with the exercise ID prefilled
-
-
         """
         self.ps.test_updates['name'] = 'cc1.08.009' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -505,6 +472,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -515,7 +483,6 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Able to work an assignment on an Apple tablet device.
 
         Steps:
-
         Click the 'Contents' button to open the table of contents
         Click on a chapter
         Click on a non-introductory section
@@ -524,13 +491,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         Click a multiple choice answer
         Click the 'Submit' button
 
-
-
         Expected Result:
-
         Answer is successfully submitted.
-
-
         """
         self.ps.test_updates['name'] = 'cc1.08.010' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -543,6 +505,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -553,7 +516,6 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Able to work an assignment on an Android tablet device.
 
         Steps:
-
         Click the 'Contents' button to open the table of contents
         Click on a chapter
         Click on a non-introductory section
@@ -562,13 +524,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         Click a multiple choice answer
         Click the 'Submit' button
 
-
-
         Expected Result:
-
         Answer is successfully submitted.
-
-
         """
         self.ps.test_updates['name'] = 'cc1.08.011' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -581,6 +538,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -591,7 +549,6 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Able to work an assignment on a WIndows tablet device.
 
         Steps:
-
         Click the 'Contents' button to open the table of contents
         Click on a chapter
         Click on a non-introductory section
@@ -600,13 +557,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         Click a multiple choice answer
         Click the 'Submit' button
 
-
-
         Expected Result:
-
         Answer is successfully submitted.
-
-
         """
         self.ps.test_updates['name'] = 'cc1.08.012' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -619,6 +571,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -629,5 +582,21 @@ class TestStudentsWorkAssignments(unittest.TestCase):
 
         Steps:
 
+
+        Expected Result:
+
         """
+        self.ps.test_updates['name'] = 'cc1.08.013' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.08',
+            'cc1.08.013',
+            '7703'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True

@@ -7,21 +7,20 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.assignment import Assignment  # NOQA
+# from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+# from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher  # NOQA
-from staxing.helper import Student  # NOQA
+from staxing.helper import Student
 
 # for template command line testing only
 # - replace list_of_cases on line 31 with all test case IDs in this file
 # - replace CaseID on line 52 with the actual cass ID
 # - delete lines 17 - 22
-list_of_cases = 0
-CaseID = 0
+list_of_cases = None
+CaseID = 'skip'
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -32,39 +31,42 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8287, 8288, 8289, 8290, 8291,
-        8292, 8293, 8294, 8295, 8296])  # NOQA
+    str([
+        8287, 8288, 8289, 8290, 8291,
+        8292, 8293, 8294, 8295, 8296
+    ])
 )
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestEpicName(unittest.TestCase):
+class TestViewStudentPerformance(unittest.TestCase):
     """T1.50 - View Student Performance."""
 
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        # self.student= Student(
-        #    use_env_vars=True,
-        #    pasta_user=self.ps,
-        #    capabilities=self.desired_capabilities
-        # )
-        self.student = Student(use_env_vars=True)
+        self.student = Student(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
         self.student.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.student.driver.session_id),
-                           **self.ps.test_updates)
+        self.ps.update_job(
+            job_id=str(self.student.driver.session_id),
+            **self.ps.test_updates
+        )
         try:
             self.student.delete()
         except:
             pass
 
     # Case C8287 - 001 - Student | View the personal Performance Forecast
-    @pytest.mark.skipif(str(8287) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_view_personal_performance_forecast(self):
+    @pytest.mark.skipif(str(8287) not in TESTS, reason='Excluded')
+    def test_student_view_personal_performance_forecast_8287(self):
         """View the personal Performance Forecast.
 
         Steps:
@@ -86,19 +88,22 @@ class TestEpicName(unittest.TestCase):
 
         # Test steps and verification assertions
         self.student.select_course(appearance='physics')
-        assert('courses/1/list/' in self.student.current_url()), \
+        assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.student.open_user_menu()
         self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+
+        self.student.sleep(5)
+
         assert('guide' in self.student.current_url()), \
             'Not viewing performance forecast'
 
         self.ps.test_updates['passed'] = True
 
     # Case C8288 - 002 - Student | Info icon shows an explanation of the data
-    @pytest.mark.skipif(str(8288) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_info_icon_shows_explanation_of_the_data(self):
+    @pytest.mark.skipif(str(8288) not in TESTS, reason='Excluded')
+    def test_student_info_icon_shows_explanation_of_the_data_8288(self):
         """Info icon shows an explanation of the data.
 
         Steps:
@@ -122,7 +127,7 @@ class TestEpicName(unittest.TestCase):
 
         # Test steps and verification assertions
         self.student.select_course(appearance='physics')
-        assert('courses/1/list/' in self.student.current_url()), \
+        assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.student.open_user_menu()
@@ -135,13 +140,14 @@ class TestEpicName(unittest.TestCase):
                 (By.CLASS_NAME, 'info-link')
             )
         ).click()
-        self.student.sleep(10)
+
+        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
     # Case C8289 - 003 - Student | View the performance color key
-    @pytest.mark.skipif(str(8289) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_view_the_performance_color_key(self):
+    @pytest.mark.skipif(str(8289) not in TESTS, reason='Excluded')
+    def test_student_view_the_performance_color_key_8289(self):
         """View the performance color key.
 
         Steps:
@@ -164,7 +170,7 @@ class TestEpicName(unittest.TestCase):
 
         # Test steps and verification assertions
         self.student.select_course(appearance='physics')
-        assert('courses/1/list/' in self.student.current_url()), \
+        assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.student.open_user_menu()
@@ -177,14 +183,15 @@ class TestEpicName(unittest.TestCase):
                 (By.CLASS_NAME, 'guide-key')
             )
         )
+
         self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
     # Case C8290 - 004 - Student | Return To Dashboard button
     # returns to the list dashboard
-    @pytest.mark.skipif(str(8290) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_return_to_dashboard_button(self):
+    @pytest.mark.skipif(str(8290) not in TESTS, reason='Excluded')
+    def test_student_return_to_dashboard_button_8290(self):
         """Return To Dashboard button returns to the list dashboard.
 
         Steps:
@@ -207,14 +214,14 @@ class TestEpicName(unittest.TestCase):
 
         # Test steps and verification assertions
         self.student.select_course(appearance='physics')
-        assert('courses/1/list/' in self.student.current_url()), \
+        assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.student.open_user_menu()
         self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.student.current_url()), \
             'Not viewing performance forecast'
-        self.student.sleep(10)
+        self.student.sleep(5)
         self.student.open_user_menu()
         self.student.wait.until(
             expect.presence_of_element_located(
@@ -222,23 +229,24 @@ class TestEpicName(unittest.TestCase):
             )
         ).click()
 
+        self.student.sleep(5)
+
         assert('list' in self.student.current_url()), \
             'Not viewing the dashboard'
-        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
     # Case C8291 - 005 - Student | A student with zero answers does not
     # show section breakdowns
-    @pytest.mark.skipif(str(8291) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_no_answers_does_not_show_breakdown(self):
+    @pytest.mark.skipif(str(8291) not in TESTS, reason='Excluded')
+    def test_student_no_answers_does_not_show_breakdown_8291(self):
         """A student with zero answers does not show section breakdowns.
 
         Steps:
-        Go to https://tutor-qa.openstax.org/
+        Go to Tutor
         Click on the 'Login' button
         Enter the student user account [ student532 | password ] in the
-        username and password text boxes
+            username and password text boxes
         Click on the 'Sign in' button
         If the user has more than one course, click on a Tutor course name
         Click on the user menu in the upper right corner
@@ -261,11 +269,9 @@ class TestEpicName(unittest.TestCase):
         # Test steps and verification assertions
         self.student.logout()
         self.student.driver.get("https://tutor-qa.openstax.org/")
-        self.student.login(username="qas_01",
-                           password="password",
+        self.student.login(username="student532",
                            url="https://tutor-qa.openstax.org/")
-        self.student.driver.get(
-            "https://tutor-qa.openstax.org/courses/75/list/")
+
         self.student.open_user_menu()
         self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.student.current_url()), \
@@ -277,8 +283,8 @@ class TestEpicName(unittest.TestCase):
 
     # Case C8292 - 006 - Student | My Weaker Areas shows up to four problematic
     # sections
-    @pytest.mark.skipif(str(8292) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_weaker_areas_shows_up_to_four_sections(self):
+    @pytest.mark.skipif(str(8292) not in TESTS, reason='Excluded')
+    def test_student_weaker_areas_shows_up_to_four_sections_8292(self):
         """My Weaker Areas shows up to four problematic sections.
 
         Steps:
@@ -300,9 +306,8 @@ class TestEpicName(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.driver.get(
-            "https://tutor-qa.openstax.org/courses/2/list/")
-        assert('courses/2/list/' in self.student.current_url()), \
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.student.open_user_menu()
@@ -310,16 +315,22 @@ class TestEpicName(unittest.TestCase):
         assert('guide' in self.student.current_url()), \
             'Not viewing performance forecast'
 
-        self.student.find(By.XPATH, "/html/body/div[@id='react-root-container']/div[@class='tutor-app openstax-wrapper']/div[@class='openstax-debug-content']/div[@class='performance-forecast student panel panel-default']/div[@class='panel-body']/div[@class='guide-container']/div[@class='guide-group']/div[@class='chapter-panel weaker']/div[@class='sections']/div[@class='section'][4]/button[@class='btn-block btn btn-default']")  # NOQA
+        weak = self.student.driver.find_elements_by_xpath(
+            "//div[@class='chapter-panel weaker']/div[@class='sections']" +
+            "/div[@class='section']")
+
         self.student.sleep(5)
+
+        assert(len(weak) >= 1), \
+            'Less than four weaker sections'
 
         self.ps.test_updates['passed'] = True
 
     # Case C8293 - 007 - Student | Chapters are listed on the left with their
     # sections to the right
-    @pytest.mark.skipif(str(8293) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_chapter_listed_on_left_with_section_on_right(self):  # NOQA
-        """Chapters are listed on the left with their sections to the right.
+    @pytest.mark.skipif(str(8293) not in TESTS, reason='Excluded')
+    def test_student_chapter_listed_on_left_with_section_on_right_8293(self):
+        """Chapter are listed on the left with their sections to the right.
 
         Steps:
         Click on the user menu in the upper right corner
@@ -342,7 +353,7 @@ class TestEpicName(unittest.TestCase):
 
         # Test steps and verification assertions
         self.student.select_course(appearance='physics')
-        assert('courses/1/list/' in self.student.current_url()), \
+        assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.student.open_user_menu()
@@ -352,19 +363,29 @@ class TestEpicName(unittest.TestCase):
 
         self.student.page.wait_for_page_load()
 
+        # Get all the chapter panels
         panels = self.student.driver.find_elements_by_class_name(
             'chapter-panel')
+
+        # Should be one chapter button for each panel, at least one section
+        # button per panel
         for panel in panels:
-            panel.find_elements_by_class_name('chapter')
-            panel.find_elements_by_class_name('sections')
+            chapter = panel.find_elements_by_class_name('chapter')
+            sections = panel.find_elements_by_class_name('sections')
+            assert(len(chapter) > 0), \
+                ''
+
+            assert(len(sections) > 0), \
+                ''
+
         self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
     # Case C8294 - 008 - Student | Clicking on a chapter bar brings up to
     # five practice assessments for that chapter
-    @pytest.mark.skipif(str(8294) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_clicking_chapter_brings_up_to_five_assessments(self):
+    @pytest.mark.skipif(str(8294) not in TESTS, reason='Excluded')
+    def test_student_clicking_chapter_brings_up_to_five_assessments_8294(self):
         """Clicking chapter bar brings up to 5 practice assessments.
 
         Steps:
@@ -389,7 +410,7 @@ class TestEpicName(unittest.TestCase):
         # btn-block btn btn-default
         # Test steps and verification assertions
         self.student.select_course(appearance='physics')
-        assert('courses/1/list/' in self.student.current_url()), \
+        assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.student.open_user_menu()
@@ -400,15 +421,22 @@ class TestEpicName(unittest.TestCase):
         self.student.page.wait_for_page_load()
         self.student.wait.until(
             expect.presence_of_element_located((
-                By.XPATH, "/html/body/div[@id='react-root-container']/div[@class='tutor-app openstax-wrapper']/div[@class='openstax-debug-content']/div[@class='performance-forecast student panel panel-default']/div[@class='panel-body']/div[@class='guide-container']/div[@class='guide-group']/div[@class='chapter-panel'][1]/div[@class='chapter']/button[@class='btn-block btn btn-default']"))).click()  # NOQA
+                By.XPATH,
+                "//div[@class='chapter']/button"
+            ))
+        ).click()
 
-        self.student.sleep(10)
+        assert('practice' in self.student.current_url()), \
+            'Not presented with practice problems'
+
+        self.student.sleep(5)
+
         self.ps.test_updates['passed'] = True
 
     # Case C8295 - 009 - Student | Clicking on a section bar brings up to five
     # practice assessments for that section
-    @pytest.mark.skipif(str(8295) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_clicking_section_brings_up_to_five_assessments(self):
+    @pytest.mark.skipif(str(8295) not in TESTS, reason='Excluded')
+    def test_student_clicking_section_brings_up_to_five_assessments_8295(self):
         """Clicking section bar brings up to 5 practice assessments.
 
         Steps:
@@ -433,27 +461,32 @@ class TestEpicName(unittest.TestCase):
 
         # Test steps and verification assertions
 
-        self.student.driver.get(
-            "https://tutor-qa.openstax.org/courses/2/list/")
-        assert('courses/2/list/' in self.student.current_url()), \
+        self.student.select_course(appearance='physics')
+        assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.student.open_user_menu()
         self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.student.current_url()), \
             'Not viewing performance forecast'
-        self.student.find(By.XPATH, "/html/body/div[@id='react-root-container']/div[@class='tutor-app openstax-wrapper']/div[@class='openstax-debug-content']/div[@class='performance-forecast student panel panel-default']/div[@class='panel-body']/div[@class='guide-container']/div[@class='guide-group']/div[@class='chapter-panel'][1]/div[@class='sections']/div[@class='section'][2]/button[@class='btn-block btn btn-default']").click()  # NOQA
+        self.student.find(
+            By.XPATH,
+            "//div[@class='chapter-panel']/div[@class='sections']" +
+            "/div[@class='section']/button"
+        ).click()
+
         assert('practice' in self.student.current_url()), \
             'Not presented with practice problems'
+
         self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
     # Case C8296 - 010 - Student | Bars without enough data show Practice More
     # To Get Forecast instead of a color bar
-    @pytest.mark.skipif(str(8296) not in TESTS, reason='Excluded')  # NOQA
-    def test_student_bars_without_data_show_practice_more(self):  # NOQA
-        """Bars without enough data show Practice More To Get Forecast.
+    @pytest.mark.skipif(str(8296) not in TESTS, reason='Excluded')
+    def test_student_bars_without_data_show_practice_more_8296(self):
+        """Bar without enough data show Practice More To Get Forecast.
 
         Steps:
         Click on the user menu in the upper right corner
@@ -476,15 +509,13 @@ class TestEpicName(unittest.TestCase):
 
         # Test steps and verification assertions
         self.student.select_course(appearance='physics')
-        assert('courses/1/list/' in self.student.current_url()), \
+        assert('list' in self.student.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.student.open_user_menu()
         self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.student.current_url()), \
             'Not viewing performance forecast'
-
         self.student.find(By.CLASS_NAME, 'no-data')
-        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
