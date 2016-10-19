@@ -245,163 +245,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
                 (By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
             )
         )
-
         self.ps.test_updates['passed'] = True
-
-
-
-
-
-    def find_all_questions(self, driver, problems):
-        """Final all available questions."""
-
-        assignment = Assignment()
-
-        questions = {}
-        section = ''
-        wait = WebDriverWait(driver, 5)
-        try:
-            loading = wait.until(
-                expect.visibility_of_element_located(
-                    (By.XPATH, '//span[text()="Loading..."]')
-                )
-            )
-            wait.until(expect.staleness_of(loading))
-        except:
-            pass
-        rows = driver.find_elements(
-            By.XPATH,
-            '//div[contains(@class,"exercise-sections")]' +
-            '//div[@class="exercises"]')                 # #######CHANGE (and below)
-        print("rows: " + str(rows))
-        for row in rows:
-            children = row.find_elements(By.XPATH, './/span[contains(text(),"ID:")]')
-            print("children: " + str(children))
-            if len(children) == 0:
-                # print('FAQ - No children tags')
-                questions[section] = []
-                continue
-            # elif len(children) == 1:
-            #     try:
-            #         section = children[0].find_element(
-            #             By.XPATH,
-            #             './/span[@class="chapter-section"]').text
-            #         questions[section] = []
-            #     except:
-            #         question = children[0].find_element(
-            #             By.XPATH,
-            #             './/span[contains(text(),"@")]').text
-            #         question = question.split(' ')[1]
-            #         questions[section].append(question)
-            else:
-                for q in children:
-                    question = q.text.split(' ')[1]
-                    questions[section].append(question)
-                # question = children[0].find_element(
-                #     By.XPATH,
-                #     './/span[contains(text(),"@")]').text
-                # question = question.split(' ')[1]
-                # questions[section].append(question)
-                # try:
-                #     question = children[1].find_element(
-                #         By.XPATH,
-                #         './/span[contains(text(),"@")]').text
-                #     question = question.split(' ')[1]
-                #     questions[section].append(question)
-                # except:
-                #     pass
-        return questions
-
-    def add_homework_problems(self, driver, problems):
-        """Add assessments to a homework."""
-        assignment = Assignment()  # #######
-
-        wait = WebDriverWait(driver, Assignment.WAIT_TIME)
-        driver.find_element(By.ID, 'problems-select').click()
-        wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//span[text()="Add Questions"]')    # CHANGE!!
-            )
-        )
-        assignment.select_sections(driver, list(problems.keys()))
-        driver.execute_script(
-            "window.scrollTo(0, document.body.scrollHeight);"
-        )
-        driver.find_element(
-            By.XPATH, '//button[contains(@class,"-show-problems")]'
-        ).click()
-        all_available = self.find_all_questions(driver, problems)
-        using = []
-        # print('AHP - Selection list: %s' % selections)
-        print(all_available)
-        print(problems)
-        for section in problems:
-            print("section: " + str(section))
-            if problems is None or str(problems).lower() == 'none':
-                print('%s: No exercises (%s)' % (section, problems[section]))
-                continue
-            # Set maximum Tutor-selected problems
-            if section == 'tutor':
-                print('Using %s Tutor selections' % problems[section])
-                assignment.set_tutor_selections(driver, problems)
-            # Select all exercises in the section
-            elif problems[section] == 'all':
-                print('Selecting all from %s' % section)
-                available = assignment.get_chapter_list(all_available, section) if \
-                    'ch' in section else all_available[section]
-                for ex in available:
-                    using.append(ex)
-            # Select between X and Y exercises, inclusive, from the section
-            elif type(problems[section]) == tuple:
-                low, high = problems[section]
-                total = randint(int(low), int(high))         # removed rsndom
-                print('Selecting %s random from %s (%s to %s)' %
-                      (total, section, low, high))
-                available = assignment.get_chapter_list(all_available, section) if \
-                    'ch' in section else all_available[section]
-                for i in range(total):
-                    ex = randint(0, len(available) - 1)      # removed random
-                    using.append(available[ex])
-                    available.remove(available[ex])
-            # Select the first X exercises from the section
-            elif type(problems[section]) == int:
-                print('Selecting first %s from %s' %
-                      (problems[section], section))
-                available = assignment.get_chapter_list(all_available, section) if \
-                    'ch' in section else all_available[section]
-                for position in range(problems[section]):
-                    using.append(available[position])
-            elif problems[section] is list:
-                print('Adding %s custom if available' % len(problems[section]))
-                for ex in problems[section]:
-                    for section in all_available:
-                        if ex in all_available[section]:
-                            using.append(ex)
-        for exercise in set(using):
-            ac = ActionChains(driver)
-            time.sleep(0.5)
-            ac.move_to_element(
-                driver.find_element(
-                    By.XPATH,
-                    '//span[contains(@data-reactid,"%s")]' % exercise
-                )
-            )
-            ac.move_by_offset(0, -80)
-            ac.click()
-            ac.perform()
-        ActionChains(driver). \
-            move_to_element(
-                driver.find_element(
-                    By.XPATH, '//span[text()="Tutor Selections"]'
-                )). \
-            move_by_offset(0, -80). \
-            perform()
-        wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//*[text()="Next"]')
-            )
-        ).click()
-
 
     # Case C7984 - 007 - Teacher | View a homework assignment summary
     @pytest.mark.skipif(str(7984) not in TESTS, reason='Excluded')
@@ -425,81 +269,21 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         # create an assignment
         self.teacher.select_course(appearance='physics')  # ############
 
-
         assignment_name = "homework-%s" % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
-        # self.teacher.add_assignment(
-        #     assignment='homework',
-        #     args={
-        #         'title': assignment_name,
-        #         'description': 'description',
-        #         'periods': {'all': (begin, end)},
-        #         'problems': {'1.1': (4, 8), },
-        #         'status': 'publish',
-        #         'feedback': 'immediate'
-        #     }
-        # )
-
-
-        break_point = None
-        assignment = Assignment()
-        driver = self.teacher.driver
-        description = "description"
-        title = "title"
-        periods = {'all': (begin, end)}
-        status = 'publish'
-        feedback = 'immediate'
-        problems = {'1.1': (2, 4), }
-
-        print('Creating a new Homework')
-        assignment.open_assignment_menu(driver)
-        driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        wait = WebDriverWait(driver, Assignment.WAIT_TIME)
-        wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//div[contains(@class,"homework-plan")]')
-            )
+        end = (today + datetime.timedelta(days=5)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='homework',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'problems': {'1.1': (4, 8), },
+                'status': 'publish',
+                'feedback': 'immediate'
+            }
         )
-        if break_point == Assignment.BEFORE_TITLE:
-            return
-        driver.find_element(By.ID, 'reading-title').send_keys(title)
-        if break_point == Assignment.BEFORE_DESCRIPTION:
-            return
-        driver.find_element(
-            By.XPATH,
-            '//div[contains(@class,"assignment-description")]' +
-            '//textarea[contains(@class,"form-control")]'). \
-            send_keys(description)
-        if break_point == Assignment.BEFORE_PERIOD:
-            return
-        assignment.assign_periods(driver, periods)
-        if break_point == Assignment.BEFORE_EXERCISE_SELECT:
-            return
-        self.add_homework_problems(driver, problems)  #############
-
-        driver.find_element(By.ID, 'feedback-select').click()
-        if feedback == 'immediate':
-            driver.find_element(
-                By.XPATH,
-                '//option[@value="immediate"]'
-            ).click()
-        else:
-            driver.find_element(By.XPATH, '//option[@value="due_at"]').click()
-        if break_point == Assignment.BEFORE_STATUS_SELECT:
-            return
-        assignment.select_status(driver, status)
-
-
-
-
-
-
-
-
-
-
         # click on assignemnt
         self.teacher.wait.until(
             expect.presence_of_element_located(
@@ -509,7 +293,9 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         # check that it opened
         self.teacher.wait.until(
             expect.presence_of_element_located(
-                (By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+                (By.XPATH,
+                 '//*[@class="modal-title" and ' +
+                 'contains(text(), "%s")]' % assignment_name)
             )
         )
         self.ps.test_updates['passed'] = True
