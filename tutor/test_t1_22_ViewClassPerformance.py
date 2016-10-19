@@ -393,7 +393,8 @@ class TestViewClassPerformance(unittest.TestCase):
         self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing performance forecast'
-        weak = self.teacher.driver.find_elements_by_xpath(
+        weak = self.teacher.find_all(
+            By.XPATH,
             "//div[@class='chapter-panel weaker']/div[@class='sections']/div")
         assert(len(weak) <= 4), \
             'Not viewing performance forecast'
@@ -439,8 +440,7 @@ class TestViewClassPerformance(unittest.TestCase):
 
         self.teacher.page.wait_for_page_load()
 
-        panels = self.teacher.driver.find_elements_by_class_name(
-            'chapter-panel')
+        panels = self.teacher.find_all(By.CLASS_NAME, 'chapter-panel')
         for panel in panels:
             panel.find_elements_by_class_name('chapter')
             panel.find_elements_by_class_name('sections')
