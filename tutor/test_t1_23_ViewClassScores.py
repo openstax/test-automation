@@ -27,13 +27,12 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8177, # 8179, 8180
-        # 8156, 8157, 8158, 8159, 8160,
-        # 8161, 8162, 8163, 8164, 8165,
-        # 8166, 8167, 8168, 8169, 8170,
-        # 8171, 8172, 8173, 8174, 8175,
-        # 8176, 8177, 8178, 8179, 8180,
-        # 8181
+        8156, 8157, 8158, 8159, 8160,
+        8161, 8162, 8163, 8164, 8165,
+        8166, 8167, 8168, 8169, 8170,
+        8171, 8172, 8173, 8174, 8175,
+        8176, 8177, 8178, 8179, 8180,
+        8181
     ])
 )
 
@@ -48,12 +47,12 @@ class TestViewClassScores(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.teacher.login()
         # go to student scores
-        self.teacher.select_course(appearance='physics')
+        self.teacher.select_course(appearance='college_physics')
         self.teacher.driver.find_element(
             By.LINK_TEXT, 'Student Scores').click()
         self.teacher.wait.until(
@@ -568,8 +567,6 @@ class TestViewClassScores(unittest.TestCase):
                 actions.move_by_offset(50, 0)
                 actions.release()
                 actions.perform()
-
-
 
         self.ps.test_updates['passed'] = True
 
@@ -1108,11 +1105,10 @@ class TestViewClassScores(unittest.TestCase):
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH,
-                 '//div[contains(@class,"teacher-review-answers")]' +
-                 '//div[contains(@class,"free-response")]')
+                (By.XPATH, '//div[@class="free-response"]')
             )
-        )
+        ).click()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8178 - 023 - Teacher | Assessment pane shows interleaved class
@@ -1191,13 +1187,13 @@ class TestViewClassScores(unittest.TestCase):
             "//span[contains(@aria-describedby,'header-cell-title')]")
         for i in range(len(assignments)//4):
             try:
-                actions = ActionChains(self.teacher.driver)
                 element = self.teacher.driver.find_element(
                     By.XPATH,
-                    '//div[contains(@class,"score") and ' +
+                    '//div[@class="scores-cell" and ' +
                     'contains(@data-reactid,"reading")]' +
-                    '//span[contains(@class,"trigger-wrap")]'
+                    '//*[@class="pie-progress"]'
                 )
+                actions = ActionChains(self.teacher.driver)
                 actions.move_to_element(element)
                 actions.perform()
                 self.teacher.driver.find_element(
@@ -1220,9 +1216,7 @@ class TestViewClassScores(unittest.TestCase):
                 actions.move_by_offset(50, 0)
                 actions.release()
                 actions.perform()
-
         assert('steps' in self.teacher.current_url()), 'not at sutdent work'
-
         self.ps.test_updates['passed'] = True
 
     # Case C8180 - 025 - Teacher | Teacher can view a student's work for a
@@ -1254,13 +1248,10 @@ class TestViewClassScores(unittest.TestCase):
             "//span[contains(@aria-describedby,'header-cell-title')]")
         for i in range(len(assignments)//4):
             try:
-                homework = self.teacher.driver.find_element(
+                self.teacher.driver.find_element(
                     By.XPATH,
-                    '//div[contains(@class,"score")]//a[contains(text(),"%")]')
-                self.teacher.driver.execute_script(
-                    'return arguments[0].scrollIntoView();', homework)
-                self.teacher.driver.execute_script('window.scrollBy(0, -80);')
-                homework.click()
+                    '//div[contains(@class,"score")]//a[contains(text(),"%")]'
+                ).click()
                 break
             except (NoSuchElementException, ElementNotVisibleException):
                 if i >= (len(assignments)//4)-1:
