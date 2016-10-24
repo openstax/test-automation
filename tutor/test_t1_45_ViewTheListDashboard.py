@@ -453,9 +453,8 @@ class TestViewTheListDashboard(unittest.TestCase):
             username=os.getenv('STUDENT_USER_ONE_COURSE'),
             password=os.getenv('STUDENT_PASSWORD'),
             existing_driver=self.student.driver,
-            site=self.student.url  # ,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         student2.login()
         student2.page.wait_for_page_load()
