@@ -11,12 +11,13 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
+from selenium.webdriver.common.action_chains import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher
+from staxing.helper import Teacher, Student
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -41,12 +42,16 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
+        self.student = Student(
+            use_env_vars=True,
+            existing_driver=self.teacher.driver,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
@@ -86,7 +91,21 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        # change to window with help center
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(
+            By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
+        )
+        assert('support' in self.teacher.current_url()), 'not at help center'
 
         self.ps.test_updates['passed'] = True
 
@@ -113,7 +132,21 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        # change to window with help center
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(
+            By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
+        )
+        assert('support' in self.teacher.current_url()), 'not at help center'
 
         self.ps.test_updates['passed'] = True
 
@@ -140,8 +173,18 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.login()
+        self.student.open_user_menu()
+        self.student.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        # change to window with help center
+        window_with_help = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_help)
+        self.student.find(
+            By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
+        )
+        assert('support' in self.student.current_url()), 'not at help center'
         self.ps.test_updates['passed'] = True
 
     # Case C7707 - 004 - Non-user | Submit support questions
@@ -151,12 +194,11 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
 
         Steps:
         Go to the Concept Coach landing page
-        Click on the help button in the bottom right
-        Enter keywords to question into text box
-        Press return key
-        Click on 'Leave us a message'
-        Enter name, email and message into corresponding text boxes
-        Click 'Send'
+        click support in the header
+        enter text into the search box
+        click contact us
+        fillout form
+        click Submit
 
         Expected Result:
         'Message sent' displayed in help box
@@ -172,8 +214,57 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.get('http://cc.openstax.org/')
+        self.teacher.sleep(1)
+        # number hardcoded because condenses at different size than tutor
+        if self.teacher.driver.get_window_size()['width'] < 1105:
+            element = self.teacher.wait.until(
+                expect.visibility_of_element_located(
+                    (By.XPATH, '//label[@for="mobileNavToggle"]')
+                )
+            )
+            actions = ActionChains(self.teacher.driver)
+            # use action chain because it is clicking to the wrong elemnt
+            actions.move_to_element(element)
+            actions.click()
+            actions.perform()
+        support = self.teacher.find(
+            By.LINK_TEXT, 'support'
+        )
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(support)
+        actions.click()
+        actions.perform()
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(
+            By.ID, 'searchAskInput'
+        ).send_keys('fake_question')
+        self.teacher.find(
+            By.ID, 'searchAskButton'
+        ).click()
+        self.teacher.find(
+            By.LINK_TEXT, 'Contact Us'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(
+            By.XPATH, '//input[contains(@id,"contactUsForm:firstName")]'
+        ).send_keys('qa')
+        self.teacher.find(
+            By.XPATH, '//input[contains(@id,"contactUsForm:lastName")]'
+        ).send_keys('test')
+        self.teacher.find(
+            By.XPATH, '//input[contains(@id,"contactUsForm:email")]'
+        ).send_keys('automated@qa.test')
+        self.teacher.find(
+            By.XPATH, '//div[@class="submit-container"]//input'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//p[contains(text(),"Thank you")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7708 - 005 - Teacher | Submit support questions
@@ -207,8 +298,49 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        # change to window with help center
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(
+            By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
+        )
+        assert('support' in self.teacher.current_url()), 'not at help center'
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(
+            By.ID, 'searchAskInput'
+        ).send_keys('fake_question')
+        self.teacher.find(
+            By.ID, 'searchAskButton'
+        ).click()
+        self.teacher.find(
+            By.LINK_TEXT, 'Contact Us'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(
+            By.XPATH, '//input[contains(@id,"contactUsForm:firstName")]'
+        ).send_keys('qa')
+        self.teacher.find(
+            By.XPATH, '//input[contains(@id,"contactUsForm:lastName")]'
+        ).send_keys('test')
+        self.teacher.find(
+            By.XPATH, '//input[contains(@id,"contactUsForm:email")]'
+        ).send_keys('automated@qa.test')
+        self.teacher.find(
+            By.XPATH, '//div[@class="submit-container"]//input'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//p[contains(text(),"Thank you")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7709 - 006 - Student | Submit support questions
@@ -241,7 +373,46 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.login()
+        self.student.open_user_menu()
+        self.student.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        # change to window with help center
+        window_with_help = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_help)
+        self.student.find(
+            By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
+        )
+        assert('support' in self.student.current_url()), 'not at help center'
+        self.student.page.wait_for_page_load()
+        self.student.find(
+            By.ID, 'searchAskInput'
+        ).send_keys('fake_question')
+        self.student.find(
+            By.ID, 'searchAskButton'
+        ).click()
+        self.student.find(
+            By.LINK_TEXT, 'Contact Us'
+        ).click()
+        self.student.page.wait_for_page_load()
+        self.student.find(
+            By.XPATH, '//input[contains(@id,"contactUsForm:firstName")]'
+        ).send_keys('qa')
+        self.student.find(
+            By.XPATH, '//input[contains(@id,"contactUsForm:lastName")]'
+        ).send_keys('test')
+        self.student.find(
+            By.XPATH, '//input[contains(@id,"contactUsForm:email")]'
+        ).send_keys('automated@qa.test')
+        self.student.find(
+            By.XPATH, '//div[@class="submit-container"]//input'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//p[contains(text(),"Thank you")]')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -277,7 +448,18 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Getting Started'
+        ).click()
+        self.teacher.find(
+            By.XPATH, '//h3[contains(text(),"Getting Started")]'
+        ).click()
+        assert('help' in self.teacher.current_url()), 'not at help center'
 
         self.ps.test_updates['passed'] = True
 
@@ -309,13 +491,23 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.login()
+        self.student.open_user_menu()
+        self.student.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        # change to window with help center
+        window_with_help = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_help)
+        self.student.find(
+            By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
+        )
+        assert('support' in self.student.current_url()), 'not at help center'
         self.ps.test_updates['passed'] = True
 
-    # Case C7712 - 009 - Teacher | View instructions on how to use CC
+    # Case C7712 - 009 - Teacher | View instructions on how to assign CC
     @pytest.mark.skipif(str(7712) not in TESTS, reason='Excluded')
-    def test_teacher_view_instructions_on_how_to_use_cc_7712(self):
+    def test_teacher_view_instructions_on_how_to_assign_cc_7712(self):
         """View instructions on how to use Concept Coach.
 
         Steps:
@@ -329,7 +521,7 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
 
         Expected Result:
         Taken to Zendesk in a new window or tab
-        AAssorted help is displayed
+        Assorted help is displayed
         """
         self.ps.test_updates['name'] = 'cc1.14.009' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -342,7 +534,21 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        # change to window with help center
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(
+            By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
+        )
+        assert('support' in self.teacher.current_url()), 'not at help center'
 
         self.ps.test_updates['passed'] = True
 
@@ -353,9 +559,7 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
 
         Steps:
 
-
         Expected Result:
-
         """
         self.ps.test_updates['name'] = 'cc1.14.010' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -380,9 +584,7 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
 
         Steps:
 
-
         Expected Result:
-
         """
         self.ps.test_updates['name'] = 'cc1.14.011' \
             + inspect.currentframe().f_code.co_name[4:]
