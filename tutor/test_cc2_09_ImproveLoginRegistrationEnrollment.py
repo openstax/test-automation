@@ -37,8 +37,6 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
@@ -79,18 +77,11 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
 
         Steps:
 
-
         Expected Result:
-
         """
         self.ps.test_updates['name'] = 'cc2.09.001' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.09',
-            'cc2.09.001',
-            '14820'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.09', 'cc2.09.001', '14820']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -122,12 +113,7 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.09.002' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.09',
-            'cc2.09.002',
-            '14819'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.09', 'cc2.09.002', '14819']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -162,12 +148,7 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.09.003' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.09',
-            'cc2.09.003',
-            '14759'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.09', 'cc2.09.003', '14759']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -200,12 +181,7 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.09.004' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.09',
-            'cc2.09.004',
-            '14862'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.09', 'cc2.09.004', '14862']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -233,12 +209,7 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.09.005' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.09',
-            'cc2.09.005',
-            '14771'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.09', 'cc2.09.005', '14771']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -261,12 +232,7 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.09.006' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.09',
-            'cc2.09.006',
-            '14821'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.09', 'cc2.09.006', '14821']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -290,12 +256,7 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.09.007' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.09',
-            'cc2.09.007',
-            '14822'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.09', 'cc2.09.007', '14822']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
