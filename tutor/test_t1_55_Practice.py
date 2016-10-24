@@ -27,10 +27,9 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8308
-        # 8297, 8298, 8299, 8300, 8301,
-        # 8302, 8303, 8304, 8305, 8306,
-        # 8307, 8308, 8309, 8310
+        8297, 8298, 8299, 8300, 8301,
+        8302, 8303, 8304, 8305, 8306,
+        8307, 8308, 8309, 8310
     ])
 )
 
@@ -45,8 +44,8 @@ class TestPractice(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.student = Student(
             use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.student.login()
         self.student.select_course(appearance='physics')
@@ -54,7 +53,7 @@ class TestPractice(unittest.TestCase):
         self.wait.until(
             expect.visibility_of_element_located((
                 By.XPATH,
-                '//button[contains(@aria-describedby,"progress-bar-tooltip")]'
+                '//button[contains(@class,"practice")]//span'
             ))
         ).click()
 
@@ -580,20 +579,21 @@ class TestPractice(unittest.TestCase):
         self.student.find(
             By.TAG_NAME, 'textarea').send_keys('qa test')
         self.student.find(
-            By.XPATH, '//input[contains(@value,"Minor")]').click()
+            By.XPATH, '//div[@data-value="Minor" and @role="radio"]').click()
         self.student.find(
-            By.XPATH, '//input[contains(@value,"other")]').click()
+            By.XPATH, '//div[@data-value="other" and @role="radio"]').click()
         self.student.find(
-            By.XPATH, '//input[contains(@value,"Biology with Courseware")]'
+            By.XPATH,
+            '//div[contains(@data-value,"Biology") and @role="radio"]'
         ).click()
         self.student.find(
-            By.XPATH, '//input[contains(@value,"Safari")]').click()
+            By.XPATH, '//div[@data-value="Safari" and @role="radio"]').click()
         self.student.find(
-            By.XPATH, '//input[contains(@value,"Submit")]').click()
+            By.XPATH, '//span[text()="Submit"]').click()
         # find submitted message
         self.student.find(
             By.XPATH,
-            '//div[contains(text(),"Your response has been recorded")]')
+            '//div[contains(text(),"Thank you")]')
 
         self.ps.test_updates['passed'] = True
 
