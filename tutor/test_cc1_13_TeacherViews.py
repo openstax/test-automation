@@ -172,7 +172,7 @@ class TestTeacherViews(unittest.TestCase):
             'Not viewing the textbook PDF'
         self.teacher.driver.switch_to_window(
             self.teacher.driver.window_handles[0])
-        # assignemnt links
+        # assignment links
         self.teacher.driver.find_element(
             By.XPATH, '//a[contains(text(),"Assignment Links")]'
         ).click()
@@ -322,7 +322,7 @@ class TestTeacherViews(unittest.TestCase):
             '/div[@class="score"]'
         ).click()
         assert('steps' in self.teacher.current_url()), \
-            "Not taken to individual student's work for assignemnt"
+            "Not taken to individual student's work for assignment"
 
         self.ps.test_updates['passed'] = True
 

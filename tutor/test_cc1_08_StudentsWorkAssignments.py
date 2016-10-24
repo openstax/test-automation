@@ -43,7 +43,8 @@ class TestStudentsWorkAssignments(unittest.TestCase):
             username=os.getenv('TEACHER_USER_CC'),
             password=os.getenv('TEACHER_PASSWORD'),
             pasta_user=self.ps,
-            capabilities=self.desired_capabilities)
+            capabilities=self.desired_capabilities
+        )
         self.teacher.login()
         if 'cc-dashboard' not in self.teacher.current_url():
             courses = self.teacher.find_all(

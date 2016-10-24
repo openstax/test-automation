@@ -7,8 +7,9 @@ import pytest
 import unittest
 import datetime
 
+from autochompsky import chompsky
 from pastasauce import PastaSauce, PastaDecorator
-# from random import randint
+from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
@@ -44,55 +45,52 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
-        self.student = Student(
-            existing_driver=self.teacher.driver,
-            username=os.getenv('STUDENT_USER'),
-            password=os.getenv('STUDENT_PASSWORD'),
-            site='https://tutor-qa.openstax.org/',
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
         # create a reading for the student to work
         self.teacher.login()
-        self.teacher.select_course(appearance='physics')
-        assignment_name = 'reading_assignemnt'
+        self.assignment_name = 't1.18 reading-%s' % randint(100, 999)
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='reading',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'reading_list': ['1.1'],
-                                        'status': 'publish'
-                                     })
-        self.student.wait.until(
+        begin = today.strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=randint(1, 10))) \
+            .strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='reading',
+            args={
+                'title': self.assignment_name,
+                'description': chompsky(),
+                'periods': {'all': (begin, end)},
+                'reading_list': ['1.1', '1.2'],
+                'status': 'publish',
+            }
+        )
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"calendar-container")]')
             )
         )
         self.teacher.logout()
         # login as a student to work the reading
+        self.student = Student(
+            existing_driver=self.teacher.driver,
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
         self.student.login()
-        self.student.select_course(appearance='physics')
         self.student.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '//div[contains(@class,"tab-content")]')
+                (By.LINK_TEXT, 'This Week')
             )
         )
         reading = self.student.driver.find_element(
-            By.XPATH, '//div[contains(@class,"task row reading workable")]')
-        self.teacher.driver.execute_script(
-            'return arguments[0].scrollIntoView();', reading)
-        self.teacher.driver.execute_script('window.scrollBy(0, -80);')
-
-        reading.click()
-        self.student.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//div[contains(@class,"card-body task-step")]')
-            )
+            By.XPATH,
+            '//span[text()="%s"]' % self.assignment_name
         )
+        self.teacher.driver.execute_script(
+            'return arguments[0].scrollIntoView();',
+            reading
+        )
+        self.teacher.driver.execute_script('window.scrollBy(0, -80);')
+        reading.click()
 
     def tearDown(self):
         """Test destructor."""
@@ -100,12 +98,9 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
             job_id=str(self.teacher.driver.session_id),
             **self.ps.test_updates
         )
+        self.student = None
         try:
             self.teacher.delete()
-        except:
-            pass
-        try:
-            self.student.delete()
         except:
             pass
 
@@ -113,7 +108,7 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
     # working a reading assignment
     @pytest.mark.skipif(str(14745) not in TESTS, reason='Excluded')
     def test_student_relative_size_and_progress_are_displayed_whil_14745(self):
-        """Relative size and progress are displayed while working a reading assignment.
+        """Size and progress are displayed while working a reading.
 
         Steps:
         Go to Tutor
@@ -160,14 +155,29 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.driver.find_element(
-            By.XPATH,
-            '//a[contains(@class,"milestones-toggle")]/i'
-        ).click()
+        self.student.find(By.CSS_SELECTOR, 'a.paging-control.next').click()
         self.student.sleep(1)
-        self.student.driver.find_element(
-            By.XPATH,
-            '//div[contains(@class,"milestones-wrapper")]'
+        self.student.find(By.CSS_SELECTOR, 'a.milestones-toggle').click()
+        self.student.sleep(1)
+        cards = self.student.find_all(
+            By.CSS_SELECTOR,
+            'div[class="milestone"]'
         )
+        preview = ''
+        if not isinstance(cards, list):
+            preview = cards.find_element(
+                By.XPATH,
+                '/div[@class="milestone-preview"]'
+            ).text
+            cards.click()
+        else:
+            card = randint(0, len(cards) - 1)
+            preview = cards[card].find_element(
+                By.XPATH,
+                '/div[@class="milestone-preview"]'
+            ).text
+            cards[card].click()
+        # Issue: section titles are not in the content
+        preview
 
         self.ps.test_updates['passed'] = True

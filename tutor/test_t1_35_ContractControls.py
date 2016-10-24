@@ -40,7 +40,6 @@ class TestContractControls(unittest.TestCase):
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
-        self.desired_capabilities = {}
         self.desired_capabilities['name'] = self.id()
         self.admin = Admin(
             use_env_vars=True,

@@ -51,7 +51,6 @@ class TestWorkAReading(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        """
         self.student = Student(
             use_env_vars=True,
             pasta_user=self.ps,
@@ -62,9 +61,6 @@ class TestWorkAReading(unittest.TestCase):
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
-        """
-        self.teacher = Teacher(use_env_vars=True)
-        self.student = Student(use_env_vars=True)
         self.student.login()
         self.teacher.login()
 
