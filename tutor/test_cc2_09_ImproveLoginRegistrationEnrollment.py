@@ -8,8 +8,8 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
@@ -117,7 +117,39 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.LINK_TEXT, 'Course Settings and Roster'
+        ).click()
+        # add a new section
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"add-period")]//button')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@class="modal-content"]//input[@type="text"]')
+            )
+        ).send_keys('test_period')
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="modal-content"]//button/span[text()="Add"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//li//a[@role="tab" and text()="test_period"]')
+            )
+        )
+        # revove old section
+
+        # re-add old section
 
         self.ps.test_updates['passed'] = True
 

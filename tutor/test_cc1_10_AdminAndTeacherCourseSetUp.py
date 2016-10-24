@@ -502,7 +502,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         ).click()
         self.teacher.sleep(2)
         archived = self.teacher.driver.find_elements(
-            By.XPATH, '//li//a[@role="tab" and text()="' + section_name + '"]')
+            By.XPATH, '//li//a[@role="tab" and text()="' + period_name + '"]')
         assert(len(archived) == 0), ' not archived'
         # add the archived period back
         self.teacher.wait.until(
@@ -514,14 +514,10 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         periods = self.teacher.driver.find_elements(
             By.XPATH, '//div[@class="modal-content"]//tbody//tr'
         )
-        print(period_name)
-        print(len(periods))
         for period in periods:
             try:
-                print('here')
                 period.find_element(
                     By.XPATH, ".//td[text()='" + period_name + "']")
-                print('here22222222')
                 period.find_element(
                     By.XPATH,
                     ".//td//span[contains(@class,'restore-period')]//button"
@@ -529,7 +525,6 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
                 break
             except NoSuchElementException:
                 if period == periods[-1]:
-                    print('archived period not found')
                     raise Exception
         self.teacher.sleep(2)
         self.teacher.wait.until(
@@ -618,14 +613,10 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         periods = self.teacher.driver.find_elements(
             By.XPATH, '//div[@class="modal-content"]//tbody//tr'
         )
-        print(period_name)
-        print(len(periods))
         for period in periods:
             try:
-                print('here')
                 period.find_element(
                     By.XPATH, ".//td[text()='" + period_name + "']")
-                print('here22222222')
                 period.find_element(
                     By.XPATH,
                     ".//td//span[contains(@class,'restore-period')]//button"
@@ -633,7 +624,6 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
                 break
             except NoSuchElementException:
                 if period == periods[-1]:
-                    print('archived period not found')
                     raise Exception
         self.teacher.sleep(2)
         self.teacher.wait.until(
