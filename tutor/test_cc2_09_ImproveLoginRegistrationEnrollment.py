@@ -7,10 +7,11 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-# from random import randint
+from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
+from selenium.common.exceptions import NoSuchElementException
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher, Student, User
@@ -18,15 +19,16 @@ from staxing.helper import Teacher, Student, User
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14820, 14819, 14759, 14862, 14771,
-        14821, 14822
+        14819
+        # 14820, 14819, 14759, 14862, 14771,
+        # 14821, 14822
     ])
 )
 
@@ -41,21 +43,21 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
-            pasta_user=self.ps,
+            # pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
         self.student = Student(
             use_env_vars=True,
             existing_driver=self.teacher.driver,
-            pasta_user=self.ps,
+            # pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
-        self.user = User(
-            use_env_vars=True,
-            existing_driver=self.teacher.driver,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        # self.user = User(
+        #     use_env_vars=True,
+        #     existing_driver=self.teacher.driver,
+        #     # pasta_user=self.ps,
+        #     # capabilities=self.desired_capabilities
+        # )
 
     def tearDown(self):
         """Test destructor."""
@@ -126,6 +128,7 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
             By.LINK_TEXT, 'Course Settings and Roster'
         ).click()
         # add a new section
+        new_section_name = "new_section_" + str(randint(100, 999))
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"add-period")]//button')
@@ -136,7 +139,7 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
                 (By.XPATH,
                  '//div[@class="modal-content"]//input[@type="text"]')
             )
-        ).send_keys('test_period')
+        ).send_keys(new_section_name)
         self.teacher.driver.find_element(
             By.XPATH,
             '//div[@class="modal-content"]//button/span[text()="Add"]'
@@ -144,12 +147,78 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
-                 '//li//a[@role="tab" and text()="test_period"]')
+                 '//li//a[@role="tab" and text()="' + new_section_name + '"]')
             )
         )
         # revove old section
+        old_section_name = self.teacher.find(By.XPATH, '//a[@role="tab"]').text
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//li//a[@role="tab" and text()="' + old_section_name + '"]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//a[contains(@class,"archive-period")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@role="tooltip"]//button' +
+                 '//span[contains(text(),"Archive")]')
+            )
+        ).click()
+        self.teacher.sleep(2)
+        archived = self.teacher.driver.find_elements(
+            By.XPATH,
+            '//li//a[@role="tab" and text()="' + old_section_name + '"]')
+        assert(len(archived) == 0), ' not archived'
 
-        # re-add old section
+        # arhive new section and re-add old section as clean-up
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//li//a[@role="tab" and text()="' + new_section_name + '"]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//a[contains(@class,"archive-period")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[@role="tooltip"]//button' +
+                 '//span[contains(text(),"Archive")]')
+            )
+        ).click()
+
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[contains(@class,"view-archived-periods")]//button')
+            )
+        ).click()
+        periods = self.teacher.driver.find_elements(
+            By.XPATH, '//div[@class="modal-content"]//tbody//tr'
+        )
+        for period in periods:
+            try:
+                period.find_element(
+                    By.XPATH, ".//td[text()='" + old_section_name + "']")
+                period.find_element(
+                    By.XPATH,
+                    ".//td//span[contains(@class,'restore-period')]//button"
+                ).click()
+                break
+            except NoSuchElementException:
+                if period == periods[-1]:
+                    raise Exception
 
         self.ps.test_updates['passed'] = True
 

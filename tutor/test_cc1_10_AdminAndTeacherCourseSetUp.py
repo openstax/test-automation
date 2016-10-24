@@ -601,7 +601,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         ).click()
         self.teacher.sleep(2)
         archived = self.teacher.driver.find_elements(
-            By.XPATH, '//li//a[@role="tab" and text()="' + section_name + '"]')
+            By.XPATH, '//li//a[@role="tab" and text()="' + period_name + '"]')
         assert(len(archived) == 0), ' not archived'
         # add the archived period back
         self.teacher.wait.until(
@@ -887,8 +887,6 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
                 raise Exception
         # after removing self from course taken to dashboard
         # or course if only 1 other course
-        # self.teacher.sleep(0.5)
-        # self.teacher2.page.wait_for_page_load()
         assert('/courses/8' not in teacher2.current_url()), \
             'teacher not deleted'
         teacher2.delete()
