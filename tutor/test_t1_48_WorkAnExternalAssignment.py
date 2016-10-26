@@ -53,10 +53,10 @@ class TestWorkAnExternalAssignment(unittest.TestCase):
         )
         self.teacher = Teacher(
             use_env_vars=True,
+            existing_driver=self.student.driver,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
-        self.student.login()
         self.teacher.login()
 
         # Create an external assignment for the student to work
@@ -116,6 +116,7 @@ class TestWorkAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             "//button[@class='async-button -publish btn btn-primary']").click()
         self.teacher.sleep(60)
+        self.student.login()
 
     def tearDown(self):
         """Test destructor."""

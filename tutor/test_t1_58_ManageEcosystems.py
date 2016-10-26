@@ -50,12 +50,11 @@ class TestManageEcosystems(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        # self.admin = Admin(
-        #    use_env_vars=True,
-        #    pasta_user=self.ps,
-        #    capabilities=self.desired_capabilities
-        # )
-        self.admin = Admin(use_env_vars=True)
+        self.admin = Admin(
+           use_env_vars=True,
+           pasta_user=self.ps,
+           capabilities=self.desired_capabilities
+        )
         self.admin.login()
 
     def tearDown(self):

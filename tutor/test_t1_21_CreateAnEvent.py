@@ -46,7 +46,6 @@ class TestCreateAnEvent(unittest.TestCase):
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
-        self.desired_capabilities = {}
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
@@ -154,7 +153,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.teacher.driver.find_element(
             By.LINK_TEXT, 'Add Event').click()
         assert('events/new' in self.teacher.current_url()),\
-            'not at Add Event Assignemnt page'
+            'not at Add Event Assignment page'
 
         self.ps.test_updates['passed'] = True
 
@@ -655,7 +654,7 @@ class TestCreateAnEvent(unittest.TestCase):
             '//button[contains(@aria-role,"close") and text()="Cancel"]'
         ).click()
         assert('calendar' in self.teacher.current_url()),\
-            'not back at calendar dashboard after canceling assignemnt'
+            'not back at calendar dashboard after canceling assignment'
 
         self.ps.test_updates['passed'] = True
 
@@ -704,7 +703,7 @@ class TestCreateAnEvent(unittest.TestCase):
             )
         ).click()
         assert('calendar' in self.teacher.current_url()),\
-            'not back at calendar dashboard after canceling assignemnt'
+            'not back at calendar dashboard after canceling assignment'
 
         self.ps.test_updates['passed'] = True
 
@@ -745,7 +744,7 @@ class TestCreateAnEvent(unittest.TestCase):
             'contains(@class,"close-x")]'
         ).click()
         assert('calendar' in self.teacher.current_url()),\
-            'not back at calendar dashboard after canceling assignemnt'
+            'not back at calendar dashboard after canceling assignment'
 
         self.ps.test_updates['passed'] = True
 
@@ -793,7 +792,7 @@ class TestCreateAnEvent(unittest.TestCase):
             )
         ).click()
         assert('calendar' in self.teacher.current_url()),\
-            'not back at calendar dashboard after canceling assignemnt'
+            'not back at calendar dashboard after canceling assignment'
 
         self.ps.test_updates['passed'] = True
 
@@ -1287,7 +1286,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
         Steps:
         Click on a draft event on the calendar
-        Click on the "Delete Assignemnt" button
+        Click on the "Delete Assignment" button
         Click on the "ok" button
 
         Expected Result:

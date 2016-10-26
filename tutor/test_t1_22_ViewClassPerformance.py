@@ -7,7 +7,7 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-# from random import randint
+from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
@@ -303,54 +303,60 @@ class TestViewClassPerformance(unittest.TestCase):
             'Not viewing the calendar dashboard'
 
         # Create an empty period to use for the test
+        period_name = "22_" + str(randint(100, 999))
         self.teacher.open_user_menu()
         self.teacher.find(
             By.PARTIAL_LINK_TEXT, 'Course Settings and Roster').click()
-        self.teacher.sleep(5)
-
+        self.teacher.page.wait_for_page_load()
         self.teacher.find(
-            By.XPATH, "//li[@class='control add-period']/button").click()
-        self.teacher.find(
-            By.XPATH,
-            "//input[@class='form-control empty']").send_keys("Epic 22")
+            By.XPATH, "//div[@class='control add-period']/button").click()
         self.teacher.find(
             By.XPATH,
-            "//button[@class='async-button " +
-            "-edit-period-confirm btn btn-default']").click()
-        self.teacher.sleep(5)
-
+            "//input[@class='form-control empty']").send_keys(period_name)
+        self.teacher.find(
+            By.XPATH,
+            "//button[contains(@class,'-edit-period-confirm')]"
+        ).click()
+        popup = self.teacher.find(
+            By.XPATH,
+            '//div[@class="teacher-edit-period-modal fade in modal"]')
+        self.teacher.wait.until(
+            expect.staleness_of(
+                (popup)
+            )
+        )
         # Check the new empty period in Performance Forecast
         self.teacher.open_user_menu()
         self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing performance forecast'
-
         self.teacher.wait.until(
-            expect.visibility_of_element_located((
-                By.LINK_TEXT, 'Epic 22'))).click()
-
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, period_name)
+            )
+        ).click()
         self.teacher.wait.until(
-            expect.visibility_of_element_located((
-                By.CLASS_NAME, 'no-data-message')))
-        self.teacher.sleep(5)
+            expect.visibility_of_element_located(
+                (By.CLASS_NAME, 'no-data-message')
+            )
+        )
 
-        # Archive the new period
+        # Archive the new period as clean up
         self.teacher.open_user_menu()
         self.teacher.find(
-            By.PARTIAL_LINK_TEXT, 'Course Settings and Roster').click()
-        self.teacher.sleep(5)
-
+            By.LINK_TEXT, 'Course Settings and Roster'
+        ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located((
-                By.LINK_TEXT, 'Epic 22'))).click()
-
+                By.LINK_TEXT, period_name)
+            )
+        ).click()
         self.teacher.find(
             By.XPATH, "//a[@class='control archive-period']").click()
         self.teacher.find(
             By.XPATH,
             "//button[@class='async-button archive-section btn btn-default']"
         ).click()
-        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -384,18 +390,14 @@ class TestViewClassPerformance(unittest.TestCase):
         self.teacher.select_course(appearance='physics')
         assert('calendar' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
-
         self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing performance forecast'
-
-        weak = self.teacher.driver.find_elements_by_xpath(
+        weak = self.teacher.find_all(
+            By.XPATH,
             "//div[@class='chapter-panel weaker']/div[@class='sections']/div")
-
         assert(len(weak) <= 4), \
             'Not viewing performance forecast'
-
-        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -438,11 +440,9 @@ class TestViewClassPerformance(unittest.TestCase):
 
         self.teacher.page.wait_for_page_load()
 
-        panels = self.teacher.driver.find_elements_by_class_name(
-            'chapter-panel')
+        panels = self.teacher.find_all(By.CLASS_NAME, 'chapter-panel')
         for panel in panels:
             panel.find_elements_by_class_name('chapter')
             panel.find_elements_by_class_name('sections')
-        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True

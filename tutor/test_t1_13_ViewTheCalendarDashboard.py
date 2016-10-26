@@ -218,7 +218,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # self.teacher.select_course(appearance='physics')
-        # create an assignemnt
+        # create an assignment
         assignment_name = 'reading-%s' % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
@@ -233,7 +233,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
                 'status': 'publish',
             }
         )
-        # click on assignemnt
+        # click on assignment
         self.teacher.wait.until(
             expect.presence_of_element_located(
                 (By.XPATH, '//label[contains(text(), "%s")]' % assignment_name)
@@ -270,8 +270,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         # self.teacher.select_course(appearance='physics')
         # create an assignment
-        self.teacher.select_course(appearance='physics')  # ############
-
         assignment_name = "homework-%s" % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
@@ -287,7 +285,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
                 'feedback': 'immediate'
             }
         )
-        # click on assignemnt
+        # click on assignment
         self.teacher.wait.until(
             expect.presence_of_element_located(
                 (By.XPATH, '//label[contains(text(), "%s")]' % assignment_name)
@@ -321,8 +319,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.008', '7985']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
-        # create an assignemnt
+        # create an assignment
         assignment_name = 'external-%s' % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
@@ -337,7 +334,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
                 'status': 'publish'
             }
         )
-        # click on assignemnt
+        # click on assignment
         self.teacher.wait.until(
             expect.presence_of_element_located(
                 (By.XPATH, '//label[contains(text(), "%s")]' % assignment_name)
@@ -386,7 +383,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
                 'status': 'publish'
             }
         )
-        # click on assignemnt
+        # click on assignment
         self.teacher.wait.until(
             expect.presence_of_element_located(
                 (By.XPATH, '//label[contains(text(), "%s")]' % assignment_name)

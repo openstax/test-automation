@@ -1,6 +1,6 @@
 """Tutor v2, Epic 16 - Conduct Spring 2016 College Research Pilots."""
 
-import inspect
+# import inspect
 import json
 import os
 # import pytest
@@ -41,8 +41,6 @@ class TestConductSpring2016CollegeResearchPilots(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
