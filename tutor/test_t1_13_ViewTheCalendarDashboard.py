@@ -35,12 +35,11 @@ basic_test_env = json.dumps([
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    # str([
-    #     7978, 7979, 7980, 7981, 7982,
-    #     7983, 7984, 7985, 7986, 7987,
-    #     7988, 7989, 7990, 7991
-    # ])
-    str([7984])
+    str([
+        7978, 7979, 7980, 7981, 7982,
+        7983, 7984, 7985, 7986, 7987,
+        7988, 7989, 7990, 7991
+    ])
 )
 
 
@@ -54,10 +53,11 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.teacher.login()
+        self.teacher.select_course(title='HS Physics')
 
     def tearDown(self):
         """Test destructor."""
@@ -221,8 +221,8 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         # create an assignemnt
         assignment_name = 'reading-%s' % randint(100, 999)
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=5)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(
             assignment='reading',
             args={
@@ -242,9 +242,12 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         # check that it opened
         self.teacher.wait.until(
             expect.presence_of_element_located(
-                (By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+                (By.XPATH,
+                 '//*[@class="modal-title" and ' +
+                 'contains(text(), "%s")]' % assignment_name)
             )
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C7984 - 007 - Teacher | View a homework assignment summary
@@ -279,7 +282,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
                 'title': assignment_name,
                 'description': 'description',
                 'periods': {'all': (begin, end)},
-                'problems': {'1.1': (4, 8), },
+                'problems': {'1.1': (2, 3), },
                 'status': 'publish',
                 'feedback': 'immediate'
             }
@@ -323,7 +326,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         assignment_name = 'external-%s' % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=5)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(
             assignment='external',
             args={
@@ -343,7 +346,9 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         # check that it opened
         self.teacher.wait.until(
             expect.presence_of_element_located(
-                (By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+                (By.XPATH,
+                 '//*[@class="modal-title" and ' +
+                 'contains(text(), "%s")]' % assignment_name)
             )
         )
 
@@ -371,7 +376,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         assignment_name = "homework-%s" % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=5)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(
             assignment='event',
             args={
@@ -390,9 +395,12 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         # check that it opened
         self.teacher.wait.until(
             expect.presence_of_element_located(
-                (By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+                (By.XPATH,
+                 '//*[@class="modal-title" and ' +
+                 'contains(text(), "%s")]' % assignment_name)
             )
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C7987 - 010 - Teacher | Open the refrenece book using the dashboard
@@ -446,8 +454,8 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         # self.teacher.select_course(title='HS Physics')
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.CLASS_NAME,
-            'view-reference-guide'
+            By.LINK_TEXT,
+            'Browse the Book'
         ).click()
         window_with_book = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_book)
