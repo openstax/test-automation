@@ -14,7 +14,7 @@ from selenium.webdriver.support import expected_conditions as expect
 from selenium.common.exceptions import NoSuchElementException
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher, Student, User
+from staxing.helper import Teacher, Student
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -26,8 +26,8 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([
-        # 14820, 14819, 14759, 14862, 14771,
-        # 14821, 14822
+        14820, 14819, 14759, 14862, 14771,
+        14821, 14822
     ])
 )
 
@@ -42,21 +42,15 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.student = Student(
             use_env_vars=True,
             existing_driver=self.teacher.driver,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
-        # self.user = User(
-        #     use_env_vars=True,
-        #     existing_driver=self.teacher.driver,
-        #     pasta_user=self.ps,
-        #     capabilities=self.desired_capabilities
-        # )
 
     def tearDown(self):
         """Test destructor."""
@@ -65,8 +59,10 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
             **self.ps.test_updates
         )
         try:
-            self.student.driver = None
-            self.user.driver = None
+            self.student.delete()
+        except:
+            pass
+        try:
             self.teacher.delete()
         except:
             pass
@@ -131,7 +127,7 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
         self.student.find(
             By.ID, 'signup_email_address').send_keys('email_001@test.com')
         self.student.find(
-            By.ID, 'signup_username').send_keys('automated_07_'+num)
+            By.ID, 'signup_username').send_keys('automated_09_'+num)
         self.student.find(
             By.ID, 'signup_password'
         ).send_keys(os.getenv('STUDENT_PASSWORD'))
@@ -146,6 +142,7 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
                 (By.LINK_TEXT, 'Sign out')
             )
         ).click()
+        print('automated_09_'+num)
         return 'automated_09_'+num
 
     # 14820 - 001 - Teacher | Register for teaching a CC course as new faculty
@@ -350,8 +347,10 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
         login_window = self.student.driver.window_handles[1]
         cc_window = self.student.driver.window_handles[0]
         self.student.driver.switch_to_window(login_window)
+        print(rand_username)
         self.student.find(
             By.ID, 'auth_key').send_keys(rand_username)
+        print(self.student.password)
         self.student.find(
             By.ID, 'password').send_keys(self.student.password)
         self.student.find(
