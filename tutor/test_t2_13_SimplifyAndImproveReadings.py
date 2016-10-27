@@ -7,7 +7,7 @@ import pytest
 import unittest
 import datetime
 
-from autochompsky import chompsky
+from autochomsky import chomsky
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint
 from selenium.webdriver.common.by import By
@@ -56,7 +56,7 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
             assignment='reading',
             args={
                 'title': self.assignment_name,
-                'description': chompsky(),
+                'description': chomsky(),
                 'periods': {'all': (begin, end)},
                 'reading_list': ['1.1', '1.2'],
                 'status': 'publish',
