@@ -11,10 +11,10 @@ from pastasauce import PastaSauce, PastaDecorator
 from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
-from staxing.assignment import Assignment
+# from staxing.assignment import Assignment
 from staxing.helper import Teacher
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.action_chains import ActionChains
+# from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.common.action_chains import ActionChains
 
 
 basic_test_env = json.dumps([
