@@ -8,9 +8,10 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
-# from staxing.assignment import Assignment
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+from staxing.assignment import Assignment
+from selenium.common.exceptions import ElementNotVisibleException
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher, Student
@@ -41,8 +42,6 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
@@ -84,16 +83,15 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.001' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.001',
-            '58276'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.001', '58276']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login(username='demo_teacher')
+        self.teacher.find(
+            By.XPATH,
+            '//p[contains(text(),' +
+            '"cannot find an OpenStax course associated with your account")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -103,24 +101,29 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """View "Getting Started with Concept Coach" Guide.
 
         Steps:
-        Click "Concept Coach Faculty. Get help"
+        Click on a Concept Coach course
+        Click on Getting Started in the usermenu
 
         Expected Result:
         CC Help Center opens in another tab with the Getting Started guide
         """
         self.ps.test_updates['name'] = 'cc2.18.002' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.002',
-            '58277'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.002', '58277']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Getting Started'
+        ).click()
+        self.teacher.find(
+            By.XPATH, '//h3[text()="Getting Started"]'
+        )
         self.ps.test_updates['passed'] = True
 
     # 58273 - 003 - Teacher | Access CC Help Center after registering for
@@ -130,8 +133,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """Access Concept Coach Help Center after registering for a course.
 
         Steps:
-        Go to Tutor
-        Sign in as teacher100
+        Go to Tutor and sign in as teacher
         Click on a Concept Coach course if the user is in more than one
         Click "Get Help" from the user menu in the upper right corner of the
             screen
@@ -141,16 +143,23 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.003' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.003',
-            '58273'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.003', '58273']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(
+            By.XPATH, '//center[text()="Concept Coach Help Center"]'
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -170,17 +179,25 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.004' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.004',
-            '58282'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.004', '58282']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.ID, 'results')
+        self.teacher.find(By.XPATH, '//div[@class="article "]')
         self.ps.test_updates['passed'] = True
 
     # 58350 - 005 - Teacher | View "Contact Us" button after submitting a
@@ -201,17 +218,24 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.005' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.005',
-            '58350'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.005', '58350']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//a[contains(text(),"Contact Us")]')
         self.ps.test_updates['passed'] = True
 
     # 58286 - 006 - Teacher | View an article after submitting a question
@@ -231,17 +255,26 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.006' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.006',
-            '58286'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.006', '58286']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
+        self.teacher.find(By.ID, 'articleContainer')
+        assert('articles' in self.teacher.current_url()), 'not at article'
         self.ps.test_updates['passed'] = True
 
     # 58290 - 007 - Teacher | Indicate that the article was helpful
@@ -263,17 +296,33 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.007' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.007',
-            '58290'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.007', '58290']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.teacher.current_url()), 'not at article'
+        self.teacher.find(
+            By.XPATH, '//div[@id="feedback"]//input[@value="Yes"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[text()="Thanks for your feedback!"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # 58291 - 008 - Teacher | Negative feedback renders a feedback popup box
@@ -296,17 +345,33 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.008' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.008',
-            '58291'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.008', '58291']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.teacher.current_url()), 'not at article'
+        self.teacher.find(
+            By.XPATH, '//div[@id="feedback"]//input[@value="No"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'feedbackDialog')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # 58292 - 009 - Teacher | Submit feedback for an article
@@ -330,17 +395,42 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.009' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.009',
-            '58292'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.009', '58292']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.teacher.current_url()), 'not at article'
+        self.teacher.find(
+            By.XPATH, '//div[@id="feedback"]//input[@value="No"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'feedbackDialog')
+            )
+        )
+        self.teacher.find(
+            By.ID, 'feedbackTextArea'
+        ).send_keys('qa automated test feedback')
+        self.teacher.find(By.XPATH, '//input[@value="Submit"]').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//p[text()="Thanks for your feedback!"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # 58320 - 010 - Teacher | Close window after submitting feedback for an
@@ -367,17 +457,47 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.010' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.010',
-            '58320'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.010', '58320']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.teacher.current_url()), 'not at article'
+        self.teacher.find(
+            By.XPATH, '//div[@id="feedback"]//input[@value="No"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'feedbackDialog')
+            )
+        )
+        self.teacher.find(
+            By.ID, 'feedbackTextArea'
+        ).send_keys('qa automated test feedback')
+        self.teacher.find(By.XPATH, '//input[@value="Submit"]').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[text()="close window"]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[text()="Thanks for your feedback!"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # 58293 - 011 - Teacher | Cancel feedback
@@ -401,17 +521,37 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.011' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.011',
-            '58293'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.011', '58293']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.teacher.current_url()), 'not at article'
+        self.teacher.find(
+            By.XPATH, '//div[@id="feedback"]//input[@value="No"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'feedbackDialog')
+            )
+        )
+        self.teacher.find(By.XPATH, '//input[@value="Cancel"]').click()
+        with self.assertRaises(ElementNotVisibleException):
+            self.teacher.find(
+                By.ID, 'feedbackDialog').click()
         self.ps.test_updates['passed'] = True
 
     # 58295 - 012 - Teacher | View related articles
@@ -426,23 +566,32 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         Click "Search" or press enter
         Click on a search result
         Scroll to "Related Articles"
-        Click on one of the articles (if any)
 
         Expected Result:
-        The user is presented with the related article
+        The user is presented with a list of related articles
         """
         self.ps.test_updates['name'] = 'cc2.18.012' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.012',
-            '58295'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.012', '58295']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.teacher.current_url()), 'not at article'
+        self.teacher.find(By.XPATH, '//h2[text()="Related Articles"]')
 
         self.ps.test_updates['passed'] = True
 
@@ -468,17 +617,45 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.013' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.013',
-            '58296'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.013', '58296']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        contact = self.teacher.find(
+            By.XPATH, '//a[contains(text(),"Contact Us")]'
+        )
+        Assignment.scroll_to(self.teacher.driver, contact)
+        contact.click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(
+            By.XPATH, '//input[contains(@name,"contactUsForm:firstName")]'
+        ).send_keys('qa_test_first_name')
+        self.teacher.find(
+            By.XPATH, '//input[contains(@name,"contactUsForm:lastName")]'
+        ).send_keys('qa_test_last_name')
+        self.teacher.find(
+            By.XPATH, '//input[contains(@name,"contactUsForm:email")]'
+        ).send_keys('qa_test@email.com')
+        self.teacher.find(By.XPATH, '//input[@value="Submit"]').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//p[contains(text(),"Thank you for your message!")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # 14823 - 014 - Teacher | View guided tutorials of Concept Coach
@@ -488,18 +665,11 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         Steps:
 
-
         Expected Result:
-
         """
         self.ps.test_updates['name'] = 'cc2.18.014' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.014',
-            '14823'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.014', '14823']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -526,17 +696,17 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.015' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.015',
-            '14825'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.015', '14825']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        self.teacher.find(By.LINK_TEXT, 'Assignment Links').click()
+        assert('assignment-links' in self.teacher.current_url()), \
+            'not at assignemnt links page'
         self.ps.test_updates['passed'] = True
 
     # 58275 - 016 - Student | Directed to a "No Courses" page when not in any
@@ -555,16 +725,19 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.016' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.016',
-            '58275'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.016', '58275']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.login(username='qa_student_37003')
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//p[contains(text(),' +
+                 '"We cannot find an OpenStax course ' +
+                 'associated with your account.")]')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -575,23 +748,37 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         Steps:
         Click "Concept Coach Students. Get help"
+        Search for 'getting started'
+        Click 'Getting Started with Concept Coach Guide - Students'
 
         Expected Result:
         CC Help Center opens in another tab with the Getting Started guide
         """
         self.ps.test_updates['name'] = 'cc2.18.017' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.017',
-            '58311'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.017', '58311']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.login()
+        self.student.open_user_menu()
+        self.student.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_help)
+        self.student.find(By.ID, 'searchAskInput').send_keys('getting started')
+        self.student.find(By.ID, 'searchAskButton').click()
+        self.student.page.wait_for_page_load()
+        self.student.find(
+            By.LINK_TEXT, 'Getting Started with Concept Coach Guide - Students'
+        ).click()
+        assert('articles' in self.student.current_url()), 'not at article'
+        self.student.find(
+            By.XPATH,
+            '//h1[text()="' +
+            'Getting Started with Concept Coach Guide - Students"]'
+        )
         self.ps.test_updates['passed'] = True
 
     # 58274 - 018 - Student | Access CC Help Center after registering for a
@@ -602,27 +789,30 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         Steps:
         Go to Tutor
-        Sign in as student01
+        Sign in as student
         Click on a Concept Coach course if the user is in more than one
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
 
         Expected Result:
         The user is presented with the CC Help Center
         """
         self.ps.test_updates['name'] = 'cc2.18.018' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.018',
-            '58274'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.018', '58274']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.login()
+        self.student.open_user_menu()
+        self.student.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_help)
+        self.student.page.wait_for_page_load()
+        self.student.find(
+            By.XPATH, '//center[text()="Concept Coach Help Center"]'
+        )
         self.ps.test_updates['passed'] = True
 
     # 58283 - 018 - Student | Submit a question
@@ -641,16 +831,22 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.019' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.019',
-            '58283'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.019', '58283']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.login()
+        self.student.open_user_menu()
+        self.student.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_help)
+        self.student.find(By.ID, 'searchAskInput').send_keys('question')
+        self.student.find(By.ID, 'searchAskButton').click()
+        self.student.page.wait_for_page_load()
+        self.student.find(By.ID, 'results')
+        self.student.find(By.XPATH, '//div[@class="article "]')
 
         self.ps.test_updates['passed'] = True
 
@@ -672,17 +868,21 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.020' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.020',
-            '58351'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.020', '58351']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.login()
+        self.student.open_user_menu()
+        self.student.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_help)
+        self.student.find(By.ID, 'searchAskInput').send_keys('question')
+        self.student.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//a[contains(text(),"Contact Us")]')
         self.ps.test_updates['passed'] = True
 
     # 58326 - 021 - Student | View an article after submitting a question
@@ -703,16 +903,23 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.021' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.021',
-            '58326'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.021', '58326']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.login()
+        self.student.open_user_menu()
+        self.student.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_help)
+        self.student.find(By.ID, 'searchAskInput').send_keys('question')
+        self.student.find(By.ID, 'searchAskButton').click()
+        self.student.page.wait_for_page_load()
+        self.student.find(By.XPATH, '//div[@class="article "]/a').click()
+        self.student.find(By.ID, 'articleContainer')
+        assert('articles' in self.student.current_url()), 'not at article'
 
         self.ps.test_updates['passed'] = True
 
@@ -735,17 +942,30 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.022' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.022',
-            '58327'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.022', '58327']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.login()
+        self.student.open_user_menu()
+        self.student.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_help)
+        self.student.find(By.ID, 'searchAskInput').send_keys('question')
+        self.student.find(By.ID, 'searchAskButton').click()
+        self.student.page.wait_for_page_load()
+        self.student.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.student.current_url()), 'not at article'
+        self.student.find(
+            By.XPATH, '//div[@id="feedback"]//input[@value="Yes"]'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[text()="Thanks for your feedback!"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # 58328 - 023 - Student | Negative feedback renders a feedback popup box
@@ -768,17 +988,30 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.023' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.023',
-            '58328'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.023', '58328']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.login()
+        self.student.open_user_menu()
+        self.student.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_help)
+        self.student.find(By.ID, 'searchAskInput').send_keys('question')
+        self.student.find(By.ID, 'searchAskButton').click()
+        self.student.page.wait_for_page_load()
+        self.student.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.student.current_url()), 'not at article'
+        self.student.find(
+            By.XPATH, '//div[@id="feedback"]//input[@value="No"]'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'feedbackDialog')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # 58329 - 024 - Student | Submit feedback for an article
@@ -802,17 +1035,39 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.024' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.024',
-            '58329'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.024', '58329']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.login()
+        self.student.open_user_menu()
+        self.student.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_help)
+        self.student.find(By.ID, 'searchAskInput').send_keys('question')
+        self.student.find(By.ID, 'searchAskButton').click()
+        self.student.page.wait_for_page_load()
+        self.student.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.student.current_url()), 'not at article'
+        self.student.find(
+            By.XPATH, '//div[@id="feedback"]//input[@value="No"]'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'feedbackDialog')
+            )
+        )
+        self.student.find(
+            By.ID, 'feedbackTextArea'
+        ).send_keys('qa automated test feedback')
+        self.student.find(By.XPATH, '//input[@value="Submit"]').click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//p[text()="Thanks for your feedback!"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # 58330 - 025 - Student | Close window after submitting feedback for an
@@ -839,17 +1094,44 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.025' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.025',
-            '58330'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.025', '58330']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.login()
+        self.student.open_user_menu()
+        self.student.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_help)
+        self.student.find(By.ID, 'searchAskInput').send_keys('question')
+        self.student.find(By.ID, 'searchAskButton').click()
+        self.student.page.wait_for_page_load()
+        self.student.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.student.current_url()), 'not at article'
+        self.student.find(
+            By.XPATH, '//div[@id="feedback"]//input[@value="No"]'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'feedbackDialog')
+            )
+        )
+        self.student.find(
+            By.ID, 'feedbackTextArea'
+        ).send_keys('qa automated test feedback')
+        self.student.find(By.XPATH, '//input[@value="Submit"]').click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[text()="close window"]')
+            )
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[text()="Thanks for your feedback!"]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # 58331 - 026 - Student | Cancel feedback
@@ -873,16 +1155,34 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.026' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.026',
-            '58331'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.026', '58331']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.login()
+        self.student.open_user_menu()
+        self.student.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_help)
+        self.student.find(By.ID, 'searchAskInput').send_keys('question')
+        self.student.find(By.ID, 'searchAskButton').click()
+        self.student.page.wait_for_page_load()
+        self.student.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.student.current_url()), 'not at article'
+        self.student.find(
+            By.XPATH, '//div[@id="feedback"]//input[@value="No"]'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'feedbackDialog')
+            )
+        )
+        self.student.find(By.XPATH, '//input[@value="Cancel"]').click()
+        with self.assertRaises(ElementNotVisibleException):
+            self.student.find(
+                By.ID, 'feedbackDialog').click()
 
         self.ps.test_updates['passed'] = True
 
@@ -905,16 +1205,23 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.027' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.027',
-            '58333'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.027', '58333']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.login()
+        self.student.open_user_menu()
+        self.student.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_help)
+        self.student.find(By.ID, 'searchAskInput').send_keys('question')
+        self.student.find(By.ID, 'searchAskButton').click()
+        self.student.page.wait_for_page_load()
+        self.student.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.student.current_url()), 'not at article'
+        self.student.find(By.XPATH, '//h2[text()="Related Articles"]')
 
         self.ps.test_updates['passed'] = True
 
@@ -940,17 +1247,42 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 'cc2.18.028' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.028',
-            '58334'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.028', '58334']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.login()
+        self.student.open_user_menu()
+        self.student.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        window_with_help = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_help)
+        self.student.find(By.ID, 'searchAskInput').send_keys('question')
+        self.student.find(By.ID, 'searchAskButton').click()
+        self.student.page.wait_for_page_load()
+        contact = self.student.find(
+            By.XPATH, '//a[contains(text(),"Contact Us")]'
+        )
+        Assignment.scroll_to(self.student.driver, contact)
+        contact.click()
+        self.student.page.wait_for_page_load()
+        self.student.find(
+            By.XPATH, '//input[contains(@name,"contactUsForm:firstName")]'
+        ).send_keys('qa_test_first_name')
+        self.student.find(
+            By.XPATH, '//input[contains(@name,"contactUsForm:lastName")]'
+        ).send_keys('qa_test_last_name')
+        self.student.find(
+            By.XPATH, '//input[contains(@name,"contactUsForm:email")]'
+        ).send_keys('qa_test@email.com')
+        self.student.find(By.XPATH, '//input[@value="Submit"]').click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//p[contains(text(),"Thank you for your message!")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # 58335 - 029 - Student | View guided tutorials of Concept Coach
@@ -960,18 +1292,11 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         Steps:
 
-
         Expected Result:
-
         """
         self.ps.test_updates['name'] = 'cc2.18.029' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            'cc2',
-            'cc2.18',
-            'cc2.18.029',
-            '58335'
-        ]
+        self.ps.test_updates['tags'] = ['cc2', 'cc2.18', 'cc2.18.029', '58335']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
