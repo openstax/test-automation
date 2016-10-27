@@ -11,8 +11,11 @@ from pastasauce import PastaSauce, PastaDecorator
 from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
-# from staxing.assignment import Assignment
+from staxing.assignment import Assignment
 from staxing.helper import Teacher
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
+
 
 basic_test_env = json.dumps([
     {
@@ -53,6 +56,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
             capabilities=self.desired_capabilities
         )
         self.teacher.login()
+        self.teacher.select_course(title='HS Physics')
 
     def tearDown(self):
         """Test destructor."""
@@ -216,15 +220,15 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         # create an assignment
         assignment_name = 'reading-%s' % randint(100, 999)
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=5)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(
             assignment='reading',
             args={
                 'title': assignment_name,
                 'description': 'description',
                 'periods': {'all': (begin, end)},
-                'reading_list': ['ch1'],
+                'reading_list': ['1.1'],
                 'status': 'publish',
             }
         )
@@ -237,7 +241,9 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         # check that it opened
         self.teacher.wait.until(
             expect.presence_of_element_located(
-                (By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+                (By.XPATH,
+                 '//*[@class="modal-title" and ' +
+                 'contains(text(), "%s")]' % assignment_name)
             )
         )
 
@@ -249,7 +255,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         """View a homework assignment summary.
 
         Steps:
-        create a homework assignemtn
+        create a homework assignment
         If the user has more than one course, click on a Tutor course name
         Click on a homework assignment on the calendar
 
@@ -266,15 +272,16 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         assignment_name = "homework-%s" % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=5)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(
             assignment='homework',
             args={
                 'title': assignment_name,
                 'description': 'description',
                 'periods': {'all': (begin, end)},
-                'problems': {'4.1': (4, 8), },
+                'problems': {'1.1': (2, 3), },
                 'status': 'publish',
+                'feedback': 'immediate'
             }
         )
         # click on assignment
@@ -286,10 +293,11 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         # check that it opened
         self.teacher.wait.until(
             expect.presence_of_element_located(
-                (By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+                (By.XPATH,
+                 '//*[@class="modal-title" and ' +
+                 'contains(text(), "%s")]' % assignment_name)
             )
         )
-
         self.ps.test_updates['passed'] = True
 
     # NOT DONE
@@ -314,7 +322,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         assignment_name = 'external-%s' % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=5)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(
             assignment='external',
             args={
@@ -334,7 +342,9 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         # check that it opened
         self.teacher.wait.until(
             expect.presence_of_element_located(
-                (By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+                (By.XPATH,
+                 '//*[@class="modal-title" and ' +
+                 'contains(text(), "%s")]' % assignment_name)
             )
         )
 
@@ -362,9 +372,9 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         assignment_name = "homework-%s" % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=5)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(
-            assignment='homework',
+            assignment='event',
             args={
                 'title': assignment_name,
                 'description': 'description',
@@ -381,7 +391,9 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         # check that it opened
         self.teacher.wait.until(
             expect.presence_of_element_located(
-                (By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+                (By.XPATH,
+                 '//*[@class="modal-title" and ' +
+                 'contains(text(), "%s")]' % assignment_name)
             )
         )
 
@@ -438,8 +450,8 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         # self.teacher.select_course(title='HS Physics')
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.CLASS_NAME,
-            'view-reference-guide'
+            By.LINK_TEXT,
+            'Browse the Book'
         ).click()
         window_with_book = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_book)
@@ -467,7 +479,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.012', '7989']
         self.ps.test_updates['passed'] = False
 
-        # self.teacher.select_course(appearance='physics')
+        self.teacher.open_user_menu()
         self.teacher.driver.find_element(
             By.CLASS_NAME,
             'viewTeacherPerformanceForecast'
@@ -505,7 +517,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
             'ui-brand-logo'
         ).click()
         assert('dashboard' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
+            'Not viewing the course picker'
 
         self.ps.test_updates['passed'] = True
 
@@ -527,6 +539,19 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.014', '7991']
         self.ps.test_updates['passed'] = False
 
+        self.teacher.logout()
+        teacher2 = Teacher(
+            username=os.getenv('TEACHER_USER_ONE_COURSE'),
+            password=os.getenv('TEACHER_PASSWORD'),
+            site='https://tutor-qa.openstax.org',
+            existing_driver=self.teacher.driver,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities,
+        )
+        print(teacher2.username)
+        print(teacher2.password)
+        teacher2.login()
+        self.teacher.open_user_menu()
         self.teacher.driver.find_element(
             By.CLASS_NAME,
             'viewTeacherPerformanceForecast'
