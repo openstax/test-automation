@@ -1143,7 +1143,6 @@ class TestRecruitingTeachers(unittest.TestCase):
             By.XPATH, '//input[@vale="Import Courses"]'
         ).click()
 
-
         self.ps.test_updates['passed'] = True
 
     # Case C7774 - 024 - Teacher | Access CC help and support during the course

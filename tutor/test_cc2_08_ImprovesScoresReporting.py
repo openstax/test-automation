@@ -14,7 +14,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementNotVisibleException
 # from staxing.assignment import Assignment  # NOQA
 from selenium.webdriver.common.action_chains import ActionChains
-from openpyxl import load_workbook, Workbook
+from openpyxl import load_workbook
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher

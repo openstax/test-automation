@@ -2300,7 +2300,7 @@ class TestCreateAReading(unittest.TestCase):
                 (By.XPATH,
                  ('//span[contains(@data-chapter-section' +
                   ',"{s}") and text()="{s}"]').format(s=section_to_remove) +
-                  '/preceding-sibling::span/input')
+                 '/preceding-sibling::span/input')
             )
         )
         if marked.is_selected():

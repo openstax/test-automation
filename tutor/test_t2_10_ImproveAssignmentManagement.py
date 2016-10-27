@@ -14,7 +14,7 @@ from selenium.webdriver.support import expected_conditions as expect
 from staxing.assignment import Assignment
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementNotVisibleException
-from selenium.common.exceptions import TimeoutException
+# from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.action_chains import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
@@ -76,7 +76,6 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             self.student.delete()
         except:
             pass
-
 
     # 14675 - 001 - Teacher | Set when feedback is available
     @pytest.mark.skipif(str(14675) not in TESTS, reason='Excluded')
