@@ -73,7 +73,7 @@ class TestWorkAHomework(unittest.TestCase):
 
     # Case C8362 - 001 - Student | Start an open homework assignment
     @pytest.mark.skipif(str(8362) not in TESTS, reason='Excluded')
-    def test_student_start_an_open_homework_assignemnt_8362(self):
+    def test_student_start_an_open_homework_assignment_8362(self):
         """Start an open homework assignment.
 
         Steps:
@@ -94,7 +94,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # non-immediate feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
@@ -149,7 +149,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # non-immediate feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
@@ -207,7 +207,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # non-immediate feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
@@ -266,7 +266,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # non-immediate feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
@@ -338,7 +338,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # non-immediate feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
@@ -421,7 +421,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # non-immediate feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
@@ -507,7 +507,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # non-immediate feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
@@ -601,7 +601,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # non-immediate feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
@@ -674,7 +674,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # non-immediate feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
@@ -746,7 +746,7 @@ class TestWorkAHomework(unittest.TestCase):
 
     # Case C8371 - 010 - Student | Verify the assignment progress changed
     @pytest.mark.skipif(str(8371) not in TESTS, reason='Excluded')
-    def test_student_verify_the_assignemnt_progress_changed_8371(self):
+    def test_student_verify_the_assignment_progress_changed_8371(self):
         """Verify the assignment progress changed.
 
         Steps:
@@ -772,7 +772,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # non-immediate feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
@@ -854,7 +854,7 @@ class TestWorkAHomework(unittest.TestCase):
     # Case C8372 - 011 - Student | Answer all assessments in an assignment and
     # view the completion report
     @pytest.mark.skipif(str(8372) not in TESTS, reason='Excluded')
-    def test_student_answer_all_assignemnt_view_completion_report_8372(self):
+    def test_student_answer_all_assignment_view_completion_report_8372(self):
         """Answer all of the assessments in an assignment.
 
         Steps:
@@ -875,7 +875,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # non-immediate feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
@@ -978,7 +978,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # non-immediate feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
@@ -1110,7 +1110,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # non-immediate feedback/ or immeditae feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
@@ -1244,7 +1244,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # non-immediate feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
@@ -1388,7 +1388,7 @@ class TestWorkAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        # how to make a past due assignemnt, need to assume that one exists?
+        # how to make a past due assignment, need to assume that one exists?
         self.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//a[contains(text(),"All Past Work")]')
@@ -1440,7 +1440,7 @@ class TestWorkAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        # how to make a past due assignemnt, need to assume that one exists?
+        # how to make a past due assignment, need to assume that one exists?
         self.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//a[contains(text(),"All Past Work")]')
@@ -1508,7 +1508,7 @@ class TestWorkAHomework(unittest.TestCase):
     # homework
     @pytest.mark.skipif(str(8381) not in TESTS, reason='Excluded')
     def test_student_answer_feedback_presented_for_a_late_homework_8381(self):
-        """Answer feedback is presented on a late assignemnt.
+        """Answer feedback is presented on a late assignment.
 
         Steps:
         Click on the "All Past Work" tab on the dashboard
@@ -1527,7 +1527,7 @@ class TestWorkAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        # how to make a late assignemnt, assuse one exisits?
+        # how to make a late assignment, assuse one exisits?
         self.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//a[contains(text(),"All Past Work")]')
@@ -1705,7 +1705,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # immediate feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
@@ -1760,7 +1760,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # non-immediate feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
@@ -1856,7 +1856,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # immediate feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',
@@ -1952,7 +1952,7 @@ class TestWorkAHomework(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         # immediate feedback
-        self.teacher.add_assignment(assignemnt='homework',
+        self.teacher.add_assignment(assignment='homework',
                                     args={
                                         'title': assignment_name,
                                         'description': 'description',

@@ -31,6 +31,7 @@ TESTS = os.getenv(
     ])
 )
 
+
 @PastaDecorator.on_platforms(BROWSERS)
 class TestCNXNavigation(unittest.TestCase):
     """CC1.05 - CNX Navigation."""
