@@ -6,7 +6,6 @@ import os
 import pytest
 import unittest
 import datetime
-import time     # ####remove this
 
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint
