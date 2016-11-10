@@ -21,7 +21,7 @@ basic_test_env = json.dumps([
     {
         'platform': 'Windows 10',
         'browserName': 'chrome',
-        'version': '50.0',
+        'version': 'latest',
         'screenResolution': "1024x768",
     },
     # {

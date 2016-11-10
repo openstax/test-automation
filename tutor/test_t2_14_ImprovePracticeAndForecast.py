@@ -18,7 +18,7 @@ from staxing.helper import Teacher
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
@@ -36,8 +36,6 @@ class TestImprovePracticeAndForecast(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
