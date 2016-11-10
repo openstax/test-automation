@@ -68,12 +68,9 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             job_id=str(self.teacher.driver.session_id),
             **self.ps.test_updates
         )
+        self.student = None
         try:
             self.teacher.delete()
-        except:
-            pass
-        try:
-            self.student.delete()
         except:
             pass
 
