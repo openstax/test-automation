@@ -1,7 +1,7 @@
 """Add command option for parameterization."""
 
 
-import pytest  # NOQA
+# import pytest  # NOQA
 
 
 def pytest_addoption(parser):

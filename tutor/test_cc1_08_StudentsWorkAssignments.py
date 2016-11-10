@@ -17,7 +17,7 @@ from staxing.helper import Teacher, Student
 basic_test_env = json.dumps([{
     'platform': 'Windows 10',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1280x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))

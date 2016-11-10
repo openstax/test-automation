@@ -27,7 +27,7 @@ CaseID = 'skip'
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
@@ -170,12 +170,14 @@ class TestWorkAReading(unittest.TestCase):
                         By.XPATH, "//button[@class='btn btn-primary']").click()
                     self.teacher.sleep(5)
                     break
-
+        except:
+            pass
+        try:
             self.teacher.driver.refresh()
             self.teacher.sleep(5)
 
+            self.teacher = None
             self.student.delete()
-            self.teacher.delete()
         except:
             pass
 
