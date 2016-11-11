@@ -30,13 +30,14 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([14683])
+    str([14688])
     # str([14675, 14676, 14677, 14678, 14800,
     #      14680, 14681, 14682, 14683, 14801,
     #      14802, 14803, 14804, 14805, 14685,
     #      14686, 14687, 14688, 14689])
 
     # these are not implemented features - 14682, 14685, 14689
+    # issue with assignemnt creation 14683, 14801, 14802, 14803, 14804, 14805,
     # issues with the add hw helper - 14687
 )
 
@@ -1106,7 +1107,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             except NoSuchElementException:
                 # click on the next breadcrumb
                 if i == len(sections):
-                    print("no two part questions in the homework")
+                    print("no two part questions in the practice")
                     raise Exception
                 else:
                     sections_new = self.student.find_all(
@@ -1118,7 +1119,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                     element.send_keys(i)
                 self.student.wait.until(
                     expect.element_to_be_clickable(
-                        (By.XPATH, '//button/span[contains(text(),"Answer")]')
+                        (By.XPATH, '//button[contains(text(),"Answer")]')
                     )
                 ).click()
                 actions = ActionChains(self.student.driver)
@@ -1273,7 +1274,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//a[@class="view-reference-guide"]' +
-                 '//span[@class="section"]//span[1]')
+                 '//span[@class="section"]')
             )
         )
         chapter_num = chapter.text
