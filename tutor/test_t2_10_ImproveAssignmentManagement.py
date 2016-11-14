@@ -30,14 +30,13 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([14688])
-    # str([14675, 14676, 14677, 14678, 14800,
-    #      14680, 14681, 14682, 14683, 14801,
-    #      14802, 14803, 14804, 14805, 14685,
-    #      14686, 14687, 14688, 14689])
+    str([14675, 14676, 14677, 14678, 14800,
+         14680, 14681, 14682, 14683, 14801,
+         14802, 14803, 14804, 14805, 14685,
+         14686, 14687, 14688, 14689])
 
     # these are not implemented features - 14682, 14685, 14689
-    # issue with assignemnt creation 14683, 14801, 14802, 14803, 14804, 14805,
+    # error returning to dashboard - 14802
     # issues with the add hw helper - 14687
 )
 
@@ -80,7 +79,6 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             self.student.delete()
         except:
             pass
-
 
     # 14675 - 001 - Teacher | Set when feedback is available
     @pytest.mark.skipif(str(14675) not in TESTS, reason='Excluded')
@@ -544,11 +542,19 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 By.XPATH,
                 "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        self.teacher.wait.until(
-            expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
-            )
-        ).click()
+        counter = 3
+        while counter >= 0:
+            try:
+                self.teacher.find(
+                    By.XPATH, '//a[contains(@class,"-edit-assignment")]'
+                ).click()
+                break
+            except NoSuchElementException:
+                if counter == 0:
+                    print("assignemnt taking too long to publish")
+                    raise Exception
+                self.teacher.get(self.teacher.current_url())
+                counter += 1
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//button[contains(@class,"delete-link")]')
@@ -556,8 +562,6 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         ).click()
         self.teacher.find(
             By.XPATH, '//button[contains(text(),"Yes")]').click()
-        assert ('calendar' in self.teacher.current_url()), \
-            'not returned to calendar after deleting an assignment'
         counter = 0
         while counter < 6:
             self.teacher.get(self.teacher.current_url())
@@ -631,11 +635,19 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 By.XPATH,
                 "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        self.teacher.wait.until(
-            expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
-            )
-        ).click()
+        counter = 3
+        while counter >= 0:
+            try:
+                self.teacher.find(
+                    By.XPATH, '//a[contains(@class,"-edit-assignment")]'
+                ).click()
+                break
+            except NoSuchElementException:
+                if counter == 0:
+                    print("assignemnt taking too long to publish")
+                    raise Exception
+                self.teacher.get(self.teacher.current_url())
+                counter += 1
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//button[contains(@class,"delete-link")]')
@@ -651,7 +663,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             expect.presence_of_element_located(
                 (By.XPATH,
                  '//a[@class="task row event deleted"]' +
-                 '//span[contains(text(),"' + assignment_name + '")]')
+                 '//div[contains(text(),"' + assignment_name + '")]')
             )
         )
         self.student.find(
@@ -708,7 +720,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             expect.presence_of_element_located(
                 (By.XPATH,
                  '//a[@class="task row external workable"]' +
-                 '//span[contains(text(),"' + assignment_name + '")]')
+                 '//div[contains(text(),"' + assignment_name + '")]')
             )
         )
         Assignment.scroll_to(self.student.driver, external)
@@ -718,6 +730,11 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.student.find(
             By.XPATH, "//h1//a[@href = 'http://google.com']"
         ).click()
+        google_window = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(google_window)
+        self.teacher.driver.close()
+        self.teacher.driver.switch_to_window(
+            self.teacher.driver.window_handles[0])
         self.student.sleep(0.5)
         self.student.find(
             By.XPATH, "//a[text()='Back to Dashboard']"
@@ -751,11 +768,19 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 By.XPATH,
                 "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        self.teacher.wait.until(
-            expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
-            )
-        ).click()
+        counter = 3
+        while counter >= 0:
+            try:
+                self.teacher.find(
+                    By.XPATH, '//a[contains(@class,"-edit-assignment")]'
+                ).click()
+                break
+            except NoSuchElementException:
+                if counter == 0:
+                    print("assignemnt taking too long to publish")
+                    raise Exception
+                self.teacher.get(self.teacher.current_url())
+                counter += 1
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//button[contains(@class,"delete-link")]')
@@ -771,7 +796,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             expect.presence_of_element_located(
                 (By.XPATH,
                  '//a[@class="task row external workable deleted"]' +
-                 '//span[contains(text(),"' + assignment_name + '")]')
+                 '//div[contains(text(),"' + assignment_name + '")]')
             )
         )
         self.student.find(
@@ -840,11 +865,19 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 By.XPATH,
                 "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        self.teacher.wait.until(
-            expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
-            )
-        ).click()
+        counter = 3
+        while counter >= 0:
+            try:
+                self.teacher.find(
+                    By.XPATH, '//a[contains(@class,"-edit-assignment")]'
+                ).click()
+                break
+            except NoSuchElementException:
+                if counter == 0:
+                    print("assignemnt taking too long to publish")
+                    raise Exception
+                self.teacher.get(self.teacher.current_url())
+                counter += 1
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//button[contains(@class,"delete-link")]')
@@ -862,7 +895,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         )
         for event in deleted_events:
             event_name = event.find_element(
-                By.XPATH, './div[contains(@class,"title")]/span').text
+                By.XPATH, './div[contains(@class,"title")]').text
             if event_name == assignment_name:
                 event.find_element(
                     By.XPATH, './/button[contains(@class,"hide-task")]'
@@ -872,10 +905,11 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 ).click()
                 self.teacher.sleep(0.5)
                 break
+        self.student.get(self.student.current_url())
         should_be_deleted = self.student.find_all(
             By.XPATH,
             '//a[@class="task row event deleted"]' +
-            '//span[contains(text(),"' + assignment_name + '")]')
+            '//div[contains(text(),"' + assignment_name + '")]')
         assert(len(should_be_deleted) == 0), "event not deleted"
 
         self.ps.test_updates['passed'] = True
