@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?><testsuite errors="0" failures="2" name="pytest" skips="11" tests="21" time="23.931"><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="931" name="test_admin_add_coinstructors_to_a_course_7770" time="16.03933310508728"><system-out>Redmond Blake
+</system-out></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="103" name="test_teacher_information_about_cc_is_available_on_demo_site_7752" time="5.373152017593384"></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="727" name="test_teacher_indicate_whether_the_teacher_was_recruited_by_7763" time="0.00033211708068847656"><skipped message="Excluded" type="pytest.skip">test_cc1_01_RecruitingTeachers.py:727: &lt;py._xmlgen.raw object at 0x1047b0f98&gt;</skipped></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="666" name="test_teacher_select_the_textbook_to_use_in_the_course_7762" time="0.0003249645233154297"><skipped message="Excluded" type="pytest.skip">test_cc1_01_RecruitingTeachers.py:666: &lt;py._xmlgen.raw object at 0x1047be4a8&gt;</skipped></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="73" name="test_admin_recruitment_and_promo_website_is_available_7751" time="5.186079740524292"></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="775" name="test_teacher_presented_a_thank_you_page_after_registering_7764" time="0.00035190582275390625"><skipped message="Excluded" type="pytest.skip">test_cc1_01_RecruitingTeachers.py:775: &lt;py._xmlgen.raw object at 0x1047be9b0&gt;</skipped></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="1012" name="test_teacher_login_with_an_existing_openstax_account_7771" time="9.623371839523315"></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="1171" name="test_teacher_acccess_cc_help_and_support_during_the_course_7774" time="11.75212812423706"></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="255" name="test_teacher_sample_exercise_questions_are_in_wire_frames_7755" time="12.20110034942627"></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="325" name="test_teacher_access_cc_support_before_course_is_created_7756" time="20.91374397277832"><failure message="self = &lt;test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1 testMethod=test_teacher_access_cc_support_before_course_is_created_7756&gt;
+
+    @pytest.mark.skipif(str(7756) not in TESTS, reason=&apos;Excluded&apos;)
+    def test_teacher_access_cc_support_before_course_is_created_7756(self):
+        &quot;&quot;&quot;Access CC help and support before the teacher&apos;s course is created.
+    
+            Steps:
+            Open the recruitment website ( http://cc.openstax.org/ )
+            Click &quot;Support&quot; in the header
+    
+            Expected Result:
+            A new tab opens with the CC Help Center
+            &quot;&quot;&quot;
+        self.ps.test_updates[&apos;name&apos;] = &apos;cc1.01.006&apos; \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates[&apos;tags&apos;] = [
+            &apos;cc1&apos;,
+            &apos;cc1.01&apos;,
+            &apos;cc1.01.006&apos;,
+            &apos;7756&apos;
+        ]
+        self.ps.test_updates[&apos;passed&apos;] = False
+    
+        # Test steps and verification assertions
+        self.teacher.get(&apos;http://cc.openstax.org/&apos;)
+        self.teacher.page.wait_for_page_load()
+&gt;       self.teacher.open_user_menu()
+
+test_cc1_01_RecruitingTeachers.py:350: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/staxing/helper.py:456: in open_user_menu
+    (By.CLASS_NAME, &apos;dropdown-toggle&apos;)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;8a2dadc73658d4dc885a41ac52fc139b&quot;)&gt;
+method = &lt;selenium.webdriver.support.expected_conditions.visibility_of_element_located object at 0x105dda1d0&gt;
+message = &apos;&apos;
+
+    def until(self, method, message=&apos;&apos;):
+        &quot;&quot;&quot;Calls the method provided with the driver as an argument until the \
+            return value is not False.&quot;&quot;&quot;
+        screen = None
+        stacktrace = None
+    
+        end_time = time.time() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, &apos;screen&apos;, None)
+                stacktrace = getattr(exc, &apos;stacktrace&apos;, None)
+            time.sleep(self._poll)
+            if time.time() &gt; end_time:
+                break
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message:
+
+/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/selenium/webdriver/support/wait.py:80: TimeoutException">self = &lt;test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1 testMethod=test_teacher_access_cc_support_before_course_is_created_7756&gt;
+
+    @pytest.mark.skipif(str(7756) not in TESTS, reason=&apos;Excluded&apos;)
+    def test_teacher_access_cc_support_before_course_is_created_7756(self):
+        &quot;&quot;&quot;Access CC help and support before the teacher&apos;s course is created.
+    
+            Steps:
+            Open the recruitment website ( http://cc.openstax.org/ )
+            Click &quot;Support&quot; in the header
+    
+            Expected Result:
+            A new tab opens with the CC Help Center
+            &quot;&quot;&quot;
+        self.ps.test_updates[&apos;name&apos;] = &apos;cc1.01.006&apos; \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates[&apos;tags&apos;] = [
+            &apos;cc1&apos;,
+            &apos;cc1.01&apos;,
+            &apos;cc1.01.006&apos;,
+            &apos;7756&apos;
+        ]
+        self.ps.test_updates[&apos;passed&apos;] = False
+    
+        # Test steps and verification assertions
+        self.teacher.get(&apos;http://cc.openstax.org/&apos;)
+        self.teacher.page.wait_for_page_load()
+&gt;       self.teacher.open_user_menu()
+
+test_cc1_01_RecruitingTeachers.py:350: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/staxing/helper.py:456: in open_user_menu
+    (By.CLASS_NAME, &apos;dropdown-toggle&apos;)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;8a2dadc73658d4dc885a41ac52fc139b&quot;)&gt;
+method = &lt;selenium.webdriver.support.expected_conditions.visibility_of_element_located object at 0x105dda1d0&gt;
+message = &apos;&apos;
+
+    def until(self, method, message=&apos;&apos;):
+        &quot;&quot;&quot;Calls the method provided with the driver as an argument until the \
+            return value is not False.&quot;&quot;&quot;
+        screen = None
+        stacktrace = None
+    
+        end_time = time.time() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, &apos;screen&apos;, None)
+                stacktrace = getattr(exc, &apos;stacktrace&apos;, None)
+            time.sleep(self._poll)
+            if time.time() &gt; end_time:
+                break
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message:
+
+/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/selenium/webdriver/support/wait.py:80: TimeoutException</failure></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="1113" name="test_admin_distribute_access_codes_for_the_course_7773" time="0.0003871917724609375"><skipped message="Excluded" type="pytest.skip">test_cc1_01_RecruitingTeachers.py:1113: &lt;py._xmlgen.raw object at 0x1051021d0&gt;</skipped></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="1077" name="test_teacher_access_the_cc_course_7772" time="10.746876955032349"></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="1228" name="test_teacher_access_cc_help_and_support_after_course_ends_7775" time="0.000331878662109375"><skipped message="Excluded" type="pytest.skip">test_cc1_01_RecruitingTeachers.py:1228: &lt;py._xmlgen.raw object at 0x1047bec50&gt;</skipped></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="531" name="test_teacher_submit_a_form_to_supply_required_course_info_7760" time="0.0018987655639648438"><skipped message="Excluded" type="pytest.skip">test_cc1_01_RecruitingTeachers.py:531: &lt;py._xmlgen.raw object at 0x1047be128&gt;</skipped></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="405" name="test_teacher_teacher_uses_a_web_form_to_sign_up_for_cc_7758" time="0.0005817413330078125"><skipped message="Excluded" type="pytest.skip">test_cc1_01_RecruitingTeachers.py:405: &lt;py._xmlgen.raw object at 0x10478e518&gt;</skipped></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="132" name="test_teacher_can_interact_with_a_cc_wire_frame_for_subjects_7753" time="9.254820823669434"></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="482" name="test_teacher_receive_error_messages_if_required_fields_are_7759" time="0.001653909683227539"><skipped message="Excluded" type="pytest.skip">test_cc1_01_RecruitingTeachers.py:482: &lt;py._xmlgen.raw object at 0x1051022e8&gt;</skipped></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="611" name="test_teacher_submit_coinstructors_classes_names_etc_7761" time="0.00035190582275390625"><skipped message="Excluded" type="pytest.skip">test_cc1_01_RecruitingTeachers.py:611: &lt;py._xmlgen.raw object at 0x105102b00&gt;</skipped></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="371" name="test_teacher_teacher_registers_to_use_a_cc_course_7757" time="0.0003712177276611328"><skipped message="Excluded" type="pytest.skip">test_cc1_01_RecruitingTeachers.py:371: &lt;py._xmlgen.raw object at 0x10510f198&gt;</skipped></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="853" name="test_teacher_sign_up_for_an_openstax_accounts_username_7765" time="0.001767873764038086"><skipped message="Excluded" type="pytest.skip">test_cc1_01_RecruitingTeachers.py:853: &lt;py._xmlgen.raw object at 0x10510f470&gt;</skipped></testcase><testcase classname="test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1" file="test_cc1_01_RecruitingTeachers.py" line="179" name="test_teacher_view_a_concept_coach_demo_video_7754" time="1.6268188953399658"><failure message="self = &lt;test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1 testMethod=test_teacher_view_a_concept_coach_demo_video_7754&gt;
+
+    @pytest.mark.skipif(str(7754) not in TESTS, reason=&apos;Excluded&apos;)
+    def test_teacher_view_a_concept_coach_demo_video_7754(self):
+        &quot;&quot;&quot;View a Concept Coach demo video.
+    
+            Steps:
+            Open recruitment website ( http://cc.openstax.org/ )
+            Hover over &quot;demos&quot; in the header
+            Click &quot;Interactive Demo&quot;
+            Click on a Concept Coach book title
+            Scroll down until an embedded video pane is displayed
+            Click on the right-pointing arrow to play the video
+    
+            Expected Result:
+            The video loads and plays
+            &quot;&quot;&quot;
+        self.ps.test_updates[&apos;name&apos;] = &apos;cc1.01.004&apos; \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates[&apos;tags&apos;] = [
+            &apos;cc1&apos;,
+            &apos;cc1.01&apos;,
+            &apos;cc1.01.004&apos;,
+            &apos;7754&apos;
+        ]
+        self.ps.test_updates[&apos;passed&apos;] = False
+    
+&gt;       raise NotImplementedError(inspect.currentframe().f_code.co_name)
+E       NotImplementedError: test_teacher_view_a_concept_coach_demo_video_7754
+
+test_cc1_01_RecruitingTeachers.py:205: NotImplementedError">self = &lt;test_cc1_01_RecruitingTeachers.TestRecruitingTeachers_1 testMethod=test_teacher_view_a_concept_coach_demo_video_7754&gt;
+
+    @pytest.mark.skipif(str(7754) not in TESTS, reason=&apos;Excluded&apos;)
+    def test_teacher_view_a_concept_coach_demo_video_7754(self):
+        &quot;&quot;&quot;View a Concept Coach demo video.
+    
+            Steps:
+            Open recruitment website ( http://cc.openstax.org/ )
+            Hover over &quot;demos&quot; in the header
+            Click &quot;Interactive Demo&quot;
+            Click on a Concept Coach book title
+            Scroll down until an embedded video pane is displayed
+            Click on the right-pointing arrow to play the video
+    
+            Expected Result:
+            The video loads and plays
+            &quot;&quot;&quot;
+        self.ps.test_updates[&apos;name&apos;] = &apos;cc1.01.004&apos; \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates[&apos;tags&apos;] = [
+            &apos;cc1&apos;,
+            &apos;cc1.01&apos;,
+            &apos;cc1.01.004&apos;,
+            &apos;7754&apos;
+        ]
+        self.ps.test_updates[&apos;passed&apos;] = False
+    
+&gt;       raise NotImplementedError(inspect.currentframe().f_code.co_name)
+E       NotImplementedError: test_teacher_view_a_concept_coach_demo_video_7754
+
+test_cc1_01_RecruitingTeachers.py:205: NotImplementedError</failure></testcase></testsuite>
