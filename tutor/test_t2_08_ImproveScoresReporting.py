@@ -731,9 +731,9 @@ class TestImproveScoresReporting(unittest.TestCase):
         for num in range(100):
             for num1 in range(12):
                 newbar.send_keys(Keys.ARROW_RIGHT)
-            if len(self.teacher.driver.find_elements_by_css_selector(
-                "div.late-caret")
-                #"//div[@class='late-caret']")
+            if len(self.teacher.driver.find_elements_by_xpath(
+                #"div.late-caret")
+                "//div[@class='late-caret']")
             ) > 0:# and (set(self.teacher.driver.find_elements_by_xpath("//div[@class='late-caret']")).symmetric_difference(set(self.teacher.driver.find_elements_by_xpath("//div[@class='late-caret accepted']"))) != set()):
                 for num2 in range(3):
                     newbar.send_keys(Keys.ARROW_RIGHT)
@@ -820,6 +820,8 @@ class TestImproveScoresReporting(unittest.TestCase):
         revert = False
         diff = False
         #worked = parent.find_elements_by_class_name("worked")
+
+        # Debug assertion
         assert(diff), \
             'unaccepted late: ' + str(late) + ", accepted late: " + str(accepted)
 
