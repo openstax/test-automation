@@ -27,20 +27,18 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([8179])
-    # str([
-    #     8156, 8157, 8158, 8159, 8160,
-    #     8161, 8162, 8163, 8164, 8165,
-    #     8166, 8167, 8168, 8169, 8170,
-    #     8171, 8172, 8173, 8174, 8175,
-    #     8176, 8177, 8178, 8179, 8180,
-    #     8181
-    # ])
+    str([
+        8156, 8157, 8158, 8159, 8160,
+        8161, 8162, 8163, 8164, 8165,
+        8166, 8167, 8168, 8169, 8170,
+        8171, 8172, 8173, 8174, 8175,
+        8176, 8177, 8178, 8179, 8180,
+        8181
+    ])
 
-    # 8158, 8159 - exprt issue
-    # 8165, 8166 - export not working on site
-    # 8169 - not showing student scores
-    # issues finding the elements
+    # 8165, 8166 - sorting not working on site
+    # 8169 - overall score not being displayed on site
+    # 8179 - issues finding the elements
 )
 
 
@@ -154,8 +152,7 @@ class TestViewClassScores(unittest.TestCase):
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
-                 '//div[@class="export-button"]//button' +
-                 '/span[text()="Export"]')
+                 '//div[@class="export-button"]//button[text()="Export"]')
             )
         )
         coursename = self.teacher.driver.find_element(
@@ -201,8 +198,7 @@ class TestViewClassScores(unittest.TestCase):
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
-                 '//div[@class="export-button"]//button' +
-                 '/span[text()="Export"]')
+                 '//div[@class="export-button"]//button[text()="Export"]')
             )
         )
         coursename = self.teacher.driver.find_element(
@@ -1320,7 +1316,6 @@ class TestViewClassScores(unittest.TestCase):
         while(bar < scroll_total_size):
             try:
                 self.teacher.sleep(1)
-                print("here????")
                 element = self.teacher.driver.find_element(
                     By.XPATH,
                     '//div[@class="scores-cell"]' +
@@ -1328,19 +1323,6 @@ class TestViewClassScores(unittest.TestCase):
                     '//*[@class="pie-progress"]'
                 )
                 element.click()
-                # element.click()
-                # print("here")
-                # actions = ActionChains(self.teacher.driver)
-                # actions.move_to_element(element)
-                # # actions.perform()
-                # # element2 =self.teacher.driver.find_element(
-                # #     By.XPATH,
-                # #     '//div[contains(@class,"popover-content")]' +
-                # #     '//a[contains(text(),"Review")]'
-                # # )
-                # actions.move_by_offset(-60, 10)
-                # actions.click()
-                # actions.perform()
                 break
             except (NoSuchElementException,
                     ElementNotVisibleException,
@@ -1358,20 +1340,12 @@ class TestViewClassScores(unittest.TestCase):
                 actions.perform()
 
         element.click()
-        print("here")
         actions = ActionChains(self.teacher.driver)
         actions.move_to_element(element)
-        # actions.perform()
-        # element2 =self.teacher.driver.find_element(
-        #     By.XPATH,
-        #     '//div[contains(@class,"popover-content")]' +
-        #     '//a[contains(text(),"Review")]'
-        # )
         actions.move_by_offset(-60, 10)
         actions.click()
         actions.perform()
 
-        print(self.teacher.current_url())
         assert('step' in self.teacher.current_url()), 'not at sutdent work'
         self.ps.test_updates['passed'] = True
 
