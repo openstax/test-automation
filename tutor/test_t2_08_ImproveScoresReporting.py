@@ -27,17 +27,11 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14833
-    ])
-)
-
-"""
-14671, 14672, 14674, 14826, 14827,
+        14671, 14672, 14674, 14826, 14827,
         14828, 14829, 14830, 14831, 14832,
         14833, 14834, 14835, 14836
-"""
-
-# 14831,
+    ])
+)
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -48,14 +42,12 @@ class TestImproveScoresReporting(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        """
         self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
-        """
-        self.teacher = Teacher(use_env_vars=True)
+
         self.teacher.login()
 
     def tearDown(self):
@@ -202,9 +194,9 @@ class TestImproveScoresReporting(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
+        self.teacher.select_course(appearance='college_physics')
 
-        assert('calendar' in self.teacher.current_url()), \
+        assert('course' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.teacher.find(By.PARTIAL_LINK_TEXT, 'Student Scores').click()
@@ -214,10 +206,7 @@ class TestImproveScoresReporting(unittest.TestCase):
 
         self.teacher.sleep(5)
 
-        self.teacher.find(
-            By.XPATH,
-            "//div[@class='overall-header-cell " +
-            "public_fixedDataTableCell_cellContent']")
+        self.teacher.find(By.XPATH, "//div[@class='overall-header-cell']")
 
         self.teacher.sleep(5)
 
@@ -249,9 +238,9 @@ class TestImproveScoresReporting(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
+        self.teacher.select_course(appearance='college_physics')
 
-        assert('calendar' in self.teacher.current_url()), \
+        assert('course' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.teacher.find(By.PARTIAL_LINK_TEXT, 'Student Scores').click()
@@ -326,9 +315,9 @@ class TestImproveScoresReporting(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
+        self.teacher.select_course(appearance='college_physics')
 
-        assert('calendar' in self.teacher.current_url()), \
+        assert('course' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.teacher.find(By.PARTIAL_LINK_TEXT, 'Student Scores').click()
@@ -338,7 +327,9 @@ class TestImproveScoresReporting(unittest.TestCase):
 
         self.teacher.sleep(5)
         self.teacher.find(
-            By.XPATH, "//i[@class='tutor-icon fa fa-info-circle']").click()
+            By.XPATH,
+            "//i[@class='tutor-icon fa fa-info-circle clickable']").click()
+        self.teacher.sleep(2)
         self.teacher.find(By.XPATH, "//div[@class='popover-content']")
 
         self.ps.test_updates['passed'] = True
@@ -369,9 +360,9 @@ class TestImproveScoresReporting(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='biology')
+        self.teacher.select_course(appearance='college_physics')
 
-        assert('calendar' in self.teacher.current_url()), \
+        assert('course' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.teacher.find(By.PARTIAL_LINK_TEXT, 'Student Scores').click()
@@ -382,7 +373,7 @@ class TestImproveScoresReporting(unittest.TestCase):
         self.teacher.sleep(10)
 
         found = False
-        self.teacher.find(By.PARTIAL_LINK_TEXT, '3rd').click()
+
         scrollbar = self.teacher.find(
             By.XPATH,
             "//div[@class='ScrollbarLayout_main " +
@@ -417,8 +408,11 @@ class TestImproveScoresReporting(unittest.TestCase):
                     newbar.send_keys(Keys.ARROW_RIGHT)
                 while not found:
                     try:
-                        self.teacher.find(
-                            By.XPATH, "//div[@class='late-caret']").click()
+                        caret = self.teacher.find(
+                            By.XPATH, "//div[@class='late-caret']")
+
+                        self.teacher.sleep(3)
+                        caret.click()
 
                         self.teacher.find(
                             By.XPATH,
@@ -524,9 +518,9 @@ class TestImproveScoresReporting(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='biology')
+        self.teacher.select_course(appearance='college_physics')
 
-        assert('calendar' in self.teacher.current_url()), \
+        assert('course' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.teacher.find(By.PARTIAL_LINK_TEXT, 'Student Scores').click()
@@ -537,7 +531,7 @@ class TestImproveScoresReporting(unittest.TestCase):
         self.teacher.sleep(10)
 
         found = False
-        self.teacher.find(By.PARTIAL_LINK_TEXT, '3rd').click()
+
         scrollbar = self.teacher.find(
             By.XPATH,
             "//div[@class='ScrollbarLayout_main " +
@@ -568,14 +562,16 @@ class TestImproveScoresReporting(unittest.TestCase):
             if len(self.teacher.driver.find_elements_by_xpath(
                 "//div[@class='late-caret accepted']")
             ) > 0:
-                for num2 in range(5):
+                for num2 in range(3):
                     newbar.send_keys(Keys.ARROW_RIGHT)
                 while not found:
                     try:
 
-                        self.teacher.find(
+                        caret = self.teacher.find(
                             By.XPATH, "//div[@class='late-caret accepted']"
-                        ).click()
+                        )
+                        self.teacher.sleep(2)
+                        caret.click()
                         self.teacher.sleep(5)
 
                         self.teacher.find(
@@ -624,7 +620,7 @@ class TestImproveScoresReporting(unittest.TestCase):
                         actions.move_to_element(newbar)
                         actions.click(newbar)
                         actions.perform()
-                        for i in range(3):
+                        for i in range(1):
                             scrolls += 1
                             newbar.send_keys(Keys.ARROW_DOWN)
 
@@ -698,8 +694,8 @@ class TestImproveScoresReporting(unittest.TestCase):
         self.teacher.sleep(10)
 
         found = False
-        #self.teacher.find(By.PARTIAL_LINK_TEXT, '3rd').click()
-        #self.teacher.driver.get("https://tutor-qa.openstax.org/course/4/scores/")
+
+        # Setup scrollbar for scrolling
         scrollbar = self.teacher.find(
             By.XPATH,
             "//div[@class='ScrollbarLayout_main " +
@@ -722,6 +718,7 @@ class TestImproveScoresReporting(unittest.TestCase):
         actions.click(newbar)
         actions.perform()
         scrolls = 0
+
         p = False
         for i in range(6):
             newbar.send_keys(Keys.PAGE_UP)
@@ -732,14 +729,11 @@ class TestImproveScoresReporting(unittest.TestCase):
             for num1 in range(12):
                 newbar.send_keys(Keys.ARROW_RIGHT)
             if len(self.teacher.driver.find_elements_by_xpath(
-                #"div.late-caret")
                 "//div[@class='late-caret']")
-            ) > 0:# and (set(self.teacher.driver.find_elements_by_xpath("//div[@class='late-caret']")).symmetric_difference(set(self.teacher.driver.find_elements_by_xpath("//div[@class='late-caret accepted']"))) != set()):
+            ) > 0:
                 for num2 in range(3):
                     newbar.send_keys(Keys.ARROW_RIGHT)
 
-                late = len(self.teacher.driver.find_elements_by_xpath("//div[@class='late-caret']"))
-                accepted = len(self.teacher.driver.find_elements_by_xpath("//div[@class='late-caret accepted']"))
                 while not found:
                     try:
                         caret = self.teacher.find(
@@ -762,7 +756,9 @@ class TestImproveScoresReporting(unittest.TestCase):
                             pass
 
                         try:
-                            if len(worked.find_elements_by_tag_name('path')) > 0:
+                            if len(worked.find_elements_by_tag_name(
+                                'path')
+                            ) > 0:
                                 p = True
 
                         except:
@@ -778,6 +774,8 @@ class TestImproveScoresReporting(unittest.TestCase):
                         found = True
                         break
 
+                    # Scroll down if the late assignment is not immediately
+                    # visible, continue to scroll until found
                     except:
 
                         if scrolls == 20:
@@ -811,27 +809,18 @@ class TestImproveScoresReporting(unittest.TestCase):
 
                 break
 
-        lates = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class='late-caret accepted']"
-        )
-
-        
-
         revert = False
         diff = False
-        #worked = parent.find_elements_by_class_name("worked")
 
-        # Debug assertion
-        assert(diff), \
-            'unaccepted late: ' + str(late) + ", accepted late: " + str(accepted)
-
+        # Case if assignment was not started at all before due date
         if len(not_started) > 0:
-            slice_late = worked.find_elements_by_tag_name('path')
+            slice_late = worked.find_elements_by_tag_name('circle')
             assert(slice_late[0].get_attribute('class') == 'slice late'), \
                 'No change'
 
             diff = True
 
+        # Case if assignment was partially complete before due date
         else:
             assert(p)
             assert(len(worked.find_elements_by_tag_name('path')) == 0), \
@@ -842,19 +831,15 @@ class TestImproveScoresReporting(unittest.TestCase):
         assert(diff), \
             'No change'
 
-        item = worked.find_element_by_xpath("//div[@class='late-caret accepted']")
-        
-        #try:
+        item = worked.find_element_by_xpath(
+            "//div[@class='late-caret accepted']")
+
         item.click()
         self.teacher.find(
             By.XPATH,
             "//button[@class='late-button btn btn-default']"
         ).click()
         revert = True
-            
-
-        #except:
-        #    pass
 
         self.teacher.sleep(5)
         assert(found), \
