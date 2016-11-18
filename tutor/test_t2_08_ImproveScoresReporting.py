@@ -27,7 +27,7 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14831
+        14833
     ])
 )
 
@@ -37,7 +37,7 @@ TESTS = os.getenv(
         14833, 14834, 14835, 14836
 """
 
-#14831, 
+# 14831,
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -46,7 +46,6 @@ class TestImproveScoresReporting(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         """
@@ -380,41 +379,123 @@ class TestImproveScoresReporting(unittest.TestCase):
         assert('scores' in self.teacher.current_url()), \
             'Not viewing Student Scores'
 
-        self.teacher.sleep(5)
+        self.teacher.sleep(10)
 
+        found = False
         self.teacher.find(By.PARTIAL_LINK_TEXT, '3rd').click()
-        scrollbar = self.teacher.find(By.XPATH, "//div[@class='ScrollbarLayout_face ScrollbarLayout_faceHorizontal public_Scrollbar_face']")
+        scrollbar = self.teacher.find(
+            By.XPATH,
+            "//div[@class='ScrollbarLayout_main " +
+            "ScrollbarLayout_mainHorizontal public_Scrollbar_main " +
+            "public_Scrollbar_mainOpaque']")
         scrollbar.click()
-        table = self.teacher.find(By.XPATH, "//div[@class='course-scores-container']/div")
 
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(scrollbar)
+        actions.click(scrollbar)
+        actions.perform()
+
+        newbar = self.teacher.find(
+            By.XPATH,
+            "//div[@class='ScrollbarLayout_main " +
+            "ScrollbarLayout_mainHorizontal public_Scrollbar_main " +
+            "public_Scrollbar_mainOpaque public_Scrollbar_mainActive']")
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(newbar)
+        actions.click(newbar)
+        actions.perform()
+        scrolls = 0
         # Four arrow rights bring a new assignment into view, try to bring
-        # 50 new assignments into view
-        for num in range(50):
-            for num1 in range(4):
+        # Bring three new assignments into view at a time
+        for num in range(100):
+            for num1 in range(12):
+                newbar.send_keys(Keys.ARROW_RIGHT)
+            if len(self.teacher.driver.find_elements_by_xpath(
+                "//div[@class='late-caret']")
+            ) > 0:
+                for num2 in range(5):
+                    newbar.send_keys(Keys.ARROW_RIGHT)
+                while not found:
+                    try:
+                        self.teacher.find(
+                            By.XPATH, "//div[@class='late-caret']").click()
 
-                # Having trouble focusing on scrollbar to send arrow rights,
-                # trying to send the arrows
-                actions = ActionChains(self.teacher.driver)
-                actions.move_to_element(scrollbar).perform()
-                #actions.click(scrollbar)
-                #actions.perform()
-                #table.click()
-                self.teacher.sleep(5)
-                self.teacher.driver.execute_script("arguments[0].scrollTop = 200", table)
-                self.teacher.sleep(20)
+                        self.teacher.find(
+                            By.XPATH,
+                            "//button[@class='late-button btn btn-default']"
+                        ).click()
 
-                # Scroll the scrollbar once scrollbar is in focus
-                scrollbar.send_keys(Keys.ARROW_RIGHT)
-            if len(self.teacher.driver.find_elements_by_xpath("//div[@class='late-caret']")) > 0:
-                self.teacher.find(By.XPATH, "//div[@class='late-caret']").click()
-                self.teacher.find(By.XPATH, "//button[@class='late-button btn btn-default']").click()
+                        """
+                        self.teacher.find_elements_by_xpath(
+                            By.XPATH, "//div[@class='late-caret accepted']"
+                        )[index].click()
 
-                self.teacher.find(By.XPATH, "//div[@class='late-caret accepted']").click()
-                self.teacher.find(By.XPATH, "//button[@class='late-button btn btn-default']").click()
+                        self.teacher.find(
+                            By.XPATH,
+                            "//button[@class='late-button btn btn-default']"
+                        ).click()
+                        """
+                        found = True
+                        break
+
+                    except:
+
+                        if scrolls == 20:
+                            break
+                        try:
+                            scrollbar = self.teacher.find(
+                                By.XPATH,
+                                "//div[@class='ScrollbarLayout_main " +
+                                "ScrollbarLayout_mainVertical " +
+                                "public_Scrollbar_main']")
+
+                            scrollbar.click()
+
+                        except:
+                            pass
+
+                        newbar = self.teacher.find(
+                            By.XPATH,
+                            "//div[@class='ScrollbarLayout_main " +
+                            "ScrollbarLayout_mainVertical " +
+                            "public_Scrollbar_main " +
+                            "public_Scrollbar_mainActive']")
+
+                        actions = ActionChains(self.teacher.driver)
+                        actions.move_to_element(newbar)
+                        actions.click(newbar)
+                        actions.perform()
+                        for i in range(3):
+                            scrolls += 1
+                            newbar.send_keys(Keys.ARROW_DOWN)
+
                 break
 
+        lates = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='late-caret accepted']"
+        )
+
+        revert = False
+        if found:
+            for item in lates:
+                try:
+                    item.click()
+                    self.teacher.find(
+                        By.XPATH,
+                        "//button[@class='late-button btn btn-default']"
+                    ).click()
+                    revert = True
+                    break
+
+                except:
+                    pass
 
         self.teacher.sleep(5)
+        assert(found), \
+            'Not found'
+
+        assert(revert), \
+            'Didnt revert'
 
         self.ps.test_updates['passed'] = True
 
@@ -443,7 +524,137 @@ class TestImproveScoresReporting(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.select_course(appearance='biology')
+
+        assert('calendar' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Student Scores').click()
+
+        assert('scores' in self.teacher.current_url()), \
+            'Not viewing Student Scores'
+
+        self.teacher.sleep(10)
+
+        found = False
+        self.teacher.find(By.PARTIAL_LINK_TEXT, '3rd').click()
+        scrollbar = self.teacher.find(
+            By.XPATH,
+            "//div[@class='ScrollbarLayout_main " +
+            "ScrollbarLayout_mainHorizontal public_Scrollbar_main " +
+            "public_Scrollbar_mainOpaque']")
+        scrollbar.click()
+
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(scrollbar)
+        actions.click(scrollbar)
+        actions.perform()
+
+        newbar = self.teacher.find(
+            By.XPATH,
+            "//div[@class='ScrollbarLayout_main " +
+            "ScrollbarLayout_mainHorizontal public_Scrollbar_main " +
+            "public_Scrollbar_mainOpaque public_Scrollbar_mainActive']")
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(newbar)
+        actions.click(newbar)
+        actions.perform()
+        scrolls = 0
+        # Four arrow rights bring a new assignment into view, try to bring
+        # Bring three new assignments into view at a time
+        for num in range(100):
+            for num1 in range(12):
+                newbar.send_keys(Keys.ARROW_RIGHT)
+            if len(self.teacher.driver.find_elements_by_xpath(
+                "//div[@class='late-caret accepted']")
+            ) > 0:
+                for num2 in range(5):
+                    newbar.send_keys(Keys.ARROW_RIGHT)
+                while not found:
+                    try:
+
+                        self.teacher.find(
+                            By.XPATH, "//div[@class='late-caret accepted']"
+                        ).click()
+                        self.teacher.sleep(5)
+
+                        self.teacher.find(
+                            By.XPATH,
+                            "//button[@class='late-button btn btn-default']"
+                        ).click()
+                        self.teacher.sleep(5)
+
+                        """
+                        self.teacher.find_elements_by_xpath(
+                            By.XPATH, "//div[@class='late-caret accepted']"
+                        )[index].click()
+
+                        self.teacher.find(
+                            By.XPATH,
+                            "//button[@class='late-button btn btn-default']"
+                        ).click()
+                        """
+                        found = True
+                        break
+
+                    except:
+
+                        if scrolls == 20:
+                            break
+                        try:
+                            scrollbar = self.teacher.find(
+                                By.XPATH,
+                                "//div[@class='ScrollbarLayout_main " +
+                                "ScrollbarLayout_mainVertical " +
+                                "public_Scrollbar_main']")
+
+                            scrollbar.click()
+
+                        except:
+                            pass
+
+                        newbar = self.teacher.find(
+                            By.XPATH,
+                            "//div[@class='ScrollbarLayout_main " +
+                            "ScrollbarLayout_mainVertical " +
+                            "public_Scrollbar_main " +
+                            "public_Scrollbar_mainActive']")
+
+                        actions = ActionChains(self.teacher.driver)
+                        actions.move_to_element(newbar)
+                        actions.click(newbar)
+                        actions.perform()
+                        for i in range(3):
+                            scrolls += 1
+                            newbar.send_keys(Keys.ARROW_DOWN)
+
+                break
+
+        lates = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='late-caret']"
+        )
+
+        revert = False
+        if found:
+            for item in lates:
+                try:
+                    item.click()
+                    self.teacher.find(
+                        By.XPATH,
+                        "//button[@class='late-button btn btn-default']"
+                    ).click()
+                    revert = True
+                    break
+
+                except:
+                    pass
+
+        self.teacher.sleep(5)
+        assert(found), \
+            'Not found'
+
+        assert(revert), \
+            'Didnt revert'
 
         self.ps.test_updates['passed'] = True
 
@@ -474,7 +685,181 @@ class TestImproveScoresReporting(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.select_course(appearance='college_physics')
+
+        assert('course' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard'
+
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Student Scores').click()
+
+        assert('scores' in self.teacher.current_url()), \
+            'Not viewing Student Scores'
+
+        self.teacher.sleep(10)
+
+        found = False
+        #self.teacher.find(By.PARTIAL_LINK_TEXT, '3rd').click()
+        #self.teacher.driver.get("https://tutor-qa.openstax.org/course/4/scores/")
+        scrollbar = self.teacher.find(
+            By.XPATH,
+            "//div[@class='ScrollbarLayout_main " +
+            "ScrollbarLayout_mainHorizontal public_Scrollbar_main " +
+            "public_Scrollbar_mainOpaque']")
+        scrollbar.click()
+
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(scrollbar)
+        actions.click(scrollbar)
+        actions.perform()
+
+        newbar = self.teacher.find(
+            By.XPATH,
+            "//div[@class='ScrollbarLayout_main " +
+            "ScrollbarLayout_mainHorizontal public_Scrollbar_main " +
+            "public_Scrollbar_mainOpaque public_Scrollbar_mainActive']")
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(newbar)
+        actions.click(newbar)
+        actions.perform()
+        scrolls = 0
+        p = False
+        for i in range(6):
+            newbar.send_keys(Keys.PAGE_UP)
+        self.teacher.sleep(3)
+        # Four arrow rights bring a new assignment into view, try to bring
+        # Bring three new assignments into view at a time
+        for num in range(100):
+            for num1 in range(12):
+                newbar.send_keys(Keys.ARROW_RIGHT)
+            if len(self.teacher.driver.find_elements_by_css_selector(
+                "div.late-caret")
+                #"//div[@class='late-caret']")
+            ) > 0:# and (set(self.teacher.driver.find_elements_by_xpath("//div[@class='late-caret']")).symmetric_difference(set(self.teacher.driver.find_elements_by_xpath("//div[@class='late-caret accepted']"))) != set()):
+                for num2 in range(3):
+                    newbar.send_keys(Keys.ARROW_RIGHT)
+
+                late = len(self.teacher.driver.find_elements_by_xpath("//div[@class='late-caret']"))
+                accepted = len(self.teacher.driver.find_elements_by_xpath("//div[@class='late-caret accepted']"))
+                while not found:
+                    try:
+                        caret = self.teacher.find(
+                            By.XPATH, "//div[@class='late-caret']")
+
+                        try:
+                            parent = caret.find_element_by_xpath(
+                                "..").find_element_by_xpath("..")
+                        except:
+                            pass
+                        try:
+                            worked = parent.find_element_by_class_name(
+                                "worked")
+                        except:
+                            pass
+                        try:
+                            not_started = worked.find_elements_by_class_name(
+                                "not-started")
+                        except:
+                            pass
+
+                        try:
+                            if len(worked.find_elements_by_tag_name('path')) > 0:
+                                p = True
+
+                        except:
+                            pass
+
+                        caret1 = caret.find_element_by_xpath("..")
+
+                        caret1.click()
+                        self.teacher.find(
+                            By.XPATH,
+                            "//button[@class='late-button btn btn-default']"
+                        ).click()
+                        found = True
+                        break
+
+                    except:
+
+                        if scrolls == 20:
+                            break
+                        try:
+                            scrollbar = self.teacher.find(
+                                By.XPATH,
+                                "//div[@class='ScrollbarLayout_main " +
+                                "ScrollbarLayout_mainVertical " +
+                                "public_Scrollbar_main']")
+
+                            scrollbar.click()
+
+                        except:
+                            pass
+
+                        newbar = self.teacher.find(
+                            By.XPATH,
+                            "//div[@class='ScrollbarLayout_main " +
+                            "ScrollbarLayout_mainVertical " +
+                            "public_Scrollbar_main " +
+                            "public_Scrollbar_mainActive']")
+
+                        actions = ActionChains(self.teacher.driver)
+                        actions.move_to_element(newbar)
+                        actions.click(newbar)
+                        actions.perform()
+                        for i in range(1):
+                            scrolls += 1
+                            newbar.send_keys(Keys.ARROW_DOWN)
+
+                break
+
+        lates = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='late-caret accepted']"
+        )
+
+        
+
+        revert = False
+        diff = False
+        #worked = parent.find_elements_by_class_name("worked")
+        assert(diff), \
+            'unaccepted late: ' + str(late) + ", accepted late: " + str(accepted)
+
+        if len(not_started) > 0:
+            slice_late = worked.find_elements_by_tag_name('path')
+            assert(slice_late[0].get_attribute('class') == 'slice late'), \
+                'No change'
+
+            diff = True
+
+        else:
+            assert(p)
+            assert(len(worked.find_elements_by_tag_name('path')) == 0), \
+                'No change'
+
+            diff = True
+
+        assert(diff), \
+            'No change'
+
+        item = worked.find_element_by_xpath("//div[@class='late-caret accepted']")
+        
+        #try:
+        item.click()
+        self.teacher.find(
+            By.XPATH,
+            "//button[@class='late-button btn btn-default']"
+        ).click()
+        revert = True
+            
+
+        #except:
+        #    pass
+
+        self.teacher.sleep(5)
+        assert(found), \
+            'Not found'
+
+        assert(revert), \
+            'Didnt revert'
 
         self.ps.test_updates['passed'] = True
 
