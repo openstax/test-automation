@@ -56,7 +56,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
             capabilities=self.desired_capabilities
         )
         self.teacher.login()
-        self.teacher.select_course(title='HS Physics')
+        self.teacher.select_course(appearance='hs_physics')
 
     def tearDown(self):
         """Test destructor."""
@@ -86,7 +86,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # self.teacher.select_course(title='HS Physics')
-        assert('calendar' in self.teacher.current_url()), \
+        assert('course' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.ps.test_updates['passed'] = True
@@ -189,9 +189,9 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         # self.teacher.select_course(title='HS Physics')
         self.teacher.open_user_menu()
-        self.teacher.find(By.CLASS_NAME, 'viewTeacherPerformanceForecast'). \
-            find_element_by_tag_name('a'). \
-            click()
+        self.teacher.find(
+            By.XPATH, '//a[@data-name="viewPerformanceGuide"]'
+        ).click()
         self.teacher.page.wait_for_page_load()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing the performance forecast'
@@ -481,14 +481,14 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.CLASS_NAME,
-            'viewTeacherPerformanceForecast'
+            By.LINK_TEXT,
+            'Performance Forecast'
         ).click()
         self.teacher.driver.find_element(
             By.CLASS_NAME,
             'course-name'
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('course' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.ps.test_updates['passed'] = True
@@ -553,14 +553,14 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         teacher2.login()
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.CLASS_NAME,
-            'viewTeacherPerformanceForecast'
+            By.LINK_TEXT,
+            'Performance Forecast'
         ).click()
         self.teacher.driver.find_element(
             By.CLASS_NAME,
             'ui-brand-logo'
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('course' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.ps.test_updates['passed'] = True
