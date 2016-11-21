@@ -23,6 +23,7 @@ basic_test_env = json.dumps([{
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
@@ -41,17 +42,25 @@ class TestContractControls(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.admin = Admin(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.admin = Admin(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.admin = Admin(
+                use_env_vars=True,
+            )
         self.admin.login()
         # make sure there are no new terms to accept
         try:
             self.admin.driver.find_element(
                 By.ID, 'i_agree'
             ).click()
+        except NoSuchElementException:
+            pass
+        try:
             self.admin.driver.find_element(
                 By.ID, 'agreement_submit'
             ).click()
@@ -71,10 +80,11 @@ class TestContractControls(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.admin.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.admin.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             self.admin.delete()
         except:

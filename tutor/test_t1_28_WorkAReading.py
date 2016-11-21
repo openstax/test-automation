@@ -31,6 +31,7 @@ basic_test_env = json.dumps([{
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
@@ -51,17 +52,25 @@ class TestWorkAReading(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.student = Student(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.teacher = Teacher(
-            use_env_vars=True,
-            existing_driver=self.student.driver,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.student = Student(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                existing_driver=self.student.driver,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.student = Student(
+                use_env_vars=True,
+            )
+            self.teacher = Teacher(
+                use_env_vars=True
+            )
         self.teacher.login()
 
         # Create a reading for the student to work
@@ -132,10 +141,11 @@ class TestWorkAReading(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.student.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.student.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             # Delete the assignment
             assert('calendar' in self.teacher.current_url()), \
