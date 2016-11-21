@@ -31,12 +31,12 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         8085, 8086, 8087, 8088, 8089,
-        8090, 8091, 8092, 8093, 8094,
-        8095, 8096, 8097, 8098, 8099,
-        8100, 8101, 8102, 8103, 8104,
-        8105, 8106, 8107, 8108, 8109,
-        8110, 8111, 8112, 8113, 8114,
-        8115, 8116
+        # 8090, 8091, 8092, 8093, 8094,
+        # 8095, 8096, 8097, 8098, 8099,
+        # 8100, 8101, 8102, 8103, 8104,
+        # 8105, 8106, 8107, 8108, 8109,
+        # 8110, 8111, 8112, 8113, 8114,
+        # 8115, 8116
     ])
 )
 
@@ -52,8 +52,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.desired_capabilities['name'] = self.id()
         self.teacher = Teacher(
             use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
+            # pasta_user=self.ps,
+            # capabilities=self.desired_capabilities
         )
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
@@ -88,7 +88,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -164,7 +164,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -277,7 +277,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -399,7 +399,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # Test steps and verification assertions
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -466,7 +466,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_name = "ext006_" + str(randint(0, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -604,7 +604,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -649,7 +649,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -704,7 +704,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -748,7 +748,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -1119,7 +1119,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -1161,7 +1161,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -1469,7 +1469,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_name = "ext021_" + str(randint(0, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -1699,7 +1699,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_name = "ext024_" + str(randint(0, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -1935,7 +1935,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_name = "ext027_" + str(randint(0, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
