@@ -1,21 +1,20 @@
 """Product, Epic 18 - CreateAnExternalAssignment."""
 
+import datetime
 import inspect
 import json
 import os
 import pytest
 import unittest
-import time
-import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint
-from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException
+# from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
-from staxing.assignment import Assignment
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import NoSuchElementException
+from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher
@@ -23,10 +22,11 @@ from staxing.helper import Teacher
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
@@ -49,22 +49,26 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
-        self.desired_capabilities = {}
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
-            use_env_vars=True,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.teacher = Teacher(
+                use_env_vars=True
+            )
         self.teacher.login()
-        self.teacher.select_course(appearance='biology')
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.teacher.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.teacher.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             self.teacher.delete()
         except:
@@ -78,10 +82,10 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         Steps:
         Click on the Add Assignment drop down menu
-        Click on the Add External Assignemnt option
+        Click on the Add External Assignment option
 
         Expected Result:
-        User taken to Add External Assignemnt Page
+        User taken to Add External Assignment Page
         """
         self.ps.test_updates['name'] = 't1.18.001' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -103,13 +107,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8086 - 002 - Teacher | Add an external assignment using the
     # calendar date
-    @pytest.mark.skipif(str(8086) not in TESTS, reason='Excluded')
+    # @pytest.mark.skipif(str(8086) not in TESTS, reason='Excluded')
+    @pytest.mark.skipif(True, reason='Manual testing only')
     def test_teacher_add_external_assignment_using_calendar_date_8086(self):
         """Add an external assignment using the calendar date.
 
         Steps:
         Click on a calendar date
-        Click on the Add External Assignemnt option
+        Click on the Add External Assignment option
 
         Expected Result:
         User taken to Add External Assignment page with due date filled in
@@ -124,20 +129,27 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
         day = self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
+                (By.CSS_SELECTOR, 'div.rc-Day--upcoming')
             )
         )
+        # day = days if not isinstance(days, list) else \
+        #     days[randint(0, min(len(days) - 1, 10))]
         self.teacher.driver.execute_script(
             'return arguments[0].scrollIntoView();', day)
-        time.sleep(2)
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(day)
-        actions.click(day)
-        actions.move_by_offset(30, 65)
-        actions.click()
-        actions.perform()
-        assert('external/new' in self.teacher.current_url()),\
-            'not at Add External Assignemnt page'
+        self.teacher.sleep(0.5)
+        # Psuedo-test - cannot click on react component
+        try:
+            date = self.teacher.find_all(
+                By.CSS_SELECTOR,
+                'ul.course-add-dropdown li a'
+            )[2]
+            link_url = date.get_attribute('href')
+            self.teacher.get(link_url)
+        except:
+            assert(False), 'date dropdown not seen'
+        self.teacher.sleep(1)
+        assert('externals/new' in self.teacher.current_url()), \
+            'not at Add External Assignment page'
 
         self.ps.test_updates['passed'] = True
 
@@ -149,8 +161,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         Steps:
         Click on the Add Assignment drop down menu
-        Click on the Add External Assignemnt option
-        Enter an assignemnt name into the Assignemnt Name text box
+        Click on the Add External Assignment option
+        Enter an Assignment name into the Assignment Name text box
         Enter date into the Open Date text feild as MM/DD/YYYY
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
@@ -172,7 +184,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             assignment_menu.click()
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        time.sleep(1)
+        self.teacher.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
@@ -189,8 +201,11 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # set date
         self.teacher.find(By.ID, 'hide-periods-radio').click()
         today = datetime.date.today()
-        opens_on = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        start = randint(1, 10)
+        opens_on = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=start + randint(1, 5))) \
+            .strftime('%m/%d/%Y')
         self.teacher.find(
             By.XPATH, '//div[contains(@class,"-due-date")]' +
             '//div[contains(@class,"datepicker__input")]').click()
@@ -211,7 +226,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             ' and not(contains(@class,"disabled")) ' +
             ' and text()="' + (closes_on[3:5]).lstrip('0') + '"]'
         ).click()
-        time.sleep(0.5)
+        self.teacher.sleep(0.5)
         self.teacher.find(
             By.CLASS_NAME, 'assign-to-label').click()
         self.teacher.find(
@@ -235,7 +250,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             ' and not(contains(@class,"disabled")) ' +
             ' and text()="' + (opens_on[3:5]).lstrip('0') + '"]'
         ).click()
-        time.sleep(0.5)
+        self.teacher.sleep(0.5)
         self.teacher.find(
             By.CLASS_NAME, 'assign-to-label').click()
         self.teacher.find(
@@ -261,8 +276,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         Steps:
         Click on the Add Assignment drop down menu
-        Click on the Add External Assignemnt option
-        Enter an assignemnt name into the Assignemnt Name text box
+        Click on the Add External Assignment option
+        Enter an Assignment name into the Assignment Name text box
         Click on the Individual periods radio button
         For each period:
         * Enter date into the Open Date text feild as MM/DD/YYYY
@@ -288,7 +303,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        time.sleep(1)
+        self.teacher.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
@@ -302,6 +317,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
             send_keys('external assignemnt description')
+
         # assign to periods individually
         self.teacher.find(By.ID, 'show-periods-radio').click()
         periods = self.teacher.find_all(
@@ -320,7 +336,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 '//div[contains(@class,"datepicker__input")]')
             self.teacher.driver.execute_script(
                 'window.scrollBy(0,' + str(element.size['height'] + 50) + ');')
-            time.sleep(0.5)
+            self.teacher.sleep(0.5)
             element.click()
             # get calendar to correct month
             month = today.month
@@ -340,7 +356,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 ' and not(contains(@class,"disabled")) ' +
                 ' and text()="' + (closes_on[3:5]).lstrip('0') + '"]'
             ).click()
-            time.sleep(0.5)
+            self.teacher.sleep(0.5)
             self.teacher.find(
                 By.XPATH, '//div[contains(@class,"tasking-plan")]' +
                 '[' + str(x + 1) + ']' +
@@ -363,7 +379,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 ' and not(contains(@class,"disabled")) ' +
                 ' and text()="' + (opens_on[3:5]).lstrip('0') + '"]'
             ).click()
-            time.sleep(0.5)
+            self.teacher.sleep(0.5)
         self.teacher.find(
             By.ID, 'external-url').send_keys('website.com')
         self.teacher.find(
@@ -379,15 +395,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8089 - 005 - Teacher | Save a draft external assignemnt
+    # Case C8089 - 005 - Teacher | Save a draft external Assignment
     @pytest.mark.skipif(str(8089) not in TESTS, reason='Excluded')
     def test_teacher_save_a_draft_external_assignment_8089(self):
-        """Save a draft external assignemnt.
+        """Save a draft external Assignment.
 
         Steps:
         Click on the Add Assignment drop down menu
-        Click on the Add External Assignemnt option
-        Enter an assignemnt name into the Assignemnt Name text box
+        Click on the Add External Assignment option
+        Enter an Assignment name into the Assignment Name text box
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Save As Draft button
@@ -412,7 +428,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        time.sleep(1)
+        self.teacher.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
@@ -425,7 +441,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
-            send_keys('external assignemnt description')
+            send_keys('external Assignment description')
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -437,6 +453,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.ID, 'external-url').send_keys('website.com')
         self.teacher.find(
             By.XPATH, '//button[contains(@class,"-save")]').click()
+        self.teacher.sleep(4)
         try:
             self.teacher.find(
                 By.XPATH, "//label[contains(text(), 'ext005')]")
@@ -448,15 +465,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8090 - 006 - Teacher | Publish a new external assignemnt
+    # Case C8090 - 006 - Teacher | Publish a new external Assignment
     @pytest.mark.skipif(str(8090) not in TESTS, reason='Excluded')
     def test_teacher_publish_a_new_external_assignment_8090(self):
-        """Publish a new external assignemnt.
+        """Publish a new external Assignment.
 
         Steps:
         Click on the Add Assignment drop down menu
-        Click on the Add External Assignemnt option
-        Enter an assignemnt name into the Assignemnt Name text box
+        Click on the Add External Assignment option
+        Enter an Assignment name into the Assignment Name text box
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
@@ -481,7 +498,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        time.sleep(1)
+        self.teacher.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
@@ -494,7 +511,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
-            send_keys('external assignemnt description')
+            send_keys('external Assignment description')
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -504,6 +521,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.ID, 'external-url').send_keys('website.com')
         self.teacher.find(
             By.XPATH, '//button[contains(@class,"-publish")]').click()
+        self.teacher.sleep(4)
         try:
             self.teacher.find(
                 By.XPATH,
@@ -517,15 +535,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8091 - 007 - Teacher | Publish a draft external assignemnt
+    # Case C8091 - 007 - Teacher | Publish a draft external Assignment
     @pytest.mark.skipif(str(8091) not in TESTS, reason='Excluded')
     def test_teacher_publish_a_draft_external_assignment_8091(self):
-        """Publish a draft external assignemnt.
+        """Publish a draft external Assignment.
 
         Steps:
         Click on the Add Assignment drop down menu
-        Click on the Add External Assignemnt option
-        Enter an assignemnt name into the Assignemnt Name text box
+        Click on the Add External Assignment option
+        Enter an Assignment name into the Assignment Name text box
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Save As Draft button
@@ -542,6 +560,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        # assignment_name = 't1.18.007 external-%s' % randint(100, 999)
         assignment_name = "ext007_" + str(randint(0, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
@@ -590,15 +609,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8092 - 008 - Teacher | Cancel a new external assignemnt before
+    # Case C8092 - 008 - Teacher | Cancel a new external Assignment before
     # making changes using Cancel button
     @pytest.mark.skipif(str(8092) not in TESTS, reason='Excluded')
     def test_teacher_cancel_new_external_before_change_using_cancel_8092(self):
-        """Cancel a new external assignemnt before changes using Cancel button.
+        """Cancel a new external Assignment before changes using Cancel button.
 
         Steps:
         Click on the Add Assignment drop down menu
-        Click on the Add External Assignemnt option
+        Click on the Add External Assignment option
         Click on the Cancel button
 
         Expected Result:
@@ -619,7 +638,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        time.sleep(1)
+        self.teacher.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
@@ -633,16 +652,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8093 - 009 - Teacher | Cancel a new external assignemnt after
+    # Case C8093 - 009 - Teacher | Cancel a new external Assignment after
     # making changes using Cancel button
     @pytest.mark.skipif(str(8093) not in TESTS, reason='Excluded')
     def test_teacher_cancel_new_external_after_changes_using_cancel_8093(self):
-        """Cancel a new external assignemnt after changes using Cancel button.
+        """Cancel a new external Assignment after changes using Cancel button.
 
         Steps:
         Click on the Add Assignment drop down menu
-        Click on the Add External Assignemnt option
-        Enter an assignemnt name into the Assignemnt Name text box
+        Click on the Add External Assignment option
+        Enter an Assignment name into the Assignment Name text box
         Click on the Cancel button
         Click on the OK button
 
@@ -664,7 +683,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        time.sleep(1)
+        self.teacher.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
@@ -690,15 +709,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8094 - 010 - Teacher | Cancel a new external assignemnt before
+    # Case C8094 - 010 - Teacher | Cancel a new external Assignment before
     # making changes using the X
     @pytest.mark.skipif(str(8094) not in TESTS, reason='Excluded')
     def test_teacher_cancel_new_external_before_changes_using_the_x_8094(self):
-        """Cancel a new external assignemnt before changes using the X.
+        """Cancel a new external Assignment before changes using the X.
 
         Steps:
         Click on the Add Assignment drop down menu
-        Click on the Add External Assignemnt option
+        Click on the Add External Assignment option
         Click on the X
 
         Expected Result:
@@ -719,7 +738,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        time.sleep(1)
+        self.teacher.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
@@ -732,16 +751,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8095 - 011 - Teacher | Cancel a new external assignemnt after
+    # Case C8095 - 011 - Teacher | Cancel a new external Assignment after
     # making changes using the X
     @pytest.mark.skipif(str(8095) not in TESTS, reason='Excluded')
     def test_teacher_cancel_new_external_after_changes_using_the_x_8095(self):
-        """Cancel a new external assignemnt after changes using the X.
+        """Cancel a new external Assignment after changes using the X.
 
         Steps:
         Click on the Add Assignment drop down menu
-        Click on the Add External Assignemnt option
-        Enter an assignemnt name into the Assignemnt Name text box
+        Click on the Add External Assignment option
+        Enter an Assignment name into the Assignment Name text box
         Click on the X
         Click on the OK button
 
@@ -763,7 +782,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        time.sleep(1)
+        self.teacher.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
@@ -787,14 +806,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8096 - 012 - Teacher | Cancel a draft external assignemnt before
+    # Case C8096 - 012 - Teacher | Cancel a draft external Assignment before
     # making changes using Cancel button
     @pytest.mark.skipif(str(8096) not in TESTS, reason='Excluded')
     def test_teacher_cancel_draft_external_before_change_use_cancel_8096(self):
-        """Cancel draft external assignemnt before changes using Cancel button.
+        """Cancel draft external Assignment before changes using Cancel button.
 
         Steps:
-        create a draft external assignemnt
+        create a draft external Assignment
         Click on the draft external assignment
         Click on the Cancel button
 
@@ -848,7 +867,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         # cancel editing the draft
-        time.sleep(1)
+        self.teacher.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
@@ -870,7 +889,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Steps:
         create a draft external assignment
         Click on the draft external assignment
-        Enter an assignemnt name into the Assignment Name text box
+        Enter an Assignment name into the Assignment Name text box
         Click on the Cancel button
         Click on the OK button
 
@@ -924,7 +943,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         # edit draft then cancel
-        time.sleep(1)
+        self.teacher.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
@@ -952,10 +971,10 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     # making changes using the X
     @pytest.mark.skipif(str(8098) not in TESTS, reason='Excluded')
     def test_teacher_cancel_draft_external_before_changes_use_the_x_8098(self):
-        """Cancel a draft external assignemnt before changes using the X.
+        """Cancel a draft external Assignment before changes using the X.
 
         Steps:
-        create a draft external assignemnt
+        create a draft external Assignment
         Click on the draft external assignment
         Click on the X button
         Click on the OK button
@@ -1020,16 +1039,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8099 - 015 - Teacher | Cancel a draft external assignemnt after
+    # Case C8099 - 015 - Teacher | Cancel a draft external Assignment after
     # making changes using the X
     @pytest.mark.skipif(str(8099) not in TESTS, reason='Excluded')
     def test_teacher_cancel_draft_external_after_changes_use_the_x_8099(self):
-        """Cancel a draft external assignemnt after changes using the X.
+        """Cancel a draft external Assignment after changes using the X.
 
         Steps:
-        create a draft external assignemnt
+        create a draft external Assignment
         Click on the draft external assignment
-        Enter an assignemnt name into the Assignment Name text box
+        Enter an Assignment name into the Assignment Name text box
         Click on the Cancel button
         Click on the OK button
 
@@ -1112,12 +1131,12 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         Steps:
         Click on the Add Assignment drop down menu
-        Click on the Add External Assignemnt option
+        Click on the Add External Assignment option
         Click on the Publish button
 
         Expected Result:
         Blank required feilds are highlighted in red
-        assignemnt is not published
+        Assignment is not published
         """
         self.ps.test_updates['name'] = 't1.18.016' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1133,7 +1152,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             assignment_menu.click()
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        time.sleep(1)
+        self.teacher.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
@@ -1155,11 +1174,11 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         Steps:
         Click on the Add Assignment drop down menu
-        Click on the Add External Assignemnt option
+        Click on the Add External Assignment option
         Click on the Save As Draft button
 
         Expected Result:
-        Blank required feilds are highlighted in red, assignemnt is not saved
+        Blank required feilds are highlighted in red, Assignment is not saved
         """
         self.ps.test_updates['name'] = 't1.18.017' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1175,7 +1194,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             assignment_menu.click()
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        time.sleep(1)
+        self.teacher.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
@@ -1192,13 +1211,13 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     # Case C8102 - 018 - Teacher | Delete an unopened external assignment
     @pytest.mark.skipif(str(8102) not in TESTS, reason='Excluded')
     def test_teacher_delete_an_unopened_external_assignment_8102(self):
-        """Delete an unopened external assignemnt.
+        """Delete an unopened external Assignment.
 
         Steps:
-        Create an unopened assignemnt
+        Create an unopened Assignment
         Click on the unopened external assignment
-        Click on the Edit Assignemnt button
-        Click on the Delete Assignemnt
+        Click on the Edit Assignment button
+        Click on the Delete Assignment
         Click on OK on the dialouge box
 
         Expected Result:
@@ -1282,13 +1301,13 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     # Case C8103 - 019 - Teacher | Delete an opened external assignment
     @pytest.mark.skipif(str(8103) not in TESTS, reason='Excluded')
     def test_teacher_delete_an_opened_external_assignment_8103(self):
-        """Delete an opened external assignemnt.
+        """Delete an opened external Assignment.
 
         Steps:
-        Create an opened assignemnt
+        Create an opened Assignment
         Click on the opened external assignment
-        Click on the Edit Assignemnt button
-        Click on the Delete Assignemnt
+        Click on the Edit Assignment button
+        Click on the Delete Assignment
         Click on OK on the dialouge box
 
         Expected Result:
@@ -1371,10 +1390,10 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
     # Case C8104 - 020 - Teacher | Delete a draft external assignment
     @pytest.mark.skipif(str(8104) not in TESTS, reason='Excluded')
     def test_teacher_delete_a_draft_external_assignment_8104(self):
-        """Delete a draft external assignemnt.
+        """Delete a draft external Assignment.
 
         Steps:
-        Create a draft assignemnt
+        Create a draft Assignment
         Click on the draft
         Click on the Delete Assignment buttom
         Click OK in the dialouge box
@@ -1451,13 +1470,13 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8105 - 021 - Teacher | Add a description to an external assignment
     @pytest.mark.skipif(str(8105) not in TESTS, reason='Excluded')
-    def test_teacher_add_a_destcription_to_an_external_assignemnt_8105(self):
-        """Add a description to an external assignemnt.
+    def test_teacher_add_a_destcription_to_an_external_Assignment_8105(self):
+        """Add a description to an external Assignment.
 
         Steps:
         Click on the Add Assignment drop down menu
-        Click on the Add External Assignemnt option
-        Enter an assignemnt name into the Assignemnt Name text box
+        Click on the Add External Assignment option
+        Enter an Assignment name into the Assignment Name text box
         Enter a description into the Description text box
         Enter date into the Due Dte text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
@@ -1483,7 +1502,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        time.sleep(1)
+        self.teacher.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
@@ -1496,7 +1515,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
-            send_keys('external assignemnt description')
+            send_keys('external Assignment description')
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -1526,13 +1545,13 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         """Change a description for a draft external assignment.
 
         Steps:
-        create a draft assignemnt
+        create a draft Assignment
         Click on the draft assignment
         Enter a new description into the Description text box
         Click on the Save as Draft button
 
         Expected Result:
-        Assignemnt has been updated on the calendar dashboard
+        Assignment has been updated on the calendar dashboard
         """
         self.ps.test_updates['name'] = 't1.18.022' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1588,7 +1607,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
-            send_keys('NEW external assignemnt description')
+            send_keys('NEW external Assignment description')
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"-save")]')
@@ -1604,14 +1623,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         """Change a description for an open external assignment.
 
         Steps:
-        create an open assignemnt
+        create an open Assignment
         Click on the open assignment
         Click on the Edit Assignment button
         Enter a new description into the Description text box
         Click on the Publish button
 
         Expected Result:
-        Assignemnt has been updated on the calendar dashboard
+        Assignment has been updated on the calendar dashboard
         """
         self.ps.test_updates['name'] = 't1.18.023' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1671,7 +1690,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
-            send_keys('NEW external assignemnt description')
+            send_keys('NEW external Assignment description')
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"-publish")]')
@@ -1682,13 +1701,13 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8108 - 024 - Teacher | Add a name to an external assignment
     @pytest.mark.skipif(str(8108) not in TESTS, reason='Excluded')
-    def test_teacher_add_a_name_to_an_external_assignemnt_8108(self):
+    def test_teacher_add_a_name_to_an_external_Assignment_8108(self):
         """Add a name to an external assignment.
 
         Steps:
         Click on the Add Assignment drop down menu
-        Click on the Add External Assignemnt option
-        Enter an assignemnt name into the Assignemnt Name text box
+        Click on the Add External Assignment option
+        Enter an Assignment name into the Assignment Name text box
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
@@ -1713,7 +1732,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        time.sleep(1)
+        self.teacher.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
@@ -1726,7 +1745,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
-            send_keys('external assignemnt description')
+            send_keys('external Assignment description')
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -1916,15 +1935,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8111 - 027 - Teacher | Add an assignemnt URL
+    # Case C8111 - 027 - Teacher | Add an Assignment URL
     @pytest.mark.skipif(str(8111) not in TESTS, reason='Excluded')
     def test_teacher_add_an_assignment_url_8111(self):
         """Add an assignment URL.
 
         Steps:
         Click on the Add Assignment drop down menu
-        Click on the Add External Assignemnt option
-        Enter an assignemnt name into the Assignemnt Name text box
+        Click on the Add External Assignment option
+        Enter an Assignment name into the Assignment Name text box
         Enter date into the Due Date text feild as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
@@ -1949,7 +1968,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        time.sleep(1)
+        self.teacher.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
@@ -1962,7 +1981,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
-            send_keys('external assignemnt description')
+            send_keys('external Assignment description')
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -1985,16 +2004,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8112 - 028 - Teacher | Change the assignemnt URL for a draft
-    # external assignemnt
+    # Case C8112 - 028 - Teacher | Change the Assignment URL for a draft
+    # external Assignment
     @pytest.mark.skipif(str(8112) not in TESTS, reason='Excluded')
     def test_teacher_change_the_assignment_url_for_a_draft_external_8112(self):
-        """Change the assignemnt URL for a draft external assignemnt.
+        """Change the Assignment URL for a draft external Assignment.
 
         Steps:
-        create a draft assignemnt
+        create a draft Assignment
         Click on the draft assignment
-        Enter a new URL into the Assignemtn URL text box
+        Enter a new URL into the assignment URL text box
         Click on the Save As Draft button
 
         Expected Result:
@@ -2010,14 +2029,16 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'draft'
-                                    })
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'draft'
+            }
+        )
         # click in the open assignment
         try:
             self.teacher.wait.until(
@@ -2127,15 +2148,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8114 - 030 - Teacher | Change all feilds in an unopened
-    # External Assignemnt
+    # External Assignment
     @pytest.mark.skipif(str(8114) not in TESTS, reason='Excluded')
     def test_teacher_change_all_feilds_in_an_unopened_external_8114(self):
-        """Change all feilds in an unopened External Assignemnt.
+        """Change all feilds in an unopened External Assignment.
 
         Steps:
         Create an unopened assignement
-        Click on the unopoened assignemnt on the calendar
-        Enter an assignemnt name into the Assignemnt Name text box
+        Click on the unopoened Assignment on the calendar
+        Enter an Assignment name into the Assignment Name text box
         Enter a description into the Description text box
         Enter date into the Open Date text feild as MM/DD/YYYY
         Enter date into the Due Date text feild as MM/DD/YYYY
@@ -2196,7 +2217,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
         ).click()
         assignment = Assignment()
-        time.sleep(1)
+        self.teacher.sleep(1)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
@@ -2208,7 +2229,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
-            send_keys('NEW external assignemnt description')
+            send_keys('NEW external Assignment description')
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=9)).strftime('%m/%d/%Y')
@@ -2232,15 +2253,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8115 - 031 - Teacher | Change all feilds in a draft External
-    # Assignemnt
+    # Assignment
     @pytest.mark.skipif(str(8115) not in TESTS, reason='Excluded')
     def test_teacher_change_all_feilds_in_a_draft_external_8115(self):
-        """Change all feilds in a draft External Assignemnt.
+        """Change all feilds in a draft External Assignment.
 
         Steps:
         Create a draft assignement
-        Click on the draft assignemnt on the calendar
-        Enter an assignemnt name into the Assignemnt Name text box
+        Click on the draft Assignment on the calendar
+        Enter an Assignment name into the Assignment Name text box
         Enter a description into the Description text box
         Enter date into the Open Date text feild as MM/DD/YYYY
         Enter date into the Due Date text feild as MM/DD/YYYY
@@ -2308,7 +2329,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
-            send_keys('NEW external assignemnt description')
+            send_keys('NEW external Assignment description')
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=9)).strftime('%m/%d/%Y')
@@ -2332,15 +2353,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8116 - 032 - Teacher | Change all possible feilds in an open
-    # External Assignemnt
+    # External Assignment
     @pytest.mark.skipif(str(8116) not in TESTS, reason='Excluded')
     def test_teacher_change_all_possible_feilds_in_an_open_external_8116(self):
-        """Change all possible feilds in an open External Assignemnt.
+        """Change all possible feilds in an open External Assignment.
 
         Steps:
         Create an open assignement
-        Click on the open assignemnt on the calendar
-        Enter an assignemnt name into the Assignemnt Name text box
+        Click on the open Assignment on the calendar
+        Enter an Assignment name into the Assignment Name text box
         Enter a description into the Description text box
         Enter date into the Due Date text feild as MM/DD/YYYY
         Click on the Save As Draft button
@@ -2398,7 +2419,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 (By.XPATH, '//a[contains(@class,"edit-assignment")]')
             )
         ).click()
-        assignment = Assignment()
+        # assignment = Assignment()
         self.teacher.sleep(1)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -2411,7 +2432,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
-            send_keys('NEW external assignemnt description')
+            send_keys('NEW external Assignment description')
         today = datetime.date.today()
         closes_on = (today + datetime.timedelta(days=9)).strftime('%m/%d/%Y')
         self.teacher.find(
@@ -2433,7 +2454,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             '//div[contains(@class,"datepicker__day")' +
             'and text()="' + (closes_on[3:5]).lstrip('0') + '"]'
         ).click()
-        time.sleep(0.5)
+        self.teacher.sleep(0.5)
         self.teacher.find(
             By.CLASS_NAME, 'assign-to-label').click()
         self.teacher.find(

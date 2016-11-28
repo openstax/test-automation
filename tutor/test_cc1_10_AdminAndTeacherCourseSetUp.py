@@ -20,10 +20,11 @@ from staxing.helper import Admin, Teacher
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
@@ -44,24 +45,34 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.admin = Admin(
-            use_env_vars=True,
-            existing_driver=self.teacher.driver,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.admin = Admin(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.teacher = Teacher(
+                use_env_vars=True
+            )
+            self.admin = Admin(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver,
+            )
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.teacher.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.teacher.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             self.admin.driver = None
             self.teacher.delete()
@@ -502,7 +513,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         ).click()
         self.teacher.sleep(2)
         archived = self.teacher.driver.find_elements(
-            By.XPATH, '//li//a[@role="tab" and text()="' + section_name + '"]')
+            By.XPATH, '//li//a[@role="tab" and text()="' + period_name + '"]')
         assert(len(archived) == 0), ' not archived'
         # add the archived period back
         self.teacher.wait.until(
@@ -514,14 +525,10 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         periods = self.teacher.driver.find_elements(
             By.XPATH, '//div[@class="modal-content"]//tbody//tr'
         )
-        print(period_name)
-        print(len(periods))
         for period in periods:
             try:
-                print('here')
                 period.find_element(
                     By.XPATH, ".//td[text()='" + period_name + "']")
-                print('here22222222')
                 period.find_element(
                     By.XPATH,
                     ".//td//span[contains(@class,'restore-period')]//button"
@@ -529,7 +536,6 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
                 break
             except NoSuchElementException:
                 if period == periods[-1]:
-                    print('archived period not found')
                     raise Exception
         self.teacher.sleep(2)
         self.teacher.wait.until(
@@ -606,7 +612,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         ).click()
         self.teacher.sleep(2)
         archived = self.teacher.driver.find_elements(
-            By.XPATH, '//li//a[@role="tab" and text()="' + section_name + '"]')
+            By.XPATH, '//li//a[@role="tab" and text()="' + period_name + '"]')
         assert(len(archived) == 0), ' not archived'
         # add the archived period back
         self.teacher.wait.until(
@@ -618,14 +624,10 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         periods = self.teacher.driver.find_elements(
             By.XPATH, '//div[@class="modal-content"]//tbody//tr'
         )
-        print(period_name)
-        print(len(periods))
         for period in periods:
             try:
-                print('here')
                 period.find_element(
                     By.XPATH, ".//td[text()='" + period_name + "']")
-                print('here22222222')
                 period.find_element(
                     By.XPATH,
                     ".//td//span[contains(@class,'restore-period')]//button"
@@ -633,7 +635,6 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
                 break
             except NoSuchElementException:
                 if period == periods[-1]:
-                    print('archived period not found')
                     raise Exception
         self.teacher.sleep(2)
         self.teacher.wait.until(
@@ -897,8 +898,6 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
                 raise Exception
         # after removing self from course taken to dashboard
         # or course if only 1 other course
-        # self.teacher.sleep(0.5)
-        # self.teacher2.page.wait_for_page_load()
         assert('/courses/8' not in teacher2.current_url()), \
             'teacher not deleted'
         teacher2.delete()

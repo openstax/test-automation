@@ -5,31 +5,38 @@ import json
 import os
 import pytest
 import unittest
+import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
-# from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
-# from staxing.assignment import Assignment
+from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+from staxing.assignment import Assignment
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import ElementNotVisibleException
+# from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.action_chains import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher
+from staxing.helper import Teacher, Student
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
-    str([
-        14675, 14676, 14677, 14678, 14800,
-        14680, 14681, 14682, 14683, 14801,
-        14802, 14803, 14804, 14805, 14685,
-        14686, 14687, 14688, 14689
-    ])
+    str([14675, 14676, 14677, 14678, 14800,
+         14680, 14681, 14682, 14683, 14801,
+         14802, 14803, 14804, 14805, 14685,
+         14686, 14687, 14688, 14689])
+
+    # these are not implemented features - 14682, 14685, 14689
+    # issues with the add hw helper - 14687
 )
 
 
@@ -39,7 +46,6 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
@@ -48,13 +54,23 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
+        self.student = Student(
+            username=os.getenv('STUDENT_USER'),
+            password=os.getenv('STUDENT_PASSWORD'),
+            site='https://tutor-qa.openstax.org',
+            existing_driver=self.teacher.driver,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.teacher.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.teacher.driver.session_id),
+                **self.ps.test_updates
+            )
+        self.student = None
         try:
             self.teacher.delete()
         except:
@@ -66,10 +82,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """Set when feedback is available.
 
         Steps:
-        Go to Tutor
-        Click on the 'Login' button
-        Enter the teacher user account in the username and password text boxes
-        Click on the 'Sign in' button
+        Login as a teacher
         If the user has more than one course, click on a Tutor course name
         Create a new homework assignment
         Click on the bar under "Show Feedback"
@@ -80,17 +93,27 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.10.001' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.001',
-            '14675'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.001', '14675']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.select_course(appearance='biology')
+        self.teacher.find(
+            By.XPATH, '//button[contains(@class,"dropdown-toggle")]').click()
+        self.teacher.find(By.LINK_TEXT, 'Add Homework').click()
+        self.teacher.sleep(1)
+        feedback_option = self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'feedback-select')
+            )
+        )
+        feedback_option.click()
+        self.teacher.find(
+            By.XPATH, '//select/option[@value="immediate"]').click()
+        feedback_option.click()
+        self.teacher.find(
+            By.XPATH, '//select/option[@value="due_at"]').click()
         self.ps.test_updates['passed'] = True
 
     # 14676 - 002 - Teacher | Set open and due times for a reading assignment
@@ -99,6 +122,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """Set open and due times for a reading assignment.
 
         Steps:
+        Login as a teacher
         If the user has more than one course, click on a Tutor course name
         Create a new reading assignment
         Click on the text box for the open time
@@ -111,17 +135,35 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.10.002' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.002',
-            '14676'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.002', '14676']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.select_course(appearance='biology')
+        self.teacher.find(
+            By.XPATH, '//button[contains(@class,"dropdown-toggle")]').click()
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        open_time = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"-assignment-open-time")]' +
+            '//input[@name="time"]'
+        )
+        open_time.clear()
+        open_time.send_keys('12:34a')
+        close_time = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"-assignment-due-time")]' +
+            '//input[@name="time"]'
+        )
+        close_time.clear()
+        close_time.send_keys('5:67p')
         self.ps.test_updates['passed'] = True
 
     # 14677 - 003 - Teacher | Set open and due times for a homework assignment
@@ -130,6 +172,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """Set open and due times for a homework assignment.
 
         Steps:
+        Login as a teacher
         If the user has more than one course, click on a Tutor course name
         Create a new homework assignment
         Click on the text box for the open time
@@ -142,17 +185,35 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.10.003' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.003',
-            '14677'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.003', '14677']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.select_course(appearance='biology')
+        self.teacher.find(
+            By.XPATH, '//button[contains(@class,"dropdown-toggle")]').click()
+        self.teacher.find(By.LINK_TEXT, 'Add Homework').click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        open_time = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"-assignment-open-time")]' +
+            '//input[@name="time"]'
+        )
+        open_time.clear()
+        open_time.send_keys('12:34a')
+        close_time = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"-assignment-due-time")]' +
+            '//input[@name="time"]'
+        )
+        close_time.clear()
+        close_time.send_keys('5:67p')
         self.ps.test_updates['passed'] = True
 
     # 14678 - 004 - Teacher | Set open and due times for an external assignment
@@ -161,6 +222,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """Set open and due times for an external assignment.
 
         Steps:
+        Login as a teacher
         If the user has more than one course, click on a Tutor course name
         Create a new external assignment
         Click on the text box for the open time
@@ -173,17 +235,36 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.10.004' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.004',
-            '14678'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.004', '14678']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.select_course(appearance='biology')
+        self.teacher.find(
+            By.XPATH, '//button[contains(@class,"dropdown-toggle")]').click()
+        self.teacher.find(
+            By.LINK_TEXT, 'Add External Assignment').click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        open_time = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"-assignment-open-time")]' +
+            '//input[@name="time"]'
+        )
+        open_time.clear()
+        open_time.send_keys('12:34a')
+        close_time = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"-assignment-due-time")]' +
+            '//input[@name="time"]'
+        )
+        close_time.clear()
+        close_time.send_keys('5:67p')
         self.ps.test_updates['passed'] = True
 
     # 14800 - 005 - Teacher | Make an assignment on time for a specific student
@@ -192,6 +273,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """Make an assignment on time for a specific student.
 
         Steps:
+        Login as a teacher
         If the user has more than one course, click on a Tutor course name
         Click "Student Scores" from calendar dashboard
         Click on the orange triangle in the upper right corner of a progress
@@ -203,17 +285,46 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.10.005' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.005',
-            '14800'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.005', '14800']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.select_course(appearance='college_physics')
+        self.teacher.find(
+            By.LINK_TEXT, 'Student Scores').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="course-scores-container"]')
+            )
+        )
+        assignments = self.teacher.find_all(
+            By.XPATH,
+            "//span[contains(@aria-describedby,'header-cell-title')]")
+        for i in range(len(assignments)//4):
+            try:
+                self.teacher.find(
+                    By.XPATH, '//div[@class="late-caret"]'
+                ).click()
+                self.teacher.find(
+                    By.XPATH,
+                    '//button[contains(text(),"Accept late score")]'
+                ).click()
+                break
+            except (NoSuchElementException, ElementNotVisibleException):
+                if i >= (len(assignments)//4)-1:
+                    print("No Late assignments for this class :(")
+                    raise Exception
+                # try to drag scroll bar instead of scrolling
+                scroll_bar = self.teacher.find(
+                    By.XPATH,
+                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                actions = ActionChains(self.teacher.driver)
+                actions.move_to_element(scroll_bar)
+                actions.click_and_hold()
+                actions.move_by_offset(50, 0)
+                actions.release()
+                actions.perform()
         self.ps.test_updates['passed'] = True
 
     # 14680 - 006 - Teacher | View score at due date
@@ -222,6 +333,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """View score at due date.
 
         Steps:
+        Login as a teacher
         If the user has more than one course, click on a Tutor course name
         Click "Student Scores" from the calendar dashboard
         (Teacher may also accept late score, and then view score at due date by
@@ -232,17 +344,47 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.10.006' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.006',
-            '14680'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.006', '14680']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.select_course(appearance='college_physics')
+        self.teacher.find(
+            By.LINK_TEXT, 'Student Scores').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="course-scores-container"]')
+            )
+        )
+        assignments = self.teacher.find_all(
+            By.XPATH,
+            "//span[contains(@aria-describedby,'header-cell-title')]")
+        for i in range(len(assignments)//4):
+            try:
+                self.teacher.find(
+                    By.XPATH, '//div[@class="late-caret accepted"]'
+                ).click()
+                self.teacher.find(
+                    By.XPATH,
+                    '//div[contains(@class,"late-status")]' +
+                    '//span[contains(text(),"due date")]'
+                )
+                break
+            except (NoSuchElementException, ElementNotVisibleException):
+                if i >= (len(assignments)//4)-1:
+                    print("No Late assignments for this class :(")
+                    raise Exception
+                # try to drag scroll bar instead of scrolling
+                scroll_bar = self.teacher.find(
+                    By.XPATH,
+                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                actions = ActionChains(self.teacher.driver)
+                actions.move_to_element(scroll_bar)
+                actions.click_and_hold()
+                actions.move_by_offset(50, 0)
+                actions.release()
+                actions.perform()
         self.ps.test_updates['passed'] = True
 
     # 14681 - 007 - Teacher | View current score
@@ -251,27 +393,52 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """View current score.
 
         Steps:
+        Login as a teacher
         If the user has more than one course, click on a Tutor course name
         Click "Student Scores" from the calendar dashboard
         Click on the orange flag in the upper right corner of a progress cell
-            for the desired student
+        for the desired student
 
         Expected Result:
         The user is presented with current score
         """
         self.ps.test_updates['name'] = 't2.10.007' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.007',
-            '14681'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.007', '14681']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.select_course(appearance='college_physics')
+        self.teacher.find(
+            By.LINK_TEXT, 'Student Scores').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="course-scores-container"]')
+            )
+        )
+        assignments = self.teacher.find_all(
+            By.XPATH,
+            "//span[contains(@aria-describedby,'header-cell-title')]")
+        for i in range(len(assignments)//4):
+            try:
+                self.teacher.find(
+                    By.XPATH, '//div[@class="score"]')
+                break
+            except (NoSuchElementException):
+                if i >= (len(assignments)//4)-1:
+                    print("No Late assignments for this class :(")
+                    raise Exception
+                # try to drag scroll bar instead of scrolling
+                scroll_bar = self.teacher.find(
+                    By.XPATH,
+                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                actions = ActionChains(self.teacher.driver)
+                actions.move_to_element(scroll_bar)
+                actions.click_and_hold()
+                actions.move_by_offset(50, 0)
+                actions.release()
+                actions.perform()
         self.ps.test_updates['passed'] = True
 
     # 14682 - 008 - Teacher | Set points per problem based on difficulty
@@ -281,18 +448,11 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         Steps:
 
-
         Expected Result:
-
         """
         self.ps.test_updates['name'] = 't2.10.008' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.008',
-            '14682'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.008', '14682']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -306,6 +466,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """Delete an open assignment.
 
         Steps:
+        Login as a teacher
         If the user has more than one course, click on a Tutor course name
         Click on an open assignment
         Click "Edit Assignment"
@@ -317,16 +478,73 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.10.009' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.009',
-            '14683'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.009', '14683']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # create an open event
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        assignment_name = "event_to_delete" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='event',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'status': 'publish'
+                                    })
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
+            ).click()
+        except NoSuchElementException:
+            self.teacher.find(
+                By.XPATH, "//a[contains(@class, 'header-control next')]"
+            ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
+            ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button[contains(@class,"delete-link")]')
+            )
+        ).click()
+        self.teacher.find(
+            By.XPATH, '//button[contains(text(),"Yes")]').click()
+        assert ('calendar' in self.teacher.current_url()), \
+            'not returned to calendar after deleting an assignment'
+        counter = 0
+        while counter < 6:
+            self.teacher.get(self.teacher.current_url())
+            deleted_reading = self.teacher.find_all(
+                By.XPATH, '//label[@data-title="' + assignment_name + '"]')
+            if len(deleted_reading) == 0:
+                break
+            else:
+                counter += 1
+        # assert it broke out of loop before just maxing out
+        assert(counter < 6), "assignment not deleted"
 
         self.ps.test_updates['passed'] = True
 
@@ -337,6 +555,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """Deleted open assignment is grayed out and is marked "Withdrawn".
 
         Steps:
+        Login as a student
         If the user has more than one course, click on a Tutor course name
 
         Expected Result:
@@ -345,17 +564,76 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.10.010' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.010',
-            '14801'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.010', '14801']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        # create a homework assignement
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        assignment_name = "event-010" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='event',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'status': 'publish'
+                                    })
+        # delete the assignment
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
+            ).click()
+        except NoSuchElementException:
+            self.teacher.find(
+                By.XPATH, "//a[contains(@class, 'header-control next')]"
+            ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
+            ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button[contains(@class,"delete-link")]')
+            )
+        ).click()
+        self.teacher.find(
+            By.XPATH, '//button[contains(text(),"Yes")]').click()
+        self.teacher.logout()
+        # login as a student to view the assignment
+        self.student.login()
+        self.student.select_course(appearance='physics')
+        self.student.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 '//a[@class="task row event deleted"]' +
+                 '//span[contains(text(),"' + assignment_name + '")]')
+            )
+        )
+        self.student.find(
+            By.XPATH,
+            '//a[@class="task row event deleted"]//span[text()="Withdrawn"]'
+        )
         self.ps.test_updates['passed'] = True
 
     # 14802 - 011 - Student | A deleted open assignment that the student has
@@ -365,6 +643,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """Deleted open assignment is not grayed out but is marked "Withdrawn".
 
         Steps:
+        Login as a student
         If the user has more than one course, click on a Tutor course name
 
         Expected Result:
@@ -373,16 +652,109 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.10.011' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.011',
-            '14802'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.011', '14802']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        assignment_name = "external-011-" + str(randint(1000, 1999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='external',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'url': 'google.com',
+                                        'status': 'publish'
+                                    })
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, '//div[contains(@class, "calendar")]')
+            )
+        )
+        self.teacher.logout()
+        # login as student and click on assignemnt
+        self.student.login()
+        self.student.select_course(appearance='physics')
+        self.student.page.wait_for_page_load()
+        external = self.student.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 '//a[@class="task row external workable"]' +
+                 '//span[contains(text(),"' + assignment_name + '")]')
+            )
+        )
+        Assignment.scroll_to(self.student.driver, external)
+        self.student.driver.execute_script('window.scrollBy(0, -150);')
+        external.click()
+        self.student.page.wait_for_page_load()
+        self.student.find(
+            By.XPATH, "//h1//a[@href = 'http://google.com']"
+        ).click()
+        self.student.sleep(0.5)
+        self.student.find(
+            By.XPATH, "//a[text()='Back to Dashboard']"
+        ).click()
+        self.student.logout()
+        # logback in as teacher to delete assignemnt
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
+            ).click()
+        except NoSuchElementException:
+            self.teacher.find(
+                By.XPATH, "//a[contains(@class, 'header-control next')]"
+            ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
+            ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button[contains(@class,"delete-link")]')
+            )
+        ).click()
+        self.teacher.find(
+            By.XPATH, '//button[contains(text(),"Yes")]').click()
+        self.teacher.logout()
+        # login as a student to view the assignment
+        self.student.login()
+        self.student.select_course(appearance='physics')
+        self.student.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 '//a[@class="task row external workable deleted"]' +
+                 '//span[contains(text(),"' + assignment_name + '")]')
+            )
+        )
+        self.student.find(
+            By.XPATH,
+            '//a[@class="task row external workable deleted"]' +
+            '//span[text()="Withdrawn"]'
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -392,6 +764,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """Delete withdrawn assignments.
 
         Steps:
+        Login as a student
         If the user has more than one course, click on a Tutor course name
         Click on the X for the withdrawn assignment
 
@@ -400,16 +773,86 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.10.012' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.012',
-            '14803'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.012', '14803']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # create a homework assignement
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        assignment_name = "event-012-" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='event',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'status': 'publish'
+                                    })
+        # delete the assignment
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
+            ).click()
+        except NoSuchElementException:
+            self.teacher.find(
+                By.XPATH, "//a[contains(@class, 'header-control next')]"
+            ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="calendar-container container-fluid"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH,
+                "//label[contains(text(), '"+assignment_name+"')]"
+            ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button[contains(@class,"delete-link")]')
+            )
+        ).click()
+        self.teacher.find(
+            By.XPATH, '//button[contains(text(),"Yes")]').click()
+        self.teacher.logout()
+        # login as a student to view the assignment
+        self.student.login()
+        self.student.select_course(appearance='physics')
+        # delete a deleted event (not necessarily the one just created)
+        deleted_events = self.student.find_all(
+            By.XPATH, '//a[@class="task row event deleted"]'
+        )
+        for event in deleted_events:
+            event_name = event.find_element(
+                By.XPATH, './div[contains(@class,"title")]/span').text
+            if event_name == assignment_name:
+                event.find_element(
+                    By.XPATH, './/button[contains(@class,"hide-task")]'
+                ).click()
+                self.student.find(
+                    By.XPATH, '//div[@role="tooltip"]//button[text()="Yes"]'
+                ).click()
+                self.teacher.sleep(0.5)
+                break
+        should_be_deleted = self.student.find_all(
+            By.XPATH,
+            '//a[@class="task row event deleted"]' +
+            '//span[contains(text(),"' + assignment_name + '")]')
+        assert(len(should_be_deleted) == 0), "event not deleted"
 
         self.ps.test_updates['passed'] = True
 
@@ -420,6 +863,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """Move the due date to a later date for an open assignment.
 
         Steps:
+        Login as a teacher
         If the user has more than one course, click on a Tutor course name
         Click on an open assignment
         Click on the text box for due date
@@ -431,17 +875,64 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.10.013' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.013',
-            '14804'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.013', '14804']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        assignment_name = "event_to_delete"
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='event',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'status': 'publish'
+                                    })
+        # click on the assignment
+        try:
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.find(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(@class,"edit-assignment")]')
+            )
+        ).click()
+        # change date
+        today = datetime.date.today()
+        closes_on = (today + datetime.timedelta(days=10)).strftime('%m/%d/%Y')
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class,"-due-date")]' +
+            '//div[contains(@class,"datepicker__input")]').click()
+        # get calendar to correct month
+        month = today.month
+        year = today.year
+        while month != int(closes_on[:2]) or year != int(closes_on[6:]):
+            self.teacher.find(
+                By.XPATH, '//a[contains(@class,"navigation--next")]').click()
+            if month != 12:
+                month += 1
+            else:
+                month = 1
+                year += 1
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class,"datepicker__day")' +
+            'and contains(text(),"' + (closes_on[3:5]).lstrip('0') + '")]'
+        ).click()
         self.ps.test_updates['passed'] = True
 
     # 14805 - 014 - Teacher | Move the due date to an earlier date for an open
@@ -451,6 +942,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """Move the due date to an earlier date for an open assignment.
 
         Steps:
+        Login as a teacher
         If the user has more than one course, click on a Tutor course name
         Click on an open assignment
         Click on the text box for the due date
@@ -461,17 +953,64 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.10.014' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.014',
-            '14805'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.014', '14805']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        assignment_name = "event_to_delete"
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=10)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='event',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'status': 'publish'
+                                    })
+        # click on the assignment
+        try:
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.find(
+                By.XPATH,
+                '//a[contains(@class,"calendar-header-control next")]'
+            ).click()
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(@data-title,"'+assignment_name+'")]'
+            ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//a[contains(@class,"edit-assignment")]')
+            )
+        ).click()
+        # change date
+        today = datetime.date.today()
+        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class,"-due-date")]' +
+            '//div[contains(@class,"datepicker__input")]').click()
+        # get calendar to correct month
+        month = today.month
+        year = today.year
+        while month != int(closes_on[:2]) or year != int(closes_on[6:]):
+            self.teacher.find(
+                By.XPATH, '//a[contains(@class,"navigation--next")]').click()
+            if month != 12:
+                month += 1
+            else:
+                month = 1
+                year += 1
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class,"datepicker__day")' +
+            'and contains(text(),"' + (closes_on[3:5]).lstrip('0') + '")]'
+        ).click()
         self.ps.test_updates['passed'] = True
 
     # 14685 - 015 - Student | View inital quiz about 2-step questions and
@@ -482,18 +1021,11 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         Steps:
 
-
         Expected Result:
-
         """
         self.ps.test_updates['name'] = 't2.10.015' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.015',
-            '14685'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.015', '14685']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -507,31 +1039,83 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """A help link explains why two-step problems.
 
         Steps:
+        Login as a student
         If the user has more than one course, click on a Tutor course name
-        Click on a homework or reading assignment
+        Click on a homework, reading assignment, or practice
         Enter text into the free response text box
         Click "Answer"
         Click on "Why?" next to the message "Now choose from one of the
-            following options"
+        following options"
 
         Expected Result:
         The user is presented with information about why two-step problems
         """
         self.ps.test_updates['name'] = 't2.10.016' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.016',
-            '14686'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.016', '14686']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.login()
+        self.student.select_course(appearance='physics')
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//button[contains(@aria-describedby,' +
+                 '"progress-bar-tooltip")]')
+            )
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[contains(@class,"task-breadcrumbs")]')
+            )
+        )
+        # work homework until a free response problem is found.
+        sections = self.student.find_all(
+            By.XPATH, '//span[contains(@class,"openstax-breadcrumbs-step")]'
+        )
+        for i in range(len(sections)):
+            try:
+                # if the question is two part must answer free response first
+                element = self.student.find(
+                    By.TAG_NAME, 'textarea')
+            except NoSuchElementException:
+                # click on the next breadcrumb
+                if i == len(sections):
+                    print("no two part questions in the homework")
+                    raise Exception
+                else:
+                    sections_new = self.student.find_all(
+                        By.XPATH, '//div[@class="openstax-breadcrumbs-step"]')
+                    sections_new[i+1].click()
+            else:
+                answer_text = "answer"
+                for i in answer_text:
+                    element.send_keys(i)
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button/span[contains(text(),"Answer")]')
+                    )
+                ).click()
+                actions = ActionChains(self.student.driver)
+                why = self.teacher.find(
+                    By.XPATH, '//span[@class="text-info"]')
+                self.teacher.driver.execute_script(
+                    'return arguments[0].scrollIntoView();', why)
+                self.teacher.driver.execute_script('window.scrollBy(0, -80);')
+                actions.move_to_element(why)
+                actions.perform()
+                self.teacher.find(
+                    By.XPATH,
+                    '//div[@class="popover-content"]//p' +
+                    '//strong[contains(text(),' +
+                    '"Why do you ask me to answer twice?")]'
+                    )
+                break
         self.ps.test_updates['passed'] = True
 
+    # NOT DONE
     # 14687 - 017 - System | Include info about two step problems and spaced
     # practice
     @pytest.mark.skipif(str(14687) not in TESTS, reason='Excluded')
@@ -539,16 +1123,17 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """Include information about two step problems and spaced practice.
 
         Steps:
+        Login as a student
         If the user has more than one course, click on a Tutor course name
         Click on a homework or reading assignment
         Enter text into the free response text box
         Click "Answer"
         Click "Why?" next to the message "Now choose from one of the following
-            options"
+        options"
         Then continue working the homework until a spaced practice question
-            comes up
-        Click on the info icon in the top right of the question box next to
-            spaced practice
+        comes up
+        click on the info icon in the top right of the question box next to
+        spaced practice
 
         Expected Result:
         The message "We ask for your own response first because recalling an
@@ -559,16 +1144,75 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.10.017' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.017',
-            '14687'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.017', '14687']
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
+        # create a homework
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.teacher.login()
+        self.teacher.select_course(appearance='physics')
+        assignment_name = "homework-017"
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=10)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='homework',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'status': 'publish',
+                                        'problems': {'1.1': (1, 2), },
+                                        'feedback': 'non-immeditae',
+                                    })
+        self.teacher.logout()
+        # login as student to work the homework
+        self.student.login()
+        self.student.select_course(appearance='physics')
+        self.student.find(
+            By.XPATH, '//span[contains(text(), "'+assignment_name+'")]'
+        ).click()
+        # work problems untill a free response question is found
+        sections = self.student.find_all(
+            By.XPATH, '//span[contains(@class,"openstax-breadcrumbs-step")]'
+        )
+        for i in range(len(sections)):
+            try:
+                # if the question is two part must answer free response first
+                element = self.student.find(
+                    By.TAG_NAME, 'textarea')
+                answer_text = "answer"
+                for i in answer_text:
+                    element.send_keys(i)
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button/span[contains(text(),"Answer")]')
+                    )
+                ).click()
+                actions = ActionChains(self.student.driver)
+                why = self.teacher.find(
+                    By.XPATH, '//span[@class="text-info"]')
+                actions.move_to_element(why)
+                actions.perform()
+                self.teacher.driver.find_element(
+                    By.XPATH,
+                    '//div[@class="popover-content"]' +
+                    '//b[contains(text(),' +
+                    '"Why do you ask me to answer twice?")]')
+                break
+            except NoSuchElementException:
+                # click on the next breadcrumb
+                if i == len(sections):
+                    print("no two part questions in the homework")
+                    raise Exception
+                sections_new = self.student.find_all(
+                    By.XPATH, '//div[@class="openstax-breadcrumbs-step"]')
+                sections_new[i+1].click()
+        # click on the last problems to find a spaced practice
+        sections = self.student.find_all(
+            By.XPATH, '//div[@class="openstax-breadcrumbs-step"]'
+        )
+        sections[-2].click()
 
         self.ps.test_updates['passed'] = True
 
@@ -579,8 +1223,9 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """When working a question there is a link back to the content for help.
 
         Steps:
+        Login as a student
         If the user has more than one course, click on a Tutor course name
-        Click on a homework or reading assignment
+        Click on a section to practice
         Scroll down to the very bottom of the assessment card
 
         Expected Result:
@@ -588,17 +1233,42 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.10.018' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.018',
-            '14688'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.018', '14688']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.login()
+        self.student.select_course(appearance='physics')
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//button[contains(@aria-describedby,' +
+                 '"progress-bar-tooltip")]')
+            )
+        ).click()
+        chapter = self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//a[@class="view-reference-guide"]' +
+                 '//span[@class="section"]//span[1]')
+            )
+        )
+        chapter_num = chapter.text
+        self.teacher.driver.execute_script(
+            'return arguments[0].scrollIntoView();', chapter)
+        chapter.click()
+        window_with_book = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_book)
+        book = self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//span[contains(@class,"chapter-section")]')
+            )
+        )
+        assert('book' in self.teacher.current_url()), \
+            'Not viewing the textbook PDF'
+        assert(chapter_num == book.get_attribute("data-chapter-section")), \
+            'Not viewing the textbook PDF'
         self.ps.test_updates['passed'] = True
 
     # 14689 - 019 - Student | Ask for credit for late work
@@ -608,18 +1278,11 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         Steps:
 
-
         Expected Result:
-
         """
         self.ps.test_updates['name'] = 't2.10.019' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.10',
-            't2.10.019',
-            '14689'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.019', '14689']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions

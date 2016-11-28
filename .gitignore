@@ -3,6 +3,8 @@
 webserver.py
 result*.xml
 result*.html
+t*.xml
+cc*.xml
 *.cache
 .cache/*
 tmp/
