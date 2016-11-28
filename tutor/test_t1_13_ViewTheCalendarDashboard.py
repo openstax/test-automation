@@ -21,17 +21,12 @@ basic_test_env = json.dumps([
     {
         'platform': 'Windows 10',
         'browserName': 'chrome',
-        'version': '50.0',
+        'version': 'latest',
         'screenResolution': "1024x768",
-    },
-    # {
-    #     'platform': 'Windows 7',
-    #     'browserName': 'firefox',
-    #     'version': 'latest',
-    #     'screenResolution': '1024x768',
-    # },
+    }
 ])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
@@ -50,20 +45,26 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.teacher = Teacher(
+                use_env_vars=True
+            )
         self.teacher.login()
-        self.teacher.select_course(title='HS Physics')
+        self.teacher.select_course(appearance='hs_physics')
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.teacher.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.teacher.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             self.teacher.delete()
         except:
@@ -86,7 +87,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # self.teacher.select_course(title='HS Physics')
-        assert('calendar' in self.teacher.current_url()), \
+        assert('course' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.ps.test_updates['passed'] = True
@@ -189,9 +190,9 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         # self.teacher.select_course(title='HS Physics')
         self.teacher.open_user_menu()
-        self.teacher.find(By.CLASS_NAME, 'viewTeacherPerformanceForecast'). \
-            find_element_by_tag_name('a'). \
-            click()
+        self.teacher.find(
+            By.XPATH, '//a[@data-name="viewPerformanceGuide"]'
+        ).click()
         self.teacher.page.wait_for_page_load()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing the performance forecast'
@@ -481,14 +482,14 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.CLASS_NAME,
-            'viewTeacherPerformanceForecast'
+            By.LINK_TEXT,
+            'Performance Forecast'
         ).click()
         self.teacher.driver.find_element(
             By.CLASS_NAME,
             'course-name'
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('course' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.ps.test_updates['passed'] = True
@@ -553,14 +554,14 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         teacher2.login()
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.CLASS_NAME,
-            'viewTeacherPerformanceForecast'
+            By.LINK_TEXT,
+            'Performance Forecast'
         ).click()
         self.teacher.driver.find_element(
             By.CLASS_NAME,
             'ui-brand-logo'
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('course' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.ps.test_updates['passed'] = True

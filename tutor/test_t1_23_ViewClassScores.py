@@ -13,6 +13,7 @@ from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementNotVisibleException
+from selenium.common.exceptions import WebDriverException
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher
@@ -20,10 +21,11 @@ from staxing.helper import Teacher
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
@@ -34,6 +36,10 @@ TESTS = os.getenv(
         8176, 8177, 8178, 8179, 8180,
         8181
     ])
+
+    # 8165, 8166 - sorting not working on site
+    # 8169 - overall score not being displayed on site
+    # 8179 - issues finding the elements
 )
 
 
@@ -45,11 +51,16 @@ class TestViewClassScores(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.teacher = Teacher(
+                use_env_vars=True
+            )
         self.teacher.login()
         # go to student scores
         self.teacher.select_course(appearance='college_physics')
@@ -63,10 +74,11 @@ class TestViewClassScores(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.teacher.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.teacher.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             self.teacher.delete()
         except:
@@ -147,8 +159,7 @@ class TestViewClassScores(unittest.TestCase):
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
-                 '//div[@class="export-button"]//button' +
-                 '/span[text()="Export"]')
+                 '//div[@class="export-button"]//button[text()="Export"]')
             )
         )
         coursename = self.teacher.driver.find_element(
@@ -194,8 +205,7 @@ class TestViewClassScores(unittest.TestCase):
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
-                 '//div[@class="export-button"]//button' +
-                 '/span[text()="Export"]')
+                 '//div[@class="export-button"]//button[text()="Export"]')
             )
         )
         coursename = self.teacher.driver.find_element(
@@ -483,31 +493,37 @@ class TestViewClassScores(unittest.TestCase):
             )
         ).click()
 
-        assignments = self.teacher.find_all(
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)//4):
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+            ).size['width']
+        bar = scroll_width
+        while(bar < scroll_total_size):
             try:
                 self.teacher.driver.find_element(
                     By.XPATH,
                     '//span[contains(@class,"review-link wide")]' +
                     '//a[contains(text(),"Review")]'
                 ).click()
-                assert('summary' in self.teacher.current_url()), \
+                assert('metrics' in self.teacher.current_url()), \
                     'Not viewing reading assignment summary'
                 break
-            except (NoSuchElementException, ElementNotVisibleException):
-                if i >= (len(assignments)//4)-1:
-                    print("completed assignments for this period")
+            except (NoSuchElementException,
+                    ElementNotVisibleException,
+                    WebDriverException):
+                bar += scroll_width
+                if scroll_total_size <= bar:
+                    print("No readings for this class :(")
                     raise Exception
-                # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.find(
-                    By.XPATH,
-                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                # drag scroll bar instead of scrolling
                 actions = ActionChains(self.teacher.driver)
                 actions.move_to_element(scroll_bar)
                 actions.click_and_hold()
-                actions.move_by_offset(50, 0)
+                actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
 
@@ -539,32 +555,37 @@ class TestViewClassScores(unittest.TestCase):
             )
         ).click()
 
-        assignments = self.teacher.find_all(
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            "//span[contains(@aria-describedby,'header-cell-title')]")
-
-        for i in range(len(assignments)//4):
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+            ).size['width']
+        bar = scroll_width
+        while(bar < scroll_total_size):
             try:
                 self.teacher.driver.find_element(
                     By.XPATH,
                     '//span[@class="review-link "]' +
                     '//a[contains(text(),"Review")]'
                 ).click()
-                assert('summary' in self.teacher.current_url()), \
+                assert('metrics' in self.teacher.current_url()), \
                     'Not viewing homework assignment summary'
                 break
-            except (NoSuchElementException, ElementNotVisibleException):
-                if i >= (len(assignments)//4)-1:
-                    print("completed assignments for this period")
+            except (NoSuchElementException,
+                    ElementNotVisibleException,
+                    WebDriverException):
+                bar += scroll_width
+                if scroll_total_size <= bar:
+                    print("No HWs for this class :(")
                     raise Exception
-                # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.find(
-                    By.XPATH,
-                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                # drag scroll bar instead of scrolling
                 actions = ActionChains(self.teacher.driver)
                 actions.move_to_element(scroll_bar)
                 actions.click_and_hold()
-                actions.move_by_offset(50, 0)
+                actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
 
@@ -592,15 +613,39 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
-            )
-        ).click()
-        self.teacher.driver.find_element(
+
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            '//div[contains(@class,"average-cell")]' +
-            '//span[contains(@class,"average")]')
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+            ).size['width']
+        bar = scroll_width
+        while(bar < scroll_total_size):
+            try:
+                self.teacher.driver.find_element(
+                    By.XPATH,
+                    '//div[contains(@class,"average-cell")]' +
+                    '//span[contains(@class,"average") and ' +
+                    'not(contains(text(),"---"))]')
+                break
+            except (NoSuchElementException,
+                    ElementNotVisibleException,
+                    WebDriverException):
+                bar += scroll_width
+                if scroll_total_size <= bar:
+                    print("No HWs with period averages")
+                    raise Exception
+                # drag scroll bar instead of scrolling
+                actions = ActionChains(self.teacher.driver)
+                actions.move_to_element(scroll_bar)
+                actions.click_and_hold()
+                actions.move_by_offset(scroll_width, 0)
+                actions.release()
+                actions.perform()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8170 - 015 - Teacher | An external assignment shows the number of
@@ -616,9 +661,36 @@ class TestViewClassScores(unittest.TestCase):
         For external assignments the fraction of students who have clicked on
         the assignment is displayed.
         """
-        self.teacher.driver.find_element(
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            '//span[contains(text(),"% have clicked")]')
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+            ).size['width']
+        bar = scroll_width
+        while(bar < scroll_total_size):
+            try:
+                self.teacher.driver.find_element(
+                    By.XPATH,
+                    '//span[@class="click-rate"]')
+                break
+            except (NoSuchElementException,
+                    ElementNotVisibleException,
+                    WebDriverException):
+                bar += scroll_width
+                if scroll_total_size <= bar:
+                    print("No readings for this class")
+                    raise Exception
+                # drag scroll bar instead of scrolling
+                actions = ActionChains(self.teacher.driver)
+                actions.move_to_element(scroll_bar)
+                actions.click_and_hold()
+                actions.move_by_offset(scroll_width, 0)
+                actions.release()
+                actions.perform()
+
 
         self.ps.test_updates['passed'] = True
 
@@ -649,33 +721,41 @@ class TestViewClassScores(unittest.TestCase):
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
         ).click()
-        assignments = self.teacher.find_all(
+
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)//4):
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+            ).size['width']
+        bar = scroll_width
+        while(bar < scroll_total_size):
             try:
                 self.teacher.driver.find_element(
                     By.XPATH,
                     '//span[contains(@class,"review-link wide")]' +
                     '//a[contains(text(),"Review")]'
                 ).click()
-                assert('summary' in self.teacher.current_url()), \
+                assert('metrics' in self.teacher.current_url()), \
                     'Not viewing reading assignment summary'
                 break
-            except (NoSuchElementException, ElementNotVisibleException):
-                if i >= (len(assignments)//4)-1:
-                    print("completed assignments for this period")
+            except (NoSuchElementException,
+                    ElementNotVisibleException,
+                    WebDriverException):
+                bar += scroll_width
+                if scroll_total_size <= bar:
+                    print("No readings for this class")
                     raise Exception
-                # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.find(
-                    By.XPATH,
-                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                # drag scroll bar instead of scrolling
                 actions = ActionChains(self.teacher.driver)
                 actions.move_to_element(scroll_bar)
                 actions.click_and_hold()
-                actions.move_by_offset(50, 0)
+                actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
+
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//span[contains(@class,"breadcrumbs")]')
@@ -720,31 +800,38 @@ class TestViewClassScores(unittest.TestCase):
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
         ).click()
-        assignments = self.teacher.find_all(
+
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)//4):
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+            ).size['width']
+        bar = scroll_width
+        while(bar < scroll_total_size):
             try:
                 self.teacher.driver.find_element(
                     By.XPATH,
                     '//span[@class="review-link "]' +
                     '//a[contains(text(),"Review")]'
                 ).click()
-                assert('summary' in self.teacher.current_url()), \
+                assert('metric' in self.teacher.current_url()), \
                     'Not viewing reading assignment summary'
                 break
-            except (NoSuchElementException, ElementNotVisibleException):
-                if i >= (len(assignments)//4)-1:
-                    print("completed assignments for this period")
+            except (NoSuchElementException,
+                    ElementNotVisibleException,
+                    WebDriverException):
+                bar += scroll_width
+                if scroll_total_size <= bar:
+                    print("No HWs for this class :(")
                     raise Exception
-                # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.find(
-                    By.XPATH,
-                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                # drag scroll bar instead of scrolling
                 actions = ActionChains(self.teacher.driver)
                 actions.move_to_element(scroll_bar)
                 actions.click_and_hold()
-                actions.move_by_offset(50, 0)
+                actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
 
@@ -789,33 +876,41 @@ class TestViewClassScores(unittest.TestCase):
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
         ).click()
-        assignments = self.teacher.find_all(
+
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)//4):
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+            ).size['width']
+        bar = scroll_width
+        while(bar < scroll_total_size):
             try:
                 self.teacher.driver.find_element(
                     By.XPATH,
                     '//span[@class="review-link "]' +
                     '//a[contains(text(),"Review")]'
                 ).click()
-                assert('summary' in self.teacher.current_url()), \
+                assert('metric' in self.teacher.current_url()), \
                     'Not viewing reading assignment summary'
                 break
-            except (NoSuchElementException, ElementNotVisibleException):
-                if i >= (len(assignments)//4)-1:
-                    print("completed assignments for this period")
+            except (NoSuchElementException,
+                    ElementNotVisibleException,
+                    WebDriverException):
+                bar += scroll_width
+                if scroll_total_size <= bar:
+                    print("No HWs for this class :(")
                     raise Exception
-                # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.find(
-                    By.XPATH,
-                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                # drag scroll bar instead of scrolling
                 actions = ActionChains(self.teacher.driver)
                 actions.move_to_element(scroll_bar)
                 actions.click_and_hold()
-                actions.move_by_offset(50, 0)
+                actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
+
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
@@ -852,31 +947,37 @@ class TestViewClassScores(unittest.TestCase):
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
         ).click()
-        assignments = self.teacher.find_all(
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)//4):
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+            ).size['width']
+        bar = scroll_width
+        while(bar < scroll_total_size):
             try:
                 self.teacher.driver.find_element(
                     By.XPATH,
                     '//span[@class="review-link "]' +
                     '//a[contains(text(),"Review")]'
                 ).click()
-                assert('summary' in self.teacher.current_url()), \
+                assert('metric' in self.teacher.current_url()), \
                     'Not viewing reading assignment summary'
                 break
-            except (NoSuchElementException, ElementNotVisibleException):
-                if i >= (len(assignments)//4)-1:
-                    print("completed assignments for this period")
+            except (NoSuchElementException,
+                    ElementNotVisibleException,
+                    WebDriverException):
+                bar += scroll_width
+                if scroll_total_size <= bar:
+                    print("No HWs for this class :(")
                     raise Exception
-                # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.find(
-                    By.XPATH,
-                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                # drag scroll bar instead of scrolling
                 actions = ActionChains(self.teacher.driver)
                 actions.move_to_element(scroll_bar)
                 actions.click_and_hold()
-                actions.move_by_offset(50, 0)
+                actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
 
@@ -926,31 +1027,37 @@ class TestViewClassScores(unittest.TestCase):
             )
         ).click()
 
-        assignments = self.teacher.find_all(
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)//4):
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+            ).size['width']
+        bar = scroll_width
+        while(bar < scroll_total_size):
             try:
                 self.teacher.driver.find_element(
                     By.XPATH,
-                    '//span[contains(@class,"review-link wide")]' +
+                    '//span[@class="review-link wide"]' +
                     '//a[contains(text(),"Review")]'
                 ).click()
-                assert('summary' in self.teacher.current_url()), \
+                assert('metric' in self.teacher.current_url()), \
                     'Not viewing reading assignment summary'
                 break
-            except (NoSuchElementException, ElementNotVisibleException):
-                if i >= (len(assignments)//4)-1:
-                    print("completed assignments for this period")
+            except (NoSuchElementException,
+                    ElementNotVisibleException,
+                    WebDriverException):
+                bar += scroll_width
+                if scroll_total_size <= bar:
+                    print("No hws this class :(")
                     raise Exception
-                # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.find(
-                    By.XPATH,
-                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                # drag scroll bar instead of scrolling
                 actions = ActionChains(self.teacher.driver)
                 actions.move_to_element(scroll_bar)
                 actions.click_and_hold()
-                actions.move_by_offset(50, 0)
+                actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
 
@@ -1000,31 +1107,37 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignments = self.teacher.find_all(
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)//4):
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+            ).size['width']
+        bar = scroll_width
+        while(bar < scroll_total_size):
             try:
                 self.teacher.driver.find_element(
                     By.XPATH,
                     '//span[@class="review-link "]' +
                     '//a[contains(text(),"Review")]'
                 ).click()
-                assert('summary' in self.teacher.current_url()), \
+                assert('metric' in self.teacher.current_url()), \
                     'Not viewing reading assignment summary'
                 break
-            except (NoSuchElementException, ElementNotVisibleException):
-                if i >= (len(assignments)//4)-1:
-                    print("completed assignments for this period")
+            except (NoSuchElementException,
+                    ElementNotVisibleException,
+                    WebDriverException):
+                bar += scroll_width
+                if scroll_total_size <= bar:
+                    print("No HWs this class :(")
                     raise Exception
-                # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.find(
-                    By.XPATH,
-                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                # drag scroll bar instead of scrolling
                 actions = ActionChains(self.teacher.driver)
                 actions.move_to_element(scroll_bar)
                 actions.click_and_hold()
-                actions.move_by_offset(50, 0)
+                actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
 
@@ -1070,33 +1183,41 @@ class TestViewClassScores(unittest.TestCase):
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
         ).click()
-        assignments = self.teacher.find_all(
+
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)//4):
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+            ).size['width']
+        bar = scroll_width
+        while(bar < scroll_total_size):
             try:
                 self.teacher.driver.find_element(
                     By.XPATH,
                     '//span[@class="review-link "]' +
                     '//a[contains(text(),"Review")]'
                 ).click()
-                assert('summary' in self.teacher.current_url()), \
+                assert('metric' in self.teacher.current_url()), \
                     'Not viewing reading assignment summary'
                 break
-            except (NoSuchElementException, ElementNotVisibleException):
-                if i >= (len(assignments)//4)-1:
-                    print("completed assignments for this period")
+            except (NoSuchElementException,
+                    ElementNotVisibleException,
+                    WebDriverException):
+                bar += scroll_width
+                if scroll_total_size <= bar:
+                    print("No HWs for this class :(")
                     raise Exception
-                # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.find(
-                    By.XPATH,
-                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                # drag scroll bar instead of scrolling
                 actions = ActionChains(self.teacher.driver)
                 actions.move_to_element(scroll_bar)
                 actions.click_and_hold()
-                actions.move_by_offset(50, 0)
+                actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
+
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
@@ -1135,33 +1256,40 @@ class TestViewClassScores(unittest.TestCase):
                 (By.XPATH, '//span[contains(@class, "tab-item-period-name")]')
             )
         ).click()
-        assignments = self.teacher.find_all(
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)//4):
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+            ).size['width']
+        bar = scroll_width
+        while(bar < scroll_total_size):
             try:
                 self.teacher.driver.find_element(
                     By.XPATH,
                     '//span[@class="review-link "]' +
                     '//a[contains(text(),"Review")]'
                 ).click()
-                assert('summary' in self.teacher.current_url()), \
+                assert('metric' in self.teacher.current_url()), \
                     'Not viewing reading assignment summary'
                 break
-            except (NoSuchElementException, ElementNotVisibleException):
-                if i >= (len(assignments)//4)-1:
-                    print("completed assignments for this period")
+            except (NoSuchElementException,
+                    ElementNotVisibleException,
+                    WebDriverException):
+                bar += scroll_width
+                if scroll_total_size <= bar:
+                    print("No HWs for this class :(")
                     raise Exception
-                # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.find(
-                    By.XPATH,
-                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                # drag scroll bar instead of scrolling
                 actions = ActionChains(self.teacher.driver)
                 actions.move_to_element(scroll_bar)
                 actions.click_and_hold()
-                actions.move_by_offset(50, 0)
+                actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
+
         self.ps.test_updates['passed'] = True
 
     # Case C8179 - 024 - Teacher | Teacher can see a student's work for a
@@ -1182,41 +1310,50 @@ class TestViewClassScores(unittest.TestCase):
         Only sections student has gone through are shown.
         """
 
-        assignments = self.teacher.find_all(
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)//4):
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+            ).size['width']
+        bar = scroll_width
+        element = None  # ###
+        while(bar < scroll_total_size):
             try:
+                self.teacher.sleep(1)
                 element = self.teacher.driver.find_element(
                     By.XPATH,
-                    '//div[@class="scores-cell" and ' +
-                    'contains(@data-reactid,"reading")]' +
+                    '//div[@class="scores-cell"]' +
+                    '//div[@class="worked wide"]' +
                     '//*[@class="pie-progress"]'
                 )
-                actions = ActionChains(self.teacher.driver)
-                actions.move_to_element(element)
-                actions.perform()
-                self.teacher.driver.find_element(
-                    By.XPATH,
-                    '//div[contains(@class,"popover-content")]' +
-                    '//a[contains(text(),"Review")]'
-                ).click()
+                element.click()
                 break
-            except (NoSuchElementException, ElementNotVisibleException):
-                if i >= (len(assignments)//4)-1:
-                    print("completed assignments for this period")
+            except (NoSuchElementException,
+                    ElementNotVisibleException,
+                    WebDriverException):
+                bar += scroll_width
+                if scroll_total_size <= bar:
+                    print("No students who have done a reading for this class")
                     raise Exception
-                # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.find(
-                    By.XPATH,
-                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                # drag scroll bar instead of scrolling
                 actions = ActionChains(self.teacher.driver)
                 actions.move_to_element(scroll_bar)
                 actions.click_and_hold()
-                actions.move_by_offset(50, 0)
+                actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
-        assert('steps' in self.teacher.current_url()), 'not at sutdent work'
+
+        element.click()
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(element)
+        actions.move_by_offset(-60, 10)
+        actions.click()
+        actions.perform()
+
+        assert('step' in self.teacher.current_url()), 'not at sutdent work'
         self.ps.test_updates['passed'] = True
 
     # Case C8180 - 025 - Teacher | Teacher can view a student's work for a
@@ -1243,32 +1380,39 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignments = self.teacher.find_all(
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)//4):
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+            ).size['width']
+        bar = scroll_width
+        while(bar < scroll_total_size):
             try:
+                self.teacher.sleep(1)
                 self.teacher.driver.find_element(
                     By.XPATH,
                     '//div[contains(@class,"score")]//a[contains(text(),"%")]'
                 ).click()
                 break
-            except (NoSuchElementException, ElementNotVisibleException):
-                if i >= (len(assignments)//4)-1:
-                    print("completed assignments for this period")
+            except (NoSuchElementException,
+                    ElementNotVisibleException,
+                    WebDriverException):
+                bar += scroll_width
+                if scroll_total_size <= bar:
+                    print("No students who have done a hw for this class")
                     raise Exception
-                # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.find(
-                    By.XPATH,
-                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                # drag scroll bar instead of scrolling
                 actions = ActionChains(self.teacher.driver)
                 actions.move_to_element(scroll_bar)
                 actions.click_and_hold()
-                actions.move_by_offset(50, 0)
+                actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
 
-        assert('steps' in self.teacher.current_url()), \
+        assert('step' in self.teacher.current_url()), \
             'Not viewing student work for homework'
 
         self.ps.test_updates['passed'] = True
@@ -1294,10 +1438,16 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignments = self.teacher.find_all(
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)//4):
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+            ).size['width']
+        bar = scroll_width
+        while(bar < scroll_total_size):
             try:
                 external = self.teacher.driver.find_element(
                     By.XPATH,
@@ -1308,22 +1458,22 @@ class TestViewClassScores(unittest.TestCase):
                 self.teacher.driver.execute_script('window.scrollBy(0, -80);')
                 external.click()
                 break
-            except (NoSuchElementException, ElementNotVisibleException):
-                if i >= (len(assignments)//4)-1:
-                    print("completed assignments for this period")
+            except (NoSuchElementException,
+                    ElementNotVisibleException,
+                    WebDriverException):
+                bar += scroll_width
+                if scroll_total_size <= bar:
+                    print("No students have done an external for this class")
                     raise Exception
-                # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.find(
-                    By.XPATH,
-                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                # drag scroll bar instead of scrolling
                 actions = ActionChains(self.teacher.driver)
                 actions.move_to_element(scroll_bar)
                 actions.click_and_hold()
-                actions.move_by_offset(50, 0)
+                actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
 
-        assert('steps' in self.teacher.current_url()), \
+        assert('task' in self.teacher.current_url()), \
             'Not viewing student "work" for external assignment'
 
         self.ps.test_updates['passed'] = True

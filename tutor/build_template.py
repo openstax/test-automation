@@ -103,7 +103,7 @@ def main(argv):
         basic_env="""{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }"""
     )

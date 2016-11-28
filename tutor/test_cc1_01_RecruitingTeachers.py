@@ -11,7 +11,7 @@ from pastasauce import PastaSauce, PastaDecorator
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.common.action_chains import ActionChains
-# from staxing.assignment import Assignment
+from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher, Admin
@@ -19,21 +19,23 @@ from staxing.helper import Teacher, Admin
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
         7751, 7752, 7753, 7754, 7755,
-        7756, 7757, 7758, 7759, 7760,
-        7761, 7762, 7763, 7764, 7765,
-        7770, 7771, 7772, 7773, 7774,
-        7775
+        7756,
+        7770, 7771, 7772, 7774,
     ])
     # 7754, 7773 not done
 )
+# 7757, 7758, 7759, 7760,
+# 7761, 7762, 7763, 7764, 7773
+# 7775, 7765
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -44,19 +46,25 @@ class TestRecruitingTeachers(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.teacher = Teacher(
+                use_env_vars=True
+            )
         self.CONDENSED_WIDTH = 1105
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.teacher.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.teacher.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             self.teacher.delete()
         except:
@@ -86,6 +94,8 @@ class TestRecruitingTeachers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
+        assert('OpenStax Concept Coach' in self.teacher.driver.page_source), \
+            'Not on the Concept Coach entry site'
 
         self.ps.test_updates['passed'] = True
 
@@ -337,20 +347,21 @@ class TestRecruitingTeachers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
-        if self.teacher.driver.get_window_size()['width'] < \
-                self.CONDENSED_WIDTH:
-            self.teacher.wait.until(
-                expect.visibility_of_element_located(
-                    (By.XPATH, '//label[@for="mobileNavToggle" and ' +
-                     'contains(@class,"fixed")]')
-                )
-            ).click()
-            self.teacher.sleep(1)
-        self.teacher.find(
-            By.XPATH, '//a[contains(text(),"support")]'
-        ).click()
+        self.teacher.open_user_menu()
+        support = self.teacher.find(
+            By.XPATH, '//a[contains(text(),"Get Help")]'
+        )
+        support_link = support.get_attribute('href')
+        Assignment.scroll_to(self.teacher.driver, support)
+        support.click()
+        handles = len(self.teacher.driver.window_handles)
+        if handles <= 1:
+            self.teacher.driver.execute_script("window.open('');")
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
+        if handles <= 1:
+            self.teacher.get(support_link)
+            self.teacher.page.wait_for_page_load()
         self.teacher.find(
             By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
         )
@@ -1086,12 +1097,16 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.username = os.getenv('TEACHER_USER_CC')
         self.teacher.login()
         self.teacher.find(
-            By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
+            By.XPATH, '//div[text()="Concept Coach"]/preceding-sibling::a'
         ).click()
-        assert('cc-dashboard' in self.teacher.current_url()),\
-            'Not taken to dashboard: %s' % self.teacher.current_url()
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.CSS_SELECTOR, 'div.hide-section-legend')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -1125,14 +1140,22 @@ class TestRecruitingTeachers(unittest.TestCase):
         ]
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
-        admin = Admin(
-            use_env_vars=True,
-            existing_driver=self.teacher.driver,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
-        )
+
+        # Test steps and verification assertions
+        admin = None
+        if not LOCAL_RUN:
+            admin = Admin(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            admin = Admin(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver,
+            )
         admin.login()
         admin.open_user_menu()
         admin.find(By.LINK_TEXT, 'Admin').click()
@@ -1171,17 +1194,31 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.username = os.getenv('TEACHER_USER_CC')
         self.teacher.login()
         self.teacher.find(
-            By.XPATH, '//a[contains(@href,"/cc-dashboard/")]'
+            By.XPATH, '//div[text()="Concept Coach"]/preceding-sibling::a'
         ).click()
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.CSS_SELECTOR, 'div.hide-section-legend')
+            )
+        )
         self.teacher.open_user_menu()
-        self.teacher.find(
-            By.PARTIAL_LINK_TEXT, "Get Help"
-        ).click()
+        support = self.teacher.find(
+            By.XPATH, '//a[contains(text(),"Get Help")]'
+        )
+        support_link = support.get_attribute('href')
+        Assignment.scroll_to(self.teacher.driver, support)
+        support.click()
+        handles = len(self.teacher.driver.window_handles)
+        if handles <= 1:
+            self.teacher.driver.execute_script("window.open('');")
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        self.teacher.page.wait_for_page_load()
+        if handles <= 1:
+            self.teacher.get(support_link)
+            self.teacher.page.wait_for_page_load()
         self.teacher.find(
             By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
         ).click()
