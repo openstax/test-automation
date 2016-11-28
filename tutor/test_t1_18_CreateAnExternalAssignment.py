@@ -30,7 +30,8 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8085, 8086, 8087, 8088, 8089,
+        8100, 8101,
+        # 8085, 8086, 8087, 8088, 8089,
         # 8090, 8091, 8092, 8093, 8094,
         # 8095, 8096, 8097, 8098, 8099,
         # 8100, 8101, 8102, 8103, 8104,
@@ -95,7 +96,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             assignment_menu.click()
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        assert('externals/new' in self.teacher.current_url()),\
+        assert('external/new' in self.teacher.current_url()),\
             'not at Add External Assignemnt page'
 
         self.ps.test_updates['passed'] = True
@@ -135,7 +136,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         actions.move_by_offset(30, 65)
         actions.click()
         actions.perform()
-        assert('externals/new' in self.teacher.current_url()),\
+        assert('external/new' in self.teacher.current_url()),\
             'not at Add External Assignemnt page'
 
         self.ps.test_updates['passed'] = True
@@ -207,7 +208,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"datepicker__day")' +
-            'and text()="' + (closes_on[3:5]).lstrip('0') + '"]'
+            ' and not(contains(@class,"disabled")) ' +
+            ' and text()="' + (closes_on[3:5]).lstrip('0') + '"]'
         ).click()
         time.sleep(0.5)
         self.teacher.find(
@@ -230,7 +232,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"datepicker__day")' +
-            'and text()="' + (opens_on[3:5]).lstrip('0') + '"]'
+            ' and not(contains(@class,"disabled")) ' +
+            ' and text()="' + (opens_on[3:5]).lstrip('0') + '"]'
         ).click()
         time.sleep(0.5)
         self.teacher.find(
@@ -311,8 +314,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 today + datetime.timedelta(days=len(periods) + 5)
             ).strftime('%m/%d/%Y')
             element = self.teacher.find(
-                By.XPATH, '//div[contains(@class,"tasking-plan")' +
-                'and contains(@data-reactid,":' + str(x + 1) + '")]' +
+                By.XPATH, '//div[contains(@class,"tasking-plan")]' +
+                '[' + str(x + 1) + ']' +
                 '//div[contains(@class,"-due-date")]' +
                 '//div[contains(@class,"datepicker__input")]')
             self.teacher.driver.execute_script(
@@ -334,12 +337,13 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                     year += 1
             self.teacher.find(
                 By.XPATH, '//div[contains(@class,"datepicker__day") ' +
-                'and text()="' + (closes_on[3:5]).lstrip('0') + '"]'
+                ' and not(contains(@class,"disabled")) ' +
+                ' and text()="' + (closes_on[3:5]).lstrip('0') + '"]'
             ).click()
             time.sleep(0.5)
             self.teacher.find(
-                By.XPATH, '//div[contains(@class,"tasking-plan") and' +
-                ' contains(@data-reactid,":' + str(x + 1) + '")]' +
+                By.XPATH, '//div[contains(@class,"tasking-plan")]' +
+                '[' + str(x + 1) + ']' +
                 '//div[contains(@class,"-open-date")]' +
                 '//div[contains(@class,"datepicker__input")]').click()
             # get calendar to correct month
@@ -356,7 +360,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                     year += 1
             self.teacher.find(
                 By.XPATH, '//div[contains(@class,"datepicker__day")' +
-                'and text()="' + (opens_on[3:5]).lstrip('0') + '"]'
+                ' and not(contains(@class,"disabled")) ' +
+                ' and text()="' + (opens_on[3:5]).lstrip('0') + '"]'
             ).click()
             time.sleep(0.5)
         self.teacher.find(
@@ -424,6 +429,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        print(opens_on)
+        print(closes_on)
         assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
         self.teacher.find(
@@ -621,7 +628,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                  '@type="button" and text()="Cancel"]')
             )
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('month' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard, after caneling assignment 008'
 
         self.ps.test_updates['passed'] = True
@@ -678,7 +685,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
         ).click()
 
-        assert('calendar' in self.teacher.current_url()), \
+        assert('month' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard, after caneling assignment 009'
 
         self.ps.test_updates['passed'] = True
@@ -720,7 +727,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                  '//button[contains(@class,"openstax-close-x")]')
             )
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('month' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard, after caneling assignment 010'
 
         self.ps.test_updates['passed'] = True
@@ -775,7 +782,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
         ).click()
 
-        assert('calendar' in self.teacher.current_url()), \
+        assert('month' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard, after caneling assignment 011'
 
         self.ps.test_updates['passed'] = True
@@ -849,7 +856,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                  '//button[contains(@aria-role,"close") and @type="button"]')
             )
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('month' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard, after caneling assignment 012'
 
         self.ps.test_updates['passed'] = True
@@ -936,7 +943,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('month' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard, after canceling assignment 13'
 
         self.ps.test_updates['passed'] = True
@@ -1008,7 +1015,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                  '//button[contains(@class,"openstax-close-x")]')
             )
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('month' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard, after canceling assignment 14'
 
         self.ps.test_updates['passed'] = True
@@ -1092,7 +1099,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('month' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard, after canceling assignment 15'
 
         self.ps.test_updates['passed'] = True
@@ -1135,7 +1142,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         )
         self.teacher.find(
             By.XPATH, '//button[contains(@class,"-publish")]').click()
-        assert('externals/new' in self.teacher.current_url()), \
+        assert('external/new' in self.teacher.current_url()), \
             'Not stopped from publishing an external with empty reqired feilds'
 
         self.ps.test_updates['passed'] = True
@@ -1177,7 +1184,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         )
         self.teacher.find(
             By.XPATH, '//button[contains(@class,"-save")]').click()
-        assert('externals/new' in self.teacher.current_url()), \
+        assert('external/new' in self.teacher.current_url()), \
             'Not stopped from saving an external with empty reqired feilds'
 
         self.ps.test_updates['passed'] = True
@@ -1269,7 +1276,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 counter += 1
         # assert it broke out of loop before just maxing out
         assert(counter < 6), "reading not deleted"
-
 
         self.ps.test_updates['passed'] = True
 
