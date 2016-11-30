@@ -10,7 +10,7 @@ import unittest
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint
 from selenium.common.exceptions import NoSuchElementException
-# from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.support.ui import WebDriverWait
@@ -30,7 +30,7 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8100, 8101,
+        8086,
         # 8085, 8086, 8087, 8088, 8089,
         # 8090, 8091, 8092, 8093, 8094,
         # 8095, 8096, 8097, 8098, 8099,
@@ -61,6 +61,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 use_env_vars=True
             )
         self.teacher.login()
+        self.teacher.select_course(appearance='biology')
 
     def tearDown(self):
         """Test destructor."""
@@ -107,8 +108,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
     # Case C8086 - 002 - Teacher | Add an external assignment using the
     # calendar date
-    # @pytest.mark.skipif(str(8086) not in TESTS, reason='Excluded')
-    @pytest.mark.skipif(True, reason='Manual testing only')
+    @pytest.mark.skipif(str(8086) not in TESTS, reason='Excluded')
     def test_teacher_add_external_assignment_using_calendar_date_8086(self):
         """Add an external assignment using the calendar date.
 
@@ -125,30 +125,22 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # click on calendar date
-        # click on add external assignemnt
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-        day = self.teacher.wait.until(
+        calendar_date = self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.CSS_SELECTOR, 'div.rc-Day--upcoming')
+                (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
             )
         )
-        # day = days if not isinstance(days, list) else \
-        #     days[randint(0, min(len(days) - 1, 10))]
         self.teacher.driver.execute_script(
-            'return arguments[0].scrollIntoView();', day)
-        self.teacher.sleep(0.5)
-        # Psuedo-test - cannot click on react component
-        try:
-            date = self.teacher.find_all(
-                By.CSS_SELECTOR,
-                'ul.course-add-dropdown li a'
-            )[2]
-            link_url = date.get_attribute('href')
-            self.teacher.get(link_url)
-        except:
-            assert(False), 'date dropdown not seen'
+            'return arguments[0].scrollIntoView();', calendar_date)
         self.teacher.sleep(1)
-        assert('externals/new' in self.teacher.current_url()), \
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(calendar_date)
+        actions.move_by_offset(0, -35)
+        actions.click()
+        actions.move_by_offset(30, 70)
+        actions.click()
+        actions.perform()
+        assert('external/new' in self.teacher.current_url()),\
             'not at Add External Assignment page'
 
         self.ps.test_updates['passed'] = True
@@ -582,7 +574,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
             self.teacher.find(
                 By.XPATH,
-                '//a[contains(@href,"externals")]' +
+                '//a[contains(@href,"external")]' +
                 '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
