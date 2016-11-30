@@ -28,12 +28,16 @@ basic_test_env = json.dumps([{
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
-    str([14675, 14676, 14677, 14678, 14800,
-         14680, 14681, 14682, 14683, 14801,
-         14802, 14803, 14804, 14805, 14685,
-         14686, 14687, 14688, 14689])
+    str([
+        14800
+        # 14675, 14676, 14677, 14678, 14800,
+        # 14680, 14681, 14682, 14683, 14801,
+        # 14802, 14803, 14804, 14805, 14685,
+        # 14686, 14687, 14688, 14689
+    ])
 
     # these are not implemented features - 14682, 14685, 14689
     # error returning to dashboard - 14802
@@ -50,20 +54,27 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
-            use_env_vars=True,
-            # site='https://tutor-staging.openstax.org',
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
-        )
-        self.student = Student(
-            username=os.getenv('STUDENT_USER'),
-            password=os.getenv('STUDENT_PASSWORD'),
-            # site='https://tutor-staging.openstax.org',
-            existing_driver=self.teacher.driver,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.student = Student(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.teacher = Teacher(
+                use_env_vars=True
+            )
+            self.student = Student(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver,
+            )
+
 
     def tearDown(self):
         """Test destructor."""
@@ -104,7 +115,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
         self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]').click()
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]').click()
         self.teacher.find(By.LINK_TEXT, 'Add Homework').click()
         self.teacher.sleep(1)
         feedback_option = self.teacher.wait.until(
@@ -146,7 +157,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
         self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]').click()
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]').click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.sleep(1)
         self.teacher.wait.until(
@@ -196,7 +207,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
         self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]').click()
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]').click()
         self.teacher.find(By.LINK_TEXT, 'Add Homework').click()
         self.teacher.sleep(1)
         self.teacher.wait.until(
@@ -246,7 +257,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
         self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]').click()
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]').click()
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
         self.teacher.sleep(1)
