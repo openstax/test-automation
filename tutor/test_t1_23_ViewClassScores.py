@@ -36,9 +36,8 @@ TESTS = os.getenv(
         8181
     ])
 
-    # 8165, 8166 - sorting not working on site
+    # 8165 - sorting not working on site
     # 8169 - overall score not being displayed on site
-    # 8179 - issues finding the elements
 )
 
 
@@ -346,7 +345,7 @@ class TestViewClassScores(unittest.TestCase):
             )
         ).click()
         self.teacher.driver.find_element(
-            By.LINK_TEXT, 'Return To Scores').click()
+            By.LINK_TEXT, 'Return to Scores').click()
         assert('scores' in self.teacher.current_url()), \
             'Not viewing Student Scores'
 
@@ -409,6 +408,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
@@ -683,7 +683,6 @@ class TestViewClassScores(unittest.TestCase):
                 actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
-
 
         self.ps.test_updates['passed'] = True
 
@@ -1342,7 +1341,10 @@ class TestViewClassScores(unittest.TestCase):
         element.click()
         actions = ActionChains(self.teacher.driver)
         actions.move_to_element(element)
-        actions.move_by_offset(-60, 10)
+        for _ in range(90):
+            actions.move_by_offset(-1, 0)
+        for _ in range(15):
+            actions.move_by_offset(0, 1)
         actions.click()
         actions.perform()
 
