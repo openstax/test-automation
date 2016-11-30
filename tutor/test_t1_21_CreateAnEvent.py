@@ -29,7 +29,7 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8133, 8134
+        8119
         # 8117, 8118, 8119, 8120, 8121,
         # 8122, 8123, 8124, 8125, 8126,
         # 8127, 8128, 8129, 8130, 8131,
@@ -189,17 +189,17 @@ class TestCreateAnEvent(unittest.TestCase):
         # Test steps and verification assertions
         calendar_date = self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//div[contains(@class,"Day--upcoming")]/span')
+                (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
             )
         )
         self.teacher.driver.execute_script(
             'return arguments[0].scrollIntoView();', calendar_date)
-        self.teacher.driver.execute_script('window.scrollBy(0, -80);')
+        self.teacher.sleep(1)
         actions = ActionChains(self.teacher.driver)
         actions.move_to_element(calendar_date)
+        actions.move_by_offset(0, -35)
         actions.click()
-        self.teacher.sleep(3)
-        actions.move_by_offset(30, 90)
+        actions.move_by_offset(30, 100)
         actions.click()
         actions.perform()
         assert('event/new' in self.teacher.current_url()),\
