@@ -75,7 +75,6 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 existing_driver=self.teacher.driver,
             )
 
-
     def tearDown(self):
         """Test destructor."""
         self.ps.update_job(
@@ -322,19 +321,29 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
             ).size['width']
         bar = scroll_width
+        print(scroll_total_size)
         while(bar < scroll_total_size):
+            print(bar)
             try:
-                self.teacher.find(
-                    By.XPATH, '//div[@class="late-caret"]'
+                print("here1")
+                self.teacher.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//div[@class="late-caret"]')
+                    )
                 ).click()
+                print("here???")
+                #
+                # self.teacher.find(
+                #     By.XPATH, '//div[@class="late-caret"]'
+                # ).click()
                 self.teacher.find(
                     By.XPATH,
                     '//button[contains(text(),"Accept late")]'
                 ).click()
                 break
-            except (NoSuchElementException,
-                    ElementNotVisibleException,
-                    WebDriverException):
+            except (NoSuchElementException, TimeoutException,
+                    ElementNotVisibleException) as err:
+                print(err)
                 bar += scroll_width
                 if scroll_total_size <= bar:
                     print("No Late assignments for this class :(")
@@ -346,6 +355,19 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
+            except (WebDriverException):
+                bar += 15
+                if scroll_total_size <= bar:
+                    print("No Late assignments for this class :(")
+                    raise Exception
+                # drag scroll bar instead of scrolling
+                actions = ActionChains(self.teacher.driver)
+                actions.move_to_element(scroll_bar)
+                actions.click_and_hold()
+                actions.move_by_offset(15, 0)
+                actions.release()
+                actions.perform()
+
         self.ps.test_updates['passed'] = True
 
     # 14680 - 006 - Teacher | View score at due date
