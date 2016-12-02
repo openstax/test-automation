@@ -29,7 +29,7 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8119
+        8124,
         # 8117, 8118, 8119, 8120, 8121,
         # 8122, 8123, 8124, 8125, 8126,
         # 8127, 8128, 8129, 8130, 8131,
@@ -76,7 +76,7 @@ class TestCreateAnEvent(unittest.TestCase):
 
     # Case C8117 - 001 - Teacher | Teacher creates an event
     @pytest.mark.skipif(str(8117) not in TESTS, reason='Excluded')
-    def test_teacher_create_an_event_8177(self):
+    def test_teacher_create_an_event_8117(self):
         """Teacher creates an event.
 
         Steps:
@@ -101,7 +101,11 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment = Assignment()
         assignment_name = 'event001'
         assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
         time.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -157,12 +161,15 @@ class TestCreateAnEvent(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
         time.sleep(1)
         assert('event/new' in self.teacher.current_url()),\
             'not at Add Event Assignment page'
@@ -235,12 +242,15 @@ class TestCreateAnEvent(unittest.TestCase):
         # Test steps and verification assertions
         assignment_name = 'event004'
         assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
         time.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -350,13 +360,15 @@ class TestCreateAnEvent(unittest.TestCase):
         # Test steps and verification assertions
         assignment_name = 'event005'
         assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
-
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
         time.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -474,8 +486,16 @@ class TestCreateAnEvent(unittest.TestCase):
         # Test steps and verification assertions
         assignment = Assignment()
         assignment_name = 'event006'
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
         time.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -537,8 +557,16 @@ class TestCreateAnEvent(unittest.TestCase):
         # Test steps and verification assertions
         assignment = Assignment()
         assignment_name = 'event007'
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
         time.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -658,8 +686,16 @@ class TestCreateAnEvent(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment = Assignment()
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
         time.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -700,8 +736,16 @@ class TestCreateAnEvent(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment = Assignment()
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
         time.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -747,8 +791,16 @@ class TestCreateAnEvent(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment = Assignment()
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
         time.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -788,8 +840,16 @@ class TestCreateAnEvent(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment = Assignment()
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
         time.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -1094,8 +1154,16 @@ class TestCreateAnEvent(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment = Assignment()
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
         time.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -1132,8 +1200,16 @@ class TestCreateAnEvent(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment = Assignment()
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
         time.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -1383,8 +1459,16 @@ class TestCreateAnEvent(unittest.TestCase):
         # Test steps and verification assertions
         assignment = Assignment()
         assignment_name = 'event022'
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
         time.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -1580,8 +1664,16 @@ class TestCreateAnEvent(unittest.TestCase):
         # Test steps and verification assertions
         assignment = Assignment()
         assignment_name = 'event025'
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
         time.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
@@ -1769,8 +1861,16 @@ class TestCreateAnEvent(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment = Assignment()
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
+        assignment_menu = self.teacher.driver.find_element(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
         time.sleep(1)
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
