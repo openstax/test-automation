@@ -213,9 +213,8 @@ class TestViewClassPerformance(unittest.TestCase):
                 (By.LINK_TEXT, 'Dashboard')
             )
         ).click()
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class,"calendar-container")]')
 
         self.ps.test_updates['passed'] = True
 
