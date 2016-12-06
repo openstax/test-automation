@@ -23,14 +23,10 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7699])
-)
-
-"""
-7691, 7692, 7693, 7694, 7695,
+    str([7691, 7692, 7693, 7694, 7695,
          7696, 7697, 7698, 7699, 7700,
-         7701, 7702, 7703
-"""
+         7701, 7702, 7703])
+)
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -41,12 +37,11 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        # self.student= Student(
-        #    use_env_vars=True,
-        #    pasta_user=self.ps,
-        #    capabilities=self.desired_capabilities
-        # )
-        self.student = Student(use_env_vars=True)
+        self.student = Student(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
+        )
         self.student.login()
 
     def tearDown(self):
