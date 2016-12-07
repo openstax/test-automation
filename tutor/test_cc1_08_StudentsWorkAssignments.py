@@ -10,9 +10,10 @@ from autochomsky import chomsky
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.support import expected_conditions as expect  # NOQA
 from staxing.assignment import Assignment
-from staxing.helper import Teacher, Student
+from staxing.helper import Teacher, Student  # NOQA
+from selenium.webdriver import ActionChains  # NOQA
 
 basic_test_env = json.dumps([{
     'platform': 'Windows 10',
@@ -247,6 +248,153 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
+        # //span[@class='title section']
+        # get the 21 drop downs in toc
+
+        #    By.PARTIAL_LINK_TEXT, "Macro Econ").click()
+        self.student.select_course(appearance='macro_economics')
+        self.student.sleep(5)
+        self.student.find(By.XPATH, "//button[@class='toggle btn']").click()
+        self.student.sleep(3)
+
+        finished = False
+
+        # Expand all the chapters in the table of contents
+        chapters = self.student.driver.find_elements_by_xpath(
+            "//span[@class='title section']")
+        chapters.pop(0)
+        for chapter in chapters:
+            chapter.click()
+
+        # Get all sections, excluding the preface
+        sections = self.student.driver.find_elements_by_xpath(
+            "//a/span[@class='title']")
+        sections.pop(0)
+
+        self.student.sleep(2)
+
+        length = len(sections)
+
+        for num in range(length):
+
+            sections = self.student.driver.find_elements_by_xpath(
+                "//a/span[@class='title']")
+            sections.pop(0)
+            sections[num].click()
+            self.student.sleep(3)
+
+            if 'Introduction-to' not in self.student.current_url():
+                # Jump to the Concept Coach widget and open Concept Coach
+                self.student.find(
+                    By.XPATH, "//div[@class='jump-to-cc']/a[@class='btn']"
+                ).click()
+                self.student.sleep(2)
+                self.student.find(
+                    By.XPATH, "//button[@class='btn btn-lg btn-primary']"
+                ).click()
+                self.student.sleep(2)
+
+                # If this section has been completed already,
+                # leave and go to the next section
+                breadcrumbs = self.student.driver.find_elements_by_xpath(
+                    "//div[@class='task-breadcrumbs']/span")
+
+                breadcrumbs[-1].click()
+                self.student.sleep(3)
+
+                if len(self.student.driver.find_elements_by_xpath(
+                    "//div[@class='card-body coach-coach-review-completed'][1]"
+                )) > 0:
+                    self.student.find(
+                        By.XPATH,
+                        "//a/button[@class='btn-plain " +
+                        "-coach-close btn btn-default']").click()
+
+                # Else, go through questions until a blank one is found
+                # and answer the question
+                else:
+                    for question in breadcrumbs:
+                        question.click()
+
+                        if len(self.student.driver.find_elements_by_xpath(
+                            "//div[@class='question-feedback bottom']"
+                        )) > 0:
+                            continue
+
+                        else:
+                            while len(
+                                self.student.driver.find_elements_by_xpath(
+                                    "//div[@class='question-feedback bottom']"
+                                )
+                            ) == 0:
+
+                                if len(
+                                    self.student.driver.find_elements_by_xpath(
+                                        "//button[@class='btn btn-default']"
+                                    )
+                                ) > 0:
+                                    self.student.find(
+                                        By.XPATH,
+                                        "//button[@class='btn btn-default']"
+                                    ).click()
+                                    continue
+
+                                # Free response
+                                if self.student.find(
+                                    By.XPATH,
+                                    "//button[@class='async-button " +
+                                    "continue btn btn-primary']"
+                                ).text == 'Answer':
+                                    self.student.find(
+                                        By.XPATH,
+                                        "//textarea").send_keys(
+                                        'An answer for this textarea')
+                                    self.student.find(
+                                        By.XPATH,
+                                        "//button[@class='async-button " +
+                                        "continue btn btn-primary']"
+                                    ).click()
+                                    self.student.sleep(3)
+
+                                # Multiple Choice
+                                elif self.student.find(
+                                    By.XPATH,
+                                    "//button[@class='async-button " +
+                                    "continue btn btn-primary']"
+                                ).text == 'Submit':
+                                    answers = self.student.driver.find_elements(  # NOQA
+                                        By.CLASS_NAME, 'answer-letter')
+                                    self.student.sleep(0.8)
+                                    rand = randint(0, len(answers) - 1)
+                                    answer = chr(ord('a') + rand)
+                                    Assignment.scroll_to(
+                                        self.student.driver, answers[0])
+                                    if answer == 'a':
+                                        self.student.driver.execute_script(
+                                            'window.scrollBy(0, -160);')
+                                    elif answer == 'd':
+                                        self.student.driver.execute_script(
+                                            'window.scrollBy(0, 160);')
+                                    answers[rand].click()
+
+                                    self.student.find(
+                                        By.XPATH,
+                                        "//button[@class='async-button " +
+                                        "continue btn btn-primary']"
+                                    ).click()
+                                    self.student.sleep(3)
+
+                                    finished = True
+
+                        break
+
+            if finished:
+                break
+
+        self.student.sleep(5)
+        self.student.find(
+            By.XPATH, "//div[@class='question-feedback bottom']")
+
         self.ps.test_updates['passed'] = True
 
     # Case C7693 - 003 - System | Assessments are from the current module
@@ -339,7 +487,44 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.select_course(appearance='macro_economics')
+        self.student.sleep(5)
+        self.student.find(By.XPATH, "//button[@class='toggle btn']").click()
+        self.student.sleep(3)
+
+        # Expand all the chapters in the table of contents
+        chapters = self.student.driver.find_elements_by_xpath(
+            "//span[@class='title section']")
+        chapters.pop(0)
+        for chapter in chapters:
+            chapter.click()
+
+        # Get all sections, excluding the preface
+        sections = self.student.driver.find_elements_by_xpath(
+            "//a/span[@class='title']")
+        sections.pop(0)
+
+        self.student.sleep(2)
+
+        length = len(sections)
+
+        for num in range(length):
+
+            sections = self.student.driver.find_elements_by_xpath(
+                "//a/span[@class='title']")
+            sections.pop(0)
+            sections[num].click()
+            self.student.sleep(3)
+
+            if 'Introduction-to' in self.student.current_url():
+                # Jump to the Concept Coach widget and open Concept Coach
+                count = self.student.driver.find_elements_by_xpath(
+                    "//div[@class='jump-to-cc']/a[@class='btn']"
+                )
+                self.student.sleep(2)
+
+                assert (len(count) == 0), "Intro should not have CC widget"
+                break
 
         self.ps.test_updates['passed'] = True
 
@@ -376,7 +561,138 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.select_course(appearance='macro_economics')
+        self.student.sleep(5)
+        self.student.find(By.XPATH, "//button[@class='toggle btn']").click()
+        self.student.sleep(3)
+
+        finished = False
+
+        # Expand all the chapters in the table of contents
+        chapters = self.student.driver.find_elements_by_xpath(
+            "//span[@class='title section']")
+        chapters.pop(0)
+        for chapter in chapters:
+            chapter.click()
+
+        # Get all sections, excluding the preface
+        sections = self.student.driver.find_elements_by_xpath(
+            "//a/span[@class='title']")
+        sections.pop(0)
+
+        self.student.sleep(2)
+
+        length = len(sections)
+
+        for num in range(length):
+
+            sections = self.student.driver.find_elements_by_xpath(
+                "//a/span[@class='title']")
+            sections.pop(0)
+            sections[num].click()
+            self.student.sleep(3)
+
+            if 'Introduction-to' not in self.student.current_url():
+                # Jump to the Concept Coach widget and open Concept Coach
+                self.student.find(
+                    By.XPATH, "//div[@class='jump-to-cc']/a[@class='btn']"
+                ).click()
+                self.student.sleep(2)
+                self.student.find(
+                    By.XPATH, "//button[@class='btn btn-lg btn-primary']"
+                ).click()
+                self.student.sleep(2)
+
+                # If this section has been completed already,
+                # leave and go to the next section
+                breadcrumbs = self.student.driver.find_elements_by_xpath(
+                    "//div[@class='task-breadcrumbs']/span")
+
+                breadcrumbs[-1].click()
+                self.student.sleep(3)
+
+                if len(self.student.driver.find_elements_by_xpath(
+                    "//div[@class='card-body coach-coach-review-completed'][1]"
+                )) > 0:
+                    self.student.find(
+                        By.XPATH,
+                        "//a/button[@class='btn-plain " +
+                        "-coach-close btn btn-default']").click()
+
+                # Else, go through questions until a blank one is found
+                # and answer the question
+                else:
+                    for question in breadcrumbs:
+                        question.click()
+
+                        if len(self.student.driver.find_elements_by_xpath(
+                            "//div[@class='question-feedback bottom']"
+                        )) > 0:
+                            continue
+
+                        else:
+                            while len(
+                                self.student.driver.find_elements_by_xpath(
+                                    "//div[@class='question-feedback bottom']"
+                                )
+                            ) == 0:
+
+                                if len(
+                                    self.student.driver.find_elements_by_xpath(
+                                        "//button[@class='btn btn-default']"
+                                    )
+                                ) > 0:
+                                    self.student.find(
+                                        By.XPATH,
+                                        "//button[@class='btn btn-default']"
+                                    ).click()
+                                    continue
+
+                                # Free response
+                                if self.student.find(
+                                    By.XPATH,
+                                    "//button[@class='async-button " +
+                                    "continue btn btn-primary']"
+                                ).text == 'Answer':
+                                    self.student.find(
+                                        By.XPATH,
+                                        "//textarea").send_keys(
+                                        'An answer for this textarea')
+                                    self.student.find(
+                                        By.XPATH,
+                                        "//button[@class='async-button " +
+                                        "continue btn btn-primary']"
+                                    ).click()
+                                    self.student.sleep(3)
+
+                                # Multiple Choice
+                                elif self.student.find(
+                                    By.XPATH,
+                                    "//button[@class='async-button " +
+                                    "continue btn btn-primary']"
+                                ).text == 'Submit':
+                                    action = ActionChains(self.student.driver)
+                                    action.send_keys('c')
+                                    action.perform()
+
+                                    self.student.find(
+                                        By.XPATH,
+                                        "//div[@class='answers-answer " +
+                                        "answer-checked']"
+                                    )
+                                    self.student.sleep(3)
+
+                                    finished = True
+                                    break
+
+                        break
+
+            if finished:
+                break
+
+        self.student.sleep(5)
+
+        self.student.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -415,7 +731,147 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.select_course(appearance='macro_economics')
+        self.student.sleep(5)
+        self.student.find(By.XPATH, "//button[@class='toggle btn']").click()
+        self.student.sleep(3)
+
+        finished = False
+
+        # Expand all the chapters in the table of contents
+        chapters = self.student.driver.find_elements_by_xpath(
+            "//span[@class='title section']")
+        chapters.pop(0)
+        for chapter in chapters:
+            chapter.click()
+
+        # Get all sections, excluding the preface
+        sections = self.student.driver.find_elements_by_xpath(
+            "//a/span[@class='title']")
+        sections.pop(0)
+
+        self.student.sleep(2)
+
+        length = len(sections)
+
+        for num in range(length):
+
+            sections = self.student.driver.find_elements_by_xpath(
+                "//a/span[@class='title']")
+            sections.pop(0)
+            sections[num].click()
+            self.student.sleep(3)
+
+            if 'Introduction-to' not in self.student.current_url():
+                # Jump to the Concept Coach widget and open Concept Coach
+                self.student.find(
+                    By.XPATH, "//div[@class='jump-to-cc']/a[@class='btn']"
+                ).click()
+                self.student.sleep(2)
+                self.student.find(
+                    By.XPATH, "//button[@class='btn btn-lg btn-primary']"
+                ).click()
+                self.student.sleep(2)
+
+                # If this section has been completed already,
+                # leave and go to the next section
+                breadcrumbs = self.student.driver.find_elements_by_xpath(
+                    "//div[@class='task-breadcrumbs']/span")
+
+                breadcrumbs[-1].click()
+                self.student.sleep(3)
+
+                if len(self.student.driver.find_elements_by_xpath(
+                    "//div[@class='card-body coach-coach-review-completed'][1]"
+                )) > 0:
+                    self.student.find(
+                        By.XPATH,
+                        "//a/button[@class='btn-plain " +
+                        "-coach-close btn btn-default']").click()
+
+                # Else, go through questions until a blank one is found
+                # and answer the question
+                else:
+                    for question in breadcrumbs:
+                        question.click()
+
+                        if len(self.student.driver.find_elements_by_xpath(
+                            "//div[@class='question-feedback bottom']"
+                        )) > 0:
+                            if len(self.student.driver.find_elements_by_xpath(
+                                "//div[@class='card-body coach-" +
+                                "coach-review-completed'][1]"
+                            )) > 0:
+                                finished = True
+                            continue
+
+                        else:
+                            while len(
+                                self.student.driver.find_elements_by_xpath(
+                                    "//div[@class='question-feedback bottom']"
+                                )
+                            ) == 0:
+                                # Free response
+
+                                if len(
+                                    self.student.driver.find_elements_by_xpath(
+                                        "//button[@class='btn btn-default']"
+                                    )
+                                ) > 0:
+                                    self.student.find(
+                                        By.XPATH,
+                                        "//button[@class='btn btn-default']"
+                                    ).click()
+                                    continue
+
+                                if self.student.find(
+                                    By.XPATH,
+                                    "//button[@class='async-button " +
+                                    "continue btn btn-primary']"
+                                ).text == 'Answer':
+                                    self.student.find(
+                                        By.XPATH,
+                                        "//textarea").send_keys(
+                                        'An answer for this textarea')
+                                    self.student.find(
+                                        By.XPATH,
+                                        "//button[@class='async-button " +
+                                        "continue btn btn-primary']"
+                                    ).click()
+                                    self.student.sleep(3)
+
+                                # Multiple Choice
+                                elif self.student.find(
+                                    By.XPATH,
+                                    "//button[@class='async-button " +
+                                    "continue btn btn-primary']"
+                                ).text == 'Submit':
+                                    answers = self.student.driver.find_elements(  # NOQA
+                                        By.CLASS_NAME, 'answer-letter')
+                                    self.student.sleep(0.8)
+                                    rand = randint(0, len(answers) - 1)
+                                    answer = chr(ord('a') + rand)
+                                    Assignment.scroll_to(
+                                        self.student.driver, answers[0])
+                                    if answer == 'a':
+                                        self.student.driver.execute_script(
+                                            'window.scrollBy(0, -160);')
+                                    elif answer == 'd':
+                                        self.student.driver.execute_script(
+                                            'window.scrollBy(0, 160);')
+                                    answers[rand].click()
+
+                                    self.student.find(
+                                        By.XPATH,
+                                        "//button[@class='async-button " +
+                                        "continue btn btn-primary']"
+                                    ).click()
+                                    self.student.sleep(3)
+
+            if finished:
+                break
+
+        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -450,7 +906,63 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.select_course(appearance='macro_economics')
+        self.student.sleep(5)
+        self.student.find(By.XPATH, "//button[@class='toggle btn']").click()
+        self.student.sleep(3)
+
+        # Expand all the chapters in the table of contents
+        chapters = self.student.driver.find_elements_by_xpath(
+            "//span[@class='title section']")
+        chapters.pop(0)
+        for chapter in chapters:
+            chapter.click()
+
+        # Get all sections, excluding the preface
+        sections = self.student.driver.find_elements_by_xpath(
+            "//a/span[@class='title']")
+        sections.pop(0)
+
+        self.student.sleep(2)
+
+        length = len(sections)
+
+        for num in range(length):
+
+            sections = self.student.driver.find_elements_by_xpath(
+                "//a/span[@class='title']")
+            sections.pop(0)
+            sections[num].click()
+            self.student.sleep(3)
+
+            if 'Introduction-to' not in self.student.current_url():
+                # Jump to the Concept Coach widget and open Concept Coach
+                self.student.find(
+                    By.XPATH, "//div[@class='jump-to-cc']/a[@class='btn']"
+                ).click()
+                self.student.sleep(2)
+                self.student.find(
+                    By.XPATH, "//button[@class='btn btn-lg btn-primary']"
+                ).click()
+                self.student.sleep(2)
+
+                # View summary
+                breadcrumbs = self.student.driver.find_elements_by_xpath(
+                    "//div[@class='task-breadcrumbs']/span")
+
+                breadcrumbs[-1].click()
+                self.student.sleep(3)
+
+                # Verify the first question has an exercise ID
+                breadcrumbs[2].click()
+
+                self.student.find(
+                    By.XPATH,
+                    "//span[@class='exercise-identifier-link']/span[2]")
+
+                break
+
+        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -481,7 +993,70 @@ class TestStudentsWorkAssignments(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.select_course(appearance='macro_economics')
+        self.student.sleep(5)
+        self.student.find(By.XPATH, "//button[@class='toggle btn']").click()
+        self.student.sleep(3)
+
+        # Expand all the chapters in the table of contents
+        chapters = self.student.driver.find_elements_by_xpath(
+            "//span[@class='title section']")
+        chapters.pop(0)
+        for chapter in chapters:
+            chapter.click()
+
+        # Get all sections, excluding the preface
+        sections = self.student.driver.find_elements_by_xpath(
+            "//a/span[@class='title']")
+        sections.pop(0)
+
+        self.student.sleep(2)
+
+        length = len(sections)
+
+        for num in range(length):
+
+            sections = self.student.driver.find_elements_by_xpath(
+                "//a/span[@class='title']")
+            sections.pop(0)
+            sections[num].click()
+            self.student.sleep(3)
+
+            if 'Introduction-to' not in self.student.current_url():
+                # Jump to the Concept Coach widget and open Concept Coach
+                self.student.find(
+                    By.XPATH, "//div[@class='jump-to-cc']/a[@class='btn']"
+                ).click()
+                self.student.sleep(2)
+                self.student.find(
+                    By.XPATH, "//button[@class='btn btn-lg btn-primary']"
+                ).click()
+                self.student.sleep(2)
+
+                # View summary
+                breadcrumbs = self.student.driver.find_elements_by_xpath(
+                    "//div[@class='task-breadcrumbs']/span")
+
+                breadcrumbs[-1].click()
+                self.student.sleep(3)
+
+                # Verify the first question has an exercise ID
+                breadcrumbs[2].click()
+
+                self.student.find(
+                    By.XPATH,
+                    "//span[@class='exercise-identifier-link']/a"
+                ).click()
+
+                self.student.driver.switch_to.window(
+                    self.student.driver.window_handles[-1])
+
+                assert("google" in self.student.current_url()), \
+                    'Not viewing the errata form'
+
+                break
+
+        self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
