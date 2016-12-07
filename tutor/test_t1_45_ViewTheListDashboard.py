@@ -7,24 +7,27 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
-from staxing.helper import Student  # NOQA
+# from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+from staxing.helper import Student
 from selenium.common.exceptions import TimeoutException
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
-    str([8268, 8269, 8270, 8271, 8272,
-         8273, 8274, 8275, 8276, 8277,
-         8278, 8279, 8280])  # NOQA
+    str([
+        8268, 8269, 8270, 8271, 8272,
+        8273, 8274, 8275, 8276, 8277,
+        8278, 8279, 8280
+    ])
 )
 
 
@@ -37,25 +40,28 @@ class TestViewTheListDashboard(unittest.TestCase):
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.student = Student(
-            use_env_vars=True  # ,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.student.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.student.driver.session_id),
-                           **self.ps.test_updates)
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.student.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             self.student.delete()
         except:
             pass
 
-    # Case C8268 - 001 - Student| View the assignment list
-    @pytest.mark.skipif(str(8268) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8268 - 001 - Student | View the assignment list
+    @pytest.mark.skipif(str(8268) not in TESTS, reason='Excluded')
     def test_student_view_the_assignemnt_list_8268(self):
-        """View the assignment list
+        """View the assignment list.
 
         Steps:
         If the user has more than one course, select a Tutor course
@@ -74,11 +80,11 @@ class TestViewTheListDashboard(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8269 - 002 - Student| View the performance forecast using the
+    # Case C8269 - 002 - Student | View the performance forecast using the
     # dashboard button
-    @pytest.mark.skipif(str(8269) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8269) not in TESTS, reason='Excluded')
     def test_student_performance_forecast_using_dashboard_button_8269(self):
-        """View the performance forecast using the dashboard button
+        """View the performance forecast using the dashboard button.
 
         Steps:
         If the user has more than one course, select a Tutor course
@@ -105,12 +111,13 @@ class TestViewTheListDashboard(unittest.TestCase):
         performance.click()
         assert('guide' in self.student.current_url()), \
             'Not viewing the performance forecast'
+
         self.ps.test_updates['passed'] = True
 
-    # Case C8270 - 003 - Student| View the performance forecast using the menu
-    @pytest.mark.skipif(str(8270) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8270 - 003 - Student | View the performance forecast using the menu
+    @pytest.mark.skipif(str(8270) not in TESTS, reason='Excluded')
     def test_student_view_performance_forecast_using_the_menu_link_8270(self):
-        """View the performance forecast using the menu link
+        """View the performance forecast using the menu link.
 
         Steps:
         If the user has more than one course, select a Tutor course
@@ -135,12 +142,13 @@ class TestViewTheListDashboard(unittest.TestCase):
         ).click()
         assert('guide' in self.student.current_url()), \
             'Not viewing the performance forecast'
+
         self.ps.test_updates['passed'] = True
 
-    # Case C8271 - 004 - Student| View the assignments for the current week
-    @pytest.mark.skipif(str(8271) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8271 - 004 - Student | View the assignments for the current week
+    @pytest.mark.skipif(str(8271) not in TESTS, reason='Excluded')
     def test_student_view_the_assignemnts_for_the_current_week_8271(self):
-        """View the assignments for the current week
+        """View the assignments for the current week.
 
         Steps:
         If the user has more than one course, select a Tutor course
@@ -160,12 +168,13 @@ class TestViewTheListDashboard(unittest.TestCase):
                 (By.LINK_TEXT, 'This Week')
             )
         )
+
         self.ps.test_updates['passed'] = True
 
-    # Case C8272 - 005 - Student| View the upcoming assignments
-    @pytest.mark.skipif(str(8272) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8272 - 005 - Student | View the upcoming assignments
+    @pytest.mark.skipif(str(8272) not in TESTS, reason='Excluded')
     def test_student_view_the_upcoming_assignemnts_8272(self):
-        """View the upcoming assignments
+        """View the upcoming assignments.
 
         Steps:
         If the user has more than one course, select a Tutor course
@@ -189,12 +198,13 @@ class TestViewTheListDashboard(unittest.TestCase):
         except TimeoutException:
             self.student.driver.find_element(
                 By.XPATH, '//div[contains(text(),"No upcoming events")]')
+
         self.ps.test_updates['passed'] = True
 
-    # Case C8273 - 006 - Student| View past work
-    @pytest.mark.skipif(str(8273) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8273 - 006 - Student | View past work
+    @pytest.mark.skipif(str(8273) not in TESTS, reason='Excluded')
     def test_student_view_past_work_8273(self):
-        """View past work
+        """View past work.
 
         Steps:
         If the user has more than one course, select a Tutor course
@@ -218,12 +228,13 @@ class TestViewTheListDashboard(unittest.TestCase):
         past_work.click()
         assert(past_work.get_attribute('aria-selected') == 'true'),\
             'not viewing past work'
+
         self.ps.test_updates['passed'] = True
 
-    # Case C8274 - 007 - Student| Check which assignments were late
-    @pytest.mark.skipif(str(8274) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8274 - 007 - Student | Check which assignments were late
+    @pytest.mark.skipif(str(8274) not in TESTS, reason='Excluded')
     def test_student_check_which_assignments_were_late_8274(self):
-        """Check which assignments were late
+        """Check which assignments were late.
 
         Steps:
         If the user has more than one course, select a Tutor course
@@ -256,10 +267,10 @@ class TestViewTheListDashboard(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8275 - 008 - Student| View recent performance forecast topics
-    @pytest.mark.skipif(str(8275) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8275 - 008 - Student | View recent performance forecast topics
+    @pytest.mark.skipif(str(8275) not in TESTS, reason='Excluded')
     def test_student_view_recent_performance_topics_8275(self):
-        """View recent performance forecast topics
+        """View recent performance forecast topics.
 
         Steps:
         If the user has more than one course, select a Tutor course
@@ -284,13 +295,14 @@ class TestViewTheListDashboard(unittest.TestCase):
                 (By.XPATH, '//div[contains(@class, "guide-group")]')
             )
         )
+
         self.ps.test_updates['passed'] = True
 
-    # Case C8276 - 009 - Student| Open the refrence book using the dashboard
+    # Case C8276 - 009 - Student | Open the refrence book using the dashboard
     # button
-    @pytest.mark.skipif(str(8276) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8276) not in TESTS, reason='Excluded')
     def test_student_open_the_refrence_book_using_dashboard_button_8276(self):
-        """Open the refrence book using the dashboard button
+        """Open the refrence book using the dashboard button.
 
         Steps:
         If the user has more than one course, select a Tutor course
@@ -323,10 +335,10 @@ class TestViewTheListDashboard(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8277 - 010 - Student| Open the refrence book using the menu link
-    @pytest.mark.skipif(str(8277) not in TESTS, reason='Excluded')  # NOQA
+    # Case C8277 - 010 - Student | Open the refrence book using the menu link
+    @pytest.mark.skipif(str(8277) not in TESTS, reason='Excluded')
     def test_student_open_the_refrence_book_using_the_menu_link_8277(self):
-        """Open the refrence book using the menu link
+        """Open the refrence book using the menu link.
 
         Steps:
         If the user has more than one course, select a Tutor course
@@ -353,13 +365,14 @@ class TestViewTheListDashboard(unittest.TestCase):
         self.student.driver.switch_to_window(window_with_book)
         assert('book' in self.student.current_url()), \
             'Not viewing the textbook PDF'
+
         self.ps.test_updates['passed'] = True
 
-    # Case C8278 - 011 - Student| Click on the course name to return to the
+    # Case C8278 - 011 - Student | Click on the course name to return to the
     # dasboard
-    @pytest.mark.skipif(str(8278) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8278) not in TESTS, reason='Excluded')
     def test_student_click_on_course_name_to_return_to_dashboard_8278(self):
-        """Click on the course name to return to the dashboard
+        """Click on the course name to return to the dashboard.
 
         Steps:
         If the user has more than one course, select a Tutor course
@@ -390,11 +403,11 @@ class TestViewTheListDashboard(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8279 - 012 - Student| Click on the OpneStax logo to return to the
+    # Case C8279 - 012 - Student | Click on the OpneStax logo to return to the
     # course picker
-    @pytest.mark.skipif(str(8279) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8279) not in TESTS, reason='Excluded')
     def test_student_click_on_openstax_logo_return_to_course_picker_8279(self):
-        """Click on the OpenStax logo to return to the course picker
+        """Click on the OpenStax logo to return to the course picker.
 
         Steps:
         If the user has more than one course, select a Tutor course
@@ -414,13 +427,14 @@ class TestViewTheListDashboard(unittest.TestCase):
             By.XPATH, '//i[contains(@class,"ui-brand-logo")]').click()
         assert('dashboard' in self.student.current_url()), \
             'Not viewing the course picker 012'
+
         self.ps.test_updates['passed'] = True
 
-    # Case C8280 - 013 - Student| Click on the course OpenStax logo to return
+    # Case C8280 - 013 - Student | Click on the course OpenStax logo to return
     # to the dasboard
-    @pytest.mark.skipif(str(8280) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8280) not in TESTS, reason='Excluded')
     def test_student_click_on_openstax_logo_to_return_to_dashboard_8280(self):
-        """Click on the OpenStax logo to return to the dashboard
+        """Click on the OpenStax logo to return to the dashboard.
 
         Steps:
         If the user has more than one course, select a Tutor course
@@ -441,9 +455,8 @@ class TestViewTheListDashboard(unittest.TestCase):
             username=os.getenv('STUDENT_USER_ONE_COURSE'),
             password=os.getenv('STUDENT_PASSWORD'),
             existing_driver=self.student.driver,
-            site='https://tutor-qa.openstax.org'  # ,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         student2.login()
         student2.page.wait_for_page_load()
@@ -456,7 +469,10 @@ class TestViewTheListDashboard(unittest.TestCase):
             )
         ).click()
         self.student.driver.find_element(
-            By.XPATH, '//i[contains(@class,"ui-brand-logo")]').click()
+            By.XPATH,
+            '//i[contains(@class,"ui-brand-logo")]'
+        ).click()
         assert('list' in self.student.current_url()), \
             'Not viewing the list dashboard 011'
+
         self.ps.test_updates['passed'] = True

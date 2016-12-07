@@ -1,123 +1,138 @@
-name: Trigger tests for a suite
+/*name: Trigger breakup tests for a suite
 description: Triggers automated tests for a test suite
 author: OpenStax QA
-version: 1.0
+version: 0.1
 includes: ^suites/view
 excludes:
 
-js:
-$(document).ready(
-    function()
-    {
-        /* Create the button */
-        var button = $('<div class="toolbar content-header-toolbar"><a class="toolbar-button toolbar-button-last toolbar-button-first content-header-button button-start" href="javascript:void(0)">Automate Test Run</a></div>');
+js:*/
+function show_error(message, xhr, status, error) {
+  alert(
+    'Error: ' + message + '\n' +
+    'Status: ' + status + '\n' +
+    'Error: ' + error + '\n' +
+    'XHR:\n' + xhr.responseText + '\n' + xhr.responseXML);
+}
 
-        /* Add it to the toolbar */
-        $("#content-header .content-header-inner").prepend(button);
+$(document).ready(function() {
+  // Create the button
+  var button = $('<div class="toolbar content-header-toolbar">' +
+                 '<a class="toolbar-button toolbar-button-last ' +
+                 'toolbar-button-first content-header-button ' +
+                 'button-start" href="javascript:void(0)">' +
+                 'Breakup Suite</a></div>');
 
-        /* Bind the click event to trigger the automated tests */
-        $("a", button).click(
-            function()
-            {
-                /* Create a new test run using all of the available test cases */
-                var params = {};
-                params['name'] = 'Full run ' + uiscripts.context.project.name;
-                params['include_all'] = true;
-                $.ajax(
-                {
-                    type: 'POST',
-                    url:  'index.php?api/v2/add_run/' + uiscripts.context.project.id,
-                    dataType: 'json',
-                    data: JSON.stringify(params),
-                    beforeSend: function(xhr, settings)
-                    {
-                        xhr.setRequestHeader('Content-Type', 'application/json');
-                    },
-                    success: function(data, status, xhr)
-                    {
-                        /* Store the test run ID for later */
-                        var run_id = 0;
-                        if(data.hasOwnProperty('id')) {
-                            run_id = data['id'];
-                        }
-                        /* Read the TestRail project information */
-                        $.ajax(
-                        {
-                            url: 'index.php?api/v2/get_project/' + uiscripts.context.project.id,
-                            dataType: 'json',
-                            beforeSend: function(xhr, settings)
-                            {
-                                xhr.setRequestHeader('Content-Type', 'application/json');
-                            },
-                            success: function(data, status, xhr)
-                            {
-                                /* Retrieve the Jenkins project name */
-                                var project_link = '';
-                                if(data.hasOwnProperty('announcement')) {
-                                    project_link = data['announcement'];
-                                }
-                                /* Read the test list for the given test run */
-                                $.ajax(
-                                {
-                                    url: 'index.php?api/v2/get_tests/' + run_id,
-                                    dataType: 'json',
-                                    beforeSend: function(xhr, settings)
-                                    {
-                                        xhr.setRequestHeader('Content-Type', 'application/json');
-                                    },
-                                    success: function(data, status, xhr)
-                                    {
-                                        /* Build the test case list */
-                                        var case_list = [];
-                                        $.each(data, function(index) {
-                                            case_list.push(data[index]['case_id']);
-                                        });
-                                        /* Construct the Jenkins API job builder */
-                                        uri = encodeURI(
-                                            'https://jenkins-qa.openstax.org:8080/job/' +
-                                            project_link +
-                                            '/buildWithParameters?token=' +
-                                            'oFHAq1zUIejeDBYmvYWo');
-                                        uri = uri + '&CASELIST=' + encodeURI('' + case_list);
-                                        uri = uri + '&RUNID=' + run_id;
-                                        /* Initiate the Jenkins build */
-                                        $.ajax(
-                                        {
-                                            url: uri,
-                                            contentType: 'json',
-                                            type: 'GET',
-                                            contentType: 'application/json; charset=utf-8;',
-                                            data: '',
-                                            success: function(data, status, xhr)
-                                            {
-                                                /* Return to the test runs list */
-                                                window.location.replace('https://openstax.testrail.net/index.php?/runs/overview/' + uiscripts.context.project.id);
-                                            },
-                                            error: function(xhr, status, error)
-                                            {
-                                                App.Dialogs.error('Error: Build Job\n' + status + '\n' + error);
-                                            }
-                                        });
-                                    },
-                                    error: function(xhr, status, error)
-                                    {
-                                        App.Dialogs.error('Error: Get Tests\n' + status + '\n' + error);
-                                    }
-                                });
-                            },
-                            error: function(xhr, status, error)
-                            {
-                                App.Dialogs.error('Error: Get Project Info\n' + status + '\n' + error);
-                            }
-                        });
-                    },
-                    error: function(xhr, status, error)
-                    {
-                        App.Dialogs.error('Error: Add Test Run\n' + status + '\n' + error);
-                    }
-                });
-                return false;
+  // Add it to the toolbar
+  $("#content-header .content-header-inner").prepend(button);
+
+  // Bind the click event to trigger the automated tests
+  $("a", button).click(function() {
+    // Create a new test run using all of the available test cases
+    var params = {};
+    params.name = 'Full Run (Split Tests) for ' + uiscripts.context.project.name;
+    params.description = 'Fragmented full suite test\n' + new Date().toLocaleString();
+    params.include_all = true;
+    $.ajax({
+      type: 'POST',
+      url:  'index.php?api/v2/add_run/' + uiscripts.context.project.id,
+      dataType: 'json',
+      data: JSON.stringify(params),
+      async: false,
+      beforeSend: function(xhr, settings) {
+        xhr.setRequestHeader('Content-Type', 'application/json');
+      }
+    })
+    .then(
+      // Success
+      function(data, status, xhr) {
+        alert('Added run');
+        // Store the test run ID for later
+        var run_id = 0;
+        if(data.hasOwnProperty('id')) {
+          run_id = data.id;
+        }
+        $.ajax({
+          type: 'GET',
+          url: 'index.php?api/v2/get_project/' + uiscripts.context.project.id,
+          dataType: 'json',
+          async: false,
+          beforeSend: function(xhr, settings) {
+            xhr.setRequestHeader('Content-Type', 'application/json');
+          }
+        })
+        .then(
+          // Success
+          function(data, status, xhr) {
+            alert('Got project');
+            /* Retrieve the Jenkins project name */
+            var project_link = '';
+            if(data.hasOwnProperty('announcement')) {
+              project_link = data.announcement;
             }
+            /* Read the test list for the given test run */
+            $.ajax({
+              type: 'GET',
+              url: 'index.php?api/v2/get_tests/' + run_id,
+              dataType: 'json',
+              async: false,
+              beforeSend: function(xhr, settings) {
+                xhr.setRequestHeader('Content-Type', 'application/json');
+              }
+            })
+            .then(
+              // Success
+              function(data, status, xhr) {
+                alert('Got tests');
+                /* Build the test case list */
+                var case_list = [];
+                $.each(data, function(index) {
+                  case_list.push(data[index].case_id);
+                });
+                var array_copy = case_list;
+                var case_lists = [];
+                while(array_copy.length) {
+                  case_lists.push(encodeURI('' + array_copy.splice(0, 100)));
+                }
+                /* Construct the Jenkins API job builder */
+                $.each(case_lists, function(index) {
+                  uri = 'https://jenkins-qa.openstax.org:8080/job/' +
+                    project_link +
+                    '/buildWithParameters?token=oFHAq1zUIejeDBYmvYWo';
+                  uri = uri + '&RUNID=' + run_id;
+                  uri = uri + '&CASELIST=' + case_lists[index];
+                  uri = encodeURI(uri);
+                  alert(uri);
+                  $.ajax({
+                    type: 'GET',
+                    url: uri,
+                    contentType: 'application/json',
+                    async: false,
+                    beforeSend: function(xhr, settings) {
+                      xhr.setRequestHeader('Content-Type', 'application/json');
+                    }
+                  })
+                  .then(
+                    // Success
+                    function(data, status, xhr) {
+                      alert('Success: Build Job\nRun: ' + run_id + '  Status: ' +
+                            status + '\nSet: ' + index + '\nURL: ' + uri +
+                            '\nData: ' + data + '\nXHR: ' + xhr.responseText);
+                    },
+                    // Failure
+                    function(xhr, status, error) { show_error('Build Job', xhr, status, error); }
+                  );
+                });
+              },
+              // Failure
+              function(xhr, status, error) { show_error('Get Test List', xhr, status, error); }
+            );
+          },
+          // Failure
+          function(xhr, status, error) { show_error('Get Project Info', xhr, status, error); }
         );
-    }
-);
+      },
+      // Failed
+      function(xhr, status, error) { show_error('Add Test Run', xhr, status, error); }
+    );
+  });
+});

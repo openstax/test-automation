@@ -7,24 +7,27 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
-from selenium.webdriver.common.by import By  # NOQA
-from selenium.webdriver.support import expected_conditions as expect  # NOQA
+from random import randint
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.support.ui import WebDriverWait
 
-from staxing.helper import Admin  # NOQA
+from staxing.helper import Admin
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
-    str([8247, 8248, 8249, 8250,
-         8251, 8252, 8253])
+    str([
+        8247, 8248, 8249, 8250, 8251,
+        8252, 8253
+    ])
 )
 
 
@@ -37,9 +40,9 @@ class TestAccountMaintenance(unittest.TestCase):
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.admin = Admin(
-            use_env_vars=True  # ,
-            # pasta_user=self.ps,
-            # capabilities=self.desired_capabilities
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.admin.login()
         self.admin.wait = WebDriverWait(self.admin.driver, 15)
@@ -51,19 +54,24 @@ class TestAccountMaintenance(unittest.TestCase):
         ).click()
         self.admin.page.wait_for_page_load()
         self.admin.driver.find_element(
-            By.XPATH, '//a[contains(text(),"Users")]').click()
+            By.XPATH,
+            '//a[contains(text(),"Users")]'
+        ).click()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.admin.driver.session_id),
-                           **self.ps.test_updates)
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.admin.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             self.admin.delete()
-        except:  # NOQA
+        except:
             pass
 
     # Case C8247 - 001 - Admin | Search for a username
-    @pytest.mark.skipif(str(8247) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8247) not in TESTS, reason='Excluded')
     def test_admin_search_for_a_username_8247(self):
         """Search for a username.
 
@@ -87,10 +95,11 @@ class TestAccountMaintenance(unittest.TestCase):
             By.XPATH, '//input[@value="Search"]').click()
         self.admin.driver.find_element(
             By.XPATH, '//td[contains(text(),"Atticus")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8248 - 002 - Admin | Search for a user's name
-    @pytest.mark.skipif(str(8248) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8248) not in TESTS, reason='Excluded')
     def test_admin_search_for_a_users_name_8248(self):
         """Search for a user's name.
 
@@ -121,7 +130,7 @@ class TestAccountMaintenance(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8249 - 003 - Admin | Create a new user
-    @pytest.mark.skipif(str(8249) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8249) not in TESTS, reason='Excluded')
     def test_admin_create_a_user_8249(self):
         """Create a new user.
 
@@ -167,10 +176,11 @@ class TestAccountMaintenance(unittest.TestCase):
             By.XPATH, '//input[@value="Search"]').click()
         self.admin.driver.find_element(
             By.XPATH, '//td[text()="automated_test_user_'+num+'"]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8250 - 004 - Admin | Edit a user
-    @pytest.mark.skipif(str(8250) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8250) not in TESTS, reason='Excluded')
     def test_admin_edit_a_user_8250(self):
         """Edit a user.
 
@@ -234,10 +244,11 @@ class TestAccountMaintenance(unittest.TestCase):
             By.XPATH, '//input[@value="Search"]').click()
         self.admin.driver.find_element(
             By.XPATH, '//td[contains(text(),"first_name_' + num + '_EDITED")]')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8251 - 005 - Admin | Assign elevated permissions
-    @pytest.mark.skipif(str(8251) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8251) not in TESTS, reason='Excluded')
     def test_admin_assign_elevated_permissions_8251(self):
         """Assign elevated permissions.
 
@@ -302,10 +313,11 @@ class TestAccountMaintenance(unittest.TestCase):
         element = self.admin.driver.find_element(By.XPATH, '//tr/td[5]')
         assert(element.get_attribute('innerHTML') == 'Yes'), \
             'permission not elevated ' + element.get_attribute('innerHTML')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8252 - 006 - Admin | Remove elevated permissions
-    @pytest.mark.skipif(str(8252) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8252) not in TESTS, reason='Excluded')
     def test_admin_remove_elevated_permissions_8252(self):
         """Remove elevated permissions.
 
@@ -375,10 +387,11 @@ class TestAccountMaintenance(unittest.TestCase):
         element = self.admin.driver.find_element(By.XPATH, '//tr/td[5]')
         assert(element.get_attribute('innerHTML') == 'No'), \
             'permission not elevated ' + element.get_attribute('innerHTML')
+
         self.ps.test_updates['passed'] = True
 
     # Case C8253 - 007 - Admin | Impersonate a user
-    @pytest.mark.skipif(str(8253) not in TESTS, reason='Excluded')  # NOQA
+    @pytest.mark.skipif(str(8253) not in TESTS, reason='Excluded')
     def test_admin_impersonate_a_user_8253(self):
         """Impersonate a user.
 
@@ -409,4 +422,5 @@ class TestAccountMaintenance(unittest.TestCase):
                 (By.XPATH, '//span[contains(text(),"Atticus Finch")]')
             )
         )
+
         self.ps.test_updates['passed'] = True
