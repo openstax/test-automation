@@ -26,11 +26,11 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8207, 8208, 8209, 8210, 8211,
-        8212, 8213, 8214, 8215, 8216,
-        8217, 8218, 8219, 8220, 8221,
-        8222, 8223, 8224, 8225, 8226,
-        8227, 8387, 8388
+        8207, 8208, 8209, 8211, 8212,
+        8213, 8214, 8215, 8216, 8217,
+        8218, 8219, 8220, 8221, 8222,
+        8223, 8224, 8225, 8226, 8387,
+        8388
     ])
 )
 
@@ -52,8 +52,8 @@ class TestAccountManagement(unittest.TestCase):
         self.google_password = os.getenv('GOOGLE_PASSWORD')
         self.facebook_account = os.getenv('FACEBOOK_USER')
         self.facebook_password = os.getenv('FACEBOOK_PASSWORD')
-        self.twitter_account = os.getenv('TWITTER_USER')
-        self.twitter_password = os.getenv('TWITTER_PASSWORD')
+        # self.twitter_account = os.getenv('TWITTER_USER')
+        # self.twitter_password = os.getenv('TWITTER_PASSWORD')
         self.student.get("http://accounts-qa.openstax.org")
 
     def tearDown(self):
@@ -67,10 +67,10 @@ class TestAccountManagement(unittest.TestCase):
         except:
             pass
 
-    # Case C8207 - 001 - User | Create a new Account with username and password
+    # Case C8207 - 001 - User | Create a new Account with an email and password
     @pytest.mark.skipif(str(8207) not in TESTS, reason='Excluded')
-    def test_user_create_a_new_account_with_a_username_and_password_8207(self):
-        """Create a new Account with a username and password.
+    def test_user_create_a_new_account_with_an_email_and_password_8207(self):
+        """Create a new Account with an email and password.
 
         Steps:
         Click on the Sign up link
@@ -279,82 +279,82 @@ class TestAccountManagement(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8210 - 004 - User | Create a new Account with Twitter
-    @pytest.mark.skipif(str(8210) not in TESTS, reason='Excluded')
-    def test_user_create_a_new_account_with_twitter_8210(self):
-        """Create a new Account with Twitter.
-
-        Steps:
-        Click on the Sign up link
-        Click on the Sign up with Twitter button
-        Enter email and password on twitter
-        Click login
-        Enter email and last name on signup page on openstax
-        Accept terms
-        Click button to create account
-
-        Expected Result:
-        User logged in and presented with their dashboard
-        """
-        self.ps.test_updates['name'] = 't1.34.003' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.003', '8208']
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-        self.student.find(By.LINK_TEXT, 'Sign up').click()
-        self.student.find(By.ID, 'twitter-login-button').click()
-        self.student.page.wait_for_page_load()
-        self.student.find(
-            By.ID, 'username_or_email').send_keys(self.twitter_account)
-        self.student.find(
-            By.ID, 'password').send_keys(self.twitter_password)
-        self.student.find(By.ID, 'allow').click()
-        self.student.page.wait_for_page_load()
-        self.student.find(
-            By.ID, 'signup_last_name').send_keys('last_name_004')
-        self.student.find(
-            By.ID, 'signup_email_address').send_keys('email_004@test.com')
-        username = self.student.find(
-            By.ID, 'signup_username').get_attribute('value')
-        self.student.find(By.ID, 'signup_i_agree').click()
-        self.student.find(
-            By.ID, 'create_account_submit').click()
-        self.student.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH,
-                 '//div[@id="session-info"]//a[text()="'+username+'"]')
-            )
-        )
-        # add password sign in, (and delete twitter so account can be reused)
-        self.student.find(
-            By.ID, 'enable-other-sign-in').click()
-        self.student.sleep(2)
-        self.student.find(
-            By.XPATH, '//div[@data-provider="identity"]//' +
-            'span[contains(@class,"add mod")]').click()
-        self.student.sleep(1)
-        self.student.find(
-            By.XPATH, '//input[@name="password"]'
-        ).send_keys(self.student.password)
-        self.student.find(
-            By.XPATH, '//input[@name="password_confirmation"]'
-        ).send_keys(self.student.password)
-        self.student.find(
-            By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
-        ).click()
-        self.student.sleep(1)
-        # delete login option
-        self.student.find(
-            By.XPATH,
-            '//div[contains(@class,"enabled-providers")]' +
-            '//div[@data-provider="twitter"]//span[contains(@class,"trash")]'
-        ).click()
-        self.student.find(
-            By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
-        ).click()
-
-        self.ps.test_updates['passed'] = True
+    # # Case C8210 - 004 - User | Create a new Account with Twitter
+    # @pytest.mark.skipif(str(8210) not in TESTS, reason='Excluded')
+    # def test_user_create_a_new_account_with_twitter_8210(self):
+    #     """Create a new Account with Twitter.
+    #
+    #     Steps:
+    #     Click on the Sign up link
+    #     Click on the Sign up with Twitter button
+    #     Enter email and password on twitter
+    #     Click login
+    #     Enter email and last name on signup page on openstax
+    #     Accept terms
+    #     Click button to create account
+    #
+    #     Expected Result:
+    #     User logged in and presented with their dashboard
+    #     """
+    #     self.ps.test_updates['name'] = 't1.34.003' \
+    #         + inspect.currentframe().f_code.co_name[4:]
+    #     self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.003', '8208']
+    #     self.ps.test_updates['passed'] = False
+    #
+    #     # Test steps and verification assertions
+    #     self.student.find(By.LINK_TEXT, 'Sign up').click()
+    #     self.student.find(By.ID, 'twitter-login-button').click()
+    #     self.student.page.wait_for_page_load()
+    #     self.student.find(
+    #         By.ID, 'username_or_email').send_keys(self.twitter_account)
+    #     self.student.find(
+    #         By.ID, 'password').send_keys(self.twitter_password)
+    #     self.student.find(By.ID, 'allow').click()
+    #     self.student.page.wait_for_page_load()
+    #     self.student.find(
+    #         By.ID, 'signup_last_name').send_keys('last_name_004')
+    #     self.student.find(
+    #         By.ID, 'signup_email_address').send_keys('email_004@test.com')
+    #     username = self.student.find(
+    #         By.ID, 'signup_username').get_attribute('value')
+    #     self.student.find(By.ID, 'signup_i_agree').click()
+    #     self.student.find(
+    #         By.ID, 'create_account_submit').click()
+    #     self.student.wait.until(
+    #         expect.visibility_of_element_located(
+    #             (By.XPATH,
+    #              '//div[@id="session-info"]//a[text()="'+username+'"]')
+    #         )
+    #     )
+    #     # add password sign in, (and delete twitter so account can be reused)
+    #     self.student.find(
+    #         By.ID, 'enable-other-sign-in').click()
+    #     self.student.sleep(2)
+    #     self.student.find(
+    #         By.XPATH, '//div[@data-provider="identity"]//' +
+    #         'span[contains(@class,"add mod")]').click()
+    #     self.student.sleep(1)
+    #     self.student.find(
+    #         By.XPATH, '//input[@name="password"]'
+    #     ).send_keys(self.student.password)
+    #     self.student.find(
+    #         By.XPATH, '//input[@name="password_confirmation"]'
+    #     ).send_keys(self.student.password)
+    #     self.student.find(
+    #         By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
+    #     ).click()
+    #     self.student.sleep(1)
+    #     # delete login option
+    #     self.student.find(
+    #         By.XPATH,
+    #         '//div[contains(@class,"enabled-providers")]' +
+    #         '//div[@data-provider="twitter"]//span[contains(@class,"trash")]'
+    #     ).click()
+    #     self.student.find(
+    #         By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
+    #     ).click()
+    #
+    #     self.ps.test_updates['passed'] = True
 
     # Case C8211 - 005 - User | Accept the terms of service
     @pytest.mark.skipif(str(8211) not in TESTS, reason='Excluded')
@@ -960,10 +960,10 @@ class TestAccountManagement(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8224 - 018 - User | Enable login with username and password
+    # Case C8224 - 018 - User | Enable login with a password
     @pytest.mark.skipif(str(8224) not in TESTS, reason='Excluded')
-    def test_user_enable_standard_login_with_username_and_password_8224(self):
-        """Enable standard login with username and password.
+    def test_user_enable_standard_login_with_a_password_8224(self):
+        """Enable standard login with a password.
 
         Steps:
         Login with something other than password
@@ -1149,57 +1149,57 @@ class TestAccountManagement(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8227 - 021 - User | Enable Twitter login
-    @pytest.mark.skipif(str(8227) not in TESTS, reason='Excluded')
-    def test_user_enable_twitter_login_8227(self):
-        """Enable Twitter login.
-
-        Steps:
-        Login with  password
-        Click enable other login options
-        Click the plus sign next to twitter
-        Enter email and password into input boxes
-        Click login
-
-        Expected Result:
-        Confirmation message displayed.
-        Twitter has been added to How you sign in list
-        """
-        self.ps.test_updates['name'] = 't1.34.021' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.021', '8227']
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-        self.student.login(url='http://accounts-qa.openstax.org')
-        self.student.find(
-            By.ID, 'enable-other-sign-in').click()
-        self.student.sleep(2)
-        self.student.find(
-            By.XPATH, '//div[@data-provider="twitter"]//' +
-            'span[contains(@class,"add mod")]').click()
-        self.student.page.wait_for_page_load()
-        self.student.find(
-            By.ID, 'username_or_email').send_keys(self.twitter_account)
-        self.student.find(
-            By.ID, 'password').send_keys(self.twitter_password)
-        self.student.find(By.ID, 'allow').click()
-        self.student.page.wait_for_page_load()
-        # check that it was added
-        self.student.find(
-            By.XPATH, '//div[contains(@class,"enabled-providers")]' +
-            '//div[@class="authentication" and @data-provider="twitter"]')
-        # delete login option
-        self.student.find(
-            By.XPATH,
-            '//div[contains(@class,"enabled-providers")]' +
-            '//div[@data-provider="twitter"]//span[contains(@class,"trash")]'
-        ).click()
-        self.student.find(
-            By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
-        ).click()
-
-        self.ps.test_updates['passed'] = True
+    # # Case C8227 - 021 - User | Enable Twitter login
+    # @pytest.mark.skipif(str(8227) not in TESTS, reason='Excluded')
+    # def test_user_enable_twitter_login_8227(self):
+    #     """Enable Twitter login.
+    #
+    #     Steps:
+    #     Login with  password
+    #     Click enable other login options
+    #     Click the plus sign next to twitter
+    #     Enter email and password into input boxes
+    #     Click login
+    #
+    #     Expected Result:
+    #     Confirmation message displayed.
+    #     Twitter has been added to How you sign in list
+    #     """
+    #     self.ps.test_updates['name'] = 't1.34.021' \
+    #         + inspect.currentframe().f_code.co_name[4:]
+    #     self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.021', '8227']
+    #     self.ps.test_updates['passed'] = False
+    #
+    #     # Test steps and verification assertions
+    #     self.student.login(url='http://accounts-qa.openstax.org')
+    #     self.student.find(
+    #         By.ID, 'enable-other-sign-in').click()
+    #     self.student.sleep(2)
+    #     self.student.find(
+    #         By.XPATH, '//div[@data-provider="twitter"]//' +
+    #         'span[contains(@class,"add mod")]').click()
+    #     self.student.page.wait_for_page_load()
+    #     self.student.find(
+    #         By.ID, 'username_or_email').send_keys(self.twitter_account)
+    #     self.student.find(
+    #         By.ID, 'password').send_keys(self.twitter_password)
+    #     self.student.find(By.ID, 'allow').click()
+    #     self.student.page.wait_for_page_load()
+    #     # check that it was added
+    #     self.student.find(
+    #         By.XPATH, '//div[contains(@class,"enabled-providers")]' +
+    #         '//div[@class="authentication" and @data-provider="twitter"]')
+    #     # delete login option
+    #     self.student.find(
+    #         By.XPATH,
+    #         '//div[contains(@class,"enabled-providers")]' +
+    #         '//div[@data-provider="twitter"]//span[contains(@class,"trash")]'
+    #     ).click()
+    #     self.student.find(
+    #         By.XPATH, '//div[@class="popover-content"]//button[text()="OK"]'
+    #     ).click()
+    #
+    #     self.ps.test_updates['passed'] = True
 
     # Case C8387 - 022 - User | Delete login option
     @pytest.mark.skipif(str(8387) not in TESTS, reason='Excluded')
