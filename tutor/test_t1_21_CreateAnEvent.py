@@ -29,14 +29,13 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8144
-        # 8117, 8118, 8119, 8120, 8121,
-        # 8122, 8123, 8124, 8125, 8126,
-        # 8127, 8128, 8129, 8130, 8131,
-        # 8132, 8133, 8134, 8135, 8136,
-        # 8137, 8138, 8139, 8140, 8141,
-        # 8142, 8143, 8144, 8145, 8146,
-        # 8147
+        8117, 8118, 8119, 8120, 8121,
+        8122, 8123, 8124, 8125, 8126,
+        8127, 8128, 8129, 8130, 8131,
+        8132, 8133, 8134, 8135, 8136,
+        8137, 8138, 8139, 8140, 8141,
+        8142, 8143, 8144, 8145, 8146,
+        8147, 111249
     ])
 )
 
@@ -2158,5 +2157,28 @@ class TestCreateAnEvent(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH, "//label[contains(text(), 'NEW" +
                 assignment_name + "')]")
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C111249 - 032 - Teacher | Add an event by dragging Add Event to a
+    # calendar date
+    @pytest.mark.skipif(str(111249) not in TESTS, reason='Excluded')
+    def test_teacher_add_an_event_by_dragging_add_event_to_a_cale_111249(self):
+        """Add an event by dragging Add Event to a calendar date.
+
+        Steps:
+        Click on the 'Add Assignment' menu
+        Click and Drag 'Add Event' to a chosen due date
+
+        Expected Result:
+        User is taken to 'Add Event' page with the date filled in.
+        """
+        self.ps.test_updates['name'] = 't1.21.032' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.21', 't1.21.032', '111249']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
