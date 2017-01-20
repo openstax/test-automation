@@ -30,14 +30,13 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8086,
-        # 8085, 8086, 8087, 8088, 8089,
-        # 8090, 8091, 8092, 8093, 8094,
-        # 8095, 8096, 8097, 8098, 8099,
-        # 8100, 8101, 8102, 8103, 8104,
-        # 8105, 8106, 8107, 8108, 8109,
-        # 8110, 8111, 8112, 8113, 8114,
-        # 8115, 8116
+        8085, 8086, 8087, 8088, 8089,
+        8090, 8091, 8092, 8093, 8094,
+        8095, 8096, 8097, 8098, 8099,
+        8100, 8101, 8102, 8103, 8104,
+        8105, 8106, 8107, 8108, 8109,
+        8110, 8111, 8112, 8113, 8114,
+        8115, 8116, 111248
     ])
 )
 
@@ -2461,5 +2460,28 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.find(
                 By.XPATH,
                 "//label[contains(text(), '" + assignment_name + "NEW')]")
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C111248 - 033 - Teacher | Add an external assignment by dragging Add
+    # External Assignment to calendar date
+    @pytest.mark.skipif(str(111248) not in TESTS, reason='Excluded')
+    def test_teacher_add_external_assignment_by_dragging_add_exte_111248(self):
+        """Add an external assignment by dragging to calendar date.
+
+        Steps:
+        Click on the Add Assignment Menu
+        Click and drag "Add External Assignment" to desired due date
+
+        Expected Result:
+        User taken to Add External Assignment page with due date filled in
+        """
+        self.ps.test_updates['name'] = 't1.14.033' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.033', '111248']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
