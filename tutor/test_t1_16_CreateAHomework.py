@@ -36,7 +36,7 @@ TESTS = os.getenv(
         8068, 8069, 8070, 8071, 8072,
         8073, 8074, 8075, 8076, 8077,
         8078, 8079, 8080, 8081, 8082,
-        8083, 8084
+        8083, 8084, 111247
     ])
 )
 
@@ -6411,7 +6411,7 @@ class TestCreateAHomework(unittest.TestCase):
         assert(deleted), 'Assignment not removed'
         self.ps.test_updates['passed'] = True
 
-    # Case C8084 - 057 - Teacher | Change the name, description, due dtaes,
+    # Case C8084 - 057 - Teacher | Change the name, description, due dates,
     # and feedback timing in an opened homework
     @pytest.mark.skipif(str(8084) not in TESTS, reason='Excluded')
     def test_teacher_change_name_descript_date_feedback_in_open_hw_8084(self):
@@ -6640,4 +6640,32 @@ class TestCreateAHomework(unittest.TestCase):
                 break
 
         assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
+
+    # Case C111247 - 058 - Teacher | Add a homework by dragging Add Homework
+    # to a calendar date
+    @pytest.mark.skipif(str(111247) not in TESTS, reason='Excluded')
+    def test_teacher_add_homework_by_dragging_add_homework_to_a_c_111247(self):
+        """Add a homework by dragging Add Homework to a calendar date.
+
+        Steps:
+        Click on the Add Assignment menu
+        Click and drag Add Homework to a chosen due date.
+
+        Expected Result:
+        User is taken to Add Homework Assignment page with due date filled in.
+        """
+        self.ps.test_updates['name'] = 't1.16.058' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.058',
+            '111247'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.ps.test_updates['passed'] = True
