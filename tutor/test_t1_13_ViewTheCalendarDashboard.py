@@ -38,7 +38,7 @@ TESTS = os.getenv(
     str([
         7978, 7979, 7980, 7981, 7982,
         7983, 7984, 7985, 7986, 7987,
-        7988, 7989, 7990, 7991
+        7988, 7989, 7990
     ])
 )
 
@@ -522,46 +522,46 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7991 - 014 - Teacher | CLick in the OpenStax logo to return to the
-    # dashboard
-    @pytest.mark.skipif(str(7991) not in TESTS, reason='Excluded')
-    def test_teacher_clicks_openstax_logo_to_return_to_dashboard_7991(self):
-        """CLick in the OpenStax logo to return to the dashboard.
-
-        Steps:
-        Click on the 'Performance Forecast' button
-        Click on the OpenStax logo in the header
-
-        Expected Result:
-        The teacher is presented with their calendar dashboard
-        """
-        self.ps.test_updates['name'] = 't1.13.014' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.014', '7991']
-        self.ps.test_updates['passed'] = False
-
-        self.teacher.logout()
-        teacher2 = Teacher(
-            username=os.getenv('TEACHER_USER_ONE_COURSE'),
-            password=os.getenv('TEACHER_PASSWORD'),
-            site='https://tutor-qa.openstax.org',
-            existing_driver=self.teacher.driver,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities,
-        )
-        print(teacher2.username)
-        print(teacher2.password)
-        teacher2.login()
-        self.teacher.open_user_menu()
-        self.teacher.driver.find_element(
-            By.LINK_TEXT,
-            'Performance Forecast'
-        ).click()
-        self.teacher.driver.find_element(
-            By.CLASS_NAME,
-            'ui-brand-logo'
-        ).click()
-        assert('course' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.ps.test_updates['passed'] = True
+    # # Case C7991 - 014 - Teacher | CLick in the OpenStax logo to return to the
+    # # dashboard
+    # @pytest.mark.skipif(str(7991) not in TESTS, reason='Excluded')
+    # def test_teacher_clicks_openstax_logo_to_return_to_dashboard_7991(self):
+    #     """CLick in the OpenStax logo to return to the dashboard.
+    #
+    #     Steps:
+    #     Click on the 'Performance Forecast' button
+    #     Click on the OpenStax logo in the header
+    #
+    #     Expected Result:
+    #     The teacher is presented with their calendar dashboard
+    #     """
+    #     self.ps.test_updates['name'] = 't1.13.014' \
+    #         + inspect.currentframe().f_code.co_name[4:]
+    #     self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.014', '7991']
+    #     self.ps.test_updates['passed'] = False
+    #
+    #     self.teacher.logout()
+    #     teacher2 = Teacher(
+    #         username=os.getenv('TEACHER_USER_ONE_COURSE'),
+    #         password=os.getenv('TEACHER_PASSWORD'),
+    #         site='https://tutor-qa.openstax.org',
+    #         existing_driver=self.teacher.driver,
+    #         pasta_user=self.ps,
+    #         capabilities=self.desired_capabilities,
+    #     )
+    #     print(teacher2.username)
+    #     print(teacher2.password)
+    #     teacher2.login()
+    #     self.teacher.open_user_menu()
+    #     self.teacher.driver.find_element(
+    #         By.LINK_TEXT,
+    #         'Performance Forecast'
+    #     ).click()
+    #     self.teacher.driver.find_element(
+    #         By.CLASS_NAME,
+    #         'ui-brand-logo'
+    #     ).click()
+    #     assert('course' in self.teacher.current_url()), \
+    #         'Not viewing the calendar dashboard'
+    #
+    #     self.ps.test_updates['passed'] = True
