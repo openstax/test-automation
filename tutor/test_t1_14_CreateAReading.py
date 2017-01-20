@@ -35,7 +35,7 @@ TESTS = os.getenv(
         8012, 8013, 8014, 8015, 8016,
         8017, 8018, 8019, 8020, 8021,
         8022, 8023, 8024, 8025, 8026,
-        8027
+        8027, 111246
     ])
     # 7993 - calendar date still not working
 )
@@ -3046,5 +3046,28 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//button[contains(@class,"footer-instructions")]'
         ).click()
         self.teacher.find(By.ID, 'plan-footer-popover')
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C111246 - 004 - Teacher | Add reading by dragging Add Reading to
+    # calendar date
+    @pytest.mark.skipif(str(111246) not in TESTS, reason='Excluded')
+    def test_teacher_add_reading_by_dragging_add_reading_to_calen_111246(self):
+        """Add reading by dragging Add Reading to calendar date.
+
+        Steps:
+        Click on the Add Assignment Menu
+        Click and drag "Add Reading" to desired due date
+
+        Expected Result:
+        User taken to Add Reading page with due date filled in
+        """
+        self.ps.test_updates['name'] = 't1.14.037' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.037', '111246']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
