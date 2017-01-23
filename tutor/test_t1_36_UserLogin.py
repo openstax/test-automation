@@ -15,18 +15,18 @@ basic_test_env = json.dumps([
     {
         'platform': 'Windows 10',
         'browserName': 'chrome',
-        'version': '50.0',
+        'version': 'latest',
         'screenResolution': "1024x768",
     },
 ])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
         8238, 8239, 8240, 8241, 8242,
-        8243, 8244, 8245, 58271, 8246,
-        58272, 96962, 96963, 96964, 96965,
-        96966, 96967
+        8243, 8244, 8245, 8246, 58271,
+        58272
     ])
 )
 
@@ -39,36 +39,54 @@ class TestUserLogin(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.admin = Admin(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.content = ContentQA(
-            existing_driver=self.admin.driver,
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.student = Student(
-            existing_driver=self.admin.driver,
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.teacher = Teacher(
-            existing_driver=self.admin.driver,
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.admin = Admin(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.content = ContentQA(
+                existing_driver=self.admin.driver,
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.student = Student(
+                existing_driver=self.admin.driver,
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.teacher = Teacher(
+                existing_driver=self.admin.driver,
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.admin = Admin(
+                use_env_vars=True,
+            )
+            self.content = ContentQA(
+                existing_driver=self.admin.driver,
+                use_env_vars=True,
+            )
+            self.student = Student(
+                existing_driver=self.admin.driver,
+                use_env_vars=True,
+            )
+            self.teacher = Teacher(
+                existing_driver=self.admin.driver,
+                use_env_vars=True,
+            )
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.admin.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.admin.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             self.teacher = None
             self.student = None
@@ -81,12 +99,10 @@ class TestUserLogin(unittest.TestCase):
     @pytest.mark.skipif(str(8238) not in TESTS, reason='Excluded')
     def test_admin_log_into_tutor_8238(self):
         """Log into Tutor.
-
         Steps:
         Click on the 'Login' button
         Enter the admin account in the username and password text boxes
         Click on the 'Sign in' button
-
         Expected Result:
         User is logged in
         """
@@ -135,14 +151,12 @@ class TestUserLogin(unittest.TestCase):
     @pytest.mark.skipif(str(8239) not in TESTS, reason='Excluded')
     def test_admin_access_the_admin_console_8239(self):
         """Access the Admin console.
-
         Steps:
         Click on the 'Login' button
         Enter the admin account in the username and password text boxes
         Click on the 'Sign in' button
         Click on the user menu
         Click on the Admin option
-
         Expected Result:
         User is presented with the admin console
         """
@@ -169,14 +183,12 @@ class TestUserLogin(unittest.TestCase):
     @pytest.mark.skipif(str(8240) not in TESTS, reason='Excluded')
     def test_admin_log_out_8240(self):
         """Log out.
-
         Steps:
         Click on the 'Login' button
         Enter the admin account in the username and password text boxes
         Click on the 'Sign in' button
         Click on the user menu
         Click on the Log out option
-
         Expected Result:
         The User is signed out
         """
@@ -202,12 +214,10 @@ class TestUserLogin(unittest.TestCase):
     @pytest.mark.skipif(str(8241) not in TESTS, reason='Excluded')
     def test_content_analyst_log_into_tutor_8241(self):
         """Log into Tutor.
-
         Steps:
         Click on the 'Login' button
         Enter the content analyst account in the username and password boxes
         Click on the 'Sign in' button
-
         Expected Result:
         The user is signed in
         """
@@ -258,14 +268,12 @@ class TestUserLogin(unittest.TestCase):
     @pytest.mark.skipif(str(8242) not in TESTS, reason='Excluded')
     def test_content_analyst_access_the_qa_viewer_8242(self):
         """Access the QA Viewer.
-
         Steps:
         Click on the 'Login' button
         Enter the content analyst account in the username and password boxes
         Click on the 'Sign in' button
         Click on the user menu
         Click on the QA Content option
-
         Expected Result:
         The user is presented with the QA viewer
         """
@@ -292,14 +300,12 @@ class TestUserLogin(unittest.TestCase):
     @pytest.mark.skipif(str(8243) not in TESTS, reason='Excluded')
     def test_content_analyst_access_the_content_analyst_console_8243(self):
         """Access the Content Annalyst Console.
-
         Steps:
         Click on the 'Login' button
         Enter the content analyst account in the username and password boxes
         Click on the 'Sign in' button
         Click on the user menu
         Click on the Content Analyst option
-
         Expected Result:
         The user is presented with the Content Analyst Console
         """
@@ -328,14 +334,12 @@ class TestUserLogin(unittest.TestCase):
     @pytest.mark.skipif(str(8244) not in TESTS, reason='Excluded')
     def test_content_analyst_log_out_8244(self):
         """Log out.
-
         Steps:
         Click on the 'Login' button
         Enter the content analyst account in the username and password boxes
         Click on the 'Sign in' button
         Click on the user menu
         Click on the Log out option
-
         Expected Result:
         The user is logged out
         """
@@ -363,12 +367,10 @@ class TestUserLogin(unittest.TestCase):
     @pytest.mark.skipif(str(8245) not in TESTS, reason='Excluded')
     def test_student_log_into_tutor_8245(self):
         """Log into Tutor.
-
         Steps:
         Click on the 'Login' button
         Enter the student account in the username and password text boxes
         Click on the 'Sign in' button
-
         Expected Result:
         The user is logged in
         """
@@ -419,12 +421,10 @@ class TestUserLogin(unittest.TestCase):
     @pytest.mark.skipif(str(8246) not in TESTS, reason='Excluded')
     def test_teacher_log_into_tutor_8246(self):
         """Log into Tutor.
-
         Steps:
         Click on the 'Login' button
         Enter the teacher account in the username and password text boxes
         Click on the 'Sign in' button
-
         Expected Result:
         The user is logged in
         """
@@ -475,14 +475,12 @@ class TestUserLogin(unittest.TestCase):
     @pytest.mark.skipif(str(58271) not in TESTS, reason='Excluded')
     def test_content_analyst_log_out_58271(self):
         """Log out.
-
         Steps:
         Click on the 'Login' button
         Enter the student account in the username and password boxes
         Click on the 'Sign in' button
         Click on the user menu
         Click on the Log out option
-
         Expected Result:
         The user is logged out
         """
@@ -510,14 +508,12 @@ class TestUserLogin(unittest.TestCase):
     @pytest.mark.skipif(str(58272) not in TESTS, reason='Excluded')
     def test_teacher_log_out_58272(self):
         """Log out.
-
         Steps:
         Click on the 'Login' button
         Enter the teacher account in the username and password boxes
         Click on the 'Sign in' button
         Click on the user menu
         Click on the Log out option
-
         Expected Result:
         The user is logged out
         """
@@ -538,134 +534,5 @@ class TestUserLogin(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"tutor-home")]'
         )
-
-        self.ps.test_updates['passed'] = True
-
-    # Case C96962 - 012 - Content Reviewer | Log into Exercises
-    @pytest.mark.skipif(str(96962) not in TESTS, reason='Excluded')
-    def test_content_reviewer_log_into_exercises_96962(self):
-        """Log into Exercises.
-
-        Steps:
-        Go to https://exercises-qa.openstax.org/
-        Click "SIGN IN"
-        Enter [content] into "Email or username" text box
-        Click "Next"
-        Enter [staxly16] into "password" text box
-        Click "Login"
-
-        Expected Result:
-        User is logged in
-        """
-        self.ps.test_updates['name'] = 't1.36.012' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.012', '96962']
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
-        self.ps.test_updates['passed'] = True
-
-    # Case C96963 - 013 - Content Reviewer | Access Reviewer Display
-    @pytest.mark.skipif(str(96963) not in TESTS, reason='Excluded')
-    def test_content_reviewer_access_reviewer_display_96963(self):
-        """Access Reviewer Display.
-
-        Steps:
-
-        Expected Result:
-        """
-        self.ps.test_updates['name'] = 't1.36.013' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.013', '96963']
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
-        self.ps.test_updates['passed'] = True
-
-    # Case C96964 - 014 - Content Reviewer | Log out
-    @pytest.mark.skipif(str(96964) not in TESTS, reason='Excluded')
-    def test_content_reviewer_log_out_96964(self):
-        """Log out.
-
-        Steps:
-        go to https://exercises-qa.openstax.org/
-        Click "SIGN IN"
-        Enter [content] into "Email or username" text box
-        Click "Next"
-        Enter [staxly16] into "password" text box
-        Click "Login"
-        Click "SIGN OUT"
-
-        Expected Result:
-        User is logged out.
-        """
-        self.ps.test_updates['name'] = 't1.36.014' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.014', '96964']
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
-        self.ps.test_updates['passed'] = True
-
-    # Case C96965 - 015 - Content Editor | Log into Exercises
-    @pytest.mark.skipif(str(96965) not in TESTS, reason='Excluded')
-    def test_content_editor_log_into_exercises_96965(self):
-        """Log into Exercises.
-
-        Steps:
-
-        Expected Result:
-        """
-        self.ps.test_updates['name'] = 't1.36.015' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.015', '96965']
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
-        self.ps.test_updates['passed'] = True
-
-    # Case C96962 - 016 - Content Editor | Access the Exercise Editor
-    @pytest.mark.skipif(str(96966) not in TESTS, reason='Excluded')
-    def test_content_editor_access_the_exercise_editor_96966(self):
-        """Access the Exercise Editor.
-
-        Steps:
-
-        Expected Result:
-        """
-        self.ps.test_updates['name'] = 't1.36.016' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.016', '96966']
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
-        self.ps.test_updates['passed'] = True
-
-    # Case C96967 - 017 - Content Editor | Log out
-    @pytest.mark.skipif(str(96967) not in TESTS, reason='Excluded')
-    def test_content_editor_log_out_96967(self):
-        """Log out.
-
-        Steps:
-
-        Expected Result:
-        """
-        self.ps.test_updates['name'] = 't1.36.017' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.017', '96967']
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
