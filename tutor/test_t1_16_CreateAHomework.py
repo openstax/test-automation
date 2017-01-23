@@ -2069,7 +2069,7 @@ class TestCreateAHomework(unittest.TestCase):
         Click on published assignment that hasn't yet been opened for students
         Click on the 'Edit Assignment' button
         Click on the 'Delete Assignment' button
-        Click 'OK' on the dialog box that pops up
+        Click 'Yes' on the dialog box that pops up
 
         Expected Result:
         The teacher is returned to the dashboard and the assignment is removed
@@ -2212,17 +2212,20 @@ class TestCreateAHomework(unittest.TestCase):
         assert(deleted), 'Assignment not removed'
         self.ps.test_updates['passed'] = True
 
-    # Case C8046 - 019 - Teacher | Attempt to delete an open homework
+    # Case C8046 - 019 - Teacher | Delete an open homework
     @pytest.mark.skipif(str(8046) not in TESTS, reason='Excluded')
-    def test_teacher_attempt_to_delete_an_open_homework_8046(self):
-        """Attempt to delete an open homework.
+    def test_teacher_delete_an_open_homework_8046(self):
+        """ Delete an open homework.
 
         Steps:
-        Click on an assignment on the calendar that is open for student to work
+        Click on published assignment that has been opened for students
         Click on the 'Edit Assignment' button
+        Click on the 'Delete Assignment' button
+        Click 'Yes' on the dialog box that pops up
 
         Expected Result:
-        The 'Delete Assignment' button should not appear on the page.
+        The teacher is returned to the dashboard and the assignment is removed
+        from the calendar.
         """
         self.ps.test_updates['name'] = 't1.16.019' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -2377,7 +2380,7 @@ class TestCreateAHomework(unittest.TestCase):
         Steps:
         Click on a draft assignment on the calendar
         Click on the 'Delete Assignment' button
-        Click OK on the dialog box that appears
+        Click 'Yes' on the dialog box that appears
 
         Expected Result:
         The teacher is returned to the dashboard and the draft assignment is

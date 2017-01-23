@@ -75,11 +75,11 @@ class TestCreateAReading(unittest.TestCase):
         """Add a reading using the Add Assignment drop down menu.
 
         Steps:
-        Click on the 'Add Assignment' drop down menu
+        Click on the 'Add Assignment' menu
         Click on the 'Add Reading' option
 
         Expected Result:
-        Takes user add reading screen
+        Takes user to Add Reading screen
         """
         self.ps.test_updates['name'] = 't1.14.001' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -110,7 +110,7 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Add Reading' option
 
         Expected Result:
-        Takes user add reading screen
+        Takes user to Add Reading screen
         """
         self.ps.test_updates['name'] = 't1.14.002' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -160,7 +160,7 @@ class TestCreateAReading(unittest.TestCase):
         """Set open and due dates for all periods collectively.
 
         Steps:
-        Click on the 'Add Assignment' drop down menu
+        Click on the 'Add Assignment' menu
         Click on the 'Add Reading' option
         Enter an assignment name into the Assignment name text box
         Enter an assignment description into the Assignment description textbox
@@ -528,8 +528,8 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Add Reading' option
         Enter an assignment name into the Assignment name text box
         Enter an assignment description into the Assignment description textbox
-        Enter into Open Date text field date as MM/DD/YYYY
-        Enter into Due Date text field date as MM/DD/YYYY
+        Click on the Open Date field and click on an date on calendar element
+        Click on the Due Date field and click on a date on calendar element
         Click on the "+ Add Readings" button
         Click on section(s) to add to assignment
         Scroll to bottom
@@ -1249,7 +1249,7 @@ class TestCreateAReading(unittest.TestCase):
         On the calendar click on a reading that is unopened
         Click on the 'Edit Assignment' button
         Click on the 'Delete Assignment' button
-        Click on the "ok" button
+        Click on the "Yes" button
 
         Expected Result:
         Takes user back to calendar dashboard.
@@ -1332,11 +1332,14 @@ class TestCreateAReading(unittest.TestCase):
         """Delete an open reading.
 
         Steps:
-        On the calendar click on an open reading
-        Click on the 'View Assignment' button
+        On the calendar click on a reading that is opened
+        Click on the 'Edit Assignment' button
+        Click on the 'Delete Assignment' button
+        Click on the "Yes" button
 
         Expected Result:
-        No "Delete Assignment" button found.
+        Takes user back to calendar dashboard.
+        Chosen assignment no longer appears on teacher calendar dashboard.
         """
         self.ps.test_updates['name'] = 't1.14.019' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1417,7 +1420,7 @@ class TestCreateAReading(unittest.TestCase):
         Steps:
         On the calendar click on a draft
         Click on the 'Delete Assignment' button
-        Click on the 'ok' button
+        Click on the 'Yes' button
 
         Expected Result:
         Takes user back to calendar dashboard.
@@ -1495,7 +1498,7 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Add Reading' option
         Enter an assignment name into the Assignment name text box
         Enter an assignment description into the Assignment description box
-        Enter into Due Date text field date as MM/DD/YYYY
+        Click on the Due Date field and click on a date on calendar element
         Click on the 'Publish' button
 
         Expected Result:
@@ -1756,8 +1759,8 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Add Assignment' drop down menu
         Click on the 'Add Reading' option
         Enter an assignment name into the Assignment name text box
-        [optional] Enter into Open Date text field date as MM/DD/YYYY
-        Enter into Due Date text field date as MM/DD/YYYY
+        Click on the Open Date field and click on an date on calendar element
+        Click on the Due Date field and click on a date on calendar element
         Click on the "+ Add Readings" button
         Click on section(s) to add to assignment
         scroll to bottom
@@ -2018,7 +2021,7 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Add Assignment' drop down menu
         Click on the 'Add Reading' option
         Enter an assignment name into the Assignment name text box
-        Enter into Due Date text field date as MM/DD/YYYY
+        Click on the Due Date field and click on a date on calendar element
         Click on the '+ Add More Readings' button
         Click on a chapter heading (not the check box)
         Click on a single section within that chapter
@@ -2123,7 +2126,7 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Add Assignment' drop down menu
         Click on the 'Add Reading' option
         Enter an assignment name into the Assignment name text box
-        Enter into Due Date text field date as MM/DD/YYYY
+        Click on the Due Date field and click on a date on calendar element
         Click on the '+ Add More Readings' button
         Click on a chapter checkbox
         Scroll to the bottom
@@ -2467,8 +2470,8 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Add Reading' option
         Enter an assignment name into the Assignment name text box
         Enter an assignment description into the Assignment description box
-        Enter into Open Date text field date as MM/DD/YYYY
-        Enter into Due Date text field date as MM/DD/YYYY
+        Click on the Open Date field and click on an date on calendar element
+        Click on the Due Date field and click on a date on calendar element
         Click on the "+ Add Readings" button
         Click on sections to add to assignment
         Scroll to bottom
@@ -2662,8 +2665,8 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Edit' option
         Enter a new assignment name into the Assignment name text box
         Enter a new assignment description into the Assignment description box
-        Enter into Open Date text field a new date as MM/DD/YYYY
-        Enter into Due Date text field a new date as MM/DD/YYYY
+        Click on the Open Date field and click on an date on calendar element
+        Click on the Due Date field and click on a date on calendar element
         Remove a section from the readings
         Click the 'Publish' button
 
@@ -2768,8 +2771,8 @@ class TestCreateAReading(unittest.TestCase):
         Click on an existing draft reading on the calendar
         Enter a new assignment name into the Assignment name text box
         Enter a new assignment description into the Assignment description box
-        Enter into Open Date text field a new date as MM/DD/YYYY
-        Enter into Due Date text field a new date as MM/DD/YYYY
+        Click on the Open Date field and click on an date on calendar element
+        Click on the Due Date field and click on a date on calendar element
         Click on the x next to a selected section
         Click the 'Save As Draft' button
 
@@ -2873,7 +2876,7 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Edit' option
         Enter a new assignment name into the Assignment name text box
         Enter a new assignment description into the Assignment description box
-        Enter into Due Date text field a new date as MM/DD/YYYY
+        Click on the Due Date field and click on a date on calendar element
         Click the 'Publish' button
 
         Expected Result:

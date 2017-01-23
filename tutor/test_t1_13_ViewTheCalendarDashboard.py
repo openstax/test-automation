@@ -522,8 +522,8 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # # Case C7991 - 014 - Teacher | CLick in the OpenStax logo to return to the
-    # # dashboard
+    # # Case C7991 - 014 - Teacher | CLick in the OpenStax logo to return to
+    # # the dashboard
     # @pytest.mark.skipif(str(7991) not in TESTS, reason='Excluded')
     # def test_teacher_clicks_openstax_logo_to_return_to_dashboard_7991(self):
     #     """CLick in the OpenStax logo to return to the dashboard.
