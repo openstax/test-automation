@@ -30,7 +30,9 @@ TESTS = os.getenv(
         8341, 8342, 8343, 8344, 8345,
         8346, 8347, 8348, 8349, 8350,
         8351, 8352, 8353, 8354, 8355,
-        8356, 8357, 8358, 8359, 8360
+        8356, 8357, 8358, 8359, 8360,
+        100135, 100136, 100137, 100138, 100139,
+        100140
     ])
 )
 
@@ -1427,5 +1429,119 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
 
         assert('stats/courses' in self.admin.current_url()), \
             'Not on stats page'
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C100135 - 021 - Admin | Set the course scholastic year
+    @pytest.mark.skipif(str(100135) not in TESTS, reason='Excluded')
+    def test_admin_set_the_course_scholastic_year_100135(self):
+        """Set the course scholastic year.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.59.021' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.59', 't1.59.021', '100135']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C100136 - 022 - Admin | Set the number of sections
+    @pytest.mark.skipif(str(100136) not in TESTS, reason='Excluded')
+    def test_admin_set_the_number_of_sections_100136(self):
+        """Set the number of sections.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.59.022' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.59', 't1.59.022', '100136']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C100137 - 023 - Admin | Set the course start date and time
+    @pytest.mark.skipif(str(100137) not in TESTS, reason='Excluded')
+    def test_admin_set_the_course_start_date_and_time_100137(self):
+        """Set the course start date and time.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.59.023' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.59', 't1.59.023', '100137']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C100138 - 024 - Admin | Set the course end date and time
+    @pytest.mark.skipif(str(100138) not in TESTS, reason='Excluded')
+    def test_admin_set_the_course_end_date_and_time_100138(self):
+        """Set the course end date and time.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.59.024' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.59', 't1.59.024', '100138']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C100139 - 025 - Admin | Set the course offering
+    @pytest.mark.skipif(str(100139) not in TESTS, reason='Excluded')
+    def test_admin_set_the_course_offering_100139(self):
+        """Set the course offering.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.59.025' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.59', 't1.59.025', '100139']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C100140 - 026 - Admin | Set the course appearance code
+    @pytest.mark.skipif(str(100140) not in TESTS, reason='Excluded')
+    def test_admin_set_the_course_appearance_code_100140(self):
+        """Set the course appearance code.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.59.026' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.59', 't1.59.026', '100140']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
