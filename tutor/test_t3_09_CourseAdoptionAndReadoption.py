@@ -38,7 +38,7 @@ TESTS = os.getenv(
 
 
 @PastaDecorator.on_platforms(BROWSERS)
-class TestCreateAReading(unittest.TestCase):
+class TestCourseAdoptionAndReadoption(unittest.TestCase):
     """T3.09 - Course Adoption and Readoption."""
 
     def setUp(self):
