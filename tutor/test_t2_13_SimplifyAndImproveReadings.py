@@ -217,8 +217,13 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         reading assignment.
 
         Steps:
+        Login as a student
+        Click on a tutor course
+        Click on a reading assignment
+        Continue to work through reading assignment
 
         Expected Result:
+        At the start of each new section, the section number is displayed
         """
         self.ps.test_updates['name'] = 't2.08.004' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -237,8 +242,13 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         """Section numbers listed at the top of each section in reference view.
 
         Steps:
+        Login as teacher
+        Click on a tutor course
+        Click "Browse the Book" or select "Browse the Book" from the user menu
+        Select a section from the contents
 
         Expected Result:
+        Section number listed in header
         """
         self.ps.test_updates['name'] = 't2.08.005' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -257,8 +267,13 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         """Section numbers listed at the top of each section in reference view.
 
         Steps:
+        Login as student
+        Click on a tutor course
+        Click "Browse the Book" or select "Browse the Book" from the user menu
+        Select a section from the contents
 
         Expected Result:
+        Section number listed in header
         """
         self.ps.test_updates['name'] = 't2.08.006' \
             + inspect.currentframe().f_code.co_name[4:]
