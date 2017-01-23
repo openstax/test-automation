@@ -39,7 +39,7 @@ TESTS = os.getenv(
 
 @PastaDecorator.on_platforms(BROWSERS)
 class TestCreateAReading(unittest.TestCase):
-    """T1.14 - Create a Reading."""
+    """T3.09 - Course Adoption and Readoption."""
 
     def setUp(self):
         """Pretest settings."""
@@ -50,8 +50,6 @@ class TestCreateAReading(unittest.TestCase):
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
-        self.teacher.login()
-        self.teacher.select_course(appearance='biology')
 
     def tearDown(self):
         """Test destructor."""
