@@ -25,8 +25,9 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         8238, 8239, 8240, 8241, 8242,
-        8243, 8244, 8245, 8246, 58271,
-        58272
+        8243, 8244, 8245, 58271, 8246,
+        58272, 96962, 96963, 96964, 96965,
+        96966, 96967
     ])
 )
 
@@ -556,5 +557,134 @@ class TestUserLogin(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"tutor-home")]'
         )
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C96962 - 012 - Content Reviewer | Log into Exercises
+    @pytest.mark.skipif(str(96962) not in TESTS, reason='Excluded')
+    def test_content_reviewer_log_into_exercises_96962(self):
+        """Log into Exercises.
+
+        Steps:
+        Go to https://exercises-qa.openstax.org/
+        Click "SIGN IN"
+        Enter [content] into "Email or username" text box
+        Click "Next"
+        Enter [staxly16] into "password" text box
+        Click "Login"
+
+        Expected Result:
+        User is logged in
+        """
+        self.ps.test_updates['name'] = 't1.36.012' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.012', '96962']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C96963 - 013 - Content Reviewer | Access Reviewer Display
+    @pytest.mark.skipif(str(96963) not in TESTS, reason='Excluded')
+    def test_content_reviewer_access_reviewer_display_96963(self):
+        """Access Reviewer Display.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.36.013' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.013', '96963']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C96964 - 014 - Content Reviewer | Log out
+    @pytest.mark.skipif(str(96964) not in TESTS, reason='Excluded')
+    def test_content_reviewer_log_out_96964(self):
+        """Log out.
+
+        Steps:
+        go to https://exercises-qa.openstax.org/
+        Click "SIGN IN"
+        Enter [content] into "Email or username" text box
+        Click "Next"
+        Enter [staxly16] into "password" text box
+        Click "Login"
+        Click "SIGN OUT"
+
+        Expected Result:
+        User is logged out.
+        """
+        self.ps.test_updates['name'] = 't1.36.014' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.014', '96964']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C96965 - 015 - Content Editor | Log into Exercises
+    @pytest.mark.skipif(str(96965) not in TESTS, reason='Excluded')
+    def test_content_editor_log_into_exercises_96965(self):
+        """Log into Exercises.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.36.015' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.015', '96965']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C96962 - 016 - Content Editor | Access the Exercise Editor
+    @pytest.mark.skipif(str(96966) not in TESTS, reason='Excluded')
+    def test_content_editor_access_the_exercise_editor_96966(self):
+        """Access the Exercise Editor.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.36.016' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.016', '96966']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C96967 - 017 - Content Editor | Log out
+    @pytest.mark.skipif(str(96967) not in TESTS, reason='Excluded')
+    def test_content_editor_log_out_96967(self):
+        """Log out.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.36.017' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.017', '96967']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
