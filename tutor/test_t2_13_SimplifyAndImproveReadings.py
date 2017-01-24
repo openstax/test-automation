@@ -28,7 +28,8 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14745, 14746
+        14745, 14746, 85291, 100126, 100127,
+        100128
     ])
 )
 
@@ -181,5 +182,106 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
             cards[card].click()
         # Issue: section titles are not in the content
         preview
+
+        self.ps.test_updates['passed'] = True
+
+    # C85291 - 003 - Student | Reading Review card appears before the first
+    # spaced practice question
+    @pytest.mark.skipif(str(85291) not in TESTS, reason='Excluded')
+    def test_student_reading_review_card_appears_before_first_spac_85291(self):
+        """Reading Review card appears before first spaced practice question.
+
+        Steps:
+        Login as student
+        Work the reading assignment
+        After completing reading the sections you get a spaced practice problem
+
+        Expected Result:
+        The reading review card should appear before the first spaced practice
+            question
+        """
+        self.ps.test_updates['name'] = 't2.08.003' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.08', 't2.08.003', '85291']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # C100126 - 004 - Student | Section number is seen at the beginning of each
+    # new section in a reading assignment
+    @pytest.mark.skipif(str(100126) not in TESTS, reason='Excluded')
+    def test_student_section_number_is_seen_st_the_beginning_of_e_100126(self):
+        """Section number is seen at the beginning of each new section in a
+        reading assignment.
+
+        Steps:
+        Login as a student
+        Click on a tutor course
+        Click on a reading assignment
+        Continue to work through reading assignment
+
+        Expected Result:
+        At the start of each new section, the section number is displayed
+        """
+        self.ps.test_updates['name'] = 't2.08.004' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.08', 't2.08.004', '100126']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # C100127 - 005 - Teacher | Section numbers are listed at the top of each
+    # section in reference view
+    @pytest.mark.skipif(str(100127) not in TESTS, reason='Excluded')
+    def test_student_section_numbers_listed_at_the_top_of_each_se_100127(self):
+        """Section numbers listed at the top of each section in reference view.
+
+        Steps:
+        Login as teacher
+        Click on a tutor course
+        Click "Browse the Book" or select "Browse the Book" from the user menu
+        Select a section from the contents
+
+        Expected Result:
+        Section number listed in header
+        """
+        self.ps.test_updates['name'] = 't2.08.005' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.08', 't2.08.005', '100127']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # C100128 - 006 - Student | Section numbers are listed at the top of each
+    # section in reference view
+    @pytest.mark.skipif(str(100128) not in TESTS, reason='Excluded')
+    def test_student_section_numbers_listed_at_the_top_of_each_se_100128(self):
+        """Section numbers listed at the top of each section in reference view.
+
+        Steps:
+        Login as student
+        Click on a tutor course
+        Click "Browse the Book" or select "Browse the Book" from the user menu
+        Select a section from the contents
+
+        Expected Result:
+        Section number listed in header
+        """
+        self.ps.test_updates['name'] = 't2.08.006' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.08', 't2.08.006', '100128']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
