@@ -27,7 +27,7 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         14851, 14852, 14855, 14856, 14858,
-        14859
+        14859, 100129, 100130
     ])
 )
 
@@ -463,4 +463,52 @@ class TestIImproveQuestionManagement(unittest.TestCase):
         )
         self.teacher.find(
             By.XPATH, '//input[@value="' + exercise_id + '"]')
+        self.ps.test_updates['passed'] = True
+
+    # 100129 - 007 - Admin | View list of excluded assesments
+    @pytest.mark.skipif(str(100129) not in TESTS, reason='Excluded')
+    def test_admin_view_list_of_excluded_assesments_100129(self):
+        """View list of excluded assesments.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 'cc2.11.007' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.11',
+            'cc2.11.007',
+            '100129'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 100130 - 008 - Admin | Export the list of excluded assesments to CSV
+    @pytest.mark.skipif(str(100130) not in TESTS, reason='Excluded')
+    def test_admin_export_the_list_of_excluded_assesments_to_csv_100130(self):
+        """Export the list of excluded assesments to CSV.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 'cc2.11.008' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.11',
+            'cc2.11.008',
+            '100130'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.ps.test_updates['passed'] = True
