@@ -24,7 +24,9 @@ basic_test_env = json.dumps([{
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
-    str([7732, 7733, 7735, 7736, 7737])  # NOQA
+    str([
+        7732, 7733, 7735, 7737
+    ])
 )
 
 
@@ -384,6 +386,7 @@ class TestStudentProgressViews(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7736 - 004 - Student | Return to current position in an assignment
     @pytest.mark.skipif(str(7736) not in TESTS, reason='Excluded')  # NOQA
     def test_student_return_to_current_position_in_an_assignment_7736(self):
@@ -404,13 +407,24 @@ class TestStudentProgressViews(unittest.TestCase):
         Click "Close" in the right corner of the header
         Click "Launch Concept Coach"
 
-
         Expected Result:
-
         The user is presented with their current position in the assignment
-
         """
+        self.ps.test_updates['name'] = 'cc1.09.005' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.09',
+            'cc1.09.005',
+            '7737'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+    '''
 
     # Case C7737 - 005 - Student | Able to review previous modules
     @pytest.mark.skipif(str(7737) not in TESTS, reason='Excluded')  # NOQA
