@@ -101,7 +101,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
         assert('external/new' in self.teacher.current_url()),\
-            'not at Add External Assignemnt page'
+            'not at Add External Assignment page'
 
         self.ps.test_updates['passed'] = True
 
@@ -188,7 +188,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
-            send_keys('external assignemnt description')
+            send_keys('external assignment description')
         # set date
         self.teacher.find(By.ID, 'hide-periods-radio').click()
         today = datetime.date.today()
@@ -307,7 +307,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
-            send_keys('external assignemnt description')
+            send_keys('external assignment description')
 
         # assign to periods individually
         self.teacher.find(By.ID, 'show-periods-radio').click()
@@ -321,8 +321,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 today + datetime.timedelta(days=len(periods) + 5)
             ).strftime('%m/%d/%Y')
             element = self.teacher.find(
-                By.XPATH, '//div[contains(@class,"tasking-plan")]' +
-                '[' + str(x + 1) + ']' +
+                By.XPATH,
+                '//div[contains(@class,"tasking-plan")][%s]' % (x + 1) +
                 '//div[contains(@class,"-due-date")]' +
                 '//div[contains(@class,"datepicker__input")]')
             self.teacher.driver.execute_script(
@@ -349,8 +349,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             ).click()
             self.teacher.sleep(0.5)
             self.teacher.find(
-                By.XPATH, '//div[contains(@class,"tasking-plan")]' +
-                '[' + str(x + 1) + ']' +
+                By.XPATH,
+                '//div[contains(@class,"tasking-plan")][%s]' % (x + 1) +
                 '//div[contains(@class,"-open-date")]' +
                 '//div[contains(@class,"datepicker__input")]').click()
             # get calendar to correct month
@@ -436,8 +436,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        print(opens_on)
-        print(closes_on)
+        print("open date: %s" % opens_on)
+        print("due date: %s" % closes_on)
         assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
         self.teacher.find(
@@ -817,7 +817,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        # create a draft external assignemnt
+        # create a draft external assignment
         assignment_name = "ext012_" + str(randint(0, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
@@ -893,7 +893,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        # create a draft external assignemnt
+        # create a draft external assignment
         assignment_name = "ext013_" + str(randint(0, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
@@ -1258,7 +1258,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 By.XPATH,
                 '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
-        # edit the assignemnt
+        # edit the assignment
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//a[contains(@class,"edit-assignment")]')
@@ -2076,8 +2076,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         """Info icon shows definitions for the status bar.
 
         Steps:
-        Create and publish an External Assignemnt
-        Click on the External Assignemnt
+        Create and publish an External Assignment
+        Click on the External Assignment
         Click on the info icon
 
         Expected Result:
