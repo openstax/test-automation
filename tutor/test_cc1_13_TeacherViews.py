@@ -29,7 +29,7 @@ TESTS = os.getenv(
     str([
         7609, 7610, 7611, 7612, 7613,
         7614, 7615, 7616, 7617, 7618,
-        7619, 7620, 7622, 7624
+        7619, 7620, 7622, 7624, 111251
     ])
 )
 
@@ -634,5 +634,30 @@ class TestTeacherViews(unittest.TestCase):
                 '//span[contains(@class,"openstax-breadcrumbs-")' +
                 'and contains(@data-reactid,"step-' + str(i) + '")]'
             ).click()
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C111251 - 015 - Teacher | Student score columns do not show a due
+    # date
+    @pytest.mark.skipif(str(111251) not in TESTS, reason='Excluded')
+    def test_teacher_student_score_columns_so_not_show_a_due_date_111251(self):
+        """Student score columns do not show a due date.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 'cc1.13.015' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.13',
+            'cc1.13.015',
+            '111251'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
