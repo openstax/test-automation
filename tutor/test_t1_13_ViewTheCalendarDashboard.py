@@ -8,32 +8,32 @@ import unittest
 import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint  # NOQA
+from random import randint
 from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 from staxing.helper import Teacher
+# from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.common.action_chains import ActionChains
+
 
 basic_test_env = json.dumps([
     {
         'platform': 'Windows 10',
         'browserName': 'chrome',
-        'version': '50.0',
+        'version': 'latest',
         'screenResolution': "1024x768",
-    },
-    # {
-    #     'platform': 'Windows 7',
-    #     'browserName': 'firefox',
-    #     'version': 'latest',
-    #     'screenResolution': '1024x768',
-    # },
+    }
 ])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
-    str([7978, 7879, 7980, 7981, 7982,
-         7983, 7984, 7985, 7986, 7987,
-         7988, 7989, 7990, 7991])
+    str([
+        7978, 7979, 7980, 7981, 7982,
+        7983, 7984, 7985, 7986, 7987,
+        7988, 7989, 7990, 7991
+    ])
 )
 
 
@@ -45,17 +45,26 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.teacher = Teacher(
+                use_env_vars=True
+            )
         self.teacher.login()
+        self.teacher.select_course(appearance='hs_physics')
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.teacher.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             self.teacher.delete()
         except:
@@ -77,8 +86,8 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.001', '7978']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
+        # self.teacher.select_course(title='HS Physics')
+        assert('course' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.ps.test_updates['passed'] = True
@@ -100,8 +109,8 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.002', '7979']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Student Score').click()
+        # self.teacher.select_course(title='HS Physics')
+        self.teacher.find(By.LINK_TEXT, 'Student Scores').click()
         assert('scores' in self.teacher.current_url()), \
             'Not viewing student scores'
 
@@ -119,30 +128,31 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         Expected Result:
         The teacher is presented with the student scores
-
         """
         self.ps.test_updates['name'] = 't1.13.003' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.003', '7980']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
+        # self.teacher.select_course(title='HS Physics')
         self.teacher.open_user_menu()
-        self.teacher.driver.find_element(By.CLASS_NAME, 'viewScores').click()
+        self.teacher.find(By.CLASS_NAME, 'viewScores'). \
+            find_element_by_tag_name('a'). \
+            click()
         assert('scores' in self.teacher.current_url()), \
             'Not viewing the student scores'
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7981 - 004 - Teacher | View performace forecast using the dashboard
-    # button
+    # Case C7981 - 004 - Teacher | View performance forecast using the
+    # dashboard button
     @pytest.mark.skipif(str(7981) not in TESTS, reason='Excluded')
-    def test_teacher_view_performace_forecast_using_the_dash_button_7981(self):
+    def test_teacher_view_performance_forecast_using_dash_button_7981(self):
         """View performance forecast using the dashboard button.
 
         Steps:
         If the user has more than one course, click on a Tutor course name
-        Click on the 'Performace Forecast' button on the dashboard
+        Click on the 'Performance Forecast' button on the dashboard
 
         Expected Result:
         The teacher is presented with the performance forecast
@@ -152,11 +162,8 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.004', '7981']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
-        self.teacher.driver.find_element(
-            By.LINK_TEXT,
-            'Performance Forecast'
-        ).click()
+        self.teacher.find(By.LINK_TEXT, 'Performance Forecast').click()
+        self.teacher.page.wait_for_page_load()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing the performance forecast'
 
@@ -165,7 +172,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
     # Case C7982 - 005 - Teacher | View performace forecast using
     # the user menu link
     @pytest.mark.skipif(str(7982) not in TESTS, reason='Excluded')
-    def test_teacher_view_performace_forecast_using_user_menu_link_7982(self):
+    def test_teacher_view_performance_forecast_using_user_menu_link_7982(self):
         """View performance forecast using the user menu link.
 
         Steps:
@@ -181,12 +188,12 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.005', '7982']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
+        # self.teacher.select_course(title='HS Physics')
         self.teacher.open_user_menu()
-        self.teacher.driver.find_element(
-            By.CLASS_NAME,
-            'viewTeacherPerformanceForecast'
+        self.teacher.find(
+            By.XPATH, '//a[@data-name="viewPerformanceGuide"]'
         ).click()
+        self.teacher.page.wait_for_page_load()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing the performance forecast'
 
@@ -210,43 +217,46 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.006', '7983']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
-        # create an assignemnt
-        assignment_name = 'reading-%s' % randint(999)
+        # self.teacher.select_course(appearance='physics')
+        # create an assignment
+        assignment_name = 'reading-%s' % randint(100, 999)
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=5)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(
             assignment='reading',
             args={
                 'title': assignment_name,
                 'description': 'description',
                 'periods': {'all': (begin, end)},
-                'reading_list': ['ch1'],
+                'reading_list': ['1.1'],
                 'status': 'publish',
             }
         )
-        # click on assignemnt
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[contains(text(), "%s")]' % assignment_name
+        # click on assignment
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, '//label[contains(text(), "%s")]' % assignment_name)
+            )
         ).click()
         # check that it opened
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//h2[contains(text(), "%s")]' % assignment_name
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 '//*[@class="modal-title" and ' +
+                 'contains(text(), "%s")]' % assignment_name)
+            )
         )
 
         self.ps.test_updates['passed'] = True
 
-    # #NOT DONE
     # Case C7984 - 007 - Teacher | View a homework assignment summary
     @pytest.mark.skipif(str(7984) not in TESTS, reason='Excluded')
     def test_teacher_view_a_homework_assignment_summary_7984(self):
         """View a homework assignment summary.
 
         Steps:
-        create a homework assignemtn
+        create a homework assignment
         If the user has more than one course, click on a Tutor course name
         Click on a homework assignment on the calendar
 
@@ -258,30 +268,37 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.007', '7984']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
+        # self.teacher.select_course(appearance='physics')
         # create an assignment
-        assignment_name = "homework-%s" % randint(999)
+        assignment_name = "homework-%s" % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=5)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(
             assignment='homework',
             args={
                 'title': assignment_name,
                 'description': 'description',
                 'periods': {'all': (begin, end)},
-                'problems': {'4.1': (4, 8), },
+                'problems': {'1.1': (2, 3), },
                 'status': 'publish',
+                'feedback': 'immediate'
             }
         )
-        # click on assignemnt
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[contains(text(), "%s")]' % assignment_name
-        ).click()  # should it be label not div
+        # click on assignment
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, '//label[contains(text(), "%s")]' % assignment_name)
+            )
+        ).click()
         # check that it opened
-        self.teacher.driver.find_element(
-            By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 '//*[@class="modal-title" and ' +
+                 'contains(text(), "%s")]' % assignment_name)
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # NOT DONE
@@ -302,11 +319,11 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.008', '7985']
         self.ps.test_updates['passed'] = False
 
-        # create an assignemnt
-        assignment_name = 'external-%s' % randint(999)
+        # create an assignment
+        assignment_name = 'external-%s' % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=5)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(
             assignment='external',
             args={
@@ -317,20 +334,23 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
                 'status': 'publish'
             }
         )
-        # click on assignemnt
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[contains(text(), "%s")]' % assignment_name
-        ).click()  # should it be label not div
+        # click on assignment
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, '//label[contains(text(), "%s")]' % assignment_name)
+            )
+        ).click()
         # check that it opened
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//h2[contains(text(), "%s")]' % assignment_name
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 '//*[@class="modal-title" and ' +
+                 'contains(text(), "%s")]' % assignment_name)
+            )
         )
 
         self.ps.test_updates['passed'] = True
 
-    # NOT DONE
     # Case C7986 - 009 - Teacher | View an event summary
     @pytest.mark.skipif(str(7986) not in TESTS, reason='Excluded')
     def test_teacher_view_an_event_summary_7986(self):
@@ -348,14 +368,14 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.009', '7986']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
+        # self.teacher.select_course(appearance='physics')
         # create an assignment
-        assignment_name = "homework-%s" % randint(999)
+        assignment_name = "homework-%s" % randint(100, 999)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=5)).strftime('%m/%d/%Y')
         self.teacher.add_assignment(
-            assignment='homework',
+            assignment='event',
             args={
                 'title': assignment_name,
                 'description': 'description',
@@ -363,14 +383,21 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
                 'status': 'publish'
             }
         )
-        # click on assignemnt
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[contains(text(), "%s")]' % assignment_name
-        ).click()  # should it be label not div
+        # click on assignment
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, '//label[contains(text(), "%s")]' % assignment_name)
+            )
+        ).click()
         # check that it opened
-        self.teacher.driver.find_element(
-            By.XPATH, '//h2[contains(text(), "%s")]' % assignment_name)
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 '//*[@class="modal-title" and ' +
+                 'contains(text(), "%s")]' % assignment_name)
+            )
+        )
+
         self.ps.test_updates['passed'] = True
 
     # Case C7987 - 010 - Teacher | Open the refrenece book using the dashboard
@@ -384,14 +411,14 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         Click on the 'Browse The Book'button
 
         Expected Result:
-        THe teacher is preseneted with the book in a new tab
+        The teacher is preseneted with the book in a new tab
         """
         self.ps.test_updates['name'] = 't1.13.010' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.010', '7987']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
+        # self.teacher.select_course(title='HS Physics')
         self.teacher.driver.find_element(
             By.LINK_TEXT,
             'Browse The Book'
@@ -415,18 +442,17 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         Expected Result:
         The teacher is presented with the book in a new tab
-
         """
         self.ps.test_updates['name'] = 't1.13.011' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.011', '7988']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
+        # self.teacher.select_course(title='HS Physics')
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.CLASS_NAME,
-            'view-reference-guide'
+            By.LINK_TEXT,
+            'Browse the Book'
         ).click()
         window_with_book = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_book)
@@ -454,16 +480,16 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.012', '7989']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
+        self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.CLASS_NAME,
-            'viewTeacherPerformanceForecast'
+            By.LINK_TEXT,
+            'Performance Forecast'
         ).click()
         self.teacher.driver.find_element(
             By.CLASS_NAME,
             'course-name'
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('course' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.ps.test_updates['passed'] = True
@@ -475,7 +501,6 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         """Cick on the OpenStax logo to return to the course picker.
 
         Steps:
-
         If the user has more than one course, click on a Tutor course name
         Click in the OpenStax logo in the header
 
@@ -487,17 +512,16 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.013', '7990']
         self.ps.test_updates['passed'] = False
 
-        self.teacher.select_course(appearance='physics')
+        # self.teacher.select_course(appearance='physics')
         self.teacher.driver.find_element(
             By.CLASS_NAME,
             'ui-brand-logo'
         ).click()
         assert('dashboard' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
+            'Not viewing the course picker'
 
         self.ps.test_updates['passed'] = True
 
-    # SHOULD WORK BUT DON'T KNOW HOW TO LOGIN WITH DIFFERENT TEACHER
     # Case C7991 - 014 - Teacher | CLick in the OpenStax logo to return to the
     # dashboard
     @pytest.mark.skipif(str(7991) not in TESTS, reason='Excluded')
@@ -516,15 +540,28 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.13', 't1.13.014', '7991']
         self.ps.test_updates['passed'] = False
 
+        self.teacher.logout()
+        teacher2 = Teacher(
+            username=os.getenv('TEACHER_USER_ONE_COURSE'),
+            password=os.getenv('TEACHER_PASSWORD'),
+            site='https://tutor-qa.openstax.org',
+            existing_driver=self.teacher.driver,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities,
+        )
+        print(teacher2.username)
+        print(teacher2.password)
+        teacher2.login()
+        self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.CLASS_NAME,
-            'viewTeacherPerformanceForecast'
+            By.LINK_TEXT,
+            'Performance Forecast'
         ).click()
         self.teacher.driver.find_element(
             By.CLASS_NAME,
             'ui-brand-logo'
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('course' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard'
 
         self.ps.test_updates['passed'] = True
