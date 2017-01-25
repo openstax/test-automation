@@ -33,16 +33,13 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         7631, 7632, 7633, 7634, 7635,
-        7636, 7637, 7638, 7639, 7640,
-        7641, 7642, 7643, 7644, 7645,
-        7646, 7647, 7648, 7650, 87364,
-        87365
+        7636, 7637, 7639, 7640, 7641,
+        7642, 7643, 7644, 7645, 7646,
+        7647, 7648, 7650, 87364, 87365
     ])
     # issues:
     # 7650 - assistive tech, not registering tab key to move from elements
-    # 7638 - says DEL on test rail make sure that means delete it,
-    #          left it with exception raised
-    # 87364, 87365 - no steps testrail. are they imlemented on tutor yet?
+    # 87364, 87365 - no steps testrail.
 )
 
 
@@ -787,7 +784,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         )
         self.ps.test_updates['passed'] = True
 
-    # DEL?
+    '''
     # Case C7638 - 008 - Student | Able to change period in the same course
     @pytest.mark.skipif(str(7638) not in TESTS, reason='Excluded')
     def test_student_able_to_change_period_in_the_same_course_7638(self):
@@ -825,6 +822,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C7639 - 009- Student | Able to enroll in more than one CC course
     @pytest.mark.skipif(str(7639) not in TESTS, reason='Excluded')
