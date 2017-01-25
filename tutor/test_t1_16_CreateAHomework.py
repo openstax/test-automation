@@ -37,7 +37,7 @@ TESTS = os.getenv(
         8068, 8069, 8070, 8071, 8072,
         8073, 8074, 8075, 8076, 8077,
         8078, 8079, 8080, 8081, 8082,
-        8083, 8084
+        8083, 8084, 111247
     ])
 )
 
@@ -2076,7 +2076,7 @@ class TestCreateAHomework(unittest.TestCase):
         Click on published assignment that hasn't yet been opened for students
         Click on the 'Edit Assignment' button
         Click on the 'Delete Assignment' button
-        Click 'OK' on the dialog box that pops up
+        Click 'Yes' on the dialog box that pops up
 
         Expected Result:
         The teacher is returned to the dashboard and the assignment is removed
@@ -2219,17 +2219,20 @@ class TestCreateAHomework(unittest.TestCase):
         assert(deleted), 'Assignment not removed'
         self.ps.test_updates['passed'] = True
 
-    # Case C8046 - 019 - Teacher | Attempt to delete an open homework
+    # Case C8046 - 019 - Teacher | Delete an open homework
     @pytest.mark.skipif(str(8046) not in TESTS, reason='Excluded')
-    def test_teacher_attempt_to_delete_an_open_homework_8046(self):
-        """Attempt to delete an open homework.
+    def test_teacher_delete_an_open_homework_8046(self):
+        """ Delete an open homework.
 
         Steps:
-        Click on an assignment on the calendar that is open for student to work
+        Click on published assignment that has been opened for students
         Click on the 'Edit Assignment' button
+        Click on the 'Delete Assignment' button
+        Click 'Yes' on the dialog box that pops up
 
         Expected Result:
-        The 'Delete Assignment' button should not appear on the page.
+        The teacher is returned to the dashboard and the assignment is removed
+        from the calendar.
         """
         self.ps.test_updates['name'] = 't1.16.019' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -2384,7 +2387,7 @@ class TestCreateAHomework(unittest.TestCase):
         Steps:
         Click on a draft assignment on the calendar
         Click on the 'Delete Assignment' button
-        Click OK on the dialog box that appears
+        Click 'Yes' on the dialog box that appears
 
         Expected Result:
         The teacher is returned to the dashboard and the draft assignment is
@@ -6418,7 +6421,7 @@ class TestCreateAHomework(unittest.TestCase):
         assert(deleted), 'Assignment not removed'
         self.ps.test_updates['passed'] = True
 
-    # Case C8084 - 057 - Teacher | Change the name, description, due dtaes,
+    # Case C8084 - 057 - Teacher | Change the name, description, due dates,
     # and feedback timing in an opened homework
     @pytest.mark.skipif(str(8084) not in TESTS, reason='Excluded')
     def test_teacher_change_name_descript_date_feedback_in_open_hw_8084(self):
@@ -6647,4 +6650,32 @@ class TestCreateAHomework(unittest.TestCase):
                 break
 
         assert(deleted), 'Assignment not removed'
+        self.ps.test_updates['passed'] = True
+
+    # Case C111247 - 058 - Teacher | Add a homework by dragging Add Homework
+    # to a calendar date
+    @pytest.mark.skipif(str(111247) not in TESTS, reason='Excluded')
+    def test_teacher_add_homework_by_dragging_add_homework_to_a_c_111247(self):
+        """Add a homework by dragging Add Homework to a calendar date.
+
+        Steps:
+        Click on the Add Assignment menu
+        Click and drag Add Homework to a chosen due date.
+
+        Expected Result:
+        User is taken to Add Homework Assignment page with due date filled in.
+        """
+        self.ps.test_updates['name'] = 't1.16.058' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.16',
+            't1.16.058',
+            '111247'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
         self.ps.test_updates['passed'] = True
