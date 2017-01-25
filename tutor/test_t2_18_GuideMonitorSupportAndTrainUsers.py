@@ -31,7 +31,7 @@ TESTS = os.getenv(
         58322, 58316, 58318, 58319, 14755,
         14750, 58336, 58337, 58338, 58353,
         58339, 58340, 58341, 58342, 58343,
-        58344, 58346, 58347, 58348
+        58344, 58346, 58347, 58348, 111250
     ])
 )
 
@@ -968,6 +968,32 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
             't2.18',
             't2.18.029',
             '58348'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 111250 - 030 - Teacher | View "Getting Started with Tutor" Guide
+    @pytest.mark.skipif(str(111250) not in TESTS, reason='Excluded')
+    def test_teacher_view_getting_started_with_tutor_guide_111250(self):
+        """View "Getting Started with Tutor" Guide.
+
+        Steps:
+        Click "Tutor Instructors. Get help"
+
+        Expected Result:
+        Tutor Help Center opens in another tab with the Getting Started guide
+        """
+        self.ps.test_updates['name'] = 't2.18.030' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't2',
+            't2.18',
+            't2.18.030',
+            '111250'
         ]
         self.ps.test_updates['passed'] = False
 
