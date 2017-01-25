@@ -30,8 +30,7 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         7704, 7705, 7706, 7707, 7708,
-        7709, 7710, 7711, 7712, 7713,
-        7714
+        7709, 7710, 7711, 7712, 7713
     ])
 )
 
@@ -576,6 +575,7 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7714 - 011 - Teacher | View instructions for Legacy users
     # transitioning to Concept Coach
     @pytest.mark.skipif(str(7714) not in TESTS, reason='Excluded')
@@ -600,3 +600,4 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
