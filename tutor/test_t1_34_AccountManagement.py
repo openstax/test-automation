@@ -27,11 +27,11 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8207, 8208, 8209, 8210, 8211,
-        8212, 8213, 8214, 8215, 8216,
-        8217, 8218, 8219, 8220, 8221,
-        8222, 8223, 8224, 8225, 8226,
-        8227, 8387, 8388
+        8207, 8208, 8209, 8211, 8212,
+        8213, 8214, 8215, 8216, 8217,
+        8218, 8219, 8220, 8221, 8222,
+        8223, 8224, 8225, 8226, 8387,
+        8388
     ])
 )
 
@@ -58,8 +58,8 @@ class TestAccountManagement(unittest.TestCase):
         self.google_password = os.getenv('GOOGLE_PASSWORD')
         self.facebook_account = os.getenv('FACEBOOK_USER')
         self.facebook_password = os.getenv('FACEBOOK_PASSWORD')
-        self.twitter_account = os.getenv('TWITTER_USER')
-        self.twitter_password = os.getenv('TWITTER_PASSWORD')
+        # self.twitter_account = os.getenv('TWITTER_USER')
+        # self.twitter_password = os.getenv('TWITTER_PASSWORD')
         self.student.get("http://accounts-qa.openstax.org")
 
     def tearDown(self):
@@ -74,10 +74,10 @@ class TestAccountManagement(unittest.TestCase):
         except:
             pass
 
-    # Case C8207 - 001 - User | Create a new Account with username and password
+    # Case C8207 - 001 - User | Create a new Account with an email and password
     @pytest.mark.skipif(str(8207) not in TESTS, reason='Excluded')
-    def test_user_create_a_new_account_with_a_username_and_password_8207(self):
-        """Create a new Account with a username and password.
+    def test_user_create_a_new_account_with_an_email_and_password_8207(self):
+        """Create a new Account with an email and password.
 
         Steps:
         Click on the Sign up link
@@ -286,6 +286,7 @@ class TestAccountManagement(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8210 - 004 - User | Create a new Account with Twitter
     @pytest.mark.skipif(str(8210) not in TESTS, reason='Excluded')
     def test_user_create_a_new_account_with_twitter_8210(self):
@@ -362,6 +363,7 @@ class TestAccountManagement(unittest.TestCase):
         ).click()
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C8211 - 005 - User | Accept the terms of service
     @pytest.mark.skipif(str(8211) not in TESTS, reason='Excluded')
@@ -967,10 +969,10 @@ class TestAccountManagement(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8224 - 018 - User | Enable login with username and password
+    # Case C8224 - 018 - User | Enable login with a password
     @pytest.mark.skipif(str(8224) not in TESTS, reason='Excluded')
-    def test_user_enable_standard_login_with_username_and_password_8224(self):
-        """Enable standard login with username and password.
+    def test_user_enable_standard_login_with_a_password_8224(self):
+        """Enable standard login with a password.
 
         Steps:
         Login with something other than password
@@ -1156,6 +1158,7 @@ class TestAccountManagement(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8227 - 021 - User | Enable Twitter login
     @pytest.mark.skipif(str(8227) not in TESTS, reason='Excluded')
     def test_user_enable_twitter_login_8227(self):
@@ -1207,6 +1210,7 @@ class TestAccountManagement(unittest.TestCase):
         ).click()
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C8387 - 022 - User | Delete login option
     @pytest.mark.skipif(str(8387) not in TESTS, reason='Excluded')
