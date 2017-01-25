@@ -621,3 +621,54 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
             )
         )
         self.ps.test_updates['passed'] = True
+
+    # 107585 - 008 - Teacher | Register and enroll in a CC course without a
+    # username
+    @pytest.mark.skipif(str(107585) not in TESTS, reason='Excluded')
+    def test_teacher_jump_to_cc_from_the_top_of_the_reading_107585(self):
+        """Register and enroll in a CC course thout a username.
+
+        Steps:
+        [Get an enrollment link from a teacher in course settings and roster]
+        Go to link
+        Click orange "Jump to Concept Coach" button
+        Click "Enroll in This Course"
+        Click "sign Up and Enroll"
+
+        [In the new window'
+        Select 'Student' from the 'I am a' drop down menu
+        Enter an email into the email text box
+        Click 'Next'
+        [an email with a pin is sent, log onto email and get pin]
+        Enter Pin into text box
+        Click 'Confirm'
+        Enter password [staxly16] into password text box
+        Re-Enter password in confirm password text box
+        Click Submit
+        Enter first name into the 'First Name' text box
+        Enter last name into the 'Last Name' text box
+        Enter school into 'School' text box
+        Click the checkbox for 'I Agree' for the Terms of Use and the Privacy Policy
+        Click 'Create Account'
+
+        Click the checkbox and click 'I Agree' for the Terms of Use
+        Click the checkbox and click 'I Agree' for the Privacy Policy
+
+        Expected Result:
+        Pop-up box for account creation is closed.
+        New user is logged into Concept Coach.
+        """
+        self.ps.test_updates['name'] = 'cc2.09.008' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc2',
+            'cc2.09',
+            'cc2.09.008',
+            '107585'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
