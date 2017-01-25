@@ -33,7 +33,7 @@ TESTS = os.getenv(
         8166, 8167, 8168, 8169, 8170,
         8171, 8172, 8173, 8174, 8175,
         8176, 8177, 8178, 8179, 8180,
-        8181
+        8181, 111252
     ])
 
     # 8165 - sorting not working on site
@@ -1475,5 +1475,25 @@ class TestViewClassScores(unittest.TestCase):
 
         assert('task' in self.teacher.current_url()), \
             'Not viewing student "work" for external assignment'
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C111252 - 027 - Teacher | Student score columns show the assignment
+    # due date
+    @pytest.mark.skipif(str(111252) not in TESTS, reason='Excluded')
+    def test_teacher_student_score_columns_show_the_assignment_du_111252(self):
+        """Student score colums show the assignemnt due date.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.23.027' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.23', 't1.23.027', '111252']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
