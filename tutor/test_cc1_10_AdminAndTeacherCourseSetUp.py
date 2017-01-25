@@ -30,9 +30,9 @@ TESTS = os.getenv(
         7715, 7716, 7717, 7718, 7719,
         7720, 7721, 7722, 7723, 7724,
         7725, 7726, 7727, 7728, 7729,
-        7730, 7731
+        7730
     ])
-    # 7716, 7717, 7731 -- not implemented on tutor
+    # 7716, 7717 -- not implemented on tutor
 )
 
 
@@ -1269,6 +1269,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7731 - 018 - Teacher | Receive a notice when students register
     @pytest.mark.skipif(str(7731) not in TESTS, reason='Excluded')
     def test_teacher_receive_a_notice_when_students_register_7731(self):
@@ -1292,3 +1293,4 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
