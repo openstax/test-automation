@@ -26,13 +26,13 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14758, 14760, 14761, 14762, 14763,
-        14764, 14767, 14768, 14772, 14773,
-        14774, 14776, 14777, 14778, 14779,
-        14780, 14781, 14782, 14783, 14784,
-        14785, 14786, 14787, 14788, 14789,
-        14790, 14791, 14792, 14793, 14794,
-        14795, 14796
+        14761, 14762, 14763, 14764, 14767,
+        14768, 14772, 14773, 14774, 14776,
+        14777, 14778, 14779, 14780, 14781,
+        14782, 14783, 14784, 14785, 14786,
+        14787, 14788, 14789, 14790, 14791,
+        14792, 14793, 14794, 14795, 14796,
+        85292
     ])
 )
 
@@ -63,6 +63,7 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         except:
             pass
 
+    '''
     # C14758 - 001 - User | Create an account that maps to the OS Product I use
     @pytest.mark.skipif(str(14758) not in TESTS, reason='Excluded')
     def test_teacher_view_a_scores_export_for_my_students_work_14758(self):
@@ -88,7 +89,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14760 - 002 - User | Create an openstax.org account and get directed to
     # Concept Coach or Tutor
     @pytest.mark.skipif(str(14760) not in TESTS, reason='Excluded')
@@ -115,6 +118,7 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # C14761 - 003 - Teacher | Create a custom URL for student registration
     @pytest.mark.skipif(str(14761) not in TESTS, reason='Excluded')
@@ -931,6 +935,37 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
             't2.09',
             't2.09.032',
             '14796'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # C85292 - 033 - Student | Change user ID
+    @pytest.mark.skipif(str(85292) not in TESTS, reason='Excluded')
+    def test_student_change_user_id_85292(self):
+        """Change user ID.
+
+        Steps:
+        Login as a student.
+        Click on the student name
+        From the dropdown menu click on my account
+        In the new tab that opened, modify the username.
+        Logout
+        Login with the new username
+
+        Expected Result:
+        Able to modify the username and login successfully with it
+        """
+        self.ps.test_updates['name'] = 't2.09.033' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't2',
+            't2.09',
+            't2.09.033',
+            '85292'
         ]
         self.ps.test_updates['passed'] = False
 
