@@ -10,7 +10,7 @@ import unittest
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint
 from selenium.common.exceptions import NoSuchElementException
-# from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.support.ui import WebDriverWait
@@ -36,7 +36,7 @@ TESTS = os.getenv(
         8100, 8101, 8102, 8103, 8104,
         8105, 8106, 8107, 8108, 8109,
         8110, 8111, 8112, 8113, 8114,
-        8115, 8116
+        8115, 8116, 111248
     ])
 )
 
@@ -60,6 +60,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 use_env_vars=True
             )
         self.teacher.login()
+        self.teacher.select_course(appearance='biology')
 
     def tearDown(self):
         """Test destructor."""
@@ -92,22 +93,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        assert('externals/new' in self.teacher.current_url()),\
+        assert('external/new' in self.teacher.current_url()),\
             'not at Add External Assignment page'
 
         self.ps.test_updates['passed'] = True
 
     # Case C8086 - 002 - Teacher | Add an external assignment using the
     # calendar date
-    # @pytest.mark.skipif(str(8086) not in TESTS, reason='Excluded')
-    @pytest.mark.skipif(True, reason='Manual testing only')
+    @pytest.mark.skipif(str(8086) not in TESTS, reason='Excluded')
     def test_teacher_add_external_assignment_using_calendar_date_8086(self):
         """Add an external assignment using the calendar date.
 
@@ -124,30 +124,22 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # click on calendar date
-        # click on add external assignemnt
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-        day = self.teacher.wait.until(
+        calendar_date = self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.CSS_SELECTOR, 'div.rc-Day--upcoming')
+                (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
             )
         )
-        # day = days if not isinstance(days, list) else \
-        #     days[randint(0, min(len(days) - 1, 10))]
         self.teacher.driver.execute_script(
-            'return arguments[0].scrollIntoView();', day)
-        self.teacher.sleep(0.5)
-        # Psuedo-test - cannot click on react component
-        try:
-            date = self.teacher.find_all(
-                By.CSS_SELECTOR,
-                'ul.course-add-dropdown li a'
-            )[2]
-            link_url = date.get_attribute('href')
-            self.teacher.get(link_url)
-        except:
-            assert(False), 'date dropdown not seen'
+            'return arguments[0].scrollIntoView();', calendar_date)
         self.teacher.sleep(1)
-        assert('externals/new' in self.teacher.current_url()), \
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(calendar_date)
+        actions.move_by_offset(0, -35)
+        actions.click()
+        actions.move_by_offset(30, 70)
+        actions.click()
+        actions.perform()
+        assert('external/new' in self.teacher.current_url()),\
             'not at Add External Assignment page'
 
         self.ps.test_updates['passed'] = True
@@ -176,7 +168,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -196,7 +188,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
-            send_keys('external assignemnt description')
+            send_keys('external assignment description')
         # set date
         self.teacher.find(By.ID, 'hide-periods-radio').click()
         today = datetime.date.today()
@@ -222,7 +214,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"datepicker__day")' +
-            'and text()="' + (closes_on[3:5]).lstrip('0') + '"]'
+            ' and not(contains(@class,"disabled")) ' +
+            ' and text()="' + (closes_on[3:5]).lstrip('0') + '"]'
         ).click()
         self.teacher.sleep(0.5)
         self.teacher.find(
@@ -245,7 +238,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"datepicker__day")' +
-            'and text()="' + (opens_on[3:5]).lstrip('0') + '"]'
+            ' and not(contains(@class,"disabled")) ' +
+            ' and text()="' + (opens_on[3:5]).lstrip('0') + '"]'
         ).click()
         self.teacher.sleep(0.5)
         self.teacher.find(
@@ -292,7 +286,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -313,7 +307,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
-            send_keys('external assignemnt description')
+            send_keys('external assignment description')
 
         # assign to periods individually
         self.teacher.find(By.ID, 'show-periods-radio').click()
@@ -327,8 +321,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 today + datetime.timedelta(days=len(periods) + 5)
             ).strftime('%m/%d/%Y')
             element = self.teacher.find(
-                By.XPATH, '//div[contains(@class,"tasking-plan")' +
-                'and contains(@data-reactid,":' + str(x + 1) + '")]' +
+                By.XPATH,
+                '//div[contains(@class,"tasking-plan")][%s]' % (x + 1) +
                 '//div[contains(@class,"-due-date")]' +
                 '//div[contains(@class,"datepicker__input")]')
             self.teacher.driver.execute_script(
@@ -350,12 +344,13 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                     year += 1
             self.teacher.find(
                 By.XPATH, '//div[contains(@class,"datepicker__day") ' +
-                'and text()="' + (closes_on[3:5]).lstrip('0') + '"]'
+                ' and not(contains(@class,"disabled")) ' +
+                ' and text()="' + (closes_on[3:5]).lstrip('0') + '"]'
             ).click()
             self.teacher.sleep(0.5)
             self.teacher.find(
-                By.XPATH, '//div[contains(@class,"tasking-plan") and' +
-                ' contains(@data-reactid,":' + str(x + 1) + '")]' +
+                By.XPATH,
+                '//div[contains(@class,"tasking-plan")][%s]' % (x + 1) +
                 '//div[contains(@class,"-open-date")]' +
                 '//div[contains(@class,"datepicker__input")]').click()
             # get calendar to correct month
@@ -372,7 +367,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                     year += 1
             self.teacher.find(
                 By.XPATH, '//div[contains(@class,"datepicker__day")' +
-                'and text()="' + (opens_on[3:5]).lstrip('0') + '"]'
+                ' and not(contains(@class,"disabled")) ' +
+                ' and text()="' + (opens_on[3:5]).lstrip('0') + '"]'
             ).click()
             self.teacher.sleep(0.5)
         self.teacher.find(
@@ -415,7 +411,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # Test steps and verification assertions
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -440,6 +436,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        print("open date: %s" % opens_on)
+        print("due date: %s" % closes_on)
         assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
         self.teacher.find(
@@ -483,7 +481,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_name = "ext006_" + str(randint(0, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -575,7 +573,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
             self.teacher.find(
                 By.XPATH,
-                '//a[contains(@href,"externals")]' +
+                '//a[contains(@href,"external")]' +
                 '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
@@ -623,7 +621,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -640,7 +638,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                  '@type="button" and text()="Cancel"]')
             )
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('month' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard, after caneling assignment 008'
 
         self.ps.test_updates['passed'] = True
@@ -668,7 +666,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -697,7 +695,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
         ).click()
 
-        assert('calendar' in self.teacher.current_url()), \
+        assert('month' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard, after caneling assignment 009'
 
         self.ps.test_updates['passed'] = True
@@ -723,7 +721,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -739,7 +737,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                  '//button[contains(@class,"openstax-close-x")]')
             )
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('month' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard, after caneling assignment 010'
 
         self.ps.test_updates['passed'] = True
@@ -767,7 +765,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -794,7 +792,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
         ).click()
 
-        assert('calendar' in self.teacher.current_url()), \
+        assert('month' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard, after caneling assignment 011'
 
         self.ps.test_updates['passed'] = True
@@ -819,7 +817,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        # create a draft external assignemnt
+        # create a draft external assignment
         assignment_name = "ext012_" + str(randint(0, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
@@ -868,7 +866,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                  '//button[contains(@aria-role,"close") and @type="button"]')
             )
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('month' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard, after caneling assignment 012'
 
         self.ps.test_updates['passed'] = True
@@ -895,7 +893,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        # create a draft external assignemnt
+        # create a draft external assignment
         assignment_name = "ext013_" + str(randint(0, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
@@ -955,7 +953,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('month' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard, after canceling assignment 13'
 
         self.ps.test_updates['passed'] = True
@@ -1027,7 +1025,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                  '//button[contains(@class,"openstax-close-x")]')
             )
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('month' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard, after canceling assignment 14'
 
         self.ps.test_updates['passed'] = True
@@ -1111,7 +1109,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
         ).click()
-        assert('calendar' in self.teacher.current_url()), \
+        assert('month' in self.teacher.current_url()), \
             'Not viewing the calendar dashboard, after canceling assignment 15'
 
         self.ps.test_updates['passed'] = True
@@ -1138,7 +1136,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -1154,7 +1152,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         )
         self.teacher.find(
             By.XPATH, '//button[contains(@class,"-publish")]').click()
-        assert('externals/new' in self.teacher.current_url()), \
+        assert('external/new' in self.teacher.current_url()), \
             'Not stopped from publishing an external with empty reqired feilds'
 
         self.ps.test_updates['passed'] = True
@@ -1180,7 +1178,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -1196,7 +1194,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         )
         self.teacher.find(
             By.XPATH, '//button[contains(@class,"-save")]').click()
-        assert('externals/new' in self.teacher.current_url()), \
+        assert('external/new' in self.teacher.current_url()), \
             'Not stopped from saving an external with empty reqired feilds'
 
         self.ps.test_updates['passed'] = True
@@ -1260,7 +1258,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 By.XPATH,
                 '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
-        # edit the assignemnt
+        # edit the assignment
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//a[contains(@class,"edit-assignment")]')
@@ -1487,7 +1485,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_name = "ext021_" + str(randint(0, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -1717,7 +1715,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_name = "ext024_" + str(randint(0, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -1953,7 +1951,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_name = "ext027_" + str(randint(0, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
                 get_attribute('class'):
@@ -2078,8 +2076,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         """Info icon shows definitions for the status bar.
 
         Steps:
-        Create and publish an External Assignemnt
-        Click on the External Assignemnt
+        Create and publish an External Assignment
+        Click on the External Assignment
         Click on the info icon
 
         Expected Result:
@@ -2462,5 +2460,28 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.find(
                 By.XPATH,
                 "//label[contains(text(), '" + assignment_name + "NEW')]")
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C111248 - 033 - Teacher | Add an external assignment by dragging Add
+    # External Assignment to calendar date
+    @pytest.mark.skipif(str(111248) not in TESTS, reason='Excluded')
+    def test_teacher_add_external_assignment_by_dragging_add_exte_111248(self):
+        """Add an external assignment by dragging to calendar date.
+
+        Steps:
+        Click on the Add Assignment Menu
+        Click and drag "Add External Assignment" to desired due date
+
+        Expected Result:
+        User taken to Add External Assignment page with due date filled in
+        """
+        self.ps.test_updates['name'] = 't1.14.033' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.033', '111248']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
