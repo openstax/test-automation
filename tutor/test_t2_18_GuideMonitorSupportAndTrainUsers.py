@@ -29,9 +29,7 @@ TESTS = os.getenv(
         14752, 14751, 58279, 58280, 58284,
         58352, 58288, 58313, 58314, 58315,
         58322, 58316, 58318, 58319, 14755,
-        14750, 58336, 58337, 58338, 58353,
-        58339, 58340, 58341, 58342, 58343,
-        58344, 58346, 58347, 58348, 111250
+        14750, 58336, 58337, 58348, 111250
     ])
 )
 
@@ -183,14 +181,13 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58284 - 005 - Teacher | Submit a question
+    # 58284 - 005 - User | Submit a question
     @pytest.mark.skipif(str(58284) not in TESTS, reason='Excluded')
-    def test_teacher_submit_a_question_58284(self):
+    def test_user_submit_a_question_58284(self):
         """Submit a question.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
 
@@ -212,15 +209,14 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58352 - 006 - Teacher | View "Contact Us" button after submitting a
+    # 58352 - 006 - User | View "Contact Us" button after submitting a
     # question
     @pytest.mark.skipif(str(58352) not in TESTS, reason='Excluded')
-    def test_teacher_view_contact_us_button_after_submitting_quest_58352(self):
+    def test_user_view_contact_us_button_after_submitting_question_58352(self):
         """View "Contact Us" button after submitting a question.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
         Scroll to the bottom of the screen
@@ -243,15 +239,14 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58288 - 007 - Teacher | View an article after submitting a question
+    # 58288 - 007 - User | View an article after submitting a question
     @pytest.mark.skipif(str(58288) not in TESTS, reason='Excluded')
-    def test_teacher_view_an_article_after_submitting_a_question_58288(self):
+    def test_user_view_an_article_after_submitting_a_question_58288(self):
         """View an article after submitting a question.
 
         Steps:
 
-        Click "Get Help" from the user menu in the upper right corner of the
-        screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
         Click on a search result
@@ -274,14 +269,13 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58313 - 008 - Teacher | Indicate that the article was helpful
+    # 58313 - 008 - User | Indicate that the article was helpful
     @pytest.mark.skipif(str(58313) not in TESTS, reason='Excluded')
-    def test_teacher_indicate_that_the_article_was_helpful_58313(self):
+    def test_user_indicate_that_the_article_was_helpful_58313(self):
         """Indicate that the article was helpful.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
         Click on a search result
@@ -306,14 +300,13 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58314 - 009 - Teacher | Negative feedback renders a feedback popup box
+    # 58314 - 009 - User | Negative feedback renders a feedback popup box
     @pytest.mark.skipif(str(58314) not in TESTS, reason='Excluded')
-    def test_teacher_negative_feedback_renders_feedback_popup_box_58314(self):
+    def test_user_negative_feedback_renders_feedback_popup_box_58314(self):
         """Negative feedback renders a feedback popup box.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
         Click on a search result
@@ -339,14 +332,13 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58315 - 010 - Teacher | Submit feedback for an article
+    # 58315 - 010 - User | Submit feedback for an article
     @pytest.mark.skipif(str(58315) not in TESTS, reason='Excluded')
-    def test_teacher_submit_feedback_for_an_article_58315(self):
+    def test_user_submit_feedback_for_an_article_58315(self):
         """Submit feedback for an article.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
         Click on a search result
@@ -373,15 +365,14 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58322 - 011 - Teacher | Close window after submitting feedback for an
+    # 58322 - 011 - User | Close window after submitting feedback for an
     # article
     @pytest.mark.skipif(str(58322) not in TESTS, reason='Excluded')
-    def test_teacher_close_window_after_submitting_feedback_for_58322(self):
+    def test_user_close_window_after_submitting_feedback_for_58322(self):
         """Close window after submitting feedback for an article.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
         Click on a search result
@@ -410,14 +401,13 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58316 - 012 - Teacher | Cancel feedback
+    # 58316 - 012 - User | Cancel feedback
     @pytest.mark.skipif(str(58316) not in TESTS, reason='Excluded')
-    def test_teacher_cancel_feedback_before_making_changes_58316(self):
+    def test_user_cancel_feedback_before_making_changes_58316(self):
         """Cancel feedback.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
         Click on a search result
@@ -444,14 +434,13 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58318 - 013 - Teacher | View related articles
+    # 58318 - 013 - User | View related articles
     @pytest.mark.skipif(str(58318) not in TESTS, reason='Excluded')
-    def test_teacher_view_related_articles_58318(self):
+    def test_user_view_related_articles_58318(self):
         """View related articles.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
         Click on a search result
@@ -476,14 +465,13 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58319 - 014 - Teacher | Submit a question to Customer Support
+    # 58319 - 014 - User | Submit a question to Customer Support
     @pytest.mark.skipif(str(58319) not in TESTS, reason='Excluded')
-    def test_teacher_submit_a_question_to_customer_support_58319(self):
+    def test_user_submit_a_question_to_customer_support_58319(self):
         """Submit a question to Customer Support.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         CLick "Search" or press enter
         Click on a search result
@@ -518,9 +506,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         Steps:
 
-
         Expected Result:
-
         """
         self.ps.test_updates['name'] = 't2.18.015' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -595,7 +581,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
     # 58337 - 018 - Student | Access Tutor Help Center after registering for a
     # course
     @pytest.mark.skipif(str(58337) not in TESTS, reason='Excluded')
-    def test_student_access_tutor_help_center_after_registering_58337(self):
+    def test_student_access_tutor_help_center_after_registering_fo_58337(self):
         """Access Tutor Help Center after registering for a course.
 
         Steps:
@@ -623,14 +609,14 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # 58338 - 019 - Student | Submit a question
     @pytest.mark.skipif(str(58338) not in TESTS, reason='Excluded')
     def test_student_submit_a_question_58338(self):
         """Submit a question.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
 
@@ -659,8 +645,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """View "Contact Us" button after submitting a question.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
         Scroll to the bottom of the page
@@ -689,8 +674,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """View an article after submitting a question.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
         Click on a search result
@@ -719,8 +703,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """Indicate that the article was helpful.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
         Click on a search result
@@ -751,8 +734,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """Negative feedback renders a feedback popup box.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
         Click on a search result
@@ -784,8 +766,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """Submit feedback for an article.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
         Click on a search result
@@ -819,8 +800,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """Close window after submitting feedback for an article.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
         Click on a search result
@@ -855,8 +835,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """Cancel feedback.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
         Click on a search result
@@ -889,8 +868,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """View related articles.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
         Click on a search result
@@ -921,8 +899,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """Submit a question to Customer Support.
 
         Steps:
-        Click "Get Help" from the user menu in the upper right corner of the
-            screen
+        Click "Get Help" from the user menu
         Enter a question or search words into the search engine
         Click "Search" or press enter
         Click on a search result
@@ -949,6 +926,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # 58348 - 029 - Student | View guided tutorials of Tutor
     @pytest.mark.skipif(str(58348) not in TESTS, reason='Excluded')
