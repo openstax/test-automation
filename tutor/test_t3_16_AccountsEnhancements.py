@@ -31,10 +31,9 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         105592, 105593, 105594, 105595, 105596,
-        105597, 105598, 105599, 105600, 105601,
-        105602, 107581, 107586, 107587, 107588,
-        107589, 107590, 107591, 107592, 107593,
-        107594
+        105597, 105598, 105599, 105600, 105602,
+        107581, 107586, 107587, 107588, 107589,
+        107590, 107591, 107592, 107593, 107594
     ])
 )
 
@@ -279,6 +278,7 @@ class TestAccountEnhancements(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C105601 - 010 - Student | Student is alerted during registration if
     # their school ID is already in use
     @pytest.mark.skipif(str(105601) not in TESTS, reason='Excluded')
@@ -299,6 +299,7 @@ class TestAccountEnhancements(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C105602 - 011 - Teacher | Account information is sent to Salseforce
     @pytest.mark.skipif(str(105602) not in TESTS, reason='Excluded')
