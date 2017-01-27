@@ -32,11 +32,10 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14800
-        # 14675, 14676, 14677, 14678, 14800,
-        # 14680, 14681, 14682, 14683, 14801,
-        # 14802, 14803, 14804, 14805, 14685,
-        # 14686, 14687, 14688, 14689
+        14676, 14677, 14678, 14800, 14680,
+        14681, 14682, 14801, 14802, 14803,
+        14804, 14805, 14685, 14686, 14687,
+        14688, 14689
     ])
 
     # these are not implemented features - 14682, 14685, 14689
@@ -90,6 +89,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         except:
             pass
 
+    '''
     # 14675 - 001 - Teacher | Set when feedback is available
     @pytest.mark.skipif(str(14675) not in TESTS, reason='Excluded')
     def test_teacher_set_when_feedback_is_available_14675(self):
@@ -129,6 +129,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.teacher.find(
             By.XPATH, '//select/option[@value="due_at"]').click()
         self.ps.test_updates['passed'] = True
+    '''
 
     # 14676 - 002 - Teacher | Set open and due times for a reading assignment
     @pytest.mark.skipif(str(14676) not in TESTS, reason='Excluded')
@@ -609,6 +610,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # 14801 - 010 - Student | A deleted open assignment that the student has
     # not worked on is grayed out and is marked "Withdrawn"
     @pytest.mark.skipif(str(14801) not in TESTS, reason='Excluded')
@@ -704,6 +706,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             '//a[@class="task row event deleted"]//span[text()="Withdrawn"]'
         )
         self.ps.test_updates['passed'] = True
+    '''
 
     # 14802 - 011 - Student | A deleted open assignment that the student has
     # worked on is not grayed out but is marked "Withdrawn"
