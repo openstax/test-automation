@@ -1121,6 +1121,11 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.get(https://tutor-qa.openstax.org/not_a_real_page)
-
+        self.teacher.get('https://tutor-qa.openstax.org/not_a_real_page')
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//h1[contains(text(),"Uh-oh, no page here")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
