@@ -25,24 +25,22 @@ from staxing.helper import Student, Teacher, Admin
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
         7631, 7632, 7633, 7634, 7635,
-        7636, 7637, 7638, 7639, 7640,
-        7641, 7642, 7643, 7644, 7645,
-        7646, 7647, 7648, 7650, 87364,
-        87365
+        7636, 7637, 7639, 7640, 7641,
+        7642, 7643, 7644, 7645, 7646,
+        7647, 7648, 7650, 87364, 87365
     ])
     # issues:
     # 7650 - assistive tech, not registering tab key to move from elements
-    # 7638 - says DEL on test rail make sure that means delete it,
-    #          left it with exception raised
-    # 87364, 87365 - no steps testrail. are they imlemented on tutor yet?
+    # 87364, 87365 - no steps testrail.
 )
 
 
@@ -54,40 +52,48 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.student = Student(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.teacher = Teacher(
-            use_env_vars=True,
-            existing_driver=self.student.driver,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.admin = Admin(
-            use_env_vars=True,
-            existing_driver=self.student.driver,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.student = Student(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.teacher = Teacher(
+                use_env_vars=True,
+                existing_driver=self.student.driver,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.admin = Admin(
+                use_env_vars=True,
+                existing_driver=self.student.driver,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.student = Student(
+                use_env_vars=True,
+            )
+            self.teacher = Teacher(
+                use_env_vars=True,
+                existing_driver=self.student.driver,
+            )
+            self.admin = Admin(
+                use_env_vars=True,
+                existing_driver=self.student.driver,
+            )
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.student.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.student.driver.session_id),
+                **self.ps.test_updates
+            )
+        self.teacher = None
+        self.admin = None
         try:
             self.student.delete()
-        except:
-            pass
-        try:
-            self.teacher.delete()
-        except:
-            pass
-        try:
-            self.admin.delete()
         except:
             pass
 
@@ -787,7 +793,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         )
         self.ps.test_updates['passed'] = True
 
-    # DEL?
+    '''
     # Case C7638 - 008 - Student | Able to change period in the same course
     @pytest.mark.skipif(str(7638) not in TESTS, reason='Excluded')
     def test_student_able_to_change_period_in_the_same_course_7638(self):
@@ -825,6 +831,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C7639 - 009- Student | Able to enroll in more than one CC course
     @pytest.mark.skipif(str(7639) not in TESTS, reason='Excluded')

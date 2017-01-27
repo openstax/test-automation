@@ -21,10 +21,11 @@ from staxing.helper import Teacher
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
@@ -35,7 +36,7 @@ TESTS = os.getenv(
         8012, 8013, 8014, 8015, 8016,
         8017, 8018, 8019, 8020, 8021,
         8022, 8023, 8024, 8025, 8026,
-        8027
+        8027, 111246
     ])
     # 7993 - calendar date still not working
 )
@@ -49,20 +50,26 @@ class TestCreateAReading(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.teacher = Teacher(
+                use_env_vars=True
+            )
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.teacher.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.teacher.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             self.teacher.delete()
         except:
@@ -75,11 +82,11 @@ class TestCreateAReading(unittest.TestCase):
         """Add a reading using the Add Assignment drop down menu.
 
         Steps:
-        Click on the 'Add Assignment' drop down menu
+        Click on the 'Add Assignment' menu
         Click on the 'Add Reading' option
 
         Expected Result:
-        Takes user add reading screen
+        Takes user to Add Reading screen
         """
         self.ps.test_updates['name'] = 't1.14.001' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -110,7 +117,7 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Add Reading' option
 
         Expected Result:
-        Takes user add reading screen
+        Takes user to Add Reading screen
         """
         self.ps.test_updates['name'] = 't1.14.002' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -160,7 +167,7 @@ class TestCreateAReading(unittest.TestCase):
         """Set open and due dates for all periods collectively.
 
         Steps:
-        Click on the 'Add Assignment' drop down menu
+        Click on the 'Add Assignment' menu
         Click on the 'Add Reading' option
         Enter an assignment name into the Assignment name text box
         Enter an assignment description into the Assignment description textbox
@@ -528,8 +535,8 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Add Reading' option
         Enter an assignment name into the Assignment name text box
         Enter an assignment description into the Assignment description textbox
-        Enter into Open Date text field date as MM/DD/YYYY
-        Enter into Due Date text field date as MM/DD/YYYY
+        Click on the Open Date field and click on an date on calendar element
+        Click on the Due Date field and click on a date on calendar element
         Click on the "+ Add Readings" button
         Click on section(s) to add to assignment
         Scroll to bottom
@@ -1249,7 +1256,7 @@ class TestCreateAReading(unittest.TestCase):
         On the calendar click on a reading that is unopened
         Click on the 'Edit Assignment' button
         Click on the 'Delete Assignment' button
-        Click on the "ok" button
+        Click on the "Yes" button
 
         Expected Result:
         Takes user back to calendar dashboard.
@@ -1332,11 +1339,14 @@ class TestCreateAReading(unittest.TestCase):
         """Delete an open reading.
 
         Steps:
-        On the calendar click on an open reading
-        Click on the 'View Assignment' button
+        On the calendar click on a reading that is opened
+        Click on the 'Edit Assignment' button
+        Click on the 'Delete Assignment' button
+        Click on the "Yes" button
 
         Expected Result:
-        No "Delete Assignment" button found.
+        Takes user back to calendar dashboard.
+        Chosen assignment no longer appears on teacher calendar dashboard.
         """
         self.ps.test_updates['name'] = 't1.14.019' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1417,7 +1427,7 @@ class TestCreateAReading(unittest.TestCase):
         Steps:
         On the calendar click on a draft
         Click on the 'Delete Assignment' button
-        Click on the 'ok' button
+        Click on the 'Yes' button
 
         Expected Result:
         Takes user back to calendar dashboard.
@@ -1495,7 +1505,7 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Add Reading' option
         Enter an assignment name into the Assignment name text box
         Enter an assignment description into the Assignment description box
-        Enter into Due Date text field date as MM/DD/YYYY
+        Click on the Due Date field and click on a date on calendar element
         Click on the 'Publish' button
 
         Expected Result:
@@ -1756,8 +1766,8 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Add Assignment' drop down menu
         Click on the 'Add Reading' option
         Enter an assignment name into the Assignment name text box
-        [optional] Enter into Open Date text field date as MM/DD/YYYY
-        Enter into Due Date text field date as MM/DD/YYYY
+        Click on the Open Date field and click on an date on calendar element
+        Click on the Due Date field and click on a date on calendar element
         Click on the "+ Add Readings" button
         Click on section(s) to add to assignment
         scroll to bottom
@@ -2018,7 +2028,7 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Add Assignment' drop down menu
         Click on the 'Add Reading' option
         Enter an assignment name into the Assignment name text box
-        Enter into Due Date text field date as MM/DD/YYYY
+        Click on the Due Date field and click on a date on calendar element
         Click on the '+ Add More Readings' button
         Click on a chapter heading (not the check box)
         Click on a single section within that chapter
@@ -2123,7 +2133,7 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Add Assignment' drop down menu
         Click on the 'Add Reading' option
         Enter an assignment name into the Assignment name text box
-        Enter into Due Date text field date as MM/DD/YYYY
+        Click on the Due Date field and click on a date on calendar element
         Click on the '+ Add More Readings' button
         Click on a chapter checkbox
         Scroll to the bottom
@@ -2300,7 +2310,7 @@ class TestCreateAReading(unittest.TestCase):
                 (By.XPATH,
                  ('//span[contains(@data-chapter-section' +
                   ',"{s}") and text()="{s}"]').format(s=section_to_remove) +
-                  '/preceding-sibling::span/input')
+                 '/preceding-sibling::span/input')
             )
         )
         if marked.is_selected():
@@ -2467,8 +2477,8 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Add Reading' option
         Enter an assignment name into the Assignment name text box
         Enter an assignment description into the Assignment description box
-        Enter into Open Date text field date as MM/DD/YYYY
-        Enter into Due Date text field date as MM/DD/YYYY
+        Click on the Open Date field and click on an date on calendar element
+        Click on the Due Date field and click on a date on calendar element
         Click on the "+ Add Readings" button
         Click on sections to add to assignment
         Scroll to bottom
@@ -2662,8 +2672,8 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Edit' option
         Enter a new assignment name into the Assignment name text box
         Enter a new assignment description into the Assignment description box
-        Enter into Open Date text field a new date as MM/DD/YYYY
-        Enter into Due Date text field a new date as MM/DD/YYYY
+        Click on the Open Date field and click on an date on calendar element
+        Click on the Due Date field and click on a date on calendar element
         Remove a section from the readings
         Click the 'Publish' button
 
@@ -2768,8 +2778,8 @@ class TestCreateAReading(unittest.TestCase):
         Click on an existing draft reading on the calendar
         Enter a new assignment name into the Assignment name text box
         Enter a new assignment description into the Assignment description box
-        Enter into Open Date text field a new date as MM/DD/YYYY
-        Enter into Due Date text field a new date as MM/DD/YYYY
+        Click on the Open Date field and click on an date on calendar element
+        Click on the Due Date field and click on a date on calendar element
         Click on the x next to a selected section
         Click the 'Save As Draft' button
 
@@ -2873,7 +2883,7 @@ class TestCreateAReading(unittest.TestCase):
         Click on the 'Edit' option
         Enter a new assignment name into the Assignment name text box
         Enter a new assignment description into the Assignment description box
-        Enter into Due Date text field a new date as MM/DD/YYYY
+        Click on the Due Date field and click on a date on calendar element
         Click the 'Publish' button
 
         Expected Result:
@@ -3046,5 +3056,28 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH, '//button[contains(@class,"footer-instructions")]'
         ).click()
         self.teacher.find(By.ID, 'plan-footer-popover')
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C111246 - 004 - Teacher | Add reading by dragging Add Reading to
+    # calendar date
+    @pytest.mark.skipif(str(111246) not in TESTS, reason='Excluded')
+    def test_teacher_add_reading_by_dragging_add_reading_to_calen_111246(self):
+        """Add reading by dragging Add Reading to calendar date.
+
+        Steps:
+        Click on the Add Assignment Menu
+        Click and drag "Add Reading" to desired due date
+
+        Expected Result:
+        User taken to Add Reading page with due date filled in
+        """
+        self.ps.test_updates['name'] = 't1.14.037' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.037', '111246']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True

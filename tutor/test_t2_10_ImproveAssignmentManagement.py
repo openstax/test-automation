@@ -14,8 +14,12 @@ from selenium.webdriver.support import expected_conditions as expect
 from staxing.assignment import Assignment
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementNotVisibleException
+<<<<<<< HEAD
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import TimeoutException
+=======
+# from selenium.common.exceptions import TimeoutException
+>>>>>>> origin/master
 from selenium.webdriver.common.action_chains import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
@@ -24,7 +28,7 @@ from staxing.helper import Teacher, Student
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
@@ -76,20 +80,26 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.teacher.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.teacher.driver.session_id),
+                **self.ps.test_updates
+            )
+        self.student = None
         try:
             self.teacher.delete()
         except:
             pass
+<<<<<<< HEAD
         try:
             self.student.delete()
         except:
             pass
 
     '''
+=======
+
+>>>>>>> origin/master
     # 14675 - 001 - Teacher | Set when feedback is available
     @pytest.mark.skipif(str(14675) not in TESTS, reason='Excluded')
     def test_teacher_set_when_feedback_is_available_14675(self):

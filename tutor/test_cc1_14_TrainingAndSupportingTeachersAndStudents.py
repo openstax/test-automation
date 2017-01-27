@@ -22,16 +22,16 @@ from staxing.helper import Teacher, Student
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
         7704, 7705, 7706, 7707, 7708,
-        7709, 7710, 7711, 7712, 7713,
-        7714
+        7709, 7710, 7711, 7712, 7713
     ])
 )
 
@@ -44,24 +44,35 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.student = Student(
-            use_env_vars=True,
-            existing_driver=self.teacher.driver,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.student = Student(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.teacher = Teacher(
+                use_env_vars=True
+            )
+            self.student = Student(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver,
+            )
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.teacher.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.teacher.driver.session_id),
+                **self.ps.test_updates
+            )
+        self.student = None
         try:
             self.teacher.delete()
         except:
@@ -576,6 +587,7 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7714 - 011 - Teacher | View instructions for Legacy users
     # transitioning to Concept Coach
     @pytest.mark.skipif(str(7714) not in TESTS, reason='Excluded')
@@ -600,3 +612,4 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''

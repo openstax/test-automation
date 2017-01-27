@@ -19,10 +19,11 @@ from staxing.helper import Admin, ContentQA, Teacher
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
@@ -51,28 +52,35 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.admin = Admin(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.content = ContentQA(
-            use_env_vars=True,
-            existing_driver=self.admin.driver,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.admin = Admin(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.content = ContentQA(
+                use_env_vars=True,
+                existing_driver=self.admin.driver,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.admin = Admin(
+                use_env_vars=True
+            )
+            self.content = ContentQA(
+                use_env_vars=True,
+                existing_driver=self.admin.driver,
+            )
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.content.driver.session_id),
-            **self.ps.test_updates
-        )
-        try:
-            self.content.delete()
-        except:
-            pass
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.admin.driver.session_id),
+                **self.ps.test_updates
+            )
+        self.content = None
         try:
             self.admin.delete()
         except:

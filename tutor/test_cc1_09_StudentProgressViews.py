@@ -19,14 +19,15 @@ from staxing.helper import Student
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        7732, 7733, 7735, 7737  # 7736,
+        7732, 7733, 7735, 7737
     ])
 )
 
@@ -39,21 +40,27 @@ class TestStudentProgressViews(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.student = Student(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.student = Student(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.student = Student(
+                use_env_vars=True,
+            )
         self.student.username = os.getenv('STUDENT_USER_CC')
         self.student.login()
         self.student.sleep(5)  # for CNX redirect
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.student.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.student.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             self.student.delete()
         except:
@@ -192,9 +199,19 @@ class TestStudentProgressViews(unittest.TestCase):
         except:
             print('Two-step message not seen.')
 
+        # Go to the first question
+        ids = 0
+        self.student.find(
+            By.XPATH, "//div[@class='task-breadcrumbs']/span").click()
+
         # Work through Concept Coach
         page = self.student.driver.page_source
         while 'or review your work below.' not in page:
+            self.student.find(
+                By.XPATH, "//span[@class='exercise-identifier-link']/span[2]")
+            ids += 1
+
+            action = False
             # Free response
             try:
                 self.student.find(By.TAG, 'textarea').send_keys(chomsky())
@@ -285,8 +302,9 @@ class TestStudentProgressViews(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7736 - 004 - Student | Return to current position in an assignment
-    '''@pytest.mark.skipif(str(7736) not in TESTS, reason='Excluded')
+    @pytest.mark.skipif(str(7736) not in TESTS, reason='Excluded')
     def test_student_return_to_current_position_in_an_assignment_7736(self):
         """Return to current position in an assignment.
 
