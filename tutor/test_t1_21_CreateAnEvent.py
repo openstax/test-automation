@@ -29,13 +29,13 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8117, 8118, 8119, 8120, 8121,
-        8122, 8123, 8124, 8125, 8126,
-        8127, 8128, 8129, 8130, 8131,
-        8132, 8133, 8134, 8135, 8136,
-        8137, 8138, 8139, 8140, 8141,
-        8142, 8143, 8144, 8145, 8146,
-        8147, 111249
+        8118, 8119, 8120, 8121, 8122,
+        8123, 8124, 8125, 8126, 8127,
+        8128, 8129, 8130, 8131, 8132,
+        8133, 8134, 8135, 8136, 8137,
+        8138, 8139, 8140, 8141, 8142,
+        8143, 8144, 8145, 8146, 8147,
+        111249
     ])
 )
 
@@ -73,6 +73,7 @@ class TestCreateAnEvent(unittest.TestCase):
         except:
             pass
 
+    '''
     # Case C8117 - 001 - Teacher | Teacher creates an event
     @pytest.mark.skipif(str(8117) not in TESTS, reason='Excluded')
     def test_teacher_create_an_event_8117(self):
@@ -139,6 +140,7 @@ class TestCreateAnEvent(unittest.TestCase):
                 "//label[contains(text(), '" + assignment_name + "')]")
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C8118 - 002 - Teacher | Add an event using the Add Assignment
     # drop down menu
