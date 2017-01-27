@@ -26,8 +26,8 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14651, 14652, 14653, 14655, 14656,
-        14657, 14850, 14658, 14660, 14661
+        14651, 14652, 14657, 14850, 14658,
+        14660, 14661
     ])
 )
 
@@ -139,6 +139,7 @@ class TestImproveCourseManagement(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # 14653 - 003 - Teacher | Move a student and their data to a new section
     @pytest.mark.skipif(str(14653) not in TESTS, reason='Excluded')
     def test_teacher_move_a_student_and_their_data_to_new_section_14653(self):
@@ -320,6 +321,7 @@ class TestImproveCourseManagement(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # 14657 - 006 - Teacher | In Student Scores dropped students are not
     # displayed
