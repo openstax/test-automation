@@ -8,12 +8,12 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
-
+from selenium.webdriver.common.keys import Keys
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher
+from staxing.helper import Teacher, Student, Admin
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -26,13 +26,14 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14761, 14762, 14763, 14764, 14767,
-        14768, 14772, 14773, 14774, 14776,
-        14777, 14778, 14779, 14780, 14781,
-        14782, 14783, 14784, 14785, 14786,
-        14787, 14788, 14789, 14790, 14791,
-        14792, 14793, 14794, 14795, 14796,
         85292
+        # 14761, 14762, 14763, 14764, 14767,
+        # 14768, 14772, 14773, 14774, 14776,
+        # 14777, 14778, 14779, 14780, 14781,
+        # 14782, 14783, 14784, 14785, 14786,
+        # 14787, 14788, 14789, 14790, 14791,
+        # 14792, 14793, 14794, 14795, 14796,
+        # 85292
     ])
 )
 
@@ -45,11 +46,34 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.student = Student(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.admin = Admin(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.teacher = Teacher(
+                use_env_vars=True,
+            )
+            self.student = Student(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver
+            )
+            self.admin = Admin(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver
+            )
 
     def tearDown(self):
         """Test destructor."""
@@ -950,11 +974,11 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
 
         Steps:
         Login as a student.
-        Click on the student name
-        From the dropdown menu click on my account
-        In the new tab that opened, modify the username.
-        Logout
-        Login with the new username
+        Click on a course
+        Open the user menu
+        Click on "Change Student ID"
+        Enter an new Student ID
+        Click save
 
         Expected Result:
         Able to modify the username and login successfully with it
@@ -970,6 +994,36 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # change student ID
+        self.student.login()
+        self.student.find(By.XPATH, '//p[@data-is-beta="true"]').click()
+        self.student.open_user_menu()
+        self.student.find(By.LINK_TEXT, 'Change Student ID').click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//input[@placeholder="School issued ID"]')
+            )
+        ).send_keys("new_student_id")
+        self.student.find(
+            By.XPATH, '//button[text()="Save"]'
+        ).click()
+        # change the student ID back
+        self.student.sleep(3)
+        self.student.open_user_menu()
+        self.student.find(By.LINK_TEXT, 'Change Student ID').click()
+        new_id = self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//input[@placeholder="School issued ID"]')
+            )
+        ).get_attribute("value")
+        assert("new_student_id" in new_id), "ID not changed"
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//input[@placeholder="School issued ID"]')
+            )
+        ).send_keys(Keys.BACK_SPACE*14)
+        self.student.find(
+            By.XPATH, '//button[text()="Save"]'
+        ).click()
 
         self.ps.test_updates['passed'] = True
