@@ -14,7 +14,7 @@ from selenium.common.exceptions import ElementNotVisibleException
 from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher, Student
+from staxing.helper import Teacher, Student, Admin
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -55,11 +55,21 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
                 pasta_user=self.ps,
                 capabilities=self.desired_capabilities
             )
+            self.admin = Admin(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
         else:
             self.teacher = Teacher(
                 use_env_vars=True
             )
             self.student = Student(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver,
+            )
+            self.admin = Admin(
                 use_env_vars=True,
                 existing_driver=self.teacher.driver,
             )
@@ -102,7 +112,65 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # create notification
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.find(
+            By.LINK_TEXT, 'Admin'
+        ).click()
+        self.admin.find(
+            By.XPATH, '//a[text()="System Setting"]'
+        ).click()
+        self.admin.find(
+            By.XPATH, '//a[text()="Notifications"]'
+        ).click()
+        self.admin.find(
+            By.ID, 'message'
+        ).send_keys("test_notification")
+        self.admin.find(
+            By.XPATH, '//input[@value="Add"]'
+        ).click()
+        self.admin.find(
+            By.XPATH, '//a[text()="admin "]'
+        ).click()
+        self.admin.find(
+            By.XPATH, '//a[text()="Sign out!"]'
+        ).click()
+        # check that notification appears
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//p[@data-is-beta="true"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[contains(@class,"notifications-bar")]' +
+                 '//span[text()="test_notification"]'
+                )
+            )
+        )
+        self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"notifications-bar")]' +
+            '//span[text()="test_notification"]'
+        )
+        self.teacher.logout()
+        # remove notification
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.find(
+            By.LINK_TEXT, 'Admin'
+        ).click()
+        self.admin.find(
+            By.XPATH, '//a[text()="System Setting"]'
+        ).click()
+        self.admin.find(
+            By.XPATH, '//a[text()="Notifications"]'
+        ).click()
+        self.admin.find(
+            By.XPATH, '//a[text()="Remove"]'
+        ).click()
+        self.admin.driver.switch_to_alert().accept()
 
         self.ps.test_updates['passed'] = True
 
@@ -159,6 +227,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(1)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('getting started')
@@ -202,10 +271,11 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(1)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(
-            By.XPATH, '//center[text()="Concept Coach Help Center"]'
+            By.XPATH, '//center[text()="Tutor Support"]'
         )
 
         self.ps.test_updates['passed'] = True
@@ -237,6 +307,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(1)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -276,6 +347,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(1)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -314,6 +386,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(1)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -355,6 +428,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(1)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -404,6 +478,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(1)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -454,6 +529,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(1)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -516,6 +592,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(1)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -580,6 +657,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(1)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -632,6 +710,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(1)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -676,6 +755,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(1)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -801,17 +881,20 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         # Test steps and verification assertions
         self.student.login()
+        self.student.find(
+            By.XPATH, '//p[@data-is-beta="true"]'
+        ).click()
         self.student.open_user_menu()
         self.student.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.student.sleep(1)
         window_with_help = self.student.driver.window_handles[1]
         self.student.driver.switch_to_window(window_with_help)
         self.student.page.wait_for_page_load()
         self.student.find(
-            By.XPATH, '//center[text()="Concept Coach Help Center"]'
+            By.XPATH, '//center[text()="Tutor Support"]'
         )
-
         self.ps.test_updates['passed'] = True
 
     '''
@@ -1110,7 +1193,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """Faulty URL shows a styled 404 error.
 
         Steps:
-        o to https://tutor-qa.openstax.org/not_a_real_page
+        go to https://tutor-qa.openstax.org/not_a_real_page
 
         Expected Result:
         A styled error page is displayed
@@ -1121,9 +1204,10 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.login()
         self.teacher.get('https://tutor-qa.openstax.org/not_a_real_page')
         self.teacher.wait.until(
-            expect.visibility_of_element_located(
+            expect.presence_of_element_located(
                 (By.XPATH,
                  '//h1[contains(text(),"Uh-oh, no page here")]')
             )
