@@ -36,8 +36,8 @@ TESTS = os.getenv(
         8063, 8064, 8065, 8066, 8067,
         8068, 8069, 8070, 8071, 8072,
         8073, 8074, 8075, 8076, 8077,
-        8078, 8079, 8080, 8081, 8082,
-        8083, 8084, 111247
+        8078, 8080, 8081, 8082, 8083,
+        8084, 111247
     ])
 )
 
@@ -5669,6 +5669,7 @@ class TestCreateAHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8079 - 052 - Teacher | Remove an assessment from the order list
     @pytest.mark.skipif(str(8079) not in TESTS, reason='Excluded')
     def test_teacher_remove_an_assessment_from_the_order_list_8079(self):
@@ -5779,6 +5780,7 @@ class TestCreateAHomework(unittest.TestCase):
             'Problem list should not be present'
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C8080 - 053 - Teacher | Remove an assessment from a homework
     # from the Select Problems pane
