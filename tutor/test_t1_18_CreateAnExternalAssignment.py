@@ -95,8 +95,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
@@ -170,8 +169,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
@@ -192,10 +190,10 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # set date
         self.teacher.find(By.ID, 'hide-periods-radio').click()
         today = datetime.date.today()
-        start = randint(1, 10)
-        opens_on = (today + datetime.timedelta(days=start)) \
+        # start = randint(1, 10)
+        opens_on = (today + datetime.timedelta(days=0)) \
             .strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=start + randint(1, 5))) \
+        closes_on = (today + datetime.timedelta(days=1)) \
             .strftime('%m/%d/%Y')
         self.teacher.find(
             By.XPATH, '//div[contains(@class,"-due-date")]' +
@@ -288,8 +286,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
 
         self.teacher.find(
@@ -413,8 +410,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
 
         self.teacher.find(
@@ -483,8 +479,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
 
         self.teacher.find(
@@ -623,8 +618,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
 
         self.teacher.find(
@@ -668,8 +662,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
 
         self.teacher.find(
@@ -723,8 +716,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
 
         self.teacher.find(
@@ -767,8 +759,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
 
         self.teacher.find(
@@ -1138,8 +1129,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
@@ -1180,8 +1170,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
@@ -1487,8 +1476,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
 
         self.teacher.find(
@@ -1717,8 +1705,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
 
         self.teacher.find(
@@ -1953,8 +1940,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
 
         self.teacher.find(
@@ -2145,7 +2131,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         """Change all feilds in an unopened External Assignment.
 
         Steps:
-        Create an unopened assignement
+        Create an unopened assignment
         Click on the unopoened Assignment on the calendar
         Enter an Assignment name into the Assignment Name text box
         Enter a description into the Description text box
@@ -2250,7 +2236,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         """Change all feilds in a draft External Assignment.
 
         Steps:
-        Create a draft assignement
+        Create a draft assignment
         Click on the draft Assignment on the calendar
         Enter an Assignment name into the Assignment Name text box
         Enter a description into the Description text box
@@ -2350,7 +2336,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         """Change all possible feilds in an open External Assignment.
 
         Steps:
-        Create an open assignement
+        Create an open assignment
         Click on the open Assignment on the calendar
         Enter an Assignment name into the Assignment Name text box
         Enter a description into the Description text box
