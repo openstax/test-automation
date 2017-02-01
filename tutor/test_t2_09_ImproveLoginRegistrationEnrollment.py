@@ -26,7 +26,7 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        85292
+        14762
         # 14761, 14762, 14763, 14764, 14767,
         # 14768, 14772, 14773, 14774, 14776,
         # 14777, 14778, 14779, 14780, 14781,
@@ -172,8 +172,17 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, 'Course Settings and Roster').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//span[@class="enrollment-code-link"]' +
+                 '//input[contains(@value,"openstax.org/enroll/")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # C14762 - 004 - Student | Register for Tutor with a custom URL
@@ -204,6 +213,22 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        # get url as a teacher
+        self.teacher.login()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, 'Course Settings and Roster').click()
+        url = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//span[@class="enrollment-code-link"]//input')
+            )
+        ).get_attribute("value")
+        self.teacher.logout()
+        # use the url as a student
+        self.teacher.get(url)
+
+        self.student.sleep(5)
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
@@ -947,10 +972,11 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         """Correct a student ID.
 
         Steps:
-
+        Navigate to the Course Roster and Settings.
+        In the Student ID column, double click to change it.
 
         Expected Result:
-
+        Student ID is corrected.
         """
         self.ps.test_updates['name'] = 't2.09.032' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -963,8 +989,53 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        # change student id
+        self.teacher.login()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, 'Course Settings and Roster').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="student-id"]//i[@type="edit"]')
+            )
+        ).click()
+        old_id = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="student-id"]//input[@type="text"]')
+            )
+        ).get_attribute("value")
+        self.teacher.find(
+            By.XPATH, '//div[@class="student-id"]//input[@type="text"]'
+        ).send_keys(Keys.RIGHT)
+        for i in "new_student_id":
+            self.teacher.find(
+                By.XPATH, '//div[@class="student-id"]//input[@type="text"]'
+            ).send_keys(i)
+        self.teacher.find(
+            By.XPATH, '//div[@class="student-id"]//i[@type="edit"]'
+        ).click()
+        # check that the id was changed
+        self.teacher.sleep(2)
+        self.teacher.find(
+            By.XPATH, '//div[@class="student-id"]//i[@type="edit"]'
+        ).click()
+        new_id = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="student-id"]//input[@type="text"]')
+            )
+        ).get_attribute("value")
+        assert(old_id+"new_student_id" == new_id), "ID not changed"
+        # change the id back
+        self.teacher.find(
+            By.XPATH, '//div[@class="student-id"]//input[@type="text"]'
+        ).send_keys(Keys.RIGHT)
+        for _ in range(14):
+            self.teacher.find(
+                By.XPATH, '//div[@class="student-id"]//input[@type="text"]'
+            ).send_keys(Keys.BACKSPACE)
+        self.teacher.find(
+            By.XPATH, '//div[@class="student-id"]//i[@type="edit"]'
+        ).click()
         self.ps.test_updates['passed'] = True
 
     # C85292 - 033 - Student | Change user ID
@@ -999,6 +1070,11 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         self.student.find(By.XPATH, '//p[@data-is-beta="true"]').click()
         self.student.open_user_menu()
         self.student.find(By.LINK_TEXT, 'Change Student ID').click()
+        old_id = self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//input[@placeholder="School issued ID"]')
+            )
+        ).get_attribute("value")
         self.student.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//input[@placeholder="School issued ID"]')
@@ -1016,12 +1092,13 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
                 (By.XPATH, '//input[@placeholder="School issued ID"]')
             )
         ).get_attribute("value")
-        assert("new_student_id" in new_id), "ID not changed"
-        self.student.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//input[@placeholder="School issued ID"]')
-            )
-        ).send_keys(Keys.BACK_SPACE*14)
+        assert(old_id+"new_student_id" == new_id), "ID not changed"
+        for _ in range(14):
+            self.student.wait.until(
+                expect.visibility_of_element_located(
+                    (By.XPATH, '//input[@placeholder="School issued ID"]')
+                )
+            ).send_keys(Keys.BACKSPACE)
         self.student.find(
             By.XPATH, '//button[text()="Save"]'
         ).click()
