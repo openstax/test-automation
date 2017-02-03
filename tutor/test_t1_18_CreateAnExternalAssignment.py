@@ -563,7 +563,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -575,7 +575,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -589,9 +589,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.page.wait_for_page_load()
         self.teacher.find(
             By.XPATH, '//button[contains(@class,"-publish")]').click()
-        self.teacher.sleep(3)
-        assert('plans' in self.teacher.current_url()), \
-            'assignment did not publish'
+        # self.teacher.sleep(50)
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 '//div/label[contains(@data-title,"' + assignment_name + '")]'
+                 )
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -627,9 +632,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH,
-                 '//button[@aria-role="close" and ' +
-                 '@type="button" and text()="Cancel"]')
+                (By.XPATH, '//button[text()="Cancel"]')
             )
         ).click()
         assert('month' in self.teacher.current_url()), \
@@ -677,9 +680,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.find(
             By.ID, 'reading-title').send_keys('new_name009')
         self.teacher.find(
-            By.XPATH,
-            '//button[@aria-role="close" and' +
-            '@type="button" and text()="Cancel"]'
+            By.XPATH, '//button[text()="Cancel"]'
         ).click()
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
         wait.until(
@@ -826,7 +827,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -838,7 +839,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -853,8 +854,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
         wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH,
-                 '//button[contains(@aria-role,"close") and @type="button"]')
+                (By.XPATH, '//button[text()="Cancel"]')
             )
         ).click()
         assert('month' in self.teacher.current_url()), \
@@ -902,7 +902,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -914,7 +914,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -935,8 +935,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.find(
             By.ID, 'reading-title').send_keys('new_name013')
         self.teacher.find(
-            By.XPATH,
-            '//button[contains(@aria-role,"close") and @type="button"]'
+            By.XPATH, '//button[text()="Cancel"]'
         ).click()
         wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME)
         wait.until(
@@ -987,7 +986,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -998,7 +997,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1060,7 +1059,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1072,7 +1071,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1227,7 +1226,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1238,7 +1237,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1317,7 +1316,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1328,7 +1327,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1408,7 +1407,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1419,7 +1418,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1557,7 +1556,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1568,7 +1567,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1635,7 +1634,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1646,7 +1645,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1783,7 +1782,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1793,7 +1792,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1862,7 +1861,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1873,7 +1872,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2021,7 +2020,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2032,7 +2031,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2092,7 +2091,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2103,7 +2102,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2167,7 +2166,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2178,7 +2177,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2272,7 +2271,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2283,7 +2282,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2370,7 +2369,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2381,7 +2380,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2468,6 +2467,26 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
+        add_external_bar = self.teacher.find(
+            By.LINK_TEXT, 'Add External Assignment')
+        calendar_date = self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
+            )
+        )
+        self.teacher.driver.execute_script(
+            'return arguments[0].scrollIntoView();', add_external_bar)
+        self.teacher.sleep(1)
+        actions = ActionChains(self.teacher.driver)
+        actions.drag_and_drop(add_external_bar, calendar_date)
+        actions.perform()
+        self.teacher.sleep(3)
+        assert('external/new' in self.teacher.current_url()),\
+            'not at Add External Assignment page'
 
         self.ps.test_updates['passed'] = True
