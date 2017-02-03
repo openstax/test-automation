@@ -29,13 +29,15 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8118, 8119, 8120, 8121, 8122,
-        8123, 8124, 8125, 8126, 8127,
-        8128, 8129, 8130, 8131, 8132,
-        8133, 8134, 8135, 8136, 8137,
-        8138, 8139, 8140, 8141, 8142,
-        8143, 8144, 8145, 8146, 8147,
-        111249
+        8146
+
+        # 8118, 8119, 8120, 8121, 8122,
+        # 8123, 8124, 8125, 8126, 8127,
+        # 8128, 8129, 8130, 8131, 8132,
+        # 8133, 8134, 8135, 8136, 8137,
+        # 8138, 8139, 8140, 8141, 8142,
+        # 8143, 8144, 8145, 8146, 8147,
+        # 111249
     ])
 )
 
@@ -106,9 +108,8 @@ class TestCreateAnEvent(unittest.TestCase):
                 (By.LINK_TEXT, 'Add Event')
             )
         ).click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -171,7 +172,7 @@ class TestCreateAnEvent(unittest.TestCase):
                 (By.LINK_TEXT, 'Add Event')
             )
         ).click()
-        time.sleep(1)
+        self.teacher.sleep(1)
         assert('event/new' in self.teacher.current_url()),\
             'not at Add Event Assignment page'
 
@@ -252,9 +253,8 @@ class TestCreateAnEvent(unittest.TestCase):
                 (By.LINK_TEXT, 'Add Event')
             )
         ).click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -291,7 +291,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ' and not(contains(@class,"disabled")) ' +
             ' and contains(text(),"' + (closes_on[3:5]).lstrip('0') + '")]'
         ).click()
-        time.sleep(0.5)
+        self.teacher.sleep(0.5)
         self.teacher.driver.find_element(
             By.CLASS_NAME, 'assign-to-label').click()
         self.teacher.driver.find_element(
@@ -313,7 +313,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ' and not(contains(@class,"disabled")) ' +
             'and contains(text(),"' + (opens_on[3:5]).lstrip('0') + '")]'
         ).click()
-        time.sleep(0.5)
+        self.teacher.sleep(0.5)
         self.teacher.driver.find_element(
             By.CLASS_NAME, 'assign-to-label').click()
 
@@ -370,9 +370,8 @@ class TestCreateAnEvent(unittest.TestCase):
                 (By.LINK_TEXT, 'Add Event')
             )
         ).click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -403,7 +402,7 @@ class TestCreateAnEvent(unittest.TestCase):
                 '//div[contains(@class,"datepicker__input")]')
             self.teacher.driver.execute_script(
                 'window.scrollBy(0,'+str(element.size['height']+50)+');')
-            time.sleep(0.5)
+            self.teacher.sleep(0.5)
             element.click()
             # get calendar to correct month
             month = today.month
@@ -422,7 +421,7 @@ class TestCreateAnEvent(unittest.TestCase):
                 ' and not(contains(@class,"disabled")) ' +
                 'and contains(text(),"' + (closes_on[3:5]).lstrip('0') + '")]'
             ).click()
-            time.sleep(0.5)
+            self.teacher.sleep(0.5)
             self.teacher.driver.find_element(
                 By.XPATH, '//div[contains(@class,"tasking-plan")]' +
                 '[' + str(x+1) + ']' +
@@ -446,7 +445,7 @@ class TestCreateAnEvent(unittest.TestCase):
                 ' and not(contains(@class,"disabled")) ' +
                 'and contains(text(),"' + (opens_on[3:5]).lstrip('0') + '")]'
             ).click()
-            time.sleep(0.5)
+            self.teacher.sleep(0.5)
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(@class,"-publish")]').click()
         try:
@@ -497,9 +496,8 @@ class TestCreateAnEvent(unittest.TestCase):
                 (By.LINK_TEXT, 'Add Event')
             )
         ).click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -515,7 +513,7 @@ class TestCreateAnEvent(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class," -save")]')
             )
@@ -568,9 +566,8 @@ class TestCreateAnEvent(unittest.TestCase):
                 (By.LINK_TEXT, 'Add Event')
             )
         ).click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -586,7 +583,7 @@ class TestCreateAnEvent(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class," -publish")]')
             )
@@ -697,16 +694,14 @@ class TestCreateAnEvent(unittest.TestCase):
                 (By.LINK_TEXT, 'Add Event')
             )
         ).click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
         )
         self.teacher.driver.find_element(
-            By.XPATH,
-            '//button[contains(@aria-role,"close") and text()="Cancel"]'
+            By.XPATH, '//button[text()="Cancel"]'
         ).click()
         assert('month' in self.teacher.current_url()),\
             'not back at calendar dashboard after canceling assignment'
@@ -747,9 +742,8 @@ class TestCreateAnEvent(unittest.TestCase):
                 (By.LINK_TEXT, 'Add Event')
             )
         ).click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -757,10 +751,9 @@ class TestCreateAnEvent(unittest.TestCase):
         self.teacher.driver.find_element(
             By.ID, 'reading-title').send_keys('event name')
         self.teacher.driver.find_element(
-            By.XPATH,
-            '//button[contains(@aria-role,"close") and text()="Cancel"]'
+            By.XPATH, '//button[text()="Cancel"]'
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
@@ -802,17 +795,15 @@ class TestCreateAnEvent(unittest.TestCase):
                 (By.LINK_TEXT, 'Add Event')
             )
         ).click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
         )
         self.teacher.driver.find_element(
             By.XPATH,
-            '//button[contains(@aria-role,"close") and ' +
-            'contains(@class,"close-x")]'
+            '//button[contains(@class,"close-x")]'
         ).click()
         assert('month' in self.teacher.current_url()),\
             'not back at calendar dashboard after canceling assignment'
@@ -851,9 +842,8 @@ class TestCreateAnEvent(unittest.TestCase):
                 (By.LINK_TEXT, 'Add Event')
             )
         ).click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -862,10 +852,9 @@ class TestCreateAnEvent(unittest.TestCase):
             By.ID, 'reading-title').send_keys('event name')
         self.teacher.driver.find_element(
             By.XPATH,
-            '//button[contains(@aria-role,"close") and ' +
-            'contains(@class,"close-x")]'
+            '//button[contains(@class,"close-x")]'
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
@@ -923,8 +912,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH,
-                 '//button[contains(@aria-role,"close") and text()="Cancel"]')
+                (By.XPATH, '//button[text()="Cancel"]')
             )
         ).click()
         assert('month' in self.teacher.current_url()),\
@@ -987,8 +975,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.teacher.driver.find_element(
             By.ID, 'reading-title').send_keys('event name')
         self.teacher.driver.find_element(
-            By.XPATH,
-            '//button[contains(@aria-role,"close") and text()="Cancel"]'
+            By.XPATH, '//button[text()="Cancel"]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -1053,8 +1040,7 @@ class TestCreateAnEvent(unittest.TestCase):
         )
         self.teacher.driver.find_element(
             By.XPATH,
-            '//button[contains(@aria-role,"close") and ' +
-            'contains(@class,"close-x")]'
+            '//button[contains(@class,"close-x")]'
         ).click()
         assert('month' in self.teacher.current_url()),\
             'not back at calendar dashboard after canceling draft'
@@ -1119,8 +1105,7 @@ class TestCreateAnEvent(unittest.TestCase):
             By.ID, 'reading-title').send_keys('event name')
         self.teacher.driver.find_element(
             By.XPATH,
-            '//button[contains(@aria-role,"close") and ' +
-            'contains(@class,"close-x")]'
+            '//button[contains(@class,"close-x")]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -1165,9 +1150,8 @@ class TestCreateAnEvent(unittest.TestCase):
                 (By.LINK_TEXT, 'Add Event')
             )
         ).click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -1211,9 +1195,8 @@ class TestCreateAnEvent(unittest.TestCase):
                 (By.LINK_TEXT, 'Add Event')
             )
         ).click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -1470,9 +1453,8 @@ class TestCreateAnEvent(unittest.TestCase):
                 (By.LINK_TEXT, 'Add Event')
             )
         ).click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -1488,7 +1470,7 @@ class TestCreateAnEvent(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"-publish")]')
             )
@@ -1675,9 +1657,8 @@ class TestCreateAnEvent(unittest.TestCase):
                 (By.LINK_TEXT, 'Add Event')
             )
         ).click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -1693,7 +1674,7 @@ class TestCreateAnEvent(unittest.TestCase):
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"-publish")]')
             )
@@ -1872,9 +1853,8 @@ class TestCreateAnEvent(unittest.TestCase):
                 (By.LINK_TEXT, 'Add Event')
             )
         ).click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//button[contains(@class,"footer-instructions")]')
             )
@@ -2143,7 +2123,7 @@ class TestCreateAnEvent(unittest.TestCase):
             By.XPATH, '//div[contains(@class,"datepicker__day")' +
             'and contains(text(),"' + (closes_on[3:5]).lstrip('0') + '")]'
         ).click()
-        time.sleep(0.5)
+        self.teacher.sleep(0.5)
         self.teacher.driver.find_element(
             By.CLASS_NAME, 'assign-to-label').click()
         # publish changes
