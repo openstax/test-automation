@@ -29,16 +29,16 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        7992, 7993, 7994, 7995, 7996,
-        7997, 7998, 7999, 8000, 8001,
-        8002, 8003, 8004, 8005, 8006,
-        8007, 8008, 8009, 8010, 8011,
-        8012, 8013, 8014, 8015, 8016,
-        8017, 8018, 8019, 8020, 8021,
-        8022, 8023, 8024, 8025, 8026,
-        8027, 111246
+        7998, 7999, 8000
+        # 7992, 7993, 7994, 7995, 7996,
+        # 7997, 7998, 7999, 8000, 8001,
+        # 8002, 8003, 8004, 8005, 8006,
+        # 8007, 8008, 8009, 8010, 8011,
+        # 8012, 8013, 8014, 8015, 8016,
+        # 8017, 8018, 8019, 8020, 8021,
+        # 8022, 8023, 8024, 8025, 8026,
+        # 8027, 111246
     ])
-    # 7993 - calendar date still not working
 )
 
 
@@ -95,14 +95,13 @@ class TestCreateAReading(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
-            By.ID,
-            'add-assignment'
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
         )
         # if the Add Assignment menu is not open
-        if assignment_menu.get_attribute('aria-expanded') == 'false':
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
-        assert('readings/new' in self.teacher.current_url()), \
+        assert('reading/new' in self.teacher.current_url()), \
             'not at add readings screen'
 
         self.ps.test_updates['passed'] = True
@@ -125,38 +124,23 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        # # self.teacher.sleep(10)
-        # calendar_dates = wait.until(
-        #     expect.presence_of_all_elements_located(
-        #         (By.CLASS_NAME, 'Day--upcoming')
-        #     )
-        # )
-        # if len(calendar_dates) == 1:
-        #     calendar_dates = [calendar_dates]
-        calendar_date = self.teacher.find(
-            By.XPATH, '//div[contains(@class,"Day--upcoming")]/span'
+        calendar_date = self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
+            )
         )
         self.teacher.driver.execute_script(
             'return arguments[0].scrollIntoView();', calendar_date)
-        self.teacher.driver.execute_script('window.scrollBy(0, -80);')
+        self.teacher.sleep(1)
         actions = ActionChains(self.teacher.driver)
         actions.move_to_element(calendar_date)
+        actions.move_by_offset(0, -35)
         actions.click()
-        # don't know how to add wait, just testing
-        for _ in range(1000):
-            actions.send_keys('slow')
-        self.teacher.sleep(3)
-
-        # It just clicks that is behing the add assignement menu?
-        actions.move_by_offset(2, 15)
+        actions.move_by_offset(30, 15)
         actions.click()
         actions.perform()
-        self.teacher.sleep(1)
-        # self.teacher.find(
-        #     By.XPATH, '//a[contains(text(),"Add Reading")]').click()
-        # self.teacher.sleep(3)
-        assert('readings/new/' in self.teacher.current_url()), \
-            'not at add reading page'
+        assert('reading/new' in self.teacher.current_url()),\
+            'not at Add Reading page'
 
         self.ps.test_updates['passed'] = True
 
@@ -193,10 +177,10 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading003_' + str(randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.wait.until(
@@ -328,10 +312,10 @@ class TestCreateAReading(unittest.TestCase):
         assignment = Assignment()
         assignment_name = 'reading004_' + str(randint(100, 999))
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.wait.until(
@@ -359,8 +343,8 @@ class TestCreateAReading(unittest.TestCase):
                 strftime('%m/%d/%Y')
             element = self.teacher.find(
                 By.XPATH,
-                '//div[contains(@class,"tasking-plan")' +
-                'and contains(@data-reactid,":'+str(x+1)+'")]' +
+                '//div[contains(@class,"tasking-plan")]' +
+                '[' + str(x + 1) + ']' +
                 '//div[contains(@class,"-due-date")]' +
                 '//div[contains(@class,"datepicker__input")]')
             self.teacher.driver.execute_script(
@@ -387,8 +371,8 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.sleep(0.5)
             self.teacher.find(
                 By.XPATH,
-                '//div[contains(@class,"tasking-plan") and' +
-                ' contains(@data-reactid,":'+str(x+1)+'")]' +
+                '//div[contains(@class,"tasking-plan")]' +
+                '[' + str(x + 1) + ']' +
                 '//div[contains(@class,"-open-date")]' +
                 '//div[contains(@class,"datepicker__input")]'
             ).click()
@@ -419,9 +403,11 @@ class TestCreateAReading(unittest.TestCase):
             )
         )
         assignment.select_sections(self.teacher.driver, ['1.1'])
-        self.teacher.find(
+        add_button = self.teacher.find(
             By.XPATH, '//button[text()="Add Readings"]'
-        ).click()
+        )
+        assignment.scroll_to(self.teacher.driver, add_button)
+        add_button.click()
         # publish
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -472,10 +458,10 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading005_' + str(randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.wait.until(
@@ -557,10 +543,10 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading006_' + str(randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.wait.until(
@@ -706,17 +692,15 @@ class TestCreateAReading(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH,
-                 '//button[@aria-role="close" and ' +
-                 '@type="button" and text()="Cancel"]')
+                (By.XPATH, '//button[text()="Cancel"]')
             )
         ).click()
         assert ('calendar' in self.teacher.current_url()),\
@@ -749,10 +733,10 @@ class TestCreateAReading(unittest.TestCase):
         # Test steps and verification assertions
         assignment_name = 'reading009_' + str(randint(100, 999))
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.wait.until(
@@ -763,9 +747,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(By.ID, 'reading-title'). \
             send_keys(assignment_name)
         self.teacher.find(
-            By.XPATH,
-            '//button[@aria-role="close" and ' +
-            '@type="button" and text()="Cancel"]'
+            By.XPATH,'//button[text()="Cancel"]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -799,10 +781,10 @@ class TestCreateAReading(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.wait.until(
@@ -841,10 +823,10 @@ class TestCreateAReading(unittest.TestCase):
         # Test steps and verification assertions
         assignment_name = 'reading011_' + str(randint(100, 999))
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.wait.until(
@@ -925,9 +907,7 @@ class TestCreateAReading(unittest.TestCase):
             ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH,
-                 '//button[@aria-role="close" and ' +
-                 '@type="button" and text()="Cancel"]')
+                (By.XPATH, '//button[text()="Cancel"]')
             )
         ).click()
         assert ('calendar' in self.teacher.current_url()),\
@@ -1001,9 +981,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(By.ID, 'reading-title'). \
             send_keys('EDIT')
         self.teacher.find(
-            By.XPATH,
-            '//button[@aria-role="close" and ' +
-            '@type="button" and text()="Cancel"]'
+            By.XPATH, '//button[text()="Cancel"]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -1187,10 +1165,10 @@ class TestCreateAReading(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.wait.until(
@@ -1229,10 +1207,10 @@ class TestCreateAReading(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.wait.until(
@@ -1521,10 +1499,10 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading021_' + str(randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.wait.until(
@@ -1787,10 +1765,10 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading024_' + str(randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.wait.until(
@@ -2049,10 +2027,10 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading-027_' + str(randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.wait.until(
@@ -2153,10 +2131,10 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading-028_' + str(randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.wait.until(
@@ -2499,10 +2477,10 @@ class TestCreateAReading(unittest.TestCase):
         assignment_name = 'reading-031_' + str(randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.wait.until(
@@ -3059,7 +3037,7 @@ class TestCreateAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C111246 - 004 - Teacher | Add reading by dragging Add Reading to
+    # Case C111246 - 037 - Teacher | Add reading by dragging Add Reading to
     # calendar date
     @pytest.mark.skipif(str(111246) not in TESTS, reason='Excluded')
     def test_teacher_add_reading_by_dragging_add_reading_to_calen_111246(self):
