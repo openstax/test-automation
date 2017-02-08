@@ -633,7 +633,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -647,7 +647,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -703,7 +703,7 @@ class TestCreateAReading(unittest.TestCase):
                 (By.XPATH, '//button[text()="Cancel"]')
             )
         ).click()
-        assert ('calendar' in self.teacher.current_url()),\
+        assert ('month' in self.teacher.current_url()),\
             'not back at calendar after canceling reading'
 
         self.ps.test_updates['passed'] = True
@@ -747,14 +747,14 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(By.ID, 'reading-title'). \
             send_keys(assignment_name)
         self.teacher.find(
-            By.XPATH,'//button[text()="Cancel"]'
+            By.XPATH, '//button[text()="Cancel"]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
         ).click()
-        assert ('calendar' in self.teacher.current_url()),\
+        assert ('month' in self.teacher.current_url()),\
             'not back at calendar after making changes, then canceling reading'
 
         self.ps.test_updates['passed'] = True
@@ -793,7 +793,7 @@ class TestCreateAReading(unittest.TestCase):
                  '//button[@aria-role="close" and contains(@class,"close-x")]')
             )
         ).click()
-        assert ('calendar' in self.teacher.current_url()),\
+        assert ('month' in self.teacher.current_url()),\
             'not back at calendar after canceling reading with x'
 
         self.ps.test_updates['passed'] = True
@@ -845,7 +845,7 @@ class TestCreateAReading(unittest.TestCase):
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
         ).click()
-        assert ('calendar' in self.teacher.current_url()),\
+        assert ('month' in self.teacher.current_url()),\
             'not back at calendar. canceling with x after making changes'
 
         self.ps.test_updates['passed'] = True
@@ -886,7 +886,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -899,7 +899,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -910,7 +910,7 @@ class TestCreateAReading(unittest.TestCase):
                 (By.XPATH, '//button[text()="Cancel"]')
             )
         ).click()
-        assert ('calendar' in self.teacher.current_url()),\
+        assert ('month' in self.teacher.current_url()),\
             'not back at calendar after canceling draft reading'
 
         self.ps.test_updates['passed'] = True
@@ -954,7 +954,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -967,7 +967,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -988,7 +988,7 @@ class TestCreateAReading(unittest.TestCase):
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
         ).click()
-        assert ('calendar' in self.teacher.current_url()),\
+        assert ('month' in self.teacher.current_url()),\
             'not back at calendar after making changes, then canceling reading'
 
         self.ps.test_updates['passed'] = True
@@ -1029,7 +1029,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1043,7 +1043,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1056,7 +1056,7 @@ class TestCreateAReading(unittest.TestCase):
                  '//button[@aria-role="close" and contains(@class,"close-x")]')
             )
         ).click()
-        assert ('calendar' in self.teacher.current_url()),\
+        assert ('month' in self.teacher.current_url()),\
             'not back at calendar after canceling reading with x'
 
         self.ps.test_updates['passed'] = True
@@ -1099,7 +1099,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1113,7 +1113,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1136,7 +1136,7 @@ class TestCreateAReading(unittest.TestCase):
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
         ).click()
-        assert ('calendar' in self.teacher.current_url()),\
+        assert ('month' in self.teacher.current_url()),\
             'not back at calendar. canceling reading with x after changes'
 
         self.ps.test_updates['passed'] = True
@@ -1262,7 +1262,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1276,7 +1276,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1295,7 +1295,7 @@ class TestCreateAReading(unittest.TestCase):
         ).click()
         self.teacher.find(
             By.XPATH, '//button[contains(text(),"Yes")]').click()
-        assert ('calendar' in self.teacher.current_url()), \
+        assert ('month' in self.teacher.current_url()), \
             'not returned to calendar after deleting an assignment'
         counter = 0
         while counter < 6:
@@ -1348,7 +1348,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1362,7 +1362,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1381,7 +1381,7 @@ class TestCreateAReading(unittest.TestCase):
         ).click()
         self.teacher.find(
             By.XPATH, '//button[contains(text(),"Yes")]').click()
-        assert ('calendar' in self.teacher.current_url()), \
+        assert ('month' in self.teacher.current_url()), \
             'not returned to calendar after deleting an assignment'
         counter = 0
         while counter < 6:
@@ -1435,7 +1435,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1449,7 +1449,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1463,7 +1463,7 @@ class TestCreateAReading(unittest.TestCase):
         ).click()
         self.teacher.find(
             By.XPATH, '//button[contains(text(),"Yes")]').click()
-        assert ('calendar' in self.teacher.current_url()), \
+        assert ('month' in self.teacher.current_url()), \
             'not returned to calendar after deleting an assignment'
         self.teacher.get(self.teacher.current_url())
         deleted_reading = self.teacher.find_all(
@@ -1590,7 +1590,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1604,7 +1604,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1679,7 +1679,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1693,7 +1693,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1857,7 +1857,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1871,7 +1871,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1943,7 +1943,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -1957,7 +1957,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2240,7 +2240,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2253,7 +2253,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2365,7 +2365,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2378,7 +2378,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2581,7 +2581,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2594,7 +2594,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2684,7 +2684,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2697,7 +2697,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2790,7 +2790,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2803,7 +2803,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2892,7 +2892,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -2905,7 +2905,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -3006,7 +3006,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
@@ -3019,7 +3019,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.wait.until(
                 expect.presence_of_element_located(
                     (By.XPATH,
-                     '//div[@class="calendar-container container-fluid"]')
+                     '//div[@class="month-wrapper"]')
                 )
             )
             self.teacher.find(
