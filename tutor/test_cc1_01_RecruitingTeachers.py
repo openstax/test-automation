@@ -28,8 +28,7 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         7751, 7752, 7753, 7754, 7755,
-        7756,
-        7770, 7771, 7772, 7774,
+        7756, 7770, 7771, 7772, 7773,
     ])
     # 7754, 7773 not done
 )
@@ -368,6 +367,7 @@ class TestRecruitingTeachers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7757 - 007 - Teacher | Teacher registers to use a CC course
     @pytest.mark.skipif(str(7757) not in TESTS, reason='Excluded')
     def test_teacher_teacher_registers_to_use_a_cc_course_7757(self):
@@ -401,7 +401,9 @@ class TestRecruitingTeachers(unittest.TestCase):
             By.ID, 'signup-form'
         )
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7758 - 008 - Teacher | Teacher uses a web form to sign up for CC
     @pytest.mark.skipif(str(7758) not in TESTS, reason='Excluded')
     def test_teacher_teacher_uses_a_web_form_to_sign_up_for_cc_7758(self):
@@ -477,12 +479,14 @@ class TestRecruitingTeachers(unittest.TestCase):
             'not at thank you page after submitting form'
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7759 - 009 - Teacher | Receive error messages if required fields on
     # the sign up form are blank
     @pytest.mark.skipif(str(7759) not in TESTS, reason='Excluded')
     def test_teacher_receive_error_messages_if_required_fields_are_7759(self):
-        """Receive error messages if required fields on the sign up form are blank.
+        """Receive error messages if required fields on sign up form are blank.
 
         Steps:
         Go to the recruitment website ( http://cc.openstax.org/ )
@@ -527,7 +531,9 @@ class TestRecruitingTeachers(unittest.TestCase):
         )
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7760 - 010 - Teacher | Submit a form to supply required course info
     @pytest.mark.skipif(str(7760) not in TESTS, reason='Excluded')
     def test_teacher_submit_a_form_to_supply_required_course_info_7760(self):
@@ -607,7 +613,9 @@ class TestRecruitingTeachers(unittest.TestCase):
             'not at thank you page after submitting form'
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7761 - 011 - Teacher | Submit co-instructors, classes, names, etc.
     @pytest.mark.skipif(str(7761) not in TESTS, reason='Excluded')
     def test_teacher_submit_coinstructors_classes_names_etc_7761(self):
@@ -662,7 +670,9 @@ class TestRecruitingTeachers(unittest.TestCase):
         )
         textarea.send_keys('co teacher info')
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7762 - 012 - Teacher | Select the textbook to use in the course
     @pytest.mark.skipif(str(7762) not in TESTS, reason='Excluded')
     def test_teacher_select_the_textbook_to_use_in_the_course_7762(self):
@@ -722,7 +732,9 @@ class TestRecruitingTeachers(unittest.TestCase):
             'contains(@class,"select2-selection__rendered")]'
         )
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7763 - 013 - Teacher | Indicate whether the teacher was recruited
     # by OpenStax
     @pytest.mark.skipif(str(7763) not in TESTS, reason='Excluded')
@@ -770,7 +782,9 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.teacher.sleep(0.5)
         textarea.send_keys('recuitment info')
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7764 - 014 - Teacher | Presented a thank you page after registering
     # to use Concept Coach
     @pytest.mark.skipif(str(7764) not in TESTS, reason='Excluded')
@@ -849,7 +863,9 @@ class TestRecruitingTeachers(unittest.TestCase):
             'not at thank you page after submitting form'
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7765 - 015 - Teacher | Sign up for an OpenStax Accounts username
     @pytest.mark.skipif(str(7765) not in TESTS, reason='Excluded')
     def test_teacher_sign_up_for_an_openstax_accounts_username_7765(self):
@@ -927,6 +943,7 @@ class TestRecruitingTeachers(unittest.TestCase):
             'not at thank you page after submitting form'
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C7770 - 020 - Admin | Add co-instructors to a course
     @pytest.mark.skipif(str(7770) not in TESTS, reason='Excluded')
@@ -1168,6 +1185,7 @@ class TestRecruitingTeachers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7774 - 024 - Teacher | Access CC help and support during the course
     @pytest.mark.skipif(str(7774) not in TESTS, reason='Excluded')
     def test_teacher_acccess_cc_help_and_support_during_the_course_7774(self):
@@ -1224,7 +1242,9 @@ class TestRecruitingTeachers(unittest.TestCase):
         ).click()
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7775 - 025 - Teacher | Access CC help and support after course ends
     @pytest.mark.skipif(str(7775) not in TESTS, reason='Excluded')
     def test_teacher_access_cc_help_and_support_after_course_ends_7775(self):
@@ -1264,3 +1284,4 @@ class TestRecruitingTeachers(unittest.TestCase):
         ).click()
 
         self.ps.test_updates['passed'] = True
+    '''
