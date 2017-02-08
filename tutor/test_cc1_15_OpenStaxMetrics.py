@@ -8,20 +8,21 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
+from selenium.webdriver.common.by import By
 # from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher
+from staxing.helper import Admin
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
@@ -36,24 +37,28 @@ class TestOpenStaxMetrics(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.admin = Admin(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.admin = Admin(
+                use_env_vars=True,
+            )
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.teacher.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.admin.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
-            self.teacher.delete()
+            self.admin.delete()
         except:
             pass
 
@@ -86,6 +91,25 @@ class TestOpenStaxMetrics(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.find(
+            By.LINK_TEXT, 'Admin'
+        ).click()
+        self.admin.page.wait_for_page_load()
+        self.admin.find(
+            By.LINK_TEXT, 'Course Organization'
+        ).click()
+        self.admin.find(
+            By.LINK_TEXT, 'Courses'
+        ).click()
+        self.admin.page.wait_for_page_load()
+        self.admin.find(
+            By.LINK_TEXT, 'List Students'
+        ).click()
+        # assert thaken to correct page
+        self.admin.find(
+            By.XPATH, '//h1[contains(text(),"Students for course")]'
+        )
+        assert('student' in self.admin.current_url())
         self.ps.test_updates['passed'] = True

@@ -25,10 +25,11 @@ CaseID = 'skip'
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
@@ -53,10 +54,10 @@ class TestWorkAnExternalAssignment(unittest.TestCase):
         )
         self.teacher = Teacher(
             use_env_vars=True,
+            existing_driver=self.student.driver,
             pasta_user=self.ps,
             capabilities=self.desired_capabilities
         )
-        self.student.login()
         self.teacher.login()
 
         # Create an external assignment for the student to work
@@ -116,13 +117,15 @@ class TestWorkAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             "//button[@class='async-button -publish btn btn-primary']").click()
         self.teacher.sleep(60)
+        self.student.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.student.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.student.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
 
             # Delete the assignment
@@ -158,12 +161,14 @@ class TestWorkAnExternalAssignment(unittest.TestCase):
                         By.XPATH, "//button[@class='btn btn-primary']").click()
                     self.teacher.sleep(5)
                     break
-
+        except:
+            pass
+        try:
             self.teacher.driver.refresh()
             self.teacher.sleep(5)
 
+            self.teacher = None
             self.student.delete()
-            self.teacher.delete()
         except:
             pass
 

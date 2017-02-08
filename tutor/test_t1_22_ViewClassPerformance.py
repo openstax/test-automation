@@ -7,7 +7,7 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-# from random import randint
+from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
@@ -25,10 +25,11 @@ CaseID = 'skip'
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
@@ -46,19 +47,27 @@ class TestViewClassPerformance(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.teacher = Teacher(
+                use_env_vars=True
+            )
         self.teacher.login()
+        self.teacher.select_course(appearance='biology')
+        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.teacher.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.teacher.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             self.teacher.delete()
         except:
@@ -90,11 +99,6 @@ class TestViewClassPerformance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing performance forecast'
 
@@ -128,14 +132,8 @@ class TestViewClassPerformance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing performance forecast'
-
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.CLASS_NAME, 'info-link')
@@ -170,14 +168,8 @@ class TestViewClassPerformance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing performance forecast'
-
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.CLASS_NAME, 'guide-key')
@@ -212,23 +204,17 @@ class TestViewClassPerformance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
 
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing performance forecast'
-
         self.teacher.open_user_menu()
         self.teacher.wait.until(
             expect.presence_of_element_located(
                 (By.LINK_TEXT, 'Dashboard')
             )
         ).click()
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class,"calendar-container")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -258,14 +244,9 @@ class TestViewClassPerformance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
 
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing performance forecast'
-
         self.teacher.find(By.CLASS_NAME, 'active')
 
         self.ps.test_updates['passed'] = True
@@ -298,59 +279,61 @@ class TestViewClassPerformance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
         # Create an empty period to use for the test
+        period_name = "22_" + str(randint(100, 999))
         self.teacher.open_user_menu()
         self.teacher.find(
             By.PARTIAL_LINK_TEXT, 'Course Settings and Roster').click()
-        self.teacher.sleep(5)
-
+        self.teacher.page.wait_for_page_load()
         self.teacher.find(
-            By.XPATH, "//li[@class='control add-period']/button").click()
-        self.teacher.find(
-            By.XPATH,
-            "//input[@class='form-control empty']").send_keys("Epic 22")
+            By.XPATH, "//div[@class='control add-period']/button").click()
         self.teacher.find(
             By.XPATH,
-            "//button[@class='async-button " +
-            "-edit-period-confirm btn btn-default']").click()
-        self.teacher.sleep(5)
-
+            "//input[@class='form-control empty']").send_keys(period_name)
+        self.teacher.find(
+            By.XPATH,
+            "//button[contains(@class,'-edit-period-confirm')]"
+        ).click()
+        popup = self.teacher.find(
+            By.XPATH,
+            '//div[@class="teacher-edit-period-modal fade in modal"]')
+        self.teacher.wait.until(
+            expect.staleness_of(
+                (popup)
+            )
+        )
         # Check the new empty period in Performance Forecast
         self.teacher.open_user_menu()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        self.teacher.find(
+            By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing performance forecast'
-
         self.teacher.wait.until(
-            expect.visibility_of_element_located((
-                By.LINK_TEXT, 'Epic 22'))).click()
-
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, period_name)
+            )
+        ).click()
         self.teacher.wait.until(
-            expect.visibility_of_element_located((
-                By.CLASS_NAME, 'no-data-message')))
-        self.teacher.sleep(5)
-
-        # Archive the new period
+            expect.visibility_of_element_located(
+                (By.CLASS_NAME, 'no-data-message')
+            )
+        )
+        # Archive the new period as clean up
         self.teacher.open_user_menu()
         self.teacher.find(
-            By.PARTIAL_LINK_TEXT, 'Course Settings and Roster').click()
-        self.teacher.sleep(5)
-
+            By.LINK_TEXT, 'Course Settings and Roster'
+        ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located((
-                By.LINK_TEXT, 'Epic 22'))).click()
-
+                By.LINK_TEXT, period_name)
+            )
+        ).click()
         self.teacher.find(
             By.XPATH, "//a[@class='control archive-period']").click()
         self.teacher.find(
             By.XPATH,
             "//button[@class='async-button archive-section btn btn-default']"
         ).click()
-        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -380,22 +363,14 @@ class TestViewClassPerformance(unittest.TestCase):
         ]
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
+        # Test steps and verification assertion
         assert('guide' in self.teacher.current_url()), \
             'Not viewing performance forecast'
-
-        weak = self.teacher.driver.find_elements_by_xpath(
+        weak = self.teacher.find_all(
+            By.XPATH,
             "//div[@class='chapter-panel weaker']/div[@class='sections']/div")
-
         assert(len(weak) <= 4), \
             'Not viewing performance forecast'
-
-        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -428,21 +403,12 @@ class TestViewClassPerformance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.teacher.current_url()), \
             'Not viewing performance forecast'
-
         self.teacher.page.wait_for_page_load()
-
-        panels = self.teacher.driver.find_elements_by_class_name(
-            'chapter-panel')
+        panels = self.teacher.find_all(By.CLASS_NAME, 'chapter-panel')
         for panel in panels:
             panel.find_elements_by_class_name('chapter')
             panel.find_elements_by_class_name('sections')
-        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
