@@ -26,14 +26,10 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14762
-        # 14761, 14762, 14763, 14764, 14767,
-        # 14768, 14772, 14773, 14774, 14776,
-        # 14777, 14778, 14779, 14780, 14781,
-        # 14782, 14783, 14784, 14785, 14786,
-        # 14787, 14788, 14789, 14790, 14791,
-        # 14792, 14793, 14794, 14795, 14796,
-        # 85292
+        14761, 14762, 14763, 14764, 14767,
+        14768, 14783, 14784, 14787, 14789,
+        14790, 14791, 14792, 14793, 14794,
+        14795, 14796, 85292
     ])
 )
 
@@ -350,6 +346,7 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # C14772 - 009 - Student | Agree to join or drop from each research
     # protocol that is running in my course
     @pytest.mark.skipif(str(14772) not in TESTS, reason='Excluded')
@@ -376,7 +373,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14773 - 010 - Researcher | Gather electronic parental consent for minors
     @pytest.mark.skipif(str(14773) not in TESTS, reason='Excluded')
     def test_researcher_gather_electronic_parental_consent_from_mi_14773(self):
@@ -402,7 +401,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14774 - 011 - Admin | Gather electronic parental consent from minors
     @pytest.mark.skipif(str(14774) not in TESTS, reason='Excluded')
     def test_admin_gather_electronic_parental_consent_from_minors_14774(self):
@@ -428,7 +429,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14776 - 012 - Researcher | Enable/Disable 'ask me later' for consent
     @pytest.mark.skipif(str(14776) not in TESTS, reason='Excluded')
     def test_researcher_enable_or_disable_ask_me_later_for_consent_14776(self):
@@ -454,7 +457,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14777 - 013 - Admin | Enable/Disable 'ask me later' for consent
     @pytest.mark.skipif(str(14777) not in TESTS, reason='Excluded')
     def test_admin_enable_or_disable_ask_me_later_for_consent_14777(self):
@@ -480,7 +485,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14778 - 014 - Researcher | Reprompt 'ask me later' to students on a
     # schedule
     @pytest.mark.skipif(str(14778) not in TESTS, reason='Excluded')
@@ -507,7 +514,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14779 - 015 - Admit | Reprompt 'ask me later' to students on a
     # schedule
     @pytest.mark.skipif(str(14779) not in TESTS, reason='Excluded')
@@ -534,7 +543,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14780 - 016 - Student | Reprompt 'ask me later' by pressing a button
     @pytest.mark.skipif(str(14780) not in TESTS, reason='Excluded')
     def test_student_reprompt_ask_me_later_by_pressing_a_button_14780(self):
@@ -560,7 +571,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14781 - 017 - Researcher | View number of students who have opted-in,
     # opted-out, ask-me-later
     @pytest.mark.skipif(str(14781) not in TESTS, reason='Excluded')
@@ -587,7 +600,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14782 - 018 - Admin | View number of students who have opted-in,
     # opted-out, ask-me-latered
     @pytest.mark.skipif(str(14782) not in TESTS, reason='Excluded')
@@ -614,6 +629,7 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # C14783 - 019 -  Researcher | Apply one protocol to multiple courses
     @pytest.mark.skipif(str(14783) not in TESTS, reason='Excluded')
@@ -667,6 +683,7 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # C14785 - 021 - Researcher | Set time bounds on when students can be asked
     # for consent
     @pytest.mark.skipif(str(14785) not in TESTS, reason='Excluded')
@@ -693,7 +710,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14786 - 022 - Admin | Set time bounds on when students can be asked
     # for consent
     @pytest.mark.skipif(str(14786) not in TESTS, reason='Excluded')
@@ -720,6 +739,7 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # C14787 - 023 - Researcher | Set if a protocol requires an e-signature
     @pytest.mark.skipif(str(14787) not in TESTS, reason='Excluded')
@@ -747,6 +767,7 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # C14788 - 024 -  Admin | Set if a protocol requires an e-signature
     @pytest.mark.skipif(str(14788) not in TESTS, reason='Excluded')
     def test_admin_set_if_a_protocol_requires_an_esignature_14788(self):
@@ -772,6 +793,7 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # C14789 - 025 - User | Reset password with an unverified email address
     @pytest.mark.skipif(str(14789) not in TESTS, reason='Excluded')
