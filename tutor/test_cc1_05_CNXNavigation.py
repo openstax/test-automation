@@ -27,8 +27,7 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        7625, 7626, 7627, 7628, 7629,
-        7630
+        7625, 7627, 7628, 7630
     ])
 )
 
@@ -135,6 +134,7 @@ class TestCNXNavigation(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7626 - 002 - Student | Following CC login author links are not seen
     @pytest.mark.skipif(str(7626) not in TESTS, reason='Excluded')
     def test_student_following_cc_login_author_links_are_not_seen_7626(self):
@@ -174,6 +174,7 @@ class TestCNXNavigation(unittest.TestCase):
             '//span[@class="list-comma" and text()="OpenStax College"]'
         )
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C7627 - 003 - Student | Able to use the table of contents to
     # navigate the book without impacting the reading assignment
@@ -271,6 +272,7 @@ class TestCNXNavigation(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7629 - 005 - Teacher | Able to search within the book
     @pytest.mark.skipif(str(7629) not in TESTS, reason='Excluded')
     def test_teacher_able_to_search_within_the_book_7629(self):
@@ -338,6 +340,7 @@ class TestCNXNavigation(unittest.TestCase):
         )
         teacher.delete()
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C7630 - 006 - Admin | CNX URLs are shorter
     @pytest.mark.skipif(str(7630) not in TESTS, reason='Excluded')
