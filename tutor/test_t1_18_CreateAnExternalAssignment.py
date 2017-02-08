@@ -61,6 +61,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
+        self.assignment = Assignment()
 
     def tearDown(self):
         """Test destructor."""
@@ -75,7 +76,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             pass
 
     # Case C8085 - 001 - Teacher | Add an external assignment using the
-    # Add Assignment menu drop down menu
+    # Add Assignment menu
     @pytest.mark.skipif(str(8085) not in TESTS, reason='Excluded')
     def test_teacher_add_external_assignment_using_drop_down_menu_8085(self):
         """Add an external assignment using the Add Assignment menu.
@@ -92,11 +93,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.001', '8085']
         self.ps.test_updates['passed'] = False
 
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        self.assignment.open_assignment_menu(self.teacher.driver)
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
         assert('external/new' in self.teacher.current_url()),\
@@ -153,8 +150,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the Add Assignment drop down menu
         Click on the Add External Assignment option
         Enter an Assignment name into the Assignment Name text box
-        Enter date into the Open Date text feild as MM/DD/YYYY
-        Enter date into the Due Date text feild as MM/DD/YYYY
+        Enter date into the Open Date text field as MM/DD/YYYY
+        Enter date into the Due Date text field as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
 
@@ -166,11 +163,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.003', '8087']
         self.ps.test_updates['passed'] = False
 
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        self.assignment.open_assignment_menu(self.teacher.driver)
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
         self.teacher.sleep(1)
@@ -190,10 +183,10 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # set date
         self.teacher.find(By.ID, 'hide-periods-radio').click()
         today = datetime.date.today()
-        # start = randint(1, 10)
-        opens_on = (today + datetime.timedelta(days=0)) \
+        start = randint(0, 10)
+        opens_on = (today + datetime.timedelta(days=start)) \
             .strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=1)) \
+        closes_on = (today + datetime.timedelta(days=start + randint(1, 6))) \
             .strftime('%m/%d/%Y')
         self.teacher.find(
             By.XPATH, '//div[contains(@class,"-due-date")]' +
@@ -269,8 +262,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Enter an Assignment name into the Assignment Name text box
         Click on the Individual periods radio button
         For each period:
-        * Enter date into the Open Date text feild as MM/DD/YYYY
-        * Enter date into the Due Date text feild as MM/DD/YYYY
+        * Enter date into the Open Date text field as MM/DD/YYYY
+        * Enter date into the Due Date text field as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
 
@@ -283,12 +276,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.18', 't1.18.004', '8088']
         self.ps.test_updates['passed'] = False
 
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-
+        self.assignment.open_assignment_menu(self.teacher.driver)
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
         self.teacher.sleep(1)
@@ -392,7 +380,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the Add Assignment drop down menu
         Click on the Add External Assignment option
         Enter an Assignment name into the Assignment Name text box
-        Enter date into the Due Date text feild as MM/DD/YYYY
+        Enter date into the Due Date text field as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Save As Draft button
 
@@ -406,13 +394,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment = Assignment()
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-
+        self.assignment.open_assignment_menu(self.teacher.driver)
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
         self.teacher.sleep(1)
@@ -431,10 +413,10 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             send_keys('external Assignment description')
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         print("open date: %s" % opens_on)
         print("due date: %s" % closes_on)
-        assignment.assign_periods(
+        self.assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
         self.teacher.find(
             By.ID, 'external-url').send_keys('website.com')
@@ -461,7 +443,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the Add Assignment drop down menu
         Click on the Add External Assignment option
         Enter an Assignment name into the Assignment Name text box
-        Enter date into the Due Date text feild as MM/DD/YYYY
+        Enter date into the Due Date text field as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
 
@@ -475,13 +457,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_name = "ext006_" + str(randint(0, 999))
-        assignment = Assignment()
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-
+        self.assignment.open_assignment_menu(self.teacher.driver)
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
         self.teacher.sleep(1)
@@ -499,9 +475,12 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             '[contains(@class,"form-control")]'). \
             send_keys('external Assignment description')
         today = datetime.date.today()
-        opens_on = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        assignment.assign_periods(
+        start = randint(0, 4)
+        opens_on = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
+        self.assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
         self.teacher.find(
             By.ID, 'external-url').send_keys('website.com')
@@ -530,7 +509,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the Add Assignment drop down menu
         Click on the Add External Assignment option
         Enter an Assignment name into the Assignment Name text box
-        Enter date into the Due Date text feild as MM/DD/YYYY
+        Enter date into the Due Date text field as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Save As Draft button
         Click on the draft on the calendar dashboard
@@ -549,16 +528,20 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # assignment_name = 't1.18.007 external-%s' % randint(100, 999)
         assignment_name = "ext007_" + str(randint(0, 999))
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'draft'
-                                    })
+        start = randint(0, 6)
+        begin = (today + datetime.timedelta(days=start)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'draft'
+            }
+        )
         try:
             self.teacher.wait.until(
                 expect.presence_of_element_located(
@@ -620,12 +603,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
 
+        # if the Add Assignment menu is not open
+        self.assignment.open_assignment_menu(self.teacher.driver)
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
         self.teacher.sleep(1)
@@ -662,12 +642,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
 
+        # if the Add Assignment menu is not open
+        self.assignment.open_assignment_menu(self.teacher.driver)
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
         self.teacher.sleep(1)
@@ -714,12 +691,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
 
+        # if the Add Assignment menu is not open
+        self.assignment.open_assignment_menu(self.teacher.driver)
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
         self.teacher.sleep(1)
@@ -757,12 +731,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
 
+        # if the Add Assignment menu is not open
+        self.assignment.open_assignment_menu(self.teacher.driver)
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
         self.teacher.sleep(1)
@@ -812,16 +783,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # create a draft external assignment
         assignment_name = "ext012_" + str(randint(0, 999))
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'draft'
-                                    })
+        start = randint(0, 10)
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'draft'
+            }
+        )
         # click on draft
         try:
             self.teacher.wait.until(
@@ -858,7 +834,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
         ).click()
         assert('month' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard, after caneling assignment 012'
+            'Not viewing the calendar dashboard, after canceling assignment'
 
         self.ps.test_updates['passed'] = True
 
@@ -887,16 +863,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # create a draft external assignment
         assignment_name = "ext013_" + str(randint(0, 999))
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'draft'
-                                    })
+        start = randint(0, 10)
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'draft'
+            }
+        )
         # click on draft
         try:
             self.teacher.wait.until(
@@ -971,16 +952,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # Test steps and verification assertions
         assignment_name = "ext014_" + str(randint(0, 999))
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'draft'
-                                    })
+        start = randint(0, 10)
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'draft'
+            }
+        )
         # click on draft
         try:
             self.teacher.wait.until(
@@ -1044,16 +1030,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # Test steps and verification assertions
         assignment_name = "ext015_" + str(randint(0, 999))
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'draft'
-                                    })
+        start = randint(0, 10)
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'draft'
+            }
+        )
         # click on draft
         try:
             self.teacher.wait.until(
@@ -1105,10 +1096,10 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case C8100 - 016 - Teacher | Attempt to publish an external assignment
-    # with blank required feilds
+    # with blank required fields
     @pytest.mark.skipif(str(8100) not in TESTS, reason='Excluded')
     def test_teacher_attempt_to_publish_external_with_blank_reqired_8100(self):
-        """Attempt to publish an external with blank required feilds.
+        """Attempt to publish an external with blank required fields.
 
         Steps:
         Click on the Add Assignment drop down menu
@@ -1116,7 +1107,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the Publish button
 
         Expected Result:
-        Blank required feilds are highlighted in red
+        Blank required fields are highlighted in red
         Assignment is not published
         """
         self.ps.test_updates['name'] = 't1.18.016' \
@@ -1125,11 +1116,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        self.assignment.open_assignment_menu(self.teacher.driver)
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
         self.teacher.sleep(1)
@@ -1142,15 +1131,15 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.find(
             By.XPATH, '//button[contains(@class,"-publish")]').click()
         assert('external/new' in self.teacher.current_url()), \
-            'Not stopped from publishing an external with empty reqired feilds'
+            'Not stopped from publishing an external with empty reqired fields'
 
         self.ps.test_updates['passed'] = True
 
     # Case C8101 - 017 - Teacher | Attempt to save a draft external assignment
-    # with blank required feilds
+    # with blank required fields
     @pytest.mark.skipif(str(8101) not in TESTS, reason='Excluded')
     def test_teacher_attempt_to_save_external_with_blank_reqired_8101(self):
-        """Attempt to save external assignment with blank required feilds.
+        """Attempt to save external assignment with blank required fields.
 
         Steps:
         Click on the Add Assignment drop down menu
@@ -1158,7 +1147,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the Save As Draft button
 
         Expected Result:
-        Blank required feilds are highlighted in red, Assignment is not saved
+        Blank required fields are highlighted in red, Assignment is not saved
         """
         self.ps.test_updates['name'] = 't1.18.017' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1166,11 +1155,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        self.assignment.open_assignment_menu(self.teacher.driver)
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
         self.teacher.sleep(1)
@@ -1183,7 +1170,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.find(
             By.XPATH, '//button[contains(@class,"-save")]').click()
         assert('external/new' in self.teacher.current_url()), \
-            'Not stopped from saving an external with empty reqired feilds'
+            'Not stopped from saving an external with empty reqired fields'
 
         self.ps.test_updates['passed'] = True
 
@@ -1211,16 +1198,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # create an unopened assignment
         assignment_name = "ext018_" + str(randint(0, 999))
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'publish'
-                                    })
+        start = randint(3, 6)
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'publish'
+            }
+        )
         # click on the unopened assignment
         try:
             self.teacher.wait.until(
@@ -1301,16 +1293,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # create an opened assignment
         assignment_name = "ext019_" + str(randint(0, 999))
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'publish'
-                                    })
+        start = 0
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'publish'
+            }
+        )
         # click in the open assignment
         try:
             self.teacher.wait.until(
@@ -1389,19 +1386,24 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # create an opened assignment
         assignment_name = "ext020_" + str(randint(0, 999))
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        start = randint(0, 10)
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
         externals_old = self.teacher.find_all(
             By.XPATH,
             '//label[contains(@data-title,"' + assignment_name + '")]')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'draft'
-                                    })
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'draft'
+            }
+        )
         # click on the open assignment
         try:
             self.teacher.wait.until(
@@ -1457,7 +1459,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the Add External Assignment option
         Enter an Assignment name into the Assignment Name text box
         Enter a description into the Description text box
-        Enter date into the Due Dte text feild as MM/DD/YYYY
+        Enter date into the Due Dte text field as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
 
@@ -1471,12 +1473,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_name = "ext021_" + str(randint(0, 999))
-        assignment = Assignment()
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        self.assignment.open_assignment_menu(self.teacher.driver)
 
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
@@ -1497,7 +1496,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        assignment.assign_periods(
+        self.assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
         self.teacher.find(
             By.ID, 'external-url').send_keys('website.com')
@@ -1540,16 +1539,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # create an open assignment
         assignment_name = "ext022_" + str(randint(0, 999))
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'draft'
-                                    })
+        start = randint(0, 10)
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'draft'
+            }
+        )
 
         # click in the open assignment
         try:
@@ -1619,16 +1623,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # create an open assignment
         assignment_name = "ext023_" + str(randint(0, 999))
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'publish'
-                                    })
+        start = 0
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'publish'
+            }
+        )
         # click in the open assignment
         try:
             self.teacher.wait.until(
@@ -1686,7 +1695,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the Add Assignment drop down menu
         Click on the Add External Assignment option
         Enter an Assignment name into the Assignment Name text box
-        Enter date into the Due Date text feild as MM/DD/YYYY
+        Enter date into the Due Date text field as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
 
@@ -1700,12 +1709,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_name = "ext024_" + str(randint(0, 999))
-        assignment = Assignment()
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        self.assignment.open_assignment_menu(self.teacher.driver)
 
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
@@ -1726,7 +1732,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        assignment.assign_periods(
+        self.assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
         self.teacher.find(
             By.ID, 'external-url').send_keys('website.com')
@@ -1767,16 +1773,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # Test steps and verification assertions
         assignment_name = "ext025_" + str(randint(0, 999))
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'draft'
-                                    })
+        start = randint(0, 10)
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'draft'
+            }
+        )
         # click on the open assignment
         try:
             self.teacher.wait.until(
@@ -1846,16 +1857,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # Test steps and verification assertions
         assignment_name = "ext026_" + str(randint(0, 999))
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'publish'
-                                    })
+        start = 0
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'publish'
+            }
+        )
         # click in the open assignment
         try:
             self.teacher.wait.until(
@@ -1921,7 +1937,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Click on the Add Assignment drop down menu
         Click on the Add External Assignment option
         Enter an Assignment name into the Assignment Name text box
-        Enter date into the Due Date text feild as MM/DD/YYYY
+        Enter date into the Due Date text field as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
 
@@ -1935,12 +1951,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_name = "ext027_" + str(randint(0, 999))
-        assignment = Assignment()
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        self.assignment.open_assignment_menu(self.teacher.driver)
 
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
@@ -1961,7 +1974,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        assignment.assign_periods(
+        self.assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
         self.teacher.find(
             By.ID, 'external-url').send_keys('website.com')
@@ -2003,8 +2016,11 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # Test steps and verification assertions
         assignment_name = "ext026_" + str(randint(0, 999))
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        start = randint(0, 10)
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
         self.teacher.add_assignment(
             assignment='external',
             args={
@@ -2076,16 +2092,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # Test steps and verification assertions
         assignment_name = "ext019_" + str(randint(0, 999))
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'publish'
-                                    })
+        start = randint(0, 10)
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'publish'
+            }
+        )
         # click in the open assignment
         try:
             self.teacher.wait.until(
@@ -2123,19 +2144,19 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8114 - 030 - Teacher | Change all feilds in an unopened
+    # Case C8114 - 030 - Teacher | Change all fields in an unopened
     # External Assignment
     @pytest.mark.skipif(str(8114) not in TESTS, reason='Excluded')
-    def test_teacher_change_all_feilds_in_an_unopened_external_8114(self):
-        """Change all feilds in an unopened External Assignment.
+    def test_teacher_change_all_fields_in_an_unopened_external_8114(self):
+        """Change all fields in an unopened External Assignment.
 
         Steps:
         Create an unopened assignment
         Click on the unopoened Assignment on the calendar
         Enter an Assignment name into the Assignment Name text box
         Enter a description into the Description text box
-        Enter date into the Open Date text feild as MM/DD/YYYY
-        Enter date into the Due Date text feild as MM/DD/YYYY
+        Enter date into the Open Date text field as MM/DD/YYYY
+        Enter date into the Due Date text field as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Publish button
 
@@ -2151,16 +2172,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # create draft
         assignment_name = "ext030_" + str(randint(0, 999))
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'publish'
-                                    })
+        start = randint(3, 6)
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'publish'
+            }
+        )
         # click in the open assignment
         try:
             self.teacher.wait.until(
@@ -2192,7 +2218,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 (By.XPATH, '//a[contains(@class,"edit-assignment")]')
             )
         ).click()
-        assignment = Assignment()
+
         self.teacher.sleep(1)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -2209,7 +2235,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         today = datetime.date.today()
         opens_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=9)).strftime('%m/%d/%Y')
-        assignment.assign_periods(
+        self.assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
         self.teacher.find(
             By.ID, 'external-url').send_keys('new')
@@ -2228,19 +2254,19 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8115 - 031 - Teacher | Change all feilds in a draft External
+    # Case C8115 - 031 - Teacher | Change all fields in a draft External
     # Assignment
     @pytest.mark.skipif(str(8115) not in TESTS, reason='Excluded')
-    def test_teacher_change_all_feilds_in_a_draft_external_8115(self):
-        """Change all feilds in a draft External Assignment.
+    def test_teacher_change_all_fields_in_a_draft_external_8115(self):
+        """Change all fields in a draft External Assignment.
 
         Steps:
         Create a draft assignment
         Click on the draft Assignment on the calendar
         Enter an Assignment name into the Assignment Name text box
         Enter a description into the Description text box
-        Enter date into the Open Date text feild as MM/DD/YYYY
-        Enter date into the Due Date text feild as MM/DD/YYYY
+        Enter date into the Open Date text field as MM/DD/YYYY
+        Enter date into the Due Date text field as MM/DD/YYYY
         Enter a URL into the Assignment URL text box
         Click on the Save As Draft button
 
@@ -2256,16 +2282,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # create draft
         assignment_name = "ext031_" + str(randint(0, 999))
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'draft'
-                                    })
+        start = randint(0, 10)
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'draft'
+            }
+        )
         # click in the open assignment
         try:
             self.teacher.wait.until(
@@ -2292,7 +2323,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         # edit draft
-        assignment = Assignment()
+
         self.teacher.sleep(1)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -2307,9 +2338,12 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             '[contains(@class,"form-control")]'). \
             send_keys('NEW external Assignment description')
         today = datetime.date.today()
-        opens_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=9)).strftime('%m/%d/%Y')
-        assignment.assign_periods(
+        start = randint(0, 10)
+        opens_on = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
+        self.assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
         self.teacher.find(
             By.ID, 'external-url').send_keys('new')
@@ -2328,18 +2362,18 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8116 - 032 - Teacher | Change all possible feilds in an open
+    # Case C8116 - 032 - Teacher | Change all possible fields in an open
     # External Assignment
     @pytest.mark.skipif(str(8116) not in TESTS, reason='Excluded')
-    def test_teacher_change_all_possible_feilds_in_an_open_external_8116(self):
-        """Change all possible feilds in an open External Assignment.
+    def test_teacher_change_all_possible_fields_in_an_open_external_8116(self):
+        """Change all possible fields in an open External Assignment.
 
         Steps:
         Create an open assignment
         Click on the open Assignment on the calendar
         Enter an Assignment name into the Assignment Name text box
         Enter a description into the Description text box
-        Enter date into the Due Date text feild as MM/DD/YYYY
+        Enter date into the Due Date text field as MM/DD/YYYY
         Click on the Save As Draft button
 
         Expected Result:
@@ -2354,16 +2388,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # create draft
         assignment_name = "ext032_" + str(randint(0, 999))
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'publish'
-                                    })
+        start = 0
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=start + randint(1, 6))) \
+            .strftime('%m/%d/%Y')
+        self.teacher.add_assignment(
+            assignment='external',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'url': 'website.com',
+                'status': 'publish'
+            }
+        )
         # click in the open assignment
         try:
             self.teacher.wait.until(
@@ -2395,7 +2434,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 (By.XPATH, '//a[contains(@class,"edit-assignment")]')
             )
         ).click()
-        # assignment = Assignment()
+
         self.teacher.sleep(1)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -2467,11 +2506,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        self.assignment.open_assignment_menu(self.teacher.driver)
         add_external_bar = self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment')
         calendar_date = self.teacher.wait.until(
