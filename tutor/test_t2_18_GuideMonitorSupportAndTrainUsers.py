@@ -8,12 +8,13 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
-# from staxing.assignment import Assignment
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+from selenium.common.exceptions import ElementNotVisibleException
+from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher
+from staxing.helper import Teacher, Student, Admin
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -42,11 +43,36 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.student = Student(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.admin = Admin(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.teacher = Teacher(
+                use_env_vars=True
+            )
+            self.student = Student(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver,
+            )
+            self.admin = Admin(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver,
+            )
 
     def tearDown(self):
         """Test destructor."""
@@ -82,16 +108,69 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.001' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.001',
-            '14752'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.001', '14752']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # create notification
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.find(
+            By.LINK_TEXT, 'Admin'
+        ).click()
+        self.admin.find(
+            By.XPATH, '//a[text()="System Setting"]'
+        ).click()
+        self.admin.find(
+            By.XPATH, '//a[text()="Notifications"]'
+        ).click()
+        self.admin.find(
+            By.ID, 'message'
+        ).send_keys("test_notification")
+        self.admin.find(
+            By.XPATH, '//input[@value="Add"]'
+        ).click()
+        self.admin.find(
+            By.XPATH, '//a[text()="admin "]'
+        ).click()
+        self.admin.find(
+            By.XPATH, '//a[text()="Sign out!"]'
+        ).click()
+        # check that notification appears
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//p[@data-is-beta="true"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//div[contains(@class,"notifications-bar")]' +
+                 '//span[text()="test_notification"]'
+                )
+            )
+        )
+        self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"notifications-bar")]' +
+            '//span[text()="test_notification"]'
+        )
+        self.teacher.logout()
+        # remove notification
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.find(
+            By.LINK_TEXT, 'Admin'
+        ).click()
+        self.admin.find(
+            By.XPATH, '//a[text()="System Setting"]'
+        ).click()
+        self.admin.find(
+            By.XPATH, '//a[text()="Notifications"]'
+        ).click()
+        self.admin.find(
+            By.XPATH, '//a[text()="Remove"]'
+        ).click()
+        self.admin.driver.switch_to_alert().accept()
 
         self.ps.test_updates['passed'] = True
 
@@ -111,16 +190,15 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.002' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.002',
-            '14751'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.002', '14751']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login(username='demo_teacher')
+        self.teacher.find(
+            By.XPATH,
+            '//p[contains(text(),' +
+            '"cannot find an OpenStax course associated with your account")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -137,16 +215,29 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.003' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.003',
-            '58279'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.003', '58279']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//p[@data-is-beta="true"]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        self.teacher.sleep(1)
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('getting started')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
+        self.teacher.find(
+            By.XPATH, '//h1[contains(text(), "Getting Started")]'
+        )
+        assert('articles' in self.teacher.current_url()), 'not at article'
 
         self.ps.test_updates['passed'] = True
 
@@ -168,16 +259,24 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.004' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.004',
-            '58280'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.004', '58280']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//p[@data-is-beta="true"]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        self.teacher.sleep(1)
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(
+            By.XPATH, '//center[text()="Tutor Support"]'
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -196,16 +295,26 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.005' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.005',
-            '58284'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.005', '58284']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//p[@data-is-beta="true"]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        self.teacher.sleep(1)
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.ID, 'results')
+        self.teacher.find(By.XPATH, '//div[@class="article "]')
 
         self.ps.test_updates['passed'] = True
 
@@ -226,16 +335,25 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.006' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.006',
-            '58352'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.006', '58352']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//p[@data-is-beta="true"]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        self.teacher.sleep(1)
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//a[contains(text(),"Contact Us")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -256,16 +374,27 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.007' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.007',
-            '58288'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.007', '58288']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//p[@data-is-beta="true"]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        self.teacher.sleep(1)
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
+        self.teacher.find(By.ID, 'articleContainer')
+        assert('articles' in self.teacher.current_url()), 'not at article'
 
         self.ps.test_updates['passed'] = True
 
@@ -287,16 +416,34 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.008' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.008',
-            '58313'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.008', '58313']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//p[@data-is-beta="true"]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        self.teacher.sleep(1)
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.teacher.current_url()), 'not at article'
+        self.teacher.find(
+            By.XPATH, '//div[@id="feedback"]//input[@value="Yes"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[text()="Thanks for your feedback!"]')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -319,16 +466,34 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.009' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.009',
-            '58314'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.009', '58314']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//p[@data-is-beta="true"]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        self.teacher.sleep(1)
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.teacher.current_url()), 'not at article'
+        self.teacher.find(
+            By.XPATH, '//div[@id="feedback"]//input[@value="No"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'feedbackDialog')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -352,16 +517,43 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.010' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.010',
-            '58315'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.010', '58315']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//p[@data-is-beta="true"]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        self.teacher.sleep(1)
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.teacher.current_url()), 'not at article'
+        self.teacher.find(
+            By.XPATH, '//div[@id="feedback"]//input[@value="No"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'feedbackDialog')
+            )
+        )
+        self.teacher.find(
+            By.ID, 'feedbackTextArea'
+        ).send_keys('qa automated test feedback')
+        self.teacher.find(By.XPATH, '//input[@value="Submit"]').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//p[text()="Thanks for your feedback!"]')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -388,16 +580,48 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.011' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.011',
-            '58322'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.011', '58322']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//p[@data-is-beta="true"]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        self.teacher.sleep(1)
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.teacher.current_url()), 'not at article'
+        self.teacher.find(
+            By.XPATH, '//div[@id="feedback"]//input[@value="No"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'feedbackDialog')
+            )
+        )
+        self.teacher.find(
+            By.ID, 'feedbackTextArea'
+        ).send_keys('qa automated test feedback')
+        self.teacher.find(By.XPATH, '//input[@value="Submit"]').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[text()="close window"]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[text()="Thanks for your feedback!"]')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -421,16 +645,38 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.012' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.012',
-            '58316'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.012', '58316']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//p[@data-is-beta="true"]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        self.teacher.sleep(1)
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.teacher.current_url()), 'not at article'
+        self.teacher.find(
+            By.XPATH, '//div[@id="feedback"]//input[@value="No"]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'feedbackDialog')
+            )
+        )
+        self.teacher.find(By.XPATH, '//input[@value="Cancel"]').click()
+        with self.assertRaises(ElementNotVisibleException):
+            self.teacher.find(
+                By.ID, 'feedbackDialog').click()
 
         self.ps.test_updates['passed'] = True
 
@@ -452,16 +698,27 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.013' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.013',
-            '58318'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.013', '58318']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//p[@data-is-beta="true"]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        self.teacher.sleep(1)
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
+        assert('articles' in self.teacher.current_url()), 'not at article'
+        self.teacher.find(By.XPATH, '//h2[text()="Related Articles"]')
 
         self.ps.test_updates['passed'] = True
 
@@ -486,16 +743,46 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.014' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.014',
-            '58319'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.014', '58319']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.find(
+            By.XPATH, '//p[@data-is-beta="true"]'
+        ).click()
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        self.teacher.sleep(1)
+        window_with_help = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_help)
+        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskButton').click()
+        self.teacher.page.wait_for_page_load()
+        contact = self.teacher.find(
+            By.XPATH, '//a[contains(text(),"Contact Us")]'
+        )
+        Assignment.scroll_to(self.teacher.driver, contact)
+        contact.click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(
+            By.XPATH, '//input[contains(@name,"contactUsForm:firstName")]'
+        ).send_keys('qa_test_first_name')
+        self.teacher.find(
+            By.XPATH, '//input[contains(@name,"contactUsForm:lastName")]'
+        ).send_keys('qa_test_last_name')
+        self.teacher.find(
+            By.XPATH, '//input[contains(@name,"contactUsForm:email")]'
+        ).send_keys('qa_test@email.com')
+        self.teacher.find(By.XPATH, '//input[@value="Submit"]').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//p[contains(text(),"Thank you for your message!")]')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -510,12 +797,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.015' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.015',
-            '14755'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.015', '14755']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -539,16 +821,19 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.016' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.016',
-            '14750'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.016', '14750']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.login(username='qa_student_37003')
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//p[contains(text(),' +
+                 '"We cannot find an OpenStax course ' +
+                 'associated with your account.")]')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -565,12 +850,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.017' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.017',
-            '58336'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.017', '58336']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -596,17 +876,25 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.018' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.018',
-            '58337'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.018', '58337']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.student.login()
+        self.student.find(
+            By.XPATH, '//p[@data-is-beta="true"]'
+        ).click()
+        self.student.open_user_menu()
+        self.student.find(
+            By.LINK_TEXT, 'Get Help'
+        ).click()
+        self.student.sleep(1)
+        window_with_help = self.student.driver.window_handles[1]
+        self.student.driver.switch_to_window(window_with_help)
+        self.student.page.wait_for_page_load()
+        self.student.find(
+            By.XPATH, '//center[text()="Tutor Support"]'
+        )
         self.ps.test_updates['passed'] = True
 
     '''
@@ -625,12 +913,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.019' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.019',
-            '58338'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.019', '58338']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -655,12 +938,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.020' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.020',
-            '58353'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.020', '58353']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -684,12 +962,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.021' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.021',
-            '58339'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.021', '58339']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -715,12 +988,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.022' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.022',
-            '58340'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.022', '58340']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -747,12 +1015,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.023' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.023',
-            '58341'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.023', '58341']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -780,12 +1043,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.024' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.024',
-            '58342'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.024', '58342']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -816,12 +1074,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.025' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.025',
-            '58343'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.025', '58343']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -849,12 +1102,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.026' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.026',
-            '58344'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.026', '58344']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -880,12 +1128,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.027' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.027',
-            '58346'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.027', '58346']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -914,12 +1157,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.028' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.028',
-            '58347'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.028', '58347']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -941,12 +1179,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.18.029' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.029',
-            '58348'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.029', '58348']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -954,28 +1187,29 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 111250 - 030 - Teacher | View "Getting Started with Tutor" Guide
+    # 111250 - 030 - User | Faulty URL shows a styled 404 error
     @pytest.mark.skipif(str(111250) not in TESTS, reason='Excluded')
-    def test_teacher_view_getting_started_with_tutor_guide_111250(self):
-        """View "Getting Started with Tutor" Guide.
+    def test_user_faulty_url_shows_a_styled_404_error_111250(self):
+        """Faulty URL shows a styled 404 error.
 
         Steps:
-        Click "Tutor Instructors. Get help"
+        go to https://tutor-qa.openstax.org/not_a_real_page
 
         Expected Result:
-        Tutor Help Center opens in another tab with the Getting Started guide
+        A styled error page is displayed
         """
         self.ps.test_updates['name'] = 't2.18.030' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.18',
-            't2.18.030',
-            '111250'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.18', 't2.18.030', '111250']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.get('https://tutor-qa.openstax.org/not_a_real_page')
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 '//h1[contains(text(),"Uh-oh, no page here")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
