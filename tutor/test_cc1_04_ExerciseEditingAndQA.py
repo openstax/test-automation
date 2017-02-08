@@ -1850,7 +1850,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
     '''
-    
+
     '''
     # Case C7686 - 029 - Content Analyst | Publish reviewed content
     # from content creators
