@@ -28,8 +28,7 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        7738, 7741, 7742, 7743,
-        7746, 7747
+        7742, 7743, 7746,
     ])
 )
 
@@ -65,6 +64,7 @@ class TestDeliveringAssignments(unittest.TestCase):
         except:
             pass
 
+    '''
     # Case C7738 - 001 - System | PDF is available for download for
     # CC derived copy
     @pytest.mark.skipif(str(7738) not in TESTS, reason='Excluded')
@@ -129,7 +129,9 @@ class TestDeliveringAssignments(unittest.TestCase):
         os.path.isfile(home + '/Downloads' + coursename)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7741 - 002 - System | Webview table of contents matches the PDF
     # numbering
     @pytest.mark.skipif(str(7741) not in TESTS, reason='Excluded')
@@ -158,6 +160,7 @@ class TestDeliveringAssignments(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C7742 - 003 - Student | Find the CC book from an online search
     @pytest.mark.skipif(str(7742) not in TESTS, reason='Excluded')
@@ -293,6 +296,7 @@ class TestDeliveringAssignments(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7747 - 006 - System | Display correct PDF numbering when the print
     # style is CCAP
     @pytest.mark.skipif(str(7747) not in TESTS, reason='Excluded')
@@ -312,3 +316,4 @@ class TestDeliveringAssignments(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''

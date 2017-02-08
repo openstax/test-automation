@@ -33,9 +33,9 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         14676, 14677, 14678, 14800, 14680,
-        14681, 14682, 14801, 14802, 14803,
-        14804, 14805, 14685, 14686, 14687,
-        14688, 14689
+        14681, 14801, 14802, 14803, 14804,
+        14805, 14685, 14686, 14687, 14688,
+        14689
     ])
 
     # these are not implemented features - 14682, 14685, 14689
@@ -499,6 +499,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 actions.perform()
         self.ps.test_updates['passed'] = True
 
+    '''
     # 14682 - 008 - Teacher | Set points per problem based on difficulty
     @pytest.mark.skipif(str(14682) not in TESTS, reason='Excluded')
     def test_teacher_set_points_per_problem_based_on_difficulty_14682(self):
@@ -517,6 +518,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # 14683 - 009 - Teacher | Delete an open assignment
     @pytest.mark.skipif(str(14683) not in TESTS, reason='Excluded')

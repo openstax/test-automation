@@ -27,8 +27,8 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14820, 14819, 14759, 14862, 14771,
-        14821, 14822
+        14819, 14759, 14862, 14771, 14821,
+        14822
     ])
 )
 
@@ -153,6 +153,7 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
         print('automated_09_'+num)
         return 'automated_09_'+num
 
+    '''
     # 14820 - 001 - Teacher | Register for teaching a CC course as new faculty
     @pytest.mark.skipif(str(14820) not in TESTS, reason='Excluded')
     def test_teacher_register_for_teaching_cc_course_as_new_facult_14820(self):
@@ -171,6 +172,7 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # 14819 - 002 - Teacher | Register for teaching a CC course as
     # returning faculty for the same book

@@ -31,10 +31,10 @@ TESTS = os.getenv(
     str([
         8156, 8157, 8158, 8159, 8160,
         8161, 8162, 8163, 8164, 8165,
-        8166, 8167, 8168, 8169, 8170,
-        8171, 8172, 8173, 8174, 8175,
-        8176, 8177, 8178, 8179, 8180,
-        8181, 111252
+        8166, 8167, 8168, 8170, 8171,
+        8172, 8173, 8174, 8175, 8176,
+        8177, 8178, 8179, 8180, 8181,
+        111252
     ])
 
     # 8165 - sorting not working on site
@@ -591,6 +591,7 @@ class TestViewClassScores(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8169 - 014 - Teacher | A homework with responses shows the period
     # average
     @pytest.mark.skipif(str(8169) not in TESTS, reason='Excluded')
@@ -647,6 +648,7 @@ class TestViewClassScores(unittest.TestCase):
                 actions.perform()
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C8170 - 015 - Teacher | An external assignment shows the number of
     # students who have clicked on it

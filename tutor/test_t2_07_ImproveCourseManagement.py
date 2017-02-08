@@ -26,8 +26,8 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14651, 14652, 14657, 14850, 14658,
-        14660, 14661
+        14651, 14657, 14850, 14658, 14660,
+        14661
     ])
 )
 
@@ -113,6 +113,7 @@ class TestImproveCourseManagement(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # 14652 - 002 - Teacher | Delegate teaching tasks to supporting instructors
     @pytest.mark.skipif(str(14652) not in TESTS, reason='Excluded')
     def test_teacher_delegate_teaching_tasks_to_supporting_instruc_14652(self):
@@ -138,6 +139,7 @@ class TestImproveCourseManagement(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     '''
     # 14653 - 003 - Teacher | Move a student and their data to a new section

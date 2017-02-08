@@ -31,7 +31,6 @@ TESTS = os.getenv(
         8213, 8214, 8215, 8216, 8217,
         8218, 8219, 8220, 8221, 8222,
         8223, 8224, 8225, 8226, 8387,
-        8388
     ])
 )
 
@@ -1262,6 +1261,7 @@ class TestAccountManagement(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8388 - 023 - User | Info Icon shows definiton for searchable option
     @pytest.mark.skipif(str(8388) not in TESTS, reason='Excluded')
     def test_user_info_icon_shows_definition_for_searchable_option_8388(self):
@@ -1315,3 +1315,4 @@ class TestAccountManagement(unittest.TestCase):
             '//button[contains(text(),"OK")]').click()
 
         self.ps.test_updates['passed'] = True
+    '''
