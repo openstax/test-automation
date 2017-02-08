@@ -30,9 +30,9 @@ TESTS = os.getenv(
     str([
         106450, 106451, 106452, 106453, 106454,
         106455, 106456, 106457, 106458, 106459,
-        106460, 106461, 106462, 107476, 107477,
-        107478, 107479, 107480, 107482, 107483,
-        107484, 107495, 107495
+        106460, 106461, 106462, 107576, 107577,
+        107578, 107579, 107580, 107582, 107583,
+        107584, 107596, 111265
     ])
 )
 
@@ -633,6 +633,7 @@ class TestCourseAdoptionAndReadoption(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C107595 - 022 - Teacher | Unable to create an assignment prior to
     # the start of term
     @pytest.mark.skipif(str(107595) not in TESTS, reason='Excluded')
@@ -660,6 +661,7 @@ class TestCourseAdoptionAndReadoption(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C107596 - 023 - Teacher | Unable to create an assignment after the
     # end of term
@@ -684,6 +686,26 @@ class TestCourseAdoptionAndReadoption(unittest.TestCase):
         self.ps.test_updates['name'] = 't3.09.023' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = ['t3', 't3.09', 't3.09.023', '107596']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C111265 - 024 - Teacher | Able to select Not Listed from the subject
+    # list
+    @pytest.mark.skipif(str(111265) not in TESTS, reason='Excluded')
+    def test_teacher_able_to_select_not_listed_from_the_subject_l_111265(self):
+        """Able to select Not Listed from the subject list
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't3.09.024' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t3', 't3.09', 't3.09.024', '111265']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
