@@ -473,7 +473,7 @@ class TestRecruitingTeachers(unittest.TestCase):
     # the sign up form are blank
     @pytest.mark.skipif(str(7759) not in TESTS, reason='Excluded')
     def test_teacher_receive_error_messages_if_required_fields_are_7759(self):
-        """Receive error messages if required fields on the sign up form are blank.
+        """Receive error messages if required fields on sign up form are blank.
 
         Steps:
         Go to the recruitment website ( http://cc.openstax.org/ )
@@ -1157,7 +1157,6 @@ class TestRecruitingTeachers(unittest.TestCase):
         admin.find(
             By.XPATH, '//input[@vale="Import Courses"]'
         ).click()
-
 
         self.ps.test_updates['passed'] = True
 
