@@ -1522,7 +1522,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
     # if not accepted previously
     @pytest.mark.skipif(str(7647) not in TESTS, reason='Excluded')
     def test_student_represented_the_current_terms_of_service_7647(self):
-        """Re-presented the current terms of service if not accepted previously.
+        """Re-presented current terms of service if not accepted previously.
 
         Steps:
         Go to Tutor
