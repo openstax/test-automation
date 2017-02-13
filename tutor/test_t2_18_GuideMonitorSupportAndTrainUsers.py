@@ -8,12 +8,12 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
-# from staxing.assignment import Assignment
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
+from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher
+from staxing.helper import Teacher, Admin
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -26,14 +26,18 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14752, 14751, 58279, 58280, 58284,
+        58319
+    ])
+)
+
+"""
+14752, 14751, 58279, 58280, 58284,
         58352, 58288, 58313, 58314, 58315,
         58322, 58316, 58318, 58319, 14755,
         14750, 58336, 58337, 58338, 58353,
         58339, 58340, 58341, 58342, 58343,
         58344, 58346, 58347, 58348
-    ])
-)
+"""
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -44,11 +48,14 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        #self.teacher = Teacher(
+        #    use_env_vars=True,
+        #    pasta_user=self.ps,
+        #    capabilities=self.desired_capabilities
+        #)
+
+        self.teacher = Teacher(use_env_vars=True)
+        #self.teacher.login()
 
     def tearDown(self):
         """Test destructor."""
@@ -93,9 +100,52 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        admin = Admin(use_env_vars=True)
+        admin.login()
+        admin.goto_admin_control()
 
-        self.ps.test_updates['passed'] = True
+        # Create the notification
+        admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'System Setting')
+            )
+        ).click()
+        admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Notifications')
+            )
+        ).click()
+        admin.sleep(5)
+
+        admin.find(By.XPATH, "//input[@id='message']").send_keys(
+            'automated test')
+
+        admin.find(By.XPATH, "//input[@class='btn btn-default']").click()
+
+        admin.sleep(5)
+
+        # View the notification
+        self.teacher.driver.refresh()
+        self.teacher.find(By.XPATH, "//div[@class='notification system']")
+
+        # Delete the notification
+        notif = admin.driver.find_elements_by_xpath(
+            "//div[@class='col-xs-12']")
+
+        for index, n in enumerate(notif):
+            if n.text.find('automated test') >= 0:
+                admin.driver.find_elements_by_xpath(
+                    "//a[@class='btn btn-warning']")[index].click()
+                admin.sleep(5)
+                admin.driver.switch_to_alert().accept()
+                admin.sleep(5)
+                self.ps.test_updates['passed'] = True
+                break
+
+        admin.delete()
+
+        # self.ps.test_updates['passed'] = True
 
     # 14751 - 002 - Teacher | Directed to a "No Courses" page when not in any
     # courses yet
@@ -122,7 +172,11 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.username = 'demo_teacher'
+        self.teacher.login()
+
+        self.teacher.find(
+            By.XPATH, "//div[@class='-course-list-empty panel panel-default']")
 
         self.ps.test_updates['passed'] = True
 
@@ -148,7 +202,24 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.username = 'demo_teacher'
+        self.teacher.login()
+
+        self.teacher.find(
+            By.XPATH, "//div[@class='-course-list-empty panel panel-default']")
+
+        # View the article
+        self.teacher.find(By.PARTIAL_LINK_TEXT, "Tutor Instructors.").click()
+        self.teacher.driver.switch_to.window(
+            self.teacher.driver.window_handles[-1])
+
+        title = self.teacher.find(
+            By.XPATH, "//h1[@class='pageType noSecondHeader']")
+
+        assert(title.text == "Getting Started with Tutor Guide -Teachers"), \
+            "Not viewing the getting started article"
+
+        self.teacher.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
@@ -179,7 +250,17 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, "Get Help").click()
+
+        self.teacher.driver.switch_to.window(
+            self.teacher.driver.window_handles[-1])
+
+        assert(self.teacher.driver.current_url.find(
+            "openstax.force.com") >= 0
+        ), \
+            "Not on the get help page"
 
         self.ps.test_updates['passed'] = True
 
@@ -208,7 +289,26 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, "Get Help").click()
+
+        self.teacher.driver.switch_to.window(
+            self.teacher.driver.window_handles[-1])
+
+        assert(self.teacher.driver.current_url.find(
+            "openstax.force.com") >= 0
+        ), \
+            "Not on the get help page"
+
+        # Ask a question
+        self.teacher.find(
+            By.XPATH, "//textarea[@id='searchAskInput']").send_keys("help")
+
+        self.teacher.find(By.XPATH, "//a[@id='searchAskButton']").click()
+
+        self.teacher.find(By.XPATH, "//div[@id='results']")
+        self.teacher.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -239,7 +339,28 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, "Get Help").click()
+
+        self.teacher.driver.switch_to.window(
+            self.teacher.driver.window_handles[-1])
+
+        assert(self.teacher.driver.current_url.find(
+            "openstax.force.com") >= 0
+        ), \
+            "Not on the get help page"
+
+        # Ask a question
+        self.teacher.find(
+            By.XPATH, "//textarea[@id='searchAskInput']").send_keys("help")
+
+        self.teacher.find(By.XPATH, "//a[@id='searchAskButton']").click()
+
+        self.teacher.find(By.XPATH, "//div[@id='results']")
+        self.teacher.sleep(3)
+
+        self.teacher.find(By.XPATH, "//div[@id='contactUs']/a")
 
         self.ps.test_updates['passed'] = True
 
@@ -270,7 +391,39 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, "Get Help").click()
+
+        self.teacher.driver.switch_to.window(
+            self.teacher.driver.window_handles[-1])
+
+        assert(self.teacher.driver.current_url.find(
+            "openstax.force.com") >= 0
+        ), \
+            "Not on the get help page"
+
+        # Ask a question
+        self.teacher.find(
+            By.XPATH, "//textarea[@id='searchAskInput']").send_keys("help")
+
+        self.teacher.find(By.XPATH, "//a[@id='searchAskButton']").click()
+
+        self.teacher.find(By.XPATH, "//div[@id='results']")
+        self.teacher.sleep(3)
+
+        if len(
+            self.teacher.driver.find_elements_by_xpath(
+                "//div[@class='article']/a")
+        ) == 0:
+            self.teacher.find(By.XPATH, "//div[@class='article ']/a").click()
+
+        else:
+            self.teacher.find(By.XPATH, "//div[@class='article']/a").click()
+        self.teacher.sleep(3)
+
+        assert(self.teacher.driver.current_url.find("articles") >= 0), \
+            "Not viewing an article"
 
         self.ps.test_updates['passed'] = True
 
@@ -302,7 +455,48 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, "Get Help").click()
+
+        self.teacher.driver.switch_to.window(
+            self.teacher.driver.window_handles[-1])
+
+        assert(self.teacher.driver.current_url.find(
+            "openstax.force.com") >= 0
+        ), \
+            "Not on the get help page"
+
+        # Ask a question
+        self.teacher.find(
+            By.XPATH, "//textarea[@id='searchAskInput']").send_keys("help")
+
+        self.teacher.find(By.XPATH, "//a[@id='searchAskButton']").click()
+
+        self.teacher.find(By.XPATH, "//div[@id='results']")
+        self.teacher.sleep(3)
+
+        if len(
+            self.teacher.driver.find_elements_by_xpath(
+                "//div[@class='article']/a")
+        ) == 0:
+            self.teacher.find(By.XPATH, "//div[@class='article ']/a").click()
+
+        else:
+            self.teacher.find(By.XPATH, "//div[@class='article']/a").click()
+        self.teacher.sleep(3)
+
+        assert(self.teacher.driver.current_url.find("articles") >= 0), \
+            "Not viewing an article"
+
+        self.teacher.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+
+        self.teacher.find(
+            By.XPATH, "//input[contains(@id, 'feedbackYesButton')]").click()
+
+        self.teacher.sleep(10)
+        self.teacher.find(By.XPATH, "//div[@id='feedback']")
 
         self.ps.test_updates['passed'] = True
 
@@ -335,7 +529,48 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, "Get Help").click()
+
+        self.teacher.driver.switch_to.window(
+            self.teacher.driver.window_handles[-1])
+
+        assert(self.teacher.driver.current_url.find(
+            "openstax.force.com") >= 0
+        ), \
+            "Not on the get help page"
+
+        # Ask a question
+        self.teacher.find(
+            By.XPATH, "//textarea[@id='searchAskInput']").send_keys("help")
+
+        self.teacher.find(By.XPATH, "//a[@id='searchAskButton']").click()
+
+        self.teacher.find(By.XPATH, "//div[@id='results']")
+        self.teacher.sleep(3)
+
+        if len(
+            self.teacher.driver.find_elements_by_xpath(
+                "//div[@class='article']/a")
+        ) == 0:
+            self.teacher.find(By.XPATH, "//div[@class='article ']/a").click()
+
+        else:
+            self.teacher.find(By.XPATH, "//div[@class='article']/a").click()
+        self.teacher.sleep(3)
+
+        assert(self.teacher.driver.current_url.find("articles") >= 0), \
+            "Not viewing an article"
+
+        self.teacher.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+
+        self.teacher.find(
+            By.XPATH, "//input[contains(@id, 'feedbackNoButton')]").click()
+
+        self.teacher.sleep(2)
+        self.teacher.find(By.XPATH, "//div[@id='feedbackDialog']")
 
         self.ps.test_updates['passed'] = True
 
@@ -369,7 +604,55 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, "Get Help").click()
+
+        self.teacher.driver.switch_to.window(
+            self.teacher.driver.window_handles[-1])
+
+        assert(self.teacher.driver.current_url.find(
+            "openstax.force.com") >= 0
+        ), \
+            "Not on the get help page"
+
+        # Ask a question
+        self.teacher.find(
+            By.XPATH, "//textarea[@id='searchAskInput']").send_keys("help")
+
+        self.teacher.find(By.XPATH, "//a[@id='searchAskButton']").click()
+
+        self.teacher.find(By.XPATH, "//div[@id='results']")
+        self.teacher.sleep(3)
+
+        if len(
+            self.teacher.driver.find_elements_by_xpath(
+                "//div[@class='article']/a")
+        ) == 0:
+            self.teacher.find(By.XPATH, "//div[@class='article ']/a").click()
+
+        else:
+            self.teacher.find(By.XPATH, "//div[@class='article']/a").click()
+        self.teacher.sleep(3)
+
+        assert(self.teacher.driver.current_url.find("articles") >= 0), \
+            "Not viewing an article"
+
+        self.teacher.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+
+        self.teacher.find(
+            By.XPATH, "//input[contains(@id, 'feedbackNoButton')]").click()
+
+        self.teacher.sleep(2)
+        self.teacher.find(
+            By.XPATH, "//textarea[@id='feedbackTextArea']").send_keys("test")
+
+        self.teacher.find(
+            By.XPATH, "//input[contains(@id, 'feedbackForm:j')]").click()
+
+        self.teacher.find(By.XPATH, "//div/p[1]")
+        self.teacher.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -406,7 +689,57 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, "Get Help").click()
+
+        self.teacher.driver.switch_to.window(
+            self.teacher.driver.window_handles[-1])
+
+        assert(self.teacher.driver.current_url.find(
+            "openstax.force.com") >= 0
+        ), \
+            "Not on the get help page"
+
+        # Ask a question
+        self.teacher.find(
+            By.XPATH, "//textarea[@id='searchAskInput']").send_keys("help")
+
+        self.teacher.find(By.XPATH, "//a[@id='searchAskButton']").click()
+
+        self.teacher.find(By.XPATH, "//div[@id='results']")
+        self.teacher.sleep(3)
+
+        if len(
+            self.teacher.driver.find_elements_by_xpath(
+                "//div[@class='article']/a")
+        ) == 0:
+            self.teacher.find(By.XPATH, "//div[@class='article ']/a").click()
+
+        else:
+            self.teacher.find(By.XPATH, "//div[@class='article']/a").click()
+        self.teacher.sleep(3)
+
+        assert(self.teacher.driver.current_url.find("articles") >= 0), \
+            "Not viewing an article"
+
+        self.teacher.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+
+        self.teacher.find(
+            By.XPATH, "//input[contains(@id, 'feedbackNoButton')]").click()
+
+        self.teacher.sleep(2)
+        self.teacher.find(
+            By.XPATH, "//textarea[@id='feedbackTextArea']").send_keys("test")
+
+        self.teacher.find(
+            By.XPATH, "//input[contains(@id, 'feedbackForm:j')]").click()
+
+        self.teacher.find(By.XPATH, "//div/p[1]")
+        self.teacher.sleep(3)
+        self.teacher.find(By.LINK_TEXT, "close window").click()
+        self.teacher.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -440,7 +773,55 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, "Get Help").click()
+
+        self.teacher.driver.switch_to.window(
+            self.teacher.driver.window_handles[-1])
+
+        assert(self.teacher.driver.current_url.find(
+            "openstax.force.com") >= 0
+        ), \
+            "Not on the get help page"
+
+        # Ask a question
+        self.teacher.find(
+            By.XPATH, "//textarea[@id='searchAskInput']").send_keys("help")
+
+        self.teacher.find(By.XPATH, "//a[@id='searchAskButton']").click()
+
+        self.teacher.find(By.XPATH, "//div[@id='results']")
+        self.teacher.sleep(3)
+
+        if len(
+            self.teacher.driver.find_elements_by_xpath(
+                "//div[@class='article']/a")
+        ) == 0:
+            self.teacher.find(By.XPATH, "//div[@class='article ']/a").click()
+
+        else:
+            self.teacher.find(By.XPATH, "//div[@class='article']/a").click()
+        self.teacher.sleep(3)
+
+        assert(self.teacher.driver.current_url.find("articles") >= 0), \
+            "Not viewing an article"
+
+        self.teacher.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+
+        self.teacher.find(
+            By.XPATH, "//input[contains(@id, 'feedbackNoButton')]").click()
+
+        self.teacher.sleep(2)
+        self.teacher.find(
+            By.XPATH, "//textarea[@id='feedbackTextArea']").send_keys("test")
+
+        self.teacher.find(
+            By.XPATH, "//div[contains(@id, 'feedbackForm:j')]/input[2]"
+        ).click()
+
+        self.teacher.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -472,7 +853,49 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, "Get Help").click()
+
+        self.teacher.driver.switch_to.window(
+            self.teacher.driver.window_handles[-1])
+
+        assert(self.teacher.driver.current_url.find(
+            "openstax.force.com") >= 0
+        ), \
+            "Not on the get help page"
+
+        # Ask a question
+        self.teacher.find(
+            By.XPATH, "//textarea[@id='searchAskInput']").send_keys("help")
+
+        self.teacher.find(By.XPATH, "//a[@id='searchAskButton']").click()
+
+        self.teacher.find(By.XPATH, "//div[@id='results']")
+        self.teacher.sleep(3)
+
+        if len(
+            self.teacher.driver.find_elements_by_xpath(
+                "//div[@class='article']/a")
+        ) == 0:
+            self.teacher.find(By.XPATH, "//div[@class='article ']/a").click()
+
+        else:
+            self.teacher.find(By.XPATH, "//div[@class='article']/a").click()
+        self.teacher.sleep(3)
+
+        assert(self.teacher.driver.current_url.find("articles") >= 0), \
+            "Not viewing an article"
+
+        related = self.teacher.driver.find_elements_by_xpath(
+            "//a[@class='relatedLink']")
+
+        if len(related) > 1:
+            old = self.teacher.driver.current_url
+            related[1].click()
+            self.teacher.sleep(3)
+            assert(self.teacher.driver.current_url != old), \
+                "Not viewing an article"
 
         self.ps.test_updates['passed'] = True
 
@@ -507,7 +930,57 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.login()
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, "Get Help").click()
+
+        self.teacher.driver.switch_to.window(
+            self.teacher.driver.window_handles[-1])
+
+        assert(self.teacher.driver.current_url.find(
+            "openstax.force.com") >= 0
+        ), \
+            "Not on the get help page"
+
+        # Ask a question
+        self.teacher.find(
+            By.XPATH, "//textarea[@id='searchAskInput']").send_keys("help")
+
+        self.teacher.find(By.XPATH, "//a[@id='searchAskButton']").click()
+
+        self.teacher.find(By.XPATH, "//div[@id='results']")
+        self.teacher.sleep(3)
+
+        if len(
+            self.teacher.driver.find_elements_by_xpath(
+                "//div[@class='article']/a")
+        ) == 0:
+            self.teacher.find(By.XPATH, "//div[@class='article ']/a").click()
+
+        else:
+            self.teacher.find(By.XPATH, "//div[@class='article']/a").click()
+        self.teacher.sleep(3)
+
+        assert(self.teacher.driver.current_url.find("articles") >= 0), \
+            "Not viewing an article"
+
+        self.teacher.driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+
+        self.teacher.find(By.LINK_TEXT, "Email Us").click()
+        self.teacher.sleep(3)
+
+        self.teacher.find(By.XPATH, "//input[@id='j_id0:j_id1:contactUsForm:firstName']").send_keys("automated")
+        self.teacher.find(By.XPATH, "//input[@id='j_id0:j_id1:contactUsForm:lastName']").send_keys("test")
+        self.teacher.find(By.XPATH, "//input[@id='j_id0:j_id1:contactUsForm:email']").send_keys("automated@test.com")
+        self.teacher.find(By.XPATH, "//input[@id='j_id0:j_id1:contactUsForm:subject']").send_keys("automated test")
+        self.teacher.find(By.XPATH, "//textarea[@id='j_id0:j_id1:contactUsForm:message']").send_keys("help")
+
+        self.teacher.find(By.XPATH, "//input[@id='j_id0:j_id1:contactUsForm:j_id440']").click()
+
+        self.teacher.sleep(5)
+        assert(self.teacher.find(By.XPATH, "//p").text == "Thank you for your message! We’ll be back to you within one business day."), \
+            "No confirmation message"
 
         self.ps.test_updates['passed'] = True
 
