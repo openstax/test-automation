@@ -29,15 +29,14 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        7998, 7999, 8000
-        # 7992, 7993, 7994, 7995, 7996,
-        # 7997, 7998, 7999, 8000, 8001,
-        # 8002, 8003, 8004, 8005, 8006,
-        # 8007, 8008, 8009, 8010, 8011,
-        # 8012, 8013, 8014, 8015, 8016,
-        # 8017, 8018, 8019, 8020, 8021,
-        # 8022, 8023, 8024, 8025, 8026,
-        # 8027, 111246
+        7992, 7993, 7994, 7995, 7996,
+        7997, 7998, 7999, 8000, 8001,
+        8002, 8003, 8004, 8005, 8006,
+        8007, 8008, 8009, 8010, 8011,
+        8012, 8013, 8014, 8015, 8016,
+        8017, 8018, 8019, 8020, 8021,
+        8022, 8023, 8024, 8025, 8026,
+        8027, 111246
     ])
 )
 
@@ -790,7 +789,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH,
-                 '//button[@aria-role="close" and contains(@class,"close-x")]')
+                 '//button[contains(@class,"close-x")]')
             )
         ).click()
         assert ('month' in self.teacher.current_url()),\
@@ -838,7 +837,7 @@ class TestCreateAReading(unittest.TestCase):
             send_keys(assignment_name)
         self.teacher.find(
             By.XPATH,
-            '//button[@aria-role="close" and contains(@class,"close-x")]'
+            '//button[contains(@class,"close-x")]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -1050,10 +1049,11 @@ class TestCreateAReading(unittest.TestCase):
                 By.XPATH,
                 "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
+        self.teacher.sleep(0.5)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH,
-                 '//button[@aria-role="close" and contains(@class,"close-x")]')
+                 '//button[contains(@class,"close-x")]')
             )
         ).click()
         assert ('month' in self.teacher.current_url()),\
@@ -1120,6 +1120,7 @@ class TestCreateAReading(unittest.TestCase):
                 By.XPATH,
                 "//a/label[contains(text(), '"+assignment_name+"')]"
             ).click()
+        self.teacher.sleep(0.5)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
@@ -1129,7 +1130,7 @@ class TestCreateAReading(unittest.TestCase):
             send_keys('EDIT')
         self.teacher.find(
             By.XPATH,
-            '//button[@aria-role="close" and contains(@class,"close-x")]'
+            '//button[contains(@class,"close-x")]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -1177,8 +1178,8 @@ class TestCreateAReading(unittest.TestCase):
             )
         ).click()
         self.teacher.find(
-            By.XPATH, '//span[contains(text(),"Required Field")]')
-        assert ('readings' in self.teacher.current_url()),\
+            By.XPATH, '//div[contains(text(),"Required field")]')
+        assert ('reading' in self.teacher.current_url()),\
             'went back to calendar even though required feilds were left blank'
 
         self.ps.test_updates['passed'] = True
@@ -1219,8 +1220,8 @@ class TestCreateAReading(unittest.TestCase):
             )
         ).click()
         self.teacher.find(
-            By.XPATH, '//span[contains(text(),"Required Field")]')
-        assert ('readings' in self.teacher.current_url()),\
+            By.XPATH, '//div[contains(text(),"Required field")]')
+        assert ('reading' in self.teacher.current_url()),\
             'went back to calendar even though required feilds were left blank'
 
         self.ps.test_updates['passed'] = True
@@ -1637,7 +1638,7 @@ class TestCreateAReading(unittest.TestCase):
                 By.XPATH,
                 "//label[contains(text(), '"+assignment_name+"')]"
             )
-        assert('calendar' in self.teacher.current_url()),\
+        assert('month' in self.teacher.current_url()),\
             'not returned to calendar after updating description'
 
         self.ps.test_updates['passed'] = True
@@ -1730,7 +1731,7 @@ class TestCreateAReading(unittest.TestCase):
                 By.XPATH,
                 "//label[contains(text(), '"+assignment_name+"')]"
             )
-        assert('calendar' in self.teacher.current_url()),\
+        assert('month' in self.teacher.current_url()),\
             'not returned to calendar after updating description'
 
         self.ps.test_updates['passed'] = True
@@ -1901,7 +1902,7 @@ class TestCreateAReading(unittest.TestCase):
                 By.XPATH,
                 "//label[contains(text(), '"+assignment_name+"NEW')]"
             )
-        assert('calendar' in self.teacher.current_url()),\
+        assert('month' in self.teacher.current_url()),\
             'not returned to calendar after updating description'
 
         self.ps.test_updates['passed'] = True
@@ -1992,7 +1993,7 @@ class TestCreateAReading(unittest.TestCase):
                 By.XPATH,
                 "//label[contains(text(), '"+assignment_name+"NEW')]"
             )
-        assert('calendar' in self.teacher.current_url()),\
+        assert('month' in self.teacher.current_url()),\
             'not returned to calendar after updating description'
 
         self.ps.test_updates['passed'] = True
@@ -2063,23 +2064,24 @@ class TestCreateAReading(unittest.TestCase):
         chapter = section.split('.')[0]
         data_chapter = self.teacher.find(
             By.XPATH,
-            '//h2[contains(@data-chapter-section,"%s")]/a' % chapter
+            '//a//span[@data-chapter-section="%s"]' % chapter
         )
-        if data_chapter.get_attribute('aria-expanded') == 'false':
+        if data_chapter.find_element(By.XPATH, "../..").\
+                get_attribute('aria-expanded') == 'false':
             data_chapter.click()
-        marked = self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH,
-                 ('//span[contains(@data-chapter-section' +
-                  ',"{s}") and text()="{s}"]').format(s=section) +
-                 '/preceding-sibling::span/input')
-            )
+
+        data_section = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section
         )
-        if not marked.is_selected():
-            marked.click()
-        self.teacher.find(
-            By.XPATH, '//button[text()="Add Readings"]'
-        ).click()
+        if not('selected' in data_section.find_element(By.XPATH, "..").
+                get_attribute('class')):
+            data_section.click()
+        element = self.teacher.find(
+            By.XPATH, '//button[text()="Add Readings"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
         # publish
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -2163,19 +2165,19 @@ class TestCreateAReading(unittest.TestCase):
                 (By.XPATH, '//div[contains(@class,"reading-plan")]')
             )
         )
-        chapter_num = '2'
-        chapter = self.teacher.find(
+        chapter = '2'
+        data_chapter = self.teacher.find(
             By.XPATH,
-            '//h2[@data-chapter-section="%s"]' % chapter_num +
-            '//i[contains(@class,"tutor-icon")]'
+            '//a//span[@data-chapter-section="%s"]' % chapter
         )
-        self.teacher.sleep(0.5)
-        if not chapter.is_selected():
-            chapter.click()
+        # if data_chapter.find_element(By.XPATH, "../..").\
+        #         get_attribute('aria-expanded') == 'false':
+        data_chapter.find_element(
+            By.XPATH, "../../span[@class='chapter-checkbox']"
+        ).click()
         element = self.teacher.find(
             By.XPATH, '//button[text()="Add Readings"]')
         Assignment.scroll_to(self.teacher.driver, element)
-        self.teacher.driver.execute_script('window.scrollBy(0, -80);')
         element.click()
         # publish
         self.teacher.wait.until(
@@ -2259,7 +2261,6 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        self.teacher.sleep(3)       # ##########
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
@@ -2279,46 +2280,30 @@ class TestCreateAReading(unittest.TestCase):
         chapter = section_to_remove.split('.')[0]
         data_chapter = self.teacher.find(
             By.XPATH,
-            '//h2[contains(@data-chapter-section,"%s")]/a' % chapter
+            '//a//span[@data-chapter-section="%s"]' % chapter
         )
-        if data_chapter.get_attribute('aria-expanded') == 'false':
+        if data_chapter.find_element(By.XPATH, "../..").\
+                get_attribute('aria-expanded') == 'false':
             data_chapter.click()
-        marked = self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH,
-                 ('//span[contains(@data-chapter-section' +
-                  ',"{s}") and text()="{s}"]').format(s=section_to_remove) +
-                 '/preceding-sibling::span/input')
-            )
+
+        data_section = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section_to_remove
         )
-        if marked.is_selected():
-            marked.click()
-        self.teacher.find(
-            By.XPATH, '//button[text()="Add Readings"]'
-        ).click()
+        if 'selected' in data_section.find_element(By.XPATH, "..").\
+                get_attribute('class'):
+            data_section.click()
+        element = self.teacher.find(
+            By.XPATH, '//button[text()="Add Readings"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
         # check that it has been removed
         removed_sections = self.teacher.find_all(
             By.XPATH, '//span[@class="chapter-section" and' +
             '@data-chapter-section="' + section_to_remove + '"]')
         assert(len(removed_sections) == 0), \
             'section has net been removed'
-        # publish
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//button[contains(@class,"-publish")]')
-            )
-        ).click()
-        try:
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
-            )
-        except NoSuchElementException:
-            self.teacher.find(
-                By.XPATH, "//a[contains(@class, 'header-control next')]"
-            ).click()
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
-            )
 
         self.ps.test_updates['passed'] = True
 
@@ -2401,46 +2386,23 @@ class TestCreateAReading(unittest.TestCase):
             )
         )
         chapter_num = section_to_remove[2:]
-        chapter = self.teacher.find(
+        data_chapter = self.teacher.find(
             By.XPATH,
-            '//h2[@data-chapter-section="%s"]' % chapter_num +
-            '//i[contains(@class,"tutor-icon")]'
+            '//a//span[@data-chapter-section="%s"]' % chapter_num
         )
-        self.teacher.sleep(0.5)
-        chapter.click()
-        # print(chapter.is_selected())
-        # raise Exception
-        # if chapter.is_selected():
-        #     chapter.click()
+        data_chapter.find_element(
+            By.XPATH, "../../span[@class='chapter-checkbox']"
+        ).click()
         element = self.teacher.find(
             By.XPATH, '//button[text()="Add Readings"]')
         Assignment.scroll_to(self.teacher.driver, element)
-        self.teacher.driver.execute_script('window.scrollBy(0, -80);')
         element.click()
-        # check that it has been removed
         removed_sections = self.teacher.find_all(
             By.XPATH,
             '//span[@class="chapter-section" and ' +
             'contains(@data-chapter-section,"'+chapter_num+'.")]')
         assert (len(removed_sections) == 0), \
             'section has net been removed'
-        # publish
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//button[contains(@class,"-publish")]')
-            )
-        ).click()
-        try:
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
-            )
-        except NoSuchElementException:
-            self.teacher.find(
-                By.XPATH, "//a[contains(@class, 'header-control next')]"
-            ).click()
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
-            )
 
         self.ps.test_updates['passed'] = True
 
@@ -2990,46 +2952,13 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-035_' + str(randint(100, 999))
-        today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='reading',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'reading_list': ['1.1'],
-                                        'status': 'publish'
-                                    })
-        try:
-            self.teacher.wait.until(
-                expect.presence_of_element_located(
-                    (By.XPATH,
-                     '//div[@class="month-wrapper"]')
-                )
-            )
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
-            ).click()
-        except NoSuchElementException:
-            self.teacher.find(
-                By.XPATH, "//a[contains(@class, 'header-control next')]"
-            ).click()
-            self.teacher.wait.until(
-                expect.presence_of_element_located(
-                    (By.XPATH,
-                     '//div[@class="month-wrapper"]')
-                )
-            )
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
-            ).click()
-        self.teacher.wait.until(
-            expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
-            )
-        ).click()
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.find(
             By.XPATH, '//button[contains(@class,"footer-instructions")]'
         ).click()
