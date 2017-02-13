@@ -10,10 +10,11 @@ from pastasauce import PastaSauce, PastaDecorator
 from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
-# from staxing.assignment import Assignment
-from staxing.helper import Teacher  # , Student
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
+
+from staxing.helper import Teacher  # , Student
+from staxing.assignment import Assignment
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -26,18 +27,19 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8028, 8029, 8030, 8031, 8032,
-        8033, 8034, 8035, 8036, 8037,
-        8038, 8039, 8040, 8041, 8042,
-        8043, 8044, 8045, 8046, 8047,
-        8048, 8049, 8050, 8051, 8052,
-        8053, 8054, 8055, 8056, 8057,
-        8058, 8059, 8060, 8061, 8062,
-        8063, 8064, 8065, 8066, 8067,
-        8068, 8069, 8070, 8071, 8072,
-        8073, 8074, 8075, 8076, 8077,
-        8078, 8080, 8081, 8082, 8083,
-        8084, 111247
+        8029
+        # 8028, 8029, 8030, 8031, 8032,
+        # 8033, 8034, 8035, 8036, 8037,
+        # 8038, 8039, 8040, 8041, 8042,
+        # 8043, 8044, 8045, 8046, 8047,
+        # 8048, 8049, 8050, 8051, 8052,
+        # 8053, 8054, 8055, 8056, 8057,
+        # 8058, 8059, 8060, 8061, 8062,
+        # 8063, 8064, 8065, 8066, 8067,
+        # 8068, 8069, 8070, 8071, 8072,
+        # 8073, 8074, 8075, 8076, 8077,
+        # 8078, 8080, 8081, 8082, 8083,
+        # 8084, 111247
     ])
 )
 
@@ -61,6 +63,7 @@ class TestCreateAHomework(unittest.TestCase):
                 use_env_vars=True
             )
         self.teacher.login()
+        self.teacher.select_course(appearance='biology')
 
     def tearDown(self):
         """Test destructor."""
@@ -97,16 +100,14 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
-        assert('homeworks' in self.teacher.current_url()), \
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
+                get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(5)
@@ -136,38 +137,25 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.page.wait_for_page_load()
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-        # Change the calendar date to December 2016
-        while (month.text != 'December 2016'):
-            self.teacher.find(By.XPATH,
-                              "//a[@class = 'calendar-header-control" +
-                              "next']").click()
-
-        self.teacher.driver.execute_script('window.scrollBy(0, 600);')
+        calendar_date = self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
+            )
+        )
+        self.teacher.driver.execute_script(
+            'return arguments[0].scrollIntoView();', calendar_date)
+        self.teacher.driver.execute_script('window.scrollBy(0, -80);')
         self.teacher.sleep(5)
-
-        upcoming = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class='rc-Day rc-Day--upcoming']")
-        for days in upcoming:
-            if days.text == '31':
-                days.click()
-                break
-
-        self.teacher.find(By.LINK_TEXT, "Add Homework").click()
-
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(calendar_date)
+        actions.move_by_offset(0, -35)
+        actions.click()
+        actions.move_by_offset(30, 45)
+        actions.click()
+        actions.perform()
         self.teacher.sleep(5)
-
-        assert('homeworks' in self.teacher.current_url()), \
-            'Not on the add a homework page'
+        assert('homework/new' in self.teacher.current_url()),\
+            'not at Add Homework page'
 
         self.ps.test_updates['passed'] = True
 
@@ -198,17 +186,9 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
-        assert('homeworks' in self.teacher.current_url()), \
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -277,17 +257,9 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
-        assert('homeworks' in self.teacher.current_url()), \
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -366,16 +338,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -531,17 +495,9 @@ class TestCreateAHomework(unittest.TestCase):
 
         # Test steps and verification assertions
 
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
-        assert('homeworks' in self.teacher.current_url()), \
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -680,16 +636,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -876,16 +824,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -1058,16 +998,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -1115,16 +1047,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -1167,16 +1091,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -1224,16 +1140,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -1277,16 +1185,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -1456,16 +1356,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -1632,16 +1524,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -1807,16 +1691,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -1987,16 +1863,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -2040,16 +1908,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -2093,16 +1953,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -2245,16 +2097,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -2404,16 +2248,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -2571,16 +2407,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -2621,16 +2449,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -2771,16 +2591,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -2949,16 +2761,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -2996,16 +2800,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -3181,16 +2977,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -3359,16 +3147,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -3405,16 +3185,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -3585,16 +3357,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -3756,16 +3520,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -3929,16 +3685,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -3976,16 +3724,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -4037,16 +3777,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -4101,16 +3833,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -4163,16 +3887,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -4225,16 +3941,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -4306,16 +4014,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -4399,16 +4099,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -4471,16 +4163,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -4545,16 +4229,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -4617,16 +4293,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -4685,16 +4353,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -4760,16 +4420,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -4859,16 +4511,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -4933,16 +4577,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -5033,16 +4669,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -5125,16 +4753,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -5216,16 +4836,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -5348,16 +4960,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -5479,16 +5083,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -5601,16 +5197,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -5701,16 +5289,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -5816,16 +5396,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -5974,16 +5546,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -6216,16 +5780,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
@@ -6452,16 +6008,8 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.select_course(appearance='physics')
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'add-assignment')
-            )
-        ).click()
-        self.teacher.find(By.PARTIAL_LINK_TEXT, 'Add Homework').click()
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homeworks/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
