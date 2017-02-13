@@ -29,14 +29,15 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        7992, 7993, 7994, 7995, 7996,
-        7997, 7998, 7999, 8000, 8001,
-        8002, 8003, 8004, 8005, 8006,
-        8007, 8008, 8009, 8010, 8011,
-        8012, 8013, 8014, 8015, 8016,
-        8017, 8018, 8019, 8020, 8021,
-        8022, 8023, 8024, 8025, 8026,
-        8027, 111246
+        7995
+        # 7992, 7993, 7994, 7995, 7996,
+        # 7997, 7998, 7999, 8000, 8001,
+        # 8002, 8003, 8004, 8005, 8006,
+        # 8007, 8008, 8009, 8010, 8011,
+        # 8012, 8013, 8014, 8015, 8016,
+        # 8017, 8018, 8019, 8020, 8021,
+        # 8022, 8023, 8024, 8025, 8026,
+        # 8027, 111246
     ])
 )
 
@@ -173,7 +174,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading003_' + str(randint(100, 999))
+        assignment_name = 'reading003_%d' % (randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
@@ -309,7 +310,7 @@ class TestCreateAReading(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment = Assignment()
-        assignment_name = 'reading004_' + str(randint(100, 999))
+        assignment_name = 'reading004_%d' % (randint(100, 999))
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
         )
@@ -342,12 +343,11 @@ class TestCreateAReading(unittest.TestCase):
                 strftime('%m/%d/%Y')
             element = self.teacher.find(
                 By.XPATH,
-                '//div[contains(@class,"tasking-plan")]' +
-                '[' + str(x + 1) + ']' +
-                '//div[contains(@class,"-due-date")]' +
-                '//div[contains(@class,"datepicker__input")]')
+                ('//div[contains(@class,"tasking-plan")][%d]' +
+                 '//div[contains(@class,"-due-date")]' +
+                 '//div[contains(@class,"datepicker__input")]') % (x + 1))
             self.teacher.driver.execute_script(
-                'window.scrollBy(0,'+str(element.size['height']+50)+');')
+                'window.scrollBy(0,%d);' % (element.size['height'] + 50))
             self.teacher.sleep(0.5)
             element.click()
             # get calendar to correct month
@@ -365,15 +365,14 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH,
                 '//div[contains(@class,"datepicker__day")' +
-                'and text()="' + (closes_on[3: 5]).lstrip('0') + '"]'
+                'and text()="%s"]' % (closes_on[3: 5]).lstrip('0')
             ).click()
             self.teacher.sleep(0.5)
             self.teacher.find(
                 By.XPATH,
-                '//div[contains(@class,"tasking-plan")]' +
-                '[' + str(x + 1) + ']' +
-                '//div[contains(@class,"-open-date")]' +
-                '//div[contains(@class,"datepicker__input")]'
+                ('//div[contains(@class,"tasking-plan")][%d]' +
+                 '//div[contains(@class,"-open-date")]' +
+                 '//div[contains(@class,"datepicker__input")]') % (x + 1)
             ).click()
             # get calendar to correct month
             month = today.month
@@ -390,7 +389,7 @@ class TestCreateAReading(unittest.TestCase):
             self.teacher.find(
                 By.XPATH,
                 '//div[contains(@class,"datepicker__day")' +
-                'and text()="' + (opens_on[3: 5]).lstrip('0') + '"]'
+                'and text()="%s"]' % (opens_on[3: 5]).lstrip('0')
             ).click()
             self.teacher.sleep(0.5)
         # add reading sections to the assignment
@@ -454,7 +453,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading005_' + str(randint(100, 999))
+        assignment_name = 'reading005_%d' % (randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
@@ -539,7 +538,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading006_' + str(randint(100, 999))
+        assignment_name = 'reading006_%d' % (randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
@@ -730,7 +729,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading009_' + str(randint(100, 999))
+        assignment_name = 'reading009_%d' % (randint(100, 999))
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
         )
@@ -820,7 +819,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading011_' + str(randint(100, 999))
+        assignment_name = 'reading011_%d' % (randint(100, 999))
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
         )
@@ -869,7 +868,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading012_' + str(randint(100, 999))
+        assignment_name = 'reading012_%d' % (randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -937,7 +936,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading013_' + str(randint(100, 999))
+        assignment_name = 'reading013_%d' % (randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -1012,7 +1011,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading007_' + str(randint(100, 999))
+        assignment_name = 'reading007_%d' % (randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -1083,7 +1082,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading015_' + str(randint(100, 999))
+        assignment_name = 'reading015_%d' % (randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -1497,7 +1496,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading021_' + str(randint(100, 999))
+        assignment_name = 'reading021_%d' % (randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
@@ -1575,7 +1574,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-022_' + str(randint(100, 999))
+        assignment_name = 'reading-022_%d' % (randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -1664,7 +1663,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-023_' + str(randint(100, 999))
+        assignment_name = 'reading-023_%d' % (randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -1763,7 +1762,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading024_' + str(randint(100, 999))
+        assignment_name = 'reading024_%d' % (randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
@@ -1842,7 +1841,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-025_' + str(randint(100, 999))
+        assignment_name = 'reading-025_%d' % (randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -1928,7 +1927,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-026_' + str(randint(100, 999))
+        assignment_name = 'reading-026_%d' % (randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -2025,7 +2024,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-027_' + str(randint(100, 999))
+        assignment_name = 'reading-027_%d' % (randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
@@ -2130,7 +2129,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-028_' + str(randint(100, 999))
+        assignment_name = 'reading-028_%d' % (randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
@@ -2223,7 +2222,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-029_' + str(randint(100, 999))
+        assignment_name = 'reading-029_%d' % (randint(100, 999))
         section_to_remove = '1.2'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
@@ -2332,7 +2331,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-030_' + str(randint(100, 999))
+        assignment_name = 'reading-030_%d' % (randint(100, 999))
         section_to_remove = 'ch2'
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
@@ -2436,7 +2435,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-031_' + str(randint(100, 999))
+        assignment_name = 'reading-031_%d' % (randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
@@ -2527,7 +2526,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-032_' + str(randint(100, 999))
+        assignment_name = 'reading-032_%d' % (randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -2629,7 +2628,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-033_' + str(randint(100, 999))
+        assignment_name = 'reading-033_%d' % (randint(100, 999))
         assignment = Assignment()
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
@@ -2735,7 +2734,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-034_' + str(randint(100, 999))
+        assignment_name = 'reading-034_%d' % (randint(100, 999))
         assignment = Assignment()
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
@@ -2838,7 +2837,7 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-035_' + str(randint(100, 999))
+        assignment_name = 'reading-035_%d' % (randint(100, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
