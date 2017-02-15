@@ -5,6 +5,7 @@ import json
 import os
 import pytest
 import unittest
+import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
 from random import randint
@@ -12,6 +13,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 
 from staxing.helper import Teacher  # , Student
 from staxing.assignment import Assignment
@@ -27,19 +29,18 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8029
-        # 8028, 8029, 8030, 8031, 8032,
-        # 8033, 8034, 8035, 8036, 8037,
-        # 8038, 8039, 8040, 8041, 8042,
-        # 8043, 8044, 8045, 8046, 8047,
-        # 8048, 8049, 8050, 8051, 8052,
-        # 8053, 8054, 8055, 8056, 8057,
-        # 8058, 8059, 8060, 8061, 8062,
-        # 8063, 8064, 8065, 8066, 8067,
-        # 8068, 8069, 8070, 8071, 8072,
-        # 8073, 8074, 8075, 8076, 8077,
-        # 8078, 8080, 8081, 8082, 8083,
-        # 8084, 111247
+        8028, 8029, 8030, 8031, 8032,
+        8033, 8034, 8035, 8036, 8037,
+        8038, 8039, 8040, 8041, 8042,
+        8043, 8044, 8045, 8046, 8047,
+        8048, 8049, 8050, 8051, 8052,
+        8053, 8054, 8055, 8056, 8057,
+        8058, 8059, 8060, 8061, 8062,
+        8063, 8064, 8065, 8066, 8067,
+        8068, 8069, 8070, 8071, 8072,
+        8073, 8074, 8075, 8076, 8077,
+        8078, 8080, 8081, 8082, 8083,
+        8084, 111247
     ])
 )
 
@@ -91,20 +92,14 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.001' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.001',
-            '8028'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.001', '8028']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
+        if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
@@ -128,12 +123,7 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.002' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.002',
-            '8028'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.002', '8028']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -145,7 +135,7 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.execute_script(
             'return arguments[0].scrollIntoView();', calendar_date)
         self.teacher.driver.execute_script('window.scrollBy(0, -80);')
-        self.teacher.sleep(5)
+        self.teacher.sleep(2)
         actions = ActionChains(self.teacher.driver)
         actions.move_to_element(calendar_date)
         actions.move_by_offset(0, -35)
@@ -153,7 +143,6 @@ class TestCreateAHomework(unittest.TestCase):
         actions.move_by_offset(30, 45)
         actions.click()
         actions.perform()
-        self.teacher.sleep(5)
         assert('homework/new' in self.teacher.current_url()),\
             'not at Add Homework page'
 
@@ -177,55 +166,87 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.003' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.003',
-            '8030'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.003', '8030']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+            )
+        )
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys(
-            'collective due date')
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
-
-        # Choose the first date calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[0].click()
-
-        # Choose today as the open date
-        today = self.teacher.driver.find_elements_by_xpath(
-            "//div[contains(@class,'datepicker__day datepicker__day--today')]")
-        today[0].click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        # set close date
+        self.teacher.driver.find_element(By.ID, 'hide-periods-radio').click()
+        today = datetime.date.today()
+        opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        self.teacher.driver.find_element(
             By.XPATH,
-            "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'datepicker__navigation datepicker" +
-                "__navigation--next']").click()
+            '//div[contains(@class,"-due-date")]' +
+            '//div[contains(@class,"datepicker__input")]').click()
+        # get calendar to correct month
+        month = today.month
+        year = today.year
+        while month != int(closes_on[:2]) or year != int(closes_on[6:]):
+            self.teacher.driver.find_element(
+                By.XPATH, '//a[contains(@class,"navigation--next")]').click()
+            if month != 12:
+                month += 1
+            else:
+                month = 1
+                year += 1
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(@class,"datepicker__day")' +
+            'and contains(text(),"' + (closes_on[3:5]).lstrip('0') + '")]'
+        ).click()
+        self.teacher.sleep(0.5)
+        # set open date
+        self.teacher.driver.find_element(
+            By.CLASS_NAME, 'assign-to-label').click()
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(@class,"-open-date")]' +
+            '//div[contains(@class,"datepicker__input")]').click()
+        # get calendar to correct month
+        month = today.month
+        year = today.year
+        while month != int(opens_on[:2]) or year != int(opens_on[6:]):
+            self.teacher.driver.find_element(
+                By.XPATH, '//a[contains(@class,"navigation--next")]').click()
+            if month != 12:
+                month += 1
+            else:
+                month = 1
+                year += 1
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(@class,"datepicker__day")' +
+            'and contains(text(),"' + (opens_on[3:5]).lstrip('0') + '")]'
+        ).click()
+        self.teacher.sleep(3)
 
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
+        new_close = self.teacher.driver.find_element(
+            By.XPATH,
+            "//div[contains(@class, 'due-date')]" +
+            "//input[@type='text' and @value]"
+        ).get_attribute("value")
+        new_open = self.teacher.driver.find_element(
+            By.XPATH,
+            "//div[contains(@class, 'open-date')]" +
+            "//input[@type='text' and @value]"
+        ).get_attribute("value")
+
+        assert(new_close == closes_on), "start date not set"
+        assert(new_open == opens_on), "start date not set"
 
         self.ps.test_updates['passed'] = True
 
@@ -248,60 +269,98 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.004' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.004',
-            '8031'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.004', '8031']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys(
-            'individual due date')
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'show-periods-radio']").click()
-
-        calendars = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")
-        odd = True
-
-        for calendar in calendars:
-            calendar.click()
-            if odd:
-                # Choose today as the open date
-                today = self.teacher.driver.find_elements_by_xpath(
-                    "//div[contains(@class,'datepicker__" +
-                    "day datepicker__day--today')]")
-                today[0].click()
-                odd = False
-
-            else:
-                while(self.teacher.find(
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        # assign for each period individually
+        self.teacher.find(By.ID, 'show-periods-radio').click()
+        periods = self.teacher.find_all(
+            By.XPATH, '//div[contains(@class,"tasking-plan")]')
+        today = datetime.date.today()
+        for x in range(len(periods)):
+            opens_on = (
+                today + datetime.timedelta(days=x + 1)).strftime('%m/%d/%Y')
+            closes_on = (
+                today + datetime.timedelta(days=len(periods) + 5)
+            ).strftime('%m/%d/%Y')
+            element = self.teacher.find(
+                By.XPATH,
+                '//div[contains(@class,"tasking-plan")][%s]' % (x + 1) +
+                '//div[contains(@class,"-due-date")]' +
+                '//div[contains(@class,"datepicker__input")]')
+            self.teacher.driver.execute_script(
+                'window.scrollBy(0,' + str(element.size['height'] + 50) + ');')
+            self.teacher.sleep(0.5)
+            element.click()
+            # get calendar to correct month
+            month = today.month
+            year = today.year
+            while (month != int(closes_on[:2]) or year != int(closes_on[6:])):
+                self.teacher.find(
                     By.XPATH,
-                    "//span[@class = 'datepicker__current-month']"
-                ).text != 'December 2016'):
-                    self.teacher.find(
-                        By.XPATH,
-                        "//a[@class = 'datepicker__navigation datepicker__" +
-                        "navigation--next']").click()
-
-                # Choose the due date of December 31, 2016
-                weekends = self.teacher.driver.find_elements_by_xpath(
-                    "//div[@class = 'datepicker__day datepicker__" +
-                    "day--weekend']")
-                for day in weekends:
-                    if day.text == '31':
-                        due = day
-                        due.click()
-                        odd = True
-                        break
+                    '//a[contains(@class,"navigation--next")]'
+                ).click()
+                if month != 12:
+                    month += 1
+                else:
+                    month = 1
+                    year += 1
+            self.teacher.find(
+                By.XPATH, '//div[contains(@class,"datepicker__day") ' +
+                ' and not(contains(@class,"disabled")) ' +
+                ' and text()="' + (closes_on[3:5]).lstrip('0') + '"]'
+            ).click()
+            self.teacher.sleep(0.5)
+            self.teacher.find(
+                By.XPATH,
+                '//div[contains(@class,"tasking-plan")][%s]' % (x + 1) +
+                '//div[contains(@class,"-open-date")]' +
+                '//div[contains(@class,"datepicker__input")]').click()
+            # get calendar to correct month
+            month = today.month
+            year = today.year
+            while (month != int(opens_on[:2]) or year != int(opens_on[6:])):
+                self.teacher.find(
+                    By.XPATH, '//a[contains(@class,"navigation--next")]'
+                ).click()
+                if month != 12:
+                    month += 1
+                else:
+                    month = 1
+                    year += 1
+            self.teacher.find(
+                By.XPATH, '//div[contains(@class,"datepicker__day")' +
+                ' and not(contains(@class,"disabled")) ' +
+                ' and text()="' + (opens_on[3:5]).lstrip('0') + '"]'
+            ).click()
+            new_close = self.teacher.driver.find_element(
+                By.XPATH,
+                "//div[contains(@class,'tasking-plan')][%s]" % (x + 1) +
+                "//div[contains(@class, 'due-date')]" +
+                "//input[@type='text' and @value]"
+            ).get_attribute("value")
+            new_open = self.teacher.driver.find_element(
+                By.XPATH,
+                "//div[contains(@class,'tasking-plan')][%s]" % (x + 1) +
+                "//div[contains(@class, 'open-date')]" +
+                "//input[@type='text' and @value]"
+            ).get_attribute("value")
+            assert(new_close == closes_on), "start date not set"
+            assert(new_open == opens_on), "start date not set"
 
         self.ps.test_updates['passed'] = True
 
@@ -329,136 +388,51 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.005' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.005',
-            '8032'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.005', '8032']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_name = "hw006_" + str(randint(0, 999))
+        assignment = Assignment()
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
         self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys('Epic 16-5')
+            By.ID, 'reading-title').send_keys(assignment_name)
         self.teacher.find(
-            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(
             By.XPATH,
-            "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
+            '//div[contains(@class,"assignment-description")]//textarea' +
+            '[contains(@class,"form-control")]'). \
+            send_keys('homework Assignment description')
+        today = datetime.date.today()
+        opens_on = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (opens_on, closes_on)})
+        assignment.add_homework_problems(
+            self.teacher.driver, {'1.1': (2, 3), })
+        self.teacher.find(
+            By.XPATH, '//button[contains(@class,"-save")]').click()
+        self.teacher.sleep(4)
+        try:
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'datepicker__navigation datepicker__" +
-                "navigation--next']").click()
-
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        # Save the draft
-        self.teacher.driver.execute_script('window.scrollBy(0, -200);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -save btn btn-default']").click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -save btn btn-default']"
-        ).click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
+                "//a/label[contains(text(), '" + assignment_name + "')]")
+        except NoSuchElementException:
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the newly created assignment and delete it
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-5':
-                assignment.click()
-                self.teacher.sleep(2)
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button delete-" +
-                    "link pull-right btn btn-default']").click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='btn btn-primary']").click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-5':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
+                "//a/label[contains(text(), '" + assignment_name + "')]")
         self.ps.test_updates['passed'] = True
 
     # Case C8033 - 006 - Teacher | Publish a new homework
@@ -485,132 +459,51 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.006' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.006',
-            '8033'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.006', '8033']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_name = "hw006_" + str(randint(0, 999))
+        assignment = Assignment()
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homework/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
         self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys('Epic 16-6')
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(
-            By.XPATH,
-            "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH, "//a[@class = 'datepicker__navigation datepicker__" +
-                "navigation--next']").click()
-
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
+            By.ID, 'reading-title').send_keys(assignment_name)
         self.teacher.find(
             By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
+            '//div[contains(@class,"assignment-description")]//textarea' +
+            '[contains(@class,"form-control")]'). \
+            send_keys('homework Assignment description')
+        today = datetime.date.today()
+        opens_on = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (opens_on, closes_on)})
+        assignment.add_homework_problems(
+            self.teacher.driver, {'1.1': (2, 3), })
         self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        # Publish the assignment
-        self.teacher.driver.execute_script('window.scrollBy(0, -200);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -publish btn btn-primary']").click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
+            By.XPATH, '//button[contains(@class,"-publish")]').click()
+        self.teacher.sleep(4)
+        try:
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the newly created assignment and delete it
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-6':
-                assignment.click()
-                self.teacher.find(
-                    By.XPATH,
-                    "//a[@class='btn btn-default -edit-assignment']").click()
-                self.teacher.sleep(5)
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button delete-link pull-" +
-                    "right btn btn-default']").click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='btn btn-primary']").click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
+                "//label[contains(text(), '" + assignment_name + "')]")
+        except NoSuchElementException:
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-6':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
+                "//label[contains(text(), '" + assignment_name + "')]")
         self.ps.test_updates['passed'] = True
 
     # Case C8034 - 007 - Teacher | Publish a draft homework
@@ -627,174 +520,81 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.007' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.007',
-            '8034'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.007', '8034']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
-        self.teacher.find(By.XPATH, "//input[@id = 'reading-title']"). \
-            send_keys('Epic 16-7')
-        self.teacher.find(By.XPATH, "//input[@id = 'hide-periods-radio']"). \
-            click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']"
-        )[1].click()
-        while(self.teacher.find(
-                By.XPATH,
-                "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
+        assignment_name = "hw007_" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='homework',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'problems': {'1.1': (2, 3), },
+                                        'status': 'draft',
+                                        'feedback': 'immediate'
+                                    })
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'datepicker__navigation datepicker__" +
-                "navigation--next']"
+                '//a[contains(@href,"homework")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
+            self.teacher.find(
+                By.XPATH,
+                '//a[contains(@href,"homework")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
 
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(By.XPATH, "//button[@id = 'problems-select']"). \
-            click()
-        self.teacher.find(By.XPATH, "//span[@class = 'chapter-checkbox']"). \
-            click()
+        self.teacher.page.wait_for_page_load()
         self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']"
-        ).click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH,
-            "//div[@class = 'controls-overlay'][1]"
-        )
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']"
-        ).click()
-        self.teacher.sleep(2)
-
-        # Save the draft
-        self.teacher.driver.execute_script('window.scrollBy(0, -200);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -save btn btn-default']"
-        ).click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
+            By.XPATH, '//button[contains(@class,"-publish")]').click()
+        self.teacher.sleep(4)
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']"
+                '//div/label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
-
-        # Select the newly created assignment and publish it
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-7':
-                assignment.click()
-                self.teacher.sleep(2)
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button -publish btn btn-primary']"
-                ).click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.sleep(60)
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
+        except NoSuchElementException:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']"
+                '//div/label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
-
-        # Select the newly created assignment and delete it
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-7':
-                self.teacher.find(By.XPATH, "//button[@class='close']").click()
-                self.teacher.sleep(5)
-                assignment.click()
-                self.teacher.find(
-                    By.XPATH,
-                    "//a[@class='btn btn-default -edit-assignment']"
-                ).click()
-                self.teacher.sleep(5)
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button delete-link pull-right " +
-                    "btn btn-default']"
-                ).click()
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='btn btn-primary']"
-                ).click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']"
-            ).click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-7':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
+        assert('/plan/' in self.teacher.current_url()), \
+            'assignment did not publish'
+        self.teacher.sleep(4)
         self.ps.test_updates['passed'] = True
 
     # Case C8035 - 008 - Teacher | Cancel a new homework before making any
@@ -815,201 +615,26 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.008' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.008',
-            '8035'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.008', '8035']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class = 'btn btn-default']"
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//button[text()="Cancel"]')
+            )
         ).click()
-
-        self.teacher.sleep(5)
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(
-            By.XPATH,
-            "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'datepicker__navigation datepicker__" +
-                "navigation--next']").click()
-
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        # Save the draft
-        self.teacher.driver.execute_script('window.scrollBy(0, -200);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -save btn btn-default']").click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the newly created assignment and publish it
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-7':
-                assignment.click()
-                self.teacher.sleep(2)
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button -publish " +
-                    "btn btn-primary']").click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.sleep(60)
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the newly created assignment and delete it
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-7':
-                self.teacher.find(By.XPATH, "//button[@class='close']").click()
-                self.teacher.sleep(5)
-                assignment.click()
-                self.teacher.find(
-                    By.XPATH,
-                    "//a[@class='btn btn-default -edit-assignment']").click()
-                self.teacher.sleep(5)
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button delete-link pull-" +
-                    "right btn btn-default']").click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='btn btn-primary']").click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-7':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
-        self.ps.test_updates['passed'] = True
-
-    # Case C8035 - 008 - Teacher | Cancel hw before making changes w/ Cancel
-    @pytest.mark.skipif(str(8035) not in TESTS, reason='Excluded')
-    def test_teacher_cancel_hw_before_make_changes_with_cancel_btn_8035(self):
-        """Cancel new homework before making changes using the Cancel button.
-
-        Steps:
-        Click on the Add Assignment drop down menu on the user dashboard, OR
-        click on a calendar date at least one day later than the current date
-        Click on the 'Add Homework' button
-        Click on the 'Cancel' button
-
-        Expected Result:
-        The teacher is returned to the dashboard.
-        """
-        self.ps.test_updates['name'] = 't1.16.008' \
-            + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.008',
-            '8035'
-        ]
-        self.ps.test_updates['passed'] = False
-
-        # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH, "//button[@class = 'btn btn-default']").click()
-
-        self.teacher.sleep(5)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
+        assert('month' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard, after caneling assignment 008'
 
         self.ps.test_updates['passed'] = True
 
@@ -1038,31 +663,38 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.009' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.009',
-            '8036'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.009', '8036']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
         self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys('test title')
-        self.teacher.sleep(5)
-        self.teacher.find(
-            By.XPATH, "//button[@class = 'btn btn-default']").click()
-        self.teacher.find(
-            By.XPATH, "//button[@class = 'ok btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
+            By.ID, 'reading-title').send_keys('new_name008')
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//button[text()="Cancel"]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[text()="Yes"]')
+            )
+        ).click()
+        assert('month' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard, after caneling assignment 008'
 
         self.ps.test_updates['passed'] = True
 
@@ -1082,27 +714,26 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.010' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.010',
-            '8037'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.010', '8037']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class = 'openstax-close-x close pull-right']").click()
-        self.teacher.sleep(5)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//button[contains(@class,"openstax-close-x")]')
+            )
+        ).click()
+        assert('month' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard, after caneling assignment 009'
 
         self.ps.test_updates['passed'] = True
 
@@ -1131,32 +762,38 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.011' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.011',
-            '8038'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.011', '8038']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
         self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys('test title')
-        self.teacher.sleep(5)
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class = 'openstax-close-x close pull-right']").click()
-        self.teacher.find(
-            By.XPATH, "//button[@class = 'ok btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
+            By.ID, 'reading-title').send_keys('new_name008')
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//button[contains(@class,"openstax-close-x")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[text()="Yes"]')
+            )
+        ).click()
+        assert('month' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard, after caneling assignment 010'
 
         self.ps.test_updates['passed'] = True
 
@@ -1176,18 +813,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.012' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.012',
-            '8039'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.012', '8039']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -1328,8 +964,6 @@ class TestCreateAHomework(unittest.TestCase):
         assert(deleted), 'Assignment not removed'
         self.ps.test_updates['passed'] = True
 
-        self.teacher.sleep(5)
-
     # Case C8040 - 013 - Teacher | Cancel a draft homework after making
     # changes using the Cancel button
     @pytest.mark.skipif(str(8040) not in TESTS, reason='Excluded')
@@ -1347,18 +981,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.013' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.013',
-            '8040'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.013', '8040']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -1515,18 +1148,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.014' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.014',
-            '8041'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.014', '8041']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -1682,18 +1314,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.015' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.015',
-            '8042'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.015', '8042']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -1854,18 +1485,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.016' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.016',
-            '8043'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.016', '8043']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(2)
@@ -1899,18 +1529,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.017' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.017',
-            '8044'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.017', '8044']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(2)
@@ -1944,18 +1573,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.018' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.018',
-            '8045'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.018', '8045']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -2088,18 +1716,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.019' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.019',
-            '8046'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.019', '8046']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -2239,18 +1866,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.020' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.020',
-            '8047'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.020', '8047']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -2398,18 +2024,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.021' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.021',
-            '8048'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.021', '8048']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -2440,18 +2065,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.022' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.022',
-            '8049'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.022', '8049']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -2582,18 +2206,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.023' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.023',
-            '8050'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.023', '8050']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -2752,18 +2375,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.024' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.024',
-            '8051'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.024', '8051']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -2791,18 +2413,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.025' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.025',
-            '8052'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.025', '8052']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -2968,18 +2589,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.026' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.026',
-            '8053'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.026', '8053']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -3138,18 +2758,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.027' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.027',
-            '8054'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.027', '8054']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(2)
@@ -3176,18 +2795,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.028' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.028',
-            '8055'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.028', '8055']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -3348,18 +2966,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.029' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.029',
-            '8056'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.029', '8056']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -3511,18 +3128,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.030' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.030',
-            '8057'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.030', '8057']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -3676,18 +3292,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.031' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.031',
-            '8058'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.031', '8058']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(By.XPATH, "//i[@class='fa fa-info-circle']").click()
@@ -3715,18 +3330,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.032' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.032',
-            '8059'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.032', '8059']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -3768,18 +3382,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.033' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.033',
-            '8060'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.033', '8060']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -3824,18 +3437,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.031' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.031',
-            '8058'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.031', '8058']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -3878,18 +3490,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.032' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.032',
-            '8059'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.032', '8059']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -3932,18 +3543,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.036' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.036',
-            '8063'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.036', '8063']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -4005,18 +3615,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.037' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.037',
-            '8064'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.037', '8064']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -4090,18 +3699,17 @@ class TestCreateAHomework(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't1.16.038' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't1',
-            't1.16',
-            't1.16.038',
-            '8065'
-        ]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.038', '8065']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -4163,9 +3771,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -4229,9 +3841,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -4293,9 +3909,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -4353,9 +3973,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -4420,9 +4044,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -4511,9 +4139,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -4577,9 +4209,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -4669,9 +4305,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -4753,9 +4393,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -4836,9 +4480,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -4960,9 +4608,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -5083,9 +4735,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -5197,9 +4853,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -5289,9 +4949,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -5396,9 +5060,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.sleep(3)
@@ -5546,9 +5214,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -5780,9 +5452,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
@@ -6008,9 +5684,13 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        Assignment().open_assignment_menu(self.teacher.driver)
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homeworks/new' in self.teacher.current_url()), \
+        assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
         self.teacher.find(
