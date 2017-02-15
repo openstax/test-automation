@@ -1448,3 +1448,30 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+
+    # 111250 - 030 - User | Faulty URL shows a styled 404 error page
+    @pytest.mark.skipif(str(111250) not in TESTS, reason='Excluded')
+    def test_user_faulty_url_shows_styled_404_page_111250(self):
+        """Faulty URL shows a styled 404 error page.
+
+        Steps:
+        go to https://tutor-qa.openstax.org/not_a_real_page
+
+        Expected Result:
+        a styled error page is displayed
+
+        """
+        self.ps.test_updates['name'] = 't2.18.030' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't2',
+            't2.18',
+            't2.18.030',
+            '111250'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
