@@ -52,9 +52,9 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         self.admin = Admin(
-           use_env_vars=True,
-           pasta_user=self.ps,
-           capabilities=self.desired_capabilities
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities
         )
         self.admin.login()
 
@@ -1638,5 +1638,207 @@ class TestManageEcosystems(unittest.TestCase):
         url = self.admin.current_url()
         assert('jobs/008e4642-85a0-4fff-86ed-4f1e7be02233' in url), \
             'Not at the jobs page'
+
+        self.ps.test_updates['passed'] = True
+
+    # 111270 - 026 - Content Analyst | Verify question availability
+    # for US History for AP Courses
+    @pytest.mark.skipif(str(111270) not in TESTS, reason='Excluded')
+    def test_content_analyst_verify_us_history_111270(self):
+        """Verify question availability for College Biology.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.58.026' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.58',
+            't1.58.026',
+            '111270'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 111271 - 027 - Content Analyst | Verify question availability
+    # for College Biology
+    @pytest.mark.skipif(str(111271) not in TESTS, reason='Excluded')
+    def test_content_analyst_verify_college_bio_questions_111271(self):
+        """Verify question availability for College Biology.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.58.027' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.58',
+            't1.58.027',
+            '111271'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 111272 - 028 - Content Analyst | Verify question availability
+    # for College Physics
+    @pytest.mark.skipif(str(111272) not in TESTS, reason='Excluded')
+    def test_content_analyst_verify_college_physics_questions_111272(self):
+        """Verify question availability for College Physics.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.58.028' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.58',
+            't1.58.028',
+            '111272'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 111273 - 029 - Content Analyst | Verify question availability
+    # for Introduction to Sociology 2e with Courseware
+    @pytest.mark.skipif(str(111273) not in TESTS, reason='Excluded')
+    def test_content_analyst_verify_sociology_2e_questions_111273(self):
+        """Verify question availability for Introduction to.
+
+        Sociology 2e with Courseware.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.58.029' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.58',
+            't1.58.029',
+            '111273'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 111274 - 030 - Content Analyst | Verify question availability
+    # for Biology for AP Courses
+    @pytest.mark.skipif(str(111274) not in TESTS, reason='Excluded')
+    def test_content_analyst_verify_ap_biology_questions_111274(self):
+        """Verify question availability for Biology for AP Courses.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.58.030' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.58',
+            't1.58.030',
+            '111274'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 111275 - 031 - Content Analyst | Verify question availability
+    # for High School Physics
+    @pytest.mark.skipif(str(111275) not in TESTS, reason='Excluded')
+    def test_content_analyst_verify_hs_physics_questions_111275(self):
+        """Verify question availability for High School Physics.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.58.031' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.58',
+            't1.58.031',
+            '111275'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 111276 - 032 - Content Analyst | Verify question availability
+    # for College Physics with Courseware
+    @pytest.mark.skipif(str(111276) not in TESTS, reason='Excluded')
+    def test_content_analyst_verify_college_physics_questions_111276(self):
+        """Verify question availability for College Physics with Courseware.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.58.032' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.58',
+            't1.58.032',
+            '111276'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 111277 - 033 - Content Analyst | Verify question availability
+    # for College Biology with Courseware
+    @pytest.mark.skipif(str(111277) not in TESTS, reason='Excluded')
+    def test_content_analyst_verify_college_bio_questions_111277(self):
+        """Verify question availability for College Biology with Courseware.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.58.033' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.58',
+            't1.58.033',
+            '111277'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
