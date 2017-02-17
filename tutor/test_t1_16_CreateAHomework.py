@@ -29,18 +29,19 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8028, 8029, 8030, 8031, 8032,
-        8033, 8034, 8035, 8036, 8037,
-        8038, 8039, 8040, 8041, 8042,
-        8043, 8044, 8045, 8046, 8047,
-        8048, 8049, 8050, 8051, 8052,
-        8053, 8054, 8055, 8056, 8057,
-        8058, 8059, 8060, 8061, 8062,
-        8063, 8064, 8065, 8066, 8067,
-        8068, 8069, 8070, 8071, 8072,
-        8073, 8074, 8075, 8076, 8077,
-        8078, 8080, 8081, 8082, 8083,
-        8084, 111247
+        8054
+        # 8028, 8029, 8030, 8031, 8032,
+        # 8033, 8034, 8035, 8036, 8037,
+        # 8038, 8039, 8040, 8041, 8042,
+        # 8043, 8044, 8045, 8046, 8047,
+        # 8048, 8049, 8050, 8051, 8052,
+        # 8053, 8054, 8055, 8056, 8057,
+        # 8058, 8059, 8060, 8061, 8062,
+        # 8063, 8064, 8065, 8066, 8067,
+        # 8068, 8069, 8070, 8071, 8072,
+        # 8073, 8074, 8075, 8076, 8077,
+        # 8078, 8080, 8081, 8082, 8083,
+        # 8084, 111247
     ])
 )
 
@@ -420,8 +421,11 @@ class TestCreateAHomework(unittest.TestCase):
             self.teacher.driver, {'all': (opens_on, closes_on)})
         assignment.add_homework_problems(
             self.teacher.driver, {'1.1': (2, 3), })
-        self.teacher.find(
-            By.XPATH, '//button[contains(@class,"-save")]').click()
+        self.teacher.sleep(1)
+        element = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"-save")]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
         self.teacher.sleep(4)
         try:
             self.teacher.find(
@@ -817,151 +821,53 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homework/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys('Epic 16-12')
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(
-            By.XPATH,
-            "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH, "//a[@class = 'datepicker__navigation datepicker__" +
-                "navigation--next']").click()
-
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        # Save the draft
-        self.teacher.driver.execute_script('window.scrollBy(0, -200);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -save btn btn-default']").click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
+        assignment_name = "hw012_" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='homework',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'problems': {'1.1': (2, 3), },
+                                        'status': 'draft',
+                                        'feedback': 'immediate'
+                                    })
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the draft and click cancel
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-12':
-                assignment.click()
-                self.teacher.sleep(2)
-                self.teacher.find(
-                    By.XPATH, "//button[@class='btn btn-default']").click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.sleep(5)
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']"
+                '//a[contains(@href,"homework")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
-
-        # Select the draft and delete it
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-12':
-                assignment.click()
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button delete-link pull-right " +
-                    "btn btn-default']"
-                ).click()
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='btn btn-primary']"
-                ).click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
+        except NoSuchElementException:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']"
+                '//a[contains(@href,"homework")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-12':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//button[text()="Cancel"]')
+            )
+        ).click()
+        assert('month' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard, after caneling assignment 012'
         self.ps.test_updates['passed'] = True
 
     # Case C8040 - 013 - Teacher | Cancel a draft homework after making
@@ -985,152 +891,65 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homework/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys('Epic 16-13')
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(
-            By.XPATH,
-            "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
+        assignment_name = "hw013_" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='homework',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'problems': {'1.1': (2, 3), },
+                                        'status': 'draft',
+                                        'feedback': 'immediate'
+                                    })
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'datepicker__navigation datepicker__" +
-                "navigation--next']").click()
-
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        # Save the draft
-        self.teacher.driver.execute_script('window.scrollBy(0, -200);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -save btn btn-default']").click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
+                '//a[contains(@href,"homework")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the draft and click cancel after making a change
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-13':
-                assignment.click()
-                self.teacher.sleep(2)
-                self.teacher.find(
-                    By.XPATH,
-                    "//input[@id = 'reading-title']").send_keys('edit')
-                self.teacher.find(
-                    By.XPATH, "//button[@class='btn btn-default']").click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='ok btn btn-primary']").click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.sleep(5)
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the draft and delete it
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-13':
-                assignment.click()
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button delete-link pull-" +
-                    "right btn btn-default']").click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='btn btn-primary']").click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-13':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
+                '//a[contains(@href,"homework")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        self.teacher.find(
+            By.ID, 'reading-title').send_keys(assignment_name)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//button[text()="Cancel"]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[text()="Yes"]')
+            )
+        ).click()
+        assert('month' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard, after caneling assignment 013'
         self.ps.test_updates['passed'] = True
 
     # Case C8041 - 014 - Teacher | Cancel a draft hw before changes using the X
@@ -1152,148 +971,54 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homework/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys('Epic 16-14')
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(
-            By.XPATH,
-            "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
+        assignment_name = "hw014_" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='homework',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'problems': {'1.1': (2, 3), },
+                                        'status': 'draft',
+                                        'feedback': 'immediate'
+                                    })
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'datepicker__navigation datepicker__" +
-                "navigation--next']").click()
-
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        # Save the draft
-        self.teacher.driver.execute_script('window.scrollBy(0, -200);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -save btn btn-default']").click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
+                '//a[contains(@href,"homework")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the draft and click x
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-14':
-                assignment.click()
-                self.teacher.sleep(2)
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='openstax-close-x close pull-right']"
-                ).click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.sleep(5)
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the draft and delete it
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-14':
-                assignment.click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='async-button delete-link " +
-                    "pull-right btn btn-default']").click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='btn btn-primary']").click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-14':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
+                '//a[contains(@href,"homework")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//button[contains(@class,"openstax-close-x")]')
+            )
+        ).click()
+        assert('month' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard, after caneling assignment 014'
         self.ps.test_updates['passed'] = True
 
     # Case C8042 - 015 - Teacher | Cancel a draft homework after making
@@ -1318,154 +1043,65 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homework/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys('Epic 16-15')
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(
-            By.XPATH,
-            "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
+        assignment_name = "hw015_" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='homework',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'problems': {'1.1': (2, 3), },
+                                        'status': 'draft',
+                                        'feedback': 'immediate'
+                                    })
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'datepicker__navigati" +
-                "on datepicker__navigation--next']").click()
-
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        # Save the draft
-        self.teacher.driver.execute_script('window.scrollBy(0, -200);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -save btn btn-default']").click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
+                '//a[contains(@href,"homework")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the draft, make a change, and click x
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-15':
-                assignment.click()
-                self.teacher.sleep(2)
-                self.teacher.find(
-                    By.XPATH,
-                    "//input[@id = 'reading-title']").send_keys('edit')
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='openstax-close-x close pull-right']"
-                ).click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='ok btn btn-primary']").click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.sleep(5)
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the draft and delete it
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-15':
-                assignment.click()
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button delete-link pull-right " +
-                    "btn btn-default']").click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='btn btn-primary']").click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-15':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
+                '//a[contains(@href,"homework")]' +
+                '//label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
+        self.teacher.find(
+            By.ID, 'reading-title').send_keys(assignment_name)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//button[contains(@class,"openstax-close-x")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[text()="Yes"]')
+            )
+        ).click()
+        assert('month' in self.teacher.current_url()), \
+            'Not viewing the calendar dashboard, after caneling assignment 015'
         self.ps.test_updates['passed'] = True
 
     # Case C8043 - 016 - Teacher | Attempt to publish a homework with blank
@@ -1498,17 +1134,15 @@ class TestCreateAHomework(unittest.TestCase):
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
-        self.teacher.sleep(2)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
         self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -publish btn btn-primary']").click()
-
-        self.teacher.sleep(3)
-
-        assert(self.teacher.find(
-            By.XPATH,
-            "//div[@class='hint required-hint']").text == 'Required Field'), \
-            'Required field text not visible'
+            By.XPATH, '//button[contains(@class,"-publish")]').click()
+        assert('homework/new' in self.teacher.current_url()), \
+            'Not stopped from publishing an external with empty reqired feilds'
 
         self.ps.test_updates['passed'] = True
 
@@ -1542,17 +1176,15 @@ class TestCreateAHomework(unittest.TestCase):
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
-        self.teacher.sleep(2)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        )
         self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -save btn btn-default']").click()
-
-        self.teacher.sleep(3)
-
-        assert(self.teacher.find(
-            By.XPATH,
-            "//div[@class='hint required-hint']").text == 'Required Field'), \
-            'Required field text not visible'
+            By.XPATH, '//button[contains(@class,"-save")]').click()
+        assert('homework/new' in self.teacher.current_url()), \
+            'Not stopped from saving an external with empty reqired feilds'
 
         self.ps.test_updates['passed'] = True
 
@@ -1577,126 +1209,68 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homework/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys('Epic 16-18')
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(
-            By.XPATH,
-            "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
+        assignment_name = "hw018_" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='homework',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'problems': {'1.1': (2, 3), },
+                                        'status': 'publish',
+                                        'feedback': 'immediate'
+                                    })
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'datepicker__navigation datepicker__" +
-                "navigation--next']").click()
-
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        # Publish the assignment
-        self.teacher.driver.execute_script('window.scrollBy(0, -20);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -publish btn btn-primary']").click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
+                '//div/label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the newly created assignment and delete it
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-18':
-                assignment.click()
-                self.teacher.find(
-                    By.XPATH,
-                    "//a[@class='btn btn-default -edit-assignment']").click()
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button delete-link pull-right " +
-                    "btn btn-default']").click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='btn btn-primary']").click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-18':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
+                '//div/label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[contains(@class,"edit-assignment")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class,"delete-link")]')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(text(),"Yes")]')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        assert('month' in self.teacher.current_url()),\
+            'not back at calendar after deleting an event'
+        self.teacher.driver.get(self.teacher.current_url())
+        self.teacher.page.wait_for_page_load()
+        events_new = self.teacher.driver.find_elements(
+            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
+        assert(len(events_new) == 0),\
+            'unopen event not deleted'
         self.ps.test_updates['passed'] = True
 
     # Case C8046 - 019 - Teacher | Delete an open homework
@@ -1720,134 +1294,68 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homework/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys('Epic 16-19')
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
-
-        # Choose the first date calendar[0], second is calendar[1]
-        # and set the open date to today
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[0].click()
-        self.teacher.driver.find_element_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--today']").click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(
-            By.XPATH,
-            "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
+        assignment_name = "hw019_" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='homework',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'problems': {'1.1': (2, 3), },
+                                        'status': 'publish',
+                                        'feedback': 'immediate'
+                                    })
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'datepicker__navigation datepicker__" +
-                "navigation--next']").click()
-
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        # Publish the assignment
-        self.teacher.driver.execute_script('window.scrollBy(0, -20);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -publish btn btn-primary']").click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the newly created assignment and delete it
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-19':
-                assignment.click()
-                self.teacher.find(
-                    By.XPATH,
-                    "//a[@class='btn btn-default -edit-assignment']").click()
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button delete-link pull" +
-                    "-right btn btn-default']").click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='btn btn-primary']").click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']"
+                '//div/label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-19':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
+        except NoSuchElementException:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
+            self.teacher.find(
+                By.XPATH,
+                '//div/label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[contains(@class,"edit-assignment")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class,"delete-link")]')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(text(),"Yes")]')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        assert('month' in self.teacher.current_url()),\
+            'not back at calendar after deleting an event'
+        self.teacher.driver.get(self.teacher.current_url())
+        self.teacher.page.wait_for_page_load()
+        events_new = self.teacher.driver.find_elements(
+            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
+        assert(len(events_new) == 0),\
+            'unopen event not deleted'
         self.ps.test_updates['passed'] = True
 
     # Case C8047 - 020 - Teacher | Delete a draft homework
@@ -1870,143 +1378,63 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homework/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH,
-            "//input[@id = 'reading-title']"
-        ).send_keys('Epic 16-20')
-        self.teacher.find(
-            By.XPATH,
-            "//input[@id = 'hide-periods-radio']"
-        ).click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']"
-        )[1].click()
-        while(self.teacher.find(
-                By.XPATH,
-                "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
+        assignment_name = "hw020_" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='homework',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'problems': {'1.1': (2, 3), },
+                                        'status': 'draft',
+                                        'feedback': 'immediate'
+                                    })
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'datepicker__navigation datepicker__" +
-                "navigation--next']"
+                '//a/label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
-
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']"
-        )
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH,
-            "//button[@id = 'problems-select']"
-        ).click()
-        self.teacher.find(
-            By.XPATH,
-            "//span[@class = 'chapter-checkbox']"
-        ).click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']"
-        ).click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH,
-            "//div[@class = 'controls-overlay'][1]"
-        )
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']"
-        ).click()
-        self.teacher.sleep(2)
-
-        # Save the assignment as a draft
-        self.teacher.driver.execute_script('window.scrollBy(0, -20);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -save btn btn-default']"
-        ).click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
+        except NoSuchElementException:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']"
+                '//a/label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
-
-        # Select the newly created assignment and delete it
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-20':
-                assignment.click()
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button delete-link pull-right " +
-                    "btn btn-default']"
-                ).click()
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='btn btn-primary']"
-                ).click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-19':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class,"delete-link")]')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(text(),"Yes")]')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        assert('month' in self.teacher.current_url()),\
+            'not back at calendar after deleting an event'
+        self.teacher.driver.get(self.teacher.current_url())
+        self.teacher.page.wait_for_page_load()
+        events_new = self.teacher.driver.find_elements(
+            By.XPATH, '//label[contains(@data-title,"'+assignment_name+'")]')
+        assert(len(events_new) == 0),\
+            'unopen event not deleted'
         self.ps.test_updates['passed'] = True
 
     # Case C8048 - 021 - Teacher | Add a description to a homework
@@ -2038,13 +1466,13 @@ class TestCreateAHomework(unittest.TestCase):
             'Not on the add a homework page'
 
         self.teacher.find(
-            By.XPATH,
-            "//textarea[@class='form-control empty']"
+            By.XPATH, "//textarea[contains(@class,'form-control')]"
         ).send_keys('test description')
-
-        self.teacher.sleep(2)
-
-        self.teacher.find(By.XPATH, "//textarea[@class='form-control']")
+        self.teacher.sleep(1)
+        text = self.teacher.find(
+            By.XPATH, "//textarea[contains(@class,'form-control')]"
+        ).text
+        assert(text == "test description"), "description not added"
 
         self.ps.test_updates['passed'] = True
 
@@ -2069,124 +1497,55 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homework/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH,
-            "//input[@id = 'reading-title']").send_keys('Epic 16-20')
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(
-            By.XPATH,
-            "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
+        assignment_name = "hw022_" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='homework',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'problems': {'1.1': (2, 3), },
+                                        'status': 'draft',
+                                        'feedback': 'immediate'
+                                    })
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'datepicker__navigation datepicker__" +
-                "navigation--next']").click()
-
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        # Save the assignment as a draft
-        self.teacher.driver.execute_script('window.scrollBy(0, -20);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -save btn btn-default']").click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
+                '//a/label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
+                '//a/label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 '//textarea[contains(@class,"form-control")]')
+            )
+        ).send_keys("-edit")
+        text = self.teacher.find(
+            By.XPATH, "//textarea[contains(@class,'form-control')]"
+        ).text
+        assert("-edit" in text), "description not added"
 
-        # Select the newly created assignment and delete it
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-20':
-                assignment.click()
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button delete-link pull-" +
-                    "right btn btn-default']").click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='btn btn-primary']").click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-20':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
         self.ps.test_updates['passed'] = True
 
     # Case C8050 - 023 - Teacher | Change a description for an open homework
@@ -2210,154 +1569,59 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homework/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys('Epic 16-23')
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
-
-        # Choose the first date calendar[0], second is calendar[1]
-        # and set the open date to today
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[0].click()
-        self.teacher.driver.find_element_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--today']").click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(
-            By.XPATH,
-            "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
+        assignment_name = "hw020_" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='homework',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'problems': {'1.1': (2, 3), },
+                                        'status': 'publish',
+                                        'feedback': 'immediate'
+                                    })
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'datepicker__navigation datepicker__" +
-                "navigation--next']").click()
-
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        # Publish the homework
-        self.teacher.driver.execute_script('window.scrollBy(0, -600);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -publish btn btn-primary']").click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
+                '//div/label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the newly created assignment, change the description
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-23':
-                assignment.click()
-                self.teacher.driver.execute_script('window.scrollBy(0, 1800);')
-                self.teacher.find(
-                    By.XPATH,
-                    "//a[@class='btn btn-default -edit-assignment']").click()
-                self.teacher.find(
-                    By.XPATH, "//textarea").send_keys('new description')
-                self.teacher.sleep(2)
-                self.teacher.find(By.XPATH, "//textarea")
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button -publish btn btn-primary']"
-                ).click()
-
-        self.teacher.sleep(5)
-
-        # Delete the open assignment
-
-        self.teacher.driver.execute_script('window.scrollBy(0, 9000);')
-        self.teacher.find(
-            By.XPATH, "//a[@class='btn btn-default -edit-assignment']").click()
-
-        assert('new description' == self.teacher.find(
-            By.XPATH, "//textarea[@class='form-control']").text), \
-            'Not viewing the calendar dashboard'
-
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button delete-link pull" +
-            "-right btn btn-default']").click()
-        self.teacher.find(
-            By.XPATH, "//button[@class='btn btn-primary']").click()
-        self.teacher.sleep(5)
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-23':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
+                '//div/label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[contains(@class,"edit-assignment")]')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 '//textarea[contains(@class,"form-control")]')
+            )
+        ).send_keys("-edit")
+        text = self.teacher.find(
+            By.XPATH, "//textarea[contains(@class,'form-control')]"
+        ).text
+        assert("-edit" in text), "description not added"
         self.ps.test_updates['passed'] = True
 
     # Case C8051 - 024 - Teacher | Add a name to a homework
@@ -2387,14 +1651,17 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH, "//input[@id='reading-title']").send_keys('test name')
-
-        self.teacher.sleep(2)
-
-        self.teacher.find(
-            By.XPATH, "//input[@class='form-control' and @id='reading-title']")
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 "//input[@id='reading-title']")
+            )
+        ).send_keys("test name")
+        self.teacher.sleep(1)
+        text = self.teacher.find(
+            By.XPATH, "//input[@id='reading-title']"
+        ).get_attribute("value")
+        assert("test name" in text), "name not added"
 
         self.ps.test_updates['passed'] = True
 
@@ -2417,160 +1684,55 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homework/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys('Epic 16-25')
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(
-            By.XPATH,
-            "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
+        assignment_name = "hw025_" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='homework',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'problems': {'1.1': (2, 3), },
+                                        'status': 'draft',
+                                        'feedback': 'immediate'
+                                    })
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'datepicker__navigation datepicker__" +
-                "navigation--next']").click()
-
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        # Save the assignment as a draft
-        self.teacher.driver.execute_script('window.scrollBy(0, -600);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -save btn btn-default']").click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
+                '//a/label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the newly created assignment, change the name
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-25':
-                assignment.click()
-                assert('Epic 16-25' == self.teacher.find(
-                    By.XPATH,
-                    "//input[@id = 'reading-title']").get_attribute(
-                    "value")), \
-                    'Not on the add a homework page'
-                self.teacher.find(
-                    By.XPATH, "//input[@id = 'reading-title']").send_keys('!')
-                self.teacher.sleep(2)
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button -save btn btn-default']"
-                ).click()
-
-        self.teacher.sleep(5)
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Delete the draft
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-25!':
-                assignment.click()
-
-                assert('Epic 16-25!' == self.teacher.find(
-                    By.XPATH, "//input[@id = 'reading-title']").get_attribute(
-                    "value")), \
-                    'Not on the add a homework page'
-
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button delete-link pull-rig" +
-                    "ht btn btn-default']").click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='btn btn-primary']").click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-25!':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
+                '//a/label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 "//input[@id='reading-title']")
+            )
+        ).send_keys("-edit")
+        self.teacher.sleep(1)
+        text = self.teacher.find(
+            By.XPATH, "//input[@id='reading-title']"
+        ).get_attribute("value")
+        assert("-edit" in text), "description not added"
         self.ps.test_updates['passed'] = True
 
     # Case C8053 - 026 - Teacher | Change a name for an open homework
@@ -2593,154 +1755,60 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homework/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys('Epic 16-26')
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
-
-        # Choose the first date calendar[0], second is calendar[1]
-        # and set the open date to today
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[0].click()
-        self.teacher.driver.find_element_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--today']").click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(
-            By.XPATH,
-            "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
+        assignment_name = "hw020_" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='homework',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'problems': {'1.1': (2, 3), },
+                                        'status': 'publish',
+                                        'feedback': 'immediate'
+                                    })
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'datepicker__navigation datepicker__" +
-                "navigation--next']").click()
-
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        # Publish the homework
-        self.teacher.driver.execute_script('window.scrollBy(0, -600);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -publish btn btn-primary']").click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
+                '//div/label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the newly created assignment, change the description
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-26':
-                assignment.click()
-                self.teacher.driver.execute_script('window.scrollBy(0, 1800);')
-                self.teacher.find(
-                    By.XPATH,
-                    "//a[@class='btn btn-default -edit-assignment']").click()
-                self.teacher.find(
-                    By.XPATH, "//input[@id = 'reading-title']").send_keys('!')
-                self.teacher.sleep(2)
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button -publis" +
-                    "h btn btn-primary']").click()
-
-        self.teacher.sleep(5)
-
-        # Delete the open assignment
-
-        self.teacher.driver.execute_script('window.scrollBy(0, 9000);')
-        self.teacher.find(
-            By.XPATH, "//a[@class='btn btn-default -edit-assignment']").click()
-
-        assert('Epic 16-26!' == self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").get_attribute(
-            "value")), \
-            'Epic 16-26!'
-
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button delete-link pull-" +
-            "right btn btn-default']").click()
-        self.teacher.find(
-            By.XPATH, "//button[@class='btn btn-primary']").click()
-        self.teacher.sleep(5)
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-26!':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
+                '//div/label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[contains(@class,"edit-assignment")]')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 "//input[@id='reading-title']")
+            )
+        ).send_keys("-edit")
+        self.teacher.sleep(1)
+        text = self.teacher.find(
+            By.XPATH, "//input[@id='reading-title']"
+        ).get_attribute("value")
+        assert("-edit" in text), "description not added"
         self.ps.test_updates['passed'] = True
 
     # Case C8054 - 027 - Teacher | Select when to show feedback to a student
