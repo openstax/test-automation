@@ -10,6 +10,7 @@ from pastasauce import PastaSauce, PastaDecorator
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 from staxing.helper import Admin, Student, Teacher, ContentQA
+from selenium.webdriver.common.keys import Keys
 
 basic_test_env = json.dumps([
     {
@@ -23,12 +24,10 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
-    str([
-        8238, 8239, 8240, 8241, 8242,
+    str([8238, 8239, 8240, 8241, 8242,
         8243, 8244, 8245, 58271, 8246,
         58272, 96962, 96963, 96964, 96965,
-        96966, 96967
-    ])
+        96966, 96967])
 )
 
 
@@ -582,7 +581,22 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(3)
+        self.content.find(By.LINK_TEXT, "SIGN IN").click()
+        self.content.find(
+            By.XPATH, "//input[@id='login_username_or_email']").send_keys(
+            os.getenv('CONTENT_USER'))
+        self.content.find(
+            By.XPATH, "//input[@id='login_username_or_email']").send_keys(
+            Keys.RETURN)
+        self.content.sleep(2)
+        self.content.find(By.XPATH, "//input[@id='login_password']").send_keys(
+            os.getenv('CONTENT_PASSWORD'))
+        self.content.find(By.XPATH, "//input[@id='login_password']").send_keys(
+            Keys.RETURN)
+        self.content.sleep(3)
+        self.content.find(By.LINK_TEXT, "SIGN OUT")
 
         self.ps.test_updates['passed'] = True
 
@@ -628,7 +642,24 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(3)
+        self.content.find(By.LINK_TEXT, "SIGN IN").click()
+        self.content.find(
+            By.XPATH, "//input[@id='login_username_or_email']").send_keys(
+            os.getenv('CONTENT_USER'))
+        self.content.find(
+            By.XPATH, "//input[@id='login_username_or_email']").send_keys(
+            Keys.RETURN)
+        self.content.sleep(2)
+        self.content.find(By.XPATH, "//input[@id='login_password']").send_keys(
+            os.getenv('CONTENT_PASSWORD'))
+        self.content.find(By.XPATH, "//input[@id='login_password']").send_keys(
+            Keys.RETURN)
+        self.content.sleep(3)
+        self.content.find(By.LINK_TEXT, "SIGN OUT").click()
+        self.content.sleep(2)
+        self.content.find(By.LINK_TEXT, "SIGN IN")
 
         self.ps.test_updates['passed'] = True
 
