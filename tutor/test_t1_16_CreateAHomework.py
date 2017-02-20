@@ -29,7 +29,7 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8054
+        8066
         # 8028, 8029, 8030, 8031, 8032,
         # 8033, 8034, 8035, 8036, 8037,
         # 8038, 8039, 8040, 8041, 8042,
@@ -1569,7 +1569,7 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = "hw020_" + str(randint(0, 999))
+        assignment_name = "hw023_" + str(randint(0, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -1755,7 +1755,7 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = "hw020_" + str(randint(0, 999))
+        assignment_name = "hw026_" + str(randint(0, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
@@ -1838,12 +1838,11 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.sleep(2)
-        self.teacher.find(
-            By.XPATH,
-            "//select").send_keys(
-            'instantly after the student answers each question' + Keys.RETURN)
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.ID, "feedback-select")
+            )
+        ).send_keys("instantly" + Keys.RETURN)
 
         self.ps.test_updates['passed'] = True
 
@@ -1867,153 +1866,49 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homework/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys('Epic 16-28')
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(
-            By.XPATH,
-            "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
+        assignment_name = "hw028_" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='homework',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'problems': {'1.1': (2, 3), },
+                                        'status': 'draft',
+                                        'feedback': 'immediate'
+                                    })
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'datepicker__navigation datepicker__" +
-                "navigation--next']").click()
-
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        # Save the assignment as a draft
-        self.teacher.driver.execute_script('window.scrollBy(0, -600);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -save btn btn-default']").click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
+                '//a/label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the newly created assignment, change the feedback
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-28':
-                assignment.click()
-                self.teacher.find(
-                    By.XPATH,
-                    "//select").send_keys(
-                    'instantly after the student answers each question' +
-                    Keys.RETURN)
-                self.teacher.sleep(2)
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button -save btn btn-default']"
-                ).click()
-
-        self.teacher.sleep(5)
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Delete the draft
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-28':
-                assignment.click()
-
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button delete-link pull-" +
-                    "right btn btn-default']").click()
-                self.teacher.find(
-                    By.XPATH, "//button[@class='btn btn-primary']").click()
-                self.teacher.sleep(5)
-                break
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-28':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
+                '//a/label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.ID, "feedback-select")
+            )
+        ).send_keys("only after" + Keys.RETURN)
         self.ps.test_updates['passed'] = True
 
     # Case C8056 - 029 - Teacher | Change when to show feedback for unopened hw
@@ -2038,145 +1933,54 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homework/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys('Epic 16-29')
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(
-            By.XPATH,
-            "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
+        assignment_name = "hw029_" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=2)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='homework',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'problems': {'1.1': (2, 3), },
+                                        'status': 'publish',
+                                        'feedback': 'immediate'
+                                    })
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'datepicker__navigation datepicker__" +
-                "navigation--next']").click()
-
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        # Publish the homework
-        self.teacher.driver.execute_script('window.scrollBy(0, -600);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -publish btn btn-primary']").click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
+                '//div/label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the newly created assignment, change the feedback
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-29':
-                assignment.click()
-                self.teacher.driver.execute_script('window.scrollBy(0, 1800);')
-                self.teacher.find(
-                    By.XPATH,
-                    "//a[@class='btn btn-default -edit-assignment']").click()
-                self.teacher.find(
-                    By.XPATH,
-                    "//select").send_keys(
-                    'instantly after the student answers each question' +
-                    Keys.RETURN)
-                self.teacher.sleep(2)
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button -publish btn btn-primary']"
-                ).click()
-
-        self.teacher.sleep(5)
-
-        # Delete the open assignment
-
-        self.teacher.driver.execute_script('window.scrollBy(0, 9000);')
-        self.teacher.find(
-            By.XPATH, "//a[@class='btn btn-default -edit-assignment']").click()
-
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button delete-link pull-" +
-            "right btn btn-default']").click()
-        self.teacher.find(
-            By.XPATH, "//button[@class='btn btn-primary']").click()
-        self.teacher.sleep(5)
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-29':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
+                '//div/label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[contains(@class,"edit-assignment")]')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.ID, "feedback-select")
+            )
+        ).send_keys("only after" + Keys.RETURN)
         self.ps.test_updates['passed'] = True
 
     # Case C8057 - 030 - Teacher | Change when to show feedback for opened hw
@@ -2200,152 +2004,57 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homework/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'reading-title']").send_keys('Epic 16-30')
-        self.teacher.find(
-            By.XPATH, "//input[@id = 'hide-periods-radio']").click()
-
-        # Choose the first date calendar[0], second is calendar[1]
-        # and set the open date to today
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[0].click()
-        self.teacher.driver.find_element_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--today']").click()
-
-        # Choose the second date calendar[1], first is calendar[0]
-        self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__input-container']")[1].click()
-        while(self.teacher.find(
-            By.XPATH,
-            "//span[@class = 'datepicker__current-month']"
-        ).text != 'December 2016'):
+        assignment_name = "hw030_" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='homework',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'problems': {'1.1': (2, 3), },
+                                        'status': 'publish',
+                                        'feedback': 'immediate'
+                                    })
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'datepicker__navigation datepicker__" +
-                "navigation--next']").click()
-
-        # Choose the due date of December 31, 2016
-        weekends = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'datepicker__day datepicker__day--weekend']")
-        for day in weekends:
-            if day.text == '31':
-                due = day
-                due.click()
-                break
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(2)
-
-        # Publish the homework
-        self.teacher.driver.execute_script('window.scrollBy(0, -600);')
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button -publish btn btn-primary']").click()
-
-        # Give the assignment time to publish
-        self.teacher.sleep(60)
-
-        assert('calendar' in self.teacher.current_url()), \
-            'Not viewing the calendar dashboard'
-
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        # Change the calendar date if necessary
-        while (month.text != 'December 2016'):
+                '//div/label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        except NoSuchElementException:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH,
+                     '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.find(
                 By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        # Select the newly created assignment, change the description
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-30':
-                assignment.click()
-                self.teacher.driver.execute_script('window.scrollBy(0, 1800);')
-                self.teacher.find(
-                    By.XPATH,
-                    "//a[@class='btn btn-default -edit-assignment']").click()
-                self.teacher.find(
-                    By.XPATH, "//select").send_keys(
-                    'instantly after the student answers each question' +
-                    Keys.RETURN)
-                self.teacher.sleep(2)
-                self.teacher.find(
-                    By.XPATH,
-                    "//button[@class='async-button -publish btn btn-primary']"
-                ).click()
-
-        self.teacher.sleep(5)
-
-        # Delete the open assignment
-
-        self.teacher.driver.execute_script('window.scrollBy(0, 9000);')
-        self.teacher.find(
-            By.XPATH, "//a[@class='btn btn-default -edit-assignment']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='async-button delete-link pull-" +
-            "right btn btn-default']").click()
-        self.teacher.find(
-            By.XPATH, "//button[@class='btn btn-primary']").click()
-        self.teacher.sleep(5)
-
-        self.teacher.driver.refresh()
-        deleted = True
-
-        # Verfiy the assignment was deleted
-        spans = self.teacher.driver.find_elements_by_tag_name('span')
-        for element in spans:
-            if element.text.endswith('2016'):
-                month = element
-
-        while (month.text != 'December 2016'):
-            self.teacher.find(
-                By.XPATH,
-                "//a[@class = 'calendar-header-control next']").click()
-
-        assignments = self.teacher.driver.find_elements_by_tag_name('label')
-        for assignment in assignments:
-            if assignment.text == 'Epic 16-30':
-                deleted = False
-                break
-
-        assert(deleted), 'Assignment not removed'
+                '//div/label[contains(@data-title,"' + assignment_name + '")]'
+            ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//a[contains(@class,"edit-assignment")]')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.ID, "feedback-select")
+            )
+        ).send_keys("only after" + Keys.RETURN)
         self.ps.test_updates['passed'] = True
 
-    # Case C8058 - 031 - Teacher | Info icon defines Add Hw status bar buttons
+    # Case C8058 - 031 - Teacher | Info icon defines Add HW status bar buttons
     @pytest.mark.skipif(str(8058) not in TESTS, reason='Excluded')
     def test_teacher_info_icon_defines_add_hw_assignment_bar_btns_8058(self):
         """Info icon shows definitions for add homework assignment status bar.
@@ -2372,11 +2081,16 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.find(By.XPATH, "//i[@class='fa fa-info-circle']").click()
-        self.teacher.find(By.XPATH, "//div[@role = 'tooltip']")
-        self.teacher.sleep(5)
-
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, "//button[contains(@class,'footer-instructions')]")
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.ID, "plan-footer-popover")
+            )
+        ).click()
         self.ps.test_updates['passed'] = True
 
     # Case C8059 - 032 - Teacher | Show available problems for a single section
@@ -2410,24 +2124,39 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.sleep(3)
-
         # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(By.XPATH, "//div[@class = 'section'][2]").click()
-        self.teacher.find(
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.ID, "problems-select")
+            )
+        ).click()
+        section = '2.1'
+        chapter = section.split('.')[0]
+        data_chapter = self.teacher.find(
             By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
+            '//a//span[@data-chapter-section="%s"]' % chapter
+        )
+        if data_chapter.find_element(By.XPATH, "../..").\
+                get_attribute('aria-expanded') == 'false':
+            data_chapter.click()
+
+        data_section = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section
+        )
+        if not('selected' in data_section.find_element(By.XPATH, "..").
+                get_attribute('class')):
+            data_section.click()
+        element = self.teacher.find(
+            By.XPATH, '//button[text()="Show Problems"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
 
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
-                    "//div[@class = 'openstax-exercise-preview exercise-" +
-                    "card has-actions non-interactive is-vertically-trunca" +
-                    "ted panel panel-default']")
+                    "//div[@data-section='%s']" % section)
             )
         )
 
@@ -2462,27 +2191,34 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.ID, "problems-select")
+            )
+        ).click()
+        chapter = '2'
         self.teacher.find(
             By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH,
-                    "//div[@class = 'openstax-exercise-preview exercise-" +
-                    "card has-actions non-interactive is-vertically-trunc" +
-                    "ated panel panel-default']")
-            )
+            '//div[@data-chapter-section="%s"]' % chapter +
+            '//span[@class="chapter-checkbox"]'
+        ).click()
+        data_sections = self.teacher.driver.find_elements(
+            By.XPATH,
+            '//div[@class="section selected"]'
         )
+        element = self.teacher.find(
+            By.XPATH, '//button[text()="Show Problems"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
+
+        for section in range(len(data_sections) - 1):
+            self.teacher.wait.until(
+                expect.visibility_of_element_located(
+                    (By.XPATH,
+                     "//div[@data-section='%s.%s']" %
+                     (chapter, str(section + 1)))
+                )
+            )
 
         self.ps.test_updates['passed'] = True
 
@@ -2517,24 +2253,41 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.sleep(3)
-
         # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(By.XPATH, "//div[@class = 'section']").click()
-        self.teacher.find(
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.ID, "problems-select")
+            )
+        ).click()
+        section = '2'
+        chapter = section.split('.')[0]
+        data_chapter = self.teacher.find(
             By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
+            '//a//span[@data-chapter-section="%s"]' % chapter
+        )
+        if data_chapter.find_element(By.XPATH, "../..").\
+                get_attribute('aria-expanded') == 'false':
+            data_chapter.click()
 
-        info = 'openstax-exercise-preview exercise-card has-actions non'
-        info += '-interactive is-vertically-truncated panel panel-default'
+        data_section = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section
+        )
+        if not('selected' in data_section.find_element(By.XPATH, "..").
+                get_attribute('class')):
+            data_section.click()
+        element = self.teacher.find(
+            By.XPATH, '//button[text()="Show Problems"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
 
-        assert(info not in self.teacher.driver.page_source), \
-            'Exercises should not be visible'
-
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                    "//p[@class='no-exercises-found']")
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C8062 - 035 - Teacher | Change number of Tutor-selected assessments
@@ -2570,25 +2323,42 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.sleep(3)
-
         # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(By.XPATH, "//div[@class = 'section']").click()
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.ID, "problems-select")
+            )
+        ).click()
+        section = '1.1'
         self.teacher.find(
             By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section
+        ).click()
+        element = self.teacher.find(
+            By.XPATH, '//button[text()="Show Problems"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
 
-        self.teacher.wait.until(
+        orig_num = self.teacher.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, "//div[@class = 'openstax-exercise-preview " +
-                 "exercise-card has-actions non-interactive is-vertically-" +
-                 "truncated panel panel-default']")
+                (By.XPATH,
+                 "//div[@class='tutor-selections']//h2")
             )
-        )
+        ).text
+        self.teacher.sleep(0.5)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                    "//div[@class='tutor-selections']//i[@type='chevron-up']")
+            )
+        ).click()
+        new_num = self.teacher.find(
+            By.XPATH, "//div[@class='tutor-selections']//h2"
+        ).text
+
+        assert(int(orig_num) == int(new_num) - 1), \
+            "tutor selections not changed"
 
         self.ps.test_updates['passed'] = True
 
@@ -2623,43 +2393,60 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.sleep(3)
-
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.ID, "problems-select")
+            )
+        ).click()
         # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
+        section = '1.1'
         self.teacher.find(
             By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        assert('3' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'Default total selections does not equal 3'
-
-        assert('0' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 0'
-
-        # Choose a problem for the assignment
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section
+        ).click()
         element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.sleep(2)
-
-        assert('4' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'total selections does not equal 4'
-
-        assert('1' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 1'
+            By.XPATH, '//button[text()="Show Problems"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
+        # keep track of inital problem counts
+        total_inital = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[@class='num total']//h2")
+            )
+        ).text
+        my_inital = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[@class='num mine']//h2")
+            )
+        ).text
+        # select an assessment
+        add_button = self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@data-exercise-id][2]//div[@class="controls-overlay"]')
+        self.teacher.sleep(0.5)
+        Assignment.scroll_to(self.teacher.driver, add_button)
+        ac = ActionChains(self.teacher.driver)
+        self.teacher.sleep(0.5)
+        ac.move_to_element(add_button)
+        for _ in range(60):
+            ac.move_by_offset(-1, 0)
+        ac.click()
+        ac.perform()
+        # assert that counts increased
+        self.teacher.sleep(1)
+        total_final = self.teacher.driver.find_element(
+            By.XPATH, "//div[@class='num total']//h2"
+        ).text
+        my_final = self.teacher.driver.find_element(
+            By.XPATH, "//div[@class='num mine']//h2"
+        ).text
+        assert(int(total_inital) == int(total_final) - 1), \
+            'Total problems counter not increased'
+        assert(int(my_inital) == int(my_final) - 1), \
+            'My selections counter not increased'
 
         self.ps.test_updates['passed'] = True
 
@@ -2695,56 +2482,87 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.sleep(3)
-
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.ID, "problems-select")
+            )
+        ).click()
         # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
+        section = '1.1'
         self.teacher.find(
             By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        assert('3' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'Default total selections does not equal 3'
-
-        assert('0' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 0'
-
-        # Choose a problem for the assignment
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section
+        ).click()
         element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.sleep(2)
+            By.XPATH, '//button[text()="Show Problems"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
+        # keep track of inital problem counts
+        total_inital = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[@class='num total']//h2")
+            )
+        ).text
+        my_inital = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[@class='num mine']//h2")
+            )
+        ).text
+        # select an assessment
+        add_button = self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@data-exercise-id][2]//div[@class="controls-overlay"]')
+        self.teacher.sleep(0.5)
+        Assignment.scroll_to(self.teacher.driver, add_button)
+        ac = ActionChains(self.teacher.driver)
+        self.teacher.sleep(0.5)
+        ac.move_to_element(add_button)
+        for _ in range(60):
+            ac.move_by_offset(-1, 0)
+        ac.click()
+        ac.perform()
+        # assert that counts increased
+        self.teacher.sleep(1)
+        total_final = self.teacher.driver.find_element(
+            By.XPATH, "//div[@class='num total']//h2"
+        ).text
+        my_final = self.teacher.driver.find_element(
+            By.XPATH, "//div[@class='num mine']//h2"
+        ).text
+        assert(int(total_inital) == int(total_final) - 1), \
+            'Total problems counter not increased'
+        assert(int(my_inital) == int(my_final) - 1), \
+            'My selections counter not increased'
 
-        assert('4' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'total selections does not equal 4'
-
-        assert('1' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 1'
-
-        self.teacher.sleep(2)
-
-        self.teacher.find(By.XPATH, "//div[@class = 'action exclude']").click()
-
-        assert('3' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'total selections does not equal 3'
-
-        assert('0' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 0'
-
+        # de-select an assessment
+        add_button = self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@data-exercise-id and contains(@class,"is-selected")]' +
+            '//div[@class="controls-overlay"]')
+        self.teacher.sleep(0.5)
+        Assignment.scroll_to(self.teacher.driver, add_button)
+        ac = ActionChains(self.teacher.driver)
+        self.teacher.sleep(0.5)
+        ac.move_to_element(add_button)
+        for _ in range(60):
+            ac.move_by_offset(-1, 0)
+        ac.click()
+        ac.perform()
+        # assert that counts increased
+        self.teacher.sleep(1)
+        total_removed = self.teacher.driver.find_element(
+            By.XPATH, "//div[@class='num total']//h2"
+        ).text
+        my_removed = self.teacher.driver.find_element(
+            By.XPATH, "//div[@class='num mine']//h2"
+        ).text
+        assert(int(total_final) == int(total_removed) + 1), \
+            'Total problems counter not reduced'
+        assert(int(my_final) == int(my_removed) + 1), \
+            'My selections counter not reduced'
         self.ps.test_updates['passed'] = True
 
     # Case C8065 - 038 - Teacher | View feedback by marking Feedback checkbox
@@ -2779,36 +2597,47 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.sleep(3)
-
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.ID, "problems-select")
+            )
+        ).click()
         # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
+        section = '1.1'
         self.teacher.find(
             By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section
+        ).click()
         element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action details']").click()
-        self.teacher.find(
-            By.XPATH, "//div[@class = 'action feedback-on']").click()
-
-        self.teacher.sleep(2)
-
-        self.teacher.find(
+            By.XPATH, '//button[text()="Show Problems"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
+        # select to view details
+        add_button = self.teacher.driver.find_element(
             By.XPATH,
-            "//div[@class = 'openstax-exercise-preview exercise-card has-" +
-            "actions actions-on-side is-displaying-feedback panel panel-de" +
-            "fault']")
+            '//div[@data-exercise-id][2]//div[@class="controls-overlay"]')
+        self.teacher.sleep(0.5)
+        Assignment.scroll_to(self.teacher.driver, add_button)
+        ac = ActionChains(self.teacher.driver)
+        self.teacher.sleep(0.5)
+        ac.move_to_element(add_button)
+        for _ in range(60):
+            ac.move_by_offset(1, 0)
+        ac.click()
+        ac.perform()
+        # assert that counts increased
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, "//span[text()='Preview Feedback']")
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'question-feedback-content')]")
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
@@ -2847,20 +2676,25 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.sleep(3)
-
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.ID, "problems-select")
+            )
+        ).click()
         # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        chapters = self.teacher.driver.find_elements_by_xpath(
-            "//span[@class = 'chapter-checkbox']")
-        chapters[randint(0, len(chapters))].click()
+        section = '1.1'
         self.teacher.find(
             By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section
+        ).click()
+        element = self.teacher.find(
+            By.XPATH, '//button[text()="Show Problems"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
 
+
+        # ####
         ids = self.teacher.driver.find_elements_by_xpath(
             "//div[@class = 'exercise-uid']")
         cards = self.teacher.driver.find_elements_by_xpath(
