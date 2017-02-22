@@ -29,7 +29,7 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8066
+        8075
         # 8028, 8029, 8030, 8031, 8032,
         # 8033, 8034, 8035, 8036, 8037,
         # 8038, 8039, 8040, 8041, 8042,
@@ -2692,26 +2692,18 @@ class TestCreateAHomework(unittest.TestCase):
             By.XPATH, '//button[text()="Show Problems"]')
         Assignment.scroll_to(self.teacher.driver, element)
         element.click()
-
-
-        # ####
-        ids = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'exercise-uid']")
-        cards = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'openstax-exercise-preview exercise-card has-act" +
-            "ions non-interactive is-vertically-truncated panel panel" +
-            "-default']")
+        # find IDs
+        ids = self.teacher.driver.find_elements(
+            By.XPATH,
+            "//span[@class='exercise-tag' and " +
+            "contains(text(),'ID: ') and contains(text(),'@')]")
+        cards = self.teacher.driver.find_elements(
+            By.XPATH,
+            "//div[@data-exercise-id]")
 
         # Verify that each visible card has an ID
         assert(len(ids) == len(cards)), \
             'Number of IDs does not match number of visible assessment cards'
-
-        # Verify that the IDs match the expected format
-        for num in ids:
-            assert(num.text.startswith(
-                "Exercise ID: ") and num.text.split(
-                '@')[0][13:].isdigit() and num.text.split('@')[1].isdigit()), \
-                'Exercise ID does not match what is expected'
 
         self.ps.test_updates['passed'] = True
 
@@ -2751,36 +2743,56 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.sleep(3)
-
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.ID, "problems-select")
+            )
+        ).click()
         # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
+        section = '1.1'
         self.teacher.find(
             By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section
+        ).click()
         element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action details']").click()
-        self.teacher.find(
-            By.XPATH, "//div[@class='action report-error']").click()
-
-        self.teacher.sleep(2)
-
+            By.XPATH, '//button[text()="Show Problems"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
+        # Open question details
+        add_button = self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@data-exercise-id][2]//div[@class="controls-overlay"]')
+        self.teacher.sleep(0.5)
+        Assignment.scroll_to(self.teacher.driver, add_button)
+        ac = ActionChains(self.teacher.driver)
+        self.teacher.sleep(0.5)
+        ac.move_to_element(add_button)
+        for _ in range(60):
+            ac.move_by_offset(1, 0)
+        ac.click()
+        ac.perform()
+        # find ID
+        id_num = self.teacher.driver.find_element(
+            By.XPATH,
+            "//span[@class='exercise-tag' and contains(text(),'ID:')]"
+        ).text.split(": ")[1]
+        # Choose a problem for the assignment
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, "//div[@class='action report-error']")
+            )
+        ).click()
         self.teacher.driver.switch_to_window(
-            self.teacher.driver.window_handles[-1])
-
-        assert('docs.google' in self.teacher.current_url()), \
+            self.teacher.driver.window_handles[1])
+        assert('errata/form' in self.teacher.current_url()), \
             'Not viewing the errata report form'
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 "//input[contains(@value,'%s')]" % id_num)
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True
 
@@ -2819,29 +2831,27 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.sleep(3)
-
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.ID, "problems-select")
+            )
+        ).click()
         # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
+        section = '1.1'
         self.teacher.find(
             By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        # Choose a problem for the assignment
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section
+        ).click()
         element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action details']").click()
-
-        self.teacher.find(By.XPATH, "//div[@class='exercise-tags']")
-
+            By.XPATH, '//button[text()="Show Problems"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH, "//div[@class='exercise-tags']")
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C8069 - 042 - Teacher | Cancel assessment selection before
@@ -2854,11 +2864,7 @@ class TestCreateAHomework(unittest.TestCase):
         From the dashboard, click on the 'Add Assignment' drop down menu and
             select 'Add Homework'
         Click the '+ Select Problems' button
-        Click on any of the chapters to display sections within the chapter
-        Select one of the non-introductory sections in one chapter
-        Click the 'Show Problems' button
         Click the 'Cancel' button
-        Click the 'OK' button
 
         Expected Result:
         User is taken back to the page where assignment name, description, and
@@ -2883,33 +2889,24 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        self.teacher.driver.execute_script('window.scrollBy(0, -9000);')
-        self.teacher.find(
-            By.XPATH,
-            "//div[@class='panel-footer']/button[@class='btn btn-default']"
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, "problems-select")
+            )
         ).click()
-        self.teacher.sleep(2)
-
-        self.teacher.find(
-            By.XPATH, "//button[@class='ok btn btn-primary']").click()
-
-        self.teacher.sleep(5)
-
-        self.teacher.find(By.XPATH, "//textarea")
-
+        cancel = self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 "//div[@class='panel-footer']/button[text()='Cancel']")
+            )
+        )
+        Assignment.scroll_to(self.teacher.driver, cancel)
+        cancel.click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, "//span[text()='Add Homework Assignment']")
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C8070 - 043 - Teacher | Cancel assessment selection after
@@ -2925,10 +2922,7 @@ class TestCreateAHomework(unittest.TestCase):
         Click on any of the chapters to display sections within the chapter
         Select one of the non-introductory sections in one chapter
         Click the 'Show Problems' button
-        Select at least one of the displayed problems
-        Click the 'Cancel' button adjacent to the 'Next' button, OR click the
-            'Cancel' button adjacent to the 'Show Problems' button and then hit
-            the 'OK' button
+        Click the'Cancel' button adjacent to the 'Show Problems'
         Click the 'OK' button
 
         Expected Result:
@@ -2954,59 +2948,40 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        assert('3' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'Default total selections does not equal 3'
-
-        assert('0' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 0'
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.sleep(2)
-
-        assert('4' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'total selections does not equal 4'
-
-        assert('1' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 1'
-
-        self.teacher.sleep(2)
-
-        self.teacher.driver.execute_script('window.scrollBy(0, -9000);')
-        self.teacher.find(
-            By.XPATH,
-            "//div[@class='panel-footer']/button[@class='btn btn-default']"
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, "problems-select")
+            )
         ).click()
-        self.teacher.sleep(2)
-
+        section = '1.1'
         self.teacher.find(
-            By.XPATH, "//button[@class='ok btn btn-primary']").click()
-
-        self.teacher.sleep(5)
-
-        self.teacher.find(By.XPATH, "//textarea")
+            By.XPATH,
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section
+        ).click()
+        element = self.teacher.find(
+            By.XPATH, '//button[text()="Show Problems"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
+        cancel = self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 "//div[@class='panel-footer']/button[text()='Cancel']")
+            )
+        )
+        Assignment.scroll_to(self.teacher.driver, cancel)
+        cancel.click()
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 "//button[text()='OK']")
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, "//span[text()='Add Homework Assignment']")
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -3020,11 +2995,7 @@ class TestCreateAHomework(unittest.TestCase):
         From the dashboard, click on the 'Add Assignment' drop down menu and
             select 'Add Homework'
         Click the '+ Select Problems' button
-        Click on any of the chapters to display sections within the chapter
-        Select one of the non-introductory sections in one chapter
-        Click the 'Show Problems' button
         Click the X button
-        Click the 'OK' button
 
         Expected Result:
         The user is returned to the page where the assignment name,
@@ -3049,34 +3020,25 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        element = self.teacher.find(
-            By.XPATH, "//button[@class='openstax-close-x close']")
-        self.teacher.driver.execute_script(
-            "return arguments[0].scrollIntoView();", element)
-        self.teacher.driver.execute_script('window.scrollBy(0, -9000);')
-        element.click()
-        self.teacher.sleep(5)
-
-        self.teacher.find(
-            By.XPATH, "//button[@class='ok btn btn-primary']").click()
-
-        self.teacher.sleep(5)
-
-        self.teacher.find(By.XPATH, "//textarea")
-
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, "problems-select")
+            )
+        ).click()
+        x_button = self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 "//div[contains(@class,'select-topics')]" +
+                 "//button[contains(@class,'close-x')]")
+            )
+        )
+        Assignment.scroll_to(self.teacher.driver, x_button)
+        x_button.click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, "//span[text()='Add Homework Assignment']")
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C8072 - 045 - Teacher | Cancel assessment selection after
@@ -3119,61 +3081,41 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, "problems-select")
+            )
+        ).click()
+        section = '1.1'
         self.teacher.find(
             By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        assert('3' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'Default total selections does not equal 3'
-
-        assert('0' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 0'
-
-        # Choose a problem for the assignment
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section
+        ).click()
         element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.sleep(2)
-
-        assert('4' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'total selections does not equal 4'
-
-        assert('1' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 1'
-
-        self.teacher.sleep(2)
-
-        element = self.teacher.find(
-            By.XPATH, "//button[@class='openstax-close-x close']")
-        self.teacher.driver.execute_script(
-            "return arguments[0].scrollIntoView();", element)
-        self.teacher.driver.execute_script('window.scrollBy(0, -9000);')
+            By.XPATH, '//button[text()="Show Problems"]')
+        Assignment.scroll_to(self.teacher.driver, element)
         element.click()
-        self.teacher.sleep(5)
-
-        self.teacher.find(
-            By.XPATH, "//button[@class='ok btn btn-primary']").click()
-
-        self.teacher.sleep(5)
-
-        self.teacher.find(By.XPATH, "//textarea")
-
+        x_button = self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 "//div[contains(@class,'select-topics')]" +
+                 "//button[contains(@class,'close-x')]")
+            )
+        )
+        Assignment.scroll_to(self.teacher.driver, x_button)
+        x_button.click()
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 "//button[text()='OK']")
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, "//span[text()='Add Homework Assignment']")
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C8073 - 046 - Teacher | Cancel assessment selection using
@@ -3215,53 +3157,62 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.sleep(3)
-
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.ID, "problems-select")
+            )
+        ).click()
         # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
+        section = '1.1'
         self.teacher.find(
             By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        assert('3' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'Default total selections does not equal 3'
-
-        assert('0' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 0'
-
-        # Choose a problem for the assignment
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section
+        ).click()
         element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.sleep(2)
-
-        assert('4' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'total selections does not equal 4'
-
-        assert('1' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 1'
-
-        self.teacher.sleep(2)
-
-        self.teacher.find(
-            By.XPATH, "//button[@class='-cancel-add btn btn-default']").click()
-
-        self.teacher.sleep(5)
-
-        self.teacher.find(By.XPATH, "//textarea")
-
+            By.XPATH, '//button[text()="Show Problems"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
+        # keep track of inital problem counts
+        total_inital = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[@class='num total']//h2")
+            )
+        ).text
+        # select an assessment
+        add_button = self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@data-exercise-id][2]//div[@class="controls-overlay"]')
+        self.teacher.sleep(0.5)
+        Assignment.scroll_to(self.teacher.driver, add_button)
+        ac = ActionChains(self.teacher.driver)
+        self.teacher.sleep(0.5)
+        ac.move_to_element(add_button)
+        for _ in range(60):
+            ac.move_by_offset(-1, 0)
+        ac.click()
+        ac.perform()
+        # assert that problem selected
+        self.teacher.sleep(1)
+        total_final = self.teacher.driver.find_element(
+            By.XPATH, "//div[@class='num total']//h2"
+        ).text
+        assert(int(total_inital) == int(total_final) - 1), \
+            'Total problems counter not increased'
+        cancel = self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 "//div[@class='actions']/button[text()='Cancel']")
+            )
+        )
+        Assignment.scroll_to(self.teacher.driver, cancel)
+        cancel.click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, "//span[text()='Add Homework Assignment']")
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C8074 - 047 - Teacher | Select assessments and view assessment order
@@ -3303,53 +3254,62 @@ class TestCreateAHomework(unittest.TestCase):
         self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
-
-        self.teacher.sleep(3)
-
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.ID, "problems-select")
+            )
+        ).click()
         # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
+        section = '1.1'
         self.teacher.find(
             By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        assert('3' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'Default total selections does not equal 3'
-
-        assert('0' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 0'
-
-        # Choose a problem for the assignment
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section
+        ).click()
         element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.sleep(2)
-
-        assert('4' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'total selections does not equal 4'
-
-        assert('1' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 1'
-
-        self.teacher.sleep(2)
-
-        self.teacher.find(
+            By.XPATH, '//button[text()="Show Problems"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
+        # keep track of inital problem counts
+        total_inital = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[@class='num total']//h2")
+            )
+        ).text
+        # select an assessment
+        add_button = self.teacher.driver.find_element(
             By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(5)
-
-        self.teacher.find(By.XPATH, "//table[@class = 'exercise-table']")
-
+            '//div[@data-exercise-id][2]//div[@class="controls-overlay"]')
+        self.teacher.sleep(0.5)
+        Assignment.scroll_to(self.teacher.driver, add_button)
+        ac = ActionChains(self.teacher.driver)
+        self.teacher.sleep(0.5)
+        ac.move_to_element(add_button)
+        for _ in range(60):
+            ac.move_by_offset(-1, 0)
+        ac.click()
+        ac.perform()
+        # assert that problem selected
+        self.teacher.sleep(1)
+        total_final = self.teacher.driver.find_element(
+            By.XPATH, "//div[@class='num total']//h2"
+        ).text
+        assert(int(total_inital) == int(total_final) - 1), \
+            'Total problems counter not increased'
+        next_button = self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 "//div[@class='actions']/button[text()='Next']")
+            )
+        )
+        Assignment.scroll_to(self.teacher.driver, next_button)
+        next_button.click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, "//table[@class='exercise-table']")
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C8075 - 048 - Teacher | Reorder selected assessments
@@ -3391,91 +3351,35 @@ class TestCreateAHomework(unittest.TestCase):
         assert('homework/new' in self.teacher.current_url()), \
             'Not on the add a homework page'
 
-        self.teacher.sleep(3)
+        Assignment().add_homework_problems(self.teacher.driver, {'1.1': 4})
 
         # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        assert('3' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'Default total selections does not equal 3'
-
-        assert('0' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 0'
-
-        # Choose a problem for the assignment
-        elements = self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'controls-overlay']")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(elements[0])
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-
-        self.teacher.driver.execute_script(
-            "return arguments[0].scrollIntoView();", elements[1])
-        self.teacher.driver.execute_script('window.scrollBy(0, -4500);')
-
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(elements[1])
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.sleep(2)
-
-        assert('5' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'total selections does not equal 5'
-
-        assert('2' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 2'
-
-        self.teacher.sleep(2)
-
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.sleep(5)
-
-        self.teacher.find(By.XPATH, "//table[@class = 'exercise-table']")
-
-        elem_1_text = self.teacher.find(
-            By.XPATH,
-            "//div[@class = 'openstax exercise-wrapper'][1]/div[@class = 'o" +
-            "penstax-exercise-preview exercise-card non-interactive is-vert" +
-            "ically-truncated panel panel-default']/div[@class = 'panel-bod" +
-            "y']/div[@class = 'openstax-question openstax-question-previe" +
-            "w']/div[@class = 'openstax-has-html question-stem']").text
-
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='btn-xs -move-exercise-up circle btn btn" +
-            "-default']").click()
-
-        assert(elem_1_text != self.teacher.find(
-            By.XPATH, "//div[@class = 'openstax exercise-wrapper'][1]/div[@" +
-            "class = 'openstax-exercise-preview exercise-card non-interacti" +
-            "ve is-vertically-truncated panel panel-default']/div[@clas" +
-            "s = 'panel-body']/div[@class = 'openstax-question openstax-que" +
-            "stion-preview']/div[@class = 'openstax-has-html question-stem']"
-        ).text), \
-            'Assessment order was not changed'
-
-        assert(elem_1_text == self.teacher.find(
-            By.XPATH, "//div[@class = 'openstax exercise-wrapper'][2]/div" +
-            "[@class = 'openstax-exercise-preview exercise-card non-intera" +
-            "ctive is-vertically-truncated panel panel-default']/div[@clas" +
-            "s = 'panel-body']/div[@class = 'openstax-question openstax-ques" +
-            "tion-preview']/div[@class = 'openstax-has-html question-stem']"
-        ).text), \
-            'Assessment order was not changed'
+        card1 = self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(@class,"exercise-wrapper")][1]')
+        card1_question = card1.find_element(
+            By.XPATH, '//div[contains(@class,"question-stem")]'
+        ).text
+        card2 = self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(@class,"exercise-wrapper")][2]')
+        card2_question = card2.find_element(
+            By.XPATH, '//div[contains(@class,"question-stem")]'
+        ).text
+        # reorder cards
+        card1.find_element(
+            By.XPATH, '//i[@type="arrow-down"]').click()
+        # Check new ordering of cards
+        card1_new = self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(@class,"exercise-wrapper")][1]')
+        card1_question_new = card1_new.find_element(
+            By.XPATH, '//div[contains(@class,"question-stem")]'
+        ).text
+        card2_new = self.teacher.driver.find_element(
+            By.XPATH, '//div[contains(@class,"exercise-wrapper")][2]')
+        card2_question_new = card2_new.find_element(
+            By.XPATH, '//div[contains(@class,"question-stem")]'
+        ).text
+        assert(card1_question == card2_question_new), "cards not switched"
+        assert(card2_question == card1_question_new), "cards not switched"
 
         self.ps.test_updates['passed'] = True
 
