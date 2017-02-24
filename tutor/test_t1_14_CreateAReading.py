@@ -29,15 +29,14 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8019,
-        # 7992, 7993, 7994, 7995, 7996,
-        # 7997, 7998, 7999, 8000, 8001,
-        # 8002, 8003, 8004, 8005, 8006,
-        # 8007, 8008, 8009, 8010, 8011,
-        # 8012, 8013, 8014, 8015, 8016,
-        # 8017, 8018, 8019, 8020, 8021,
-        # 8022, 8023, 8024, 8025, 8026,
-        # 8027, 111246
+        7992, 7993, 7994, 7995, 7996,
+        7997, 7998, 7999, 8000, 8001,
+        8002, 8003, 8004, 8005, 8006,
+        8007, 8008, 8009, 8010, 8011,
+        8012, 8013, 8014, 8015, 8016,
+        8017, 8018, 8019, 8020, 8021,
+        8022, 8023, 8024, 8025, 8026,
+        8027, 111246
     ])
 )
 
@@ -2061,7 +2060,6 @@ class TestCreateAReading(unittest.TestCase):
         if data_chapter.find_element(By.XPATH, "../..").\
                 get_attribute('aria-expanded') == 'false':
             data_chapter.click()
-
         data_section = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"section")]' +
@@ -2108,48 +2106,42 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-030_%d' % (randint(100, 999))
-        section_to_remove = 'ch2'
-        today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='reading',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'reading_list': ['ch1',
-                                                         section_to_remove, ],
-                                        'status': 'publish'
-                                    })
-        try:
-            self.teacher.wait.until(
-                expect.presence_of_element_located(
-                    (By.XPATH,
-                     '//div[@class="month-wrapper"]')
-                )
-            )
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
-            ).click()
-        except NoSuchElementException:
-            self.teacher.find(
-                By.XPATH, "//a[contains(@class, 'header-control next')]"
-            ).click()
-            self.teacher.wait.until(
-                expect.presence_of_element_located(
-                    (By.XPATH,
-                     '//div[@class="month-wrapper"]')
-                )
-            )
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
-            ).click()
+        section_to_remove = '1.1'
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
+                (By.ID, 'reading-title')
             )
+        )
+        # add reading sections to the assignment
+        self.teacher.find(By.ID, 'reading-select').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"reading-plan")]')
+            )
+        )
+        chapter = '2'
+        self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section_to_remove
         ).click()
+        data_chapter = self.teacher.find(
+            By.XPATH,
+            '//a//span[@data-chapter-section="%s"]' % chapter
+        )
+        data_chapter.find_element(
+            By.XPATH, "../../span[@class='chapter-checkbox']"
+        ).click()
+        element = self.teacher.find(
+            By.XPATH, '//button[text()="Add Readings"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
         # remove section
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -2161,11 +2153,11 @@ class TestCreateAReading(unittest.TestCase):
                 (By.XPATH, '//div[contains(@class,"reading-plan")]')
             )
         )
-        chapter_num = section_to_remove[2:]
         data_chapter = self.teacher.find(
             By.XPATH,
-            '//a//span[@data-chapter-section="%s"]' % chapter_num
+            '//a//span[@data-chapter-section="%s"]' % chapter
         )
+        Assignment.scroll_to(self.teacher.driver, data_chapter)
         data_chapter.find_element(
             By.XPATH, "../../span[@class='chapter-checkbox']"
         ).click()
@@ -2176,7 +2168,7 @@ class TestCreateAReading(unittest.TestCase):
         removed_sections = self.teacher.find_all(
             By.XPATH,
             '//span[@class="chapter-section" and ' +
-            'contains(@data-chapter-section,"'+chapter_num+'.")]')
+            'contains(@data-chapter-section,"'+chapter+'.")]')
         assert (len(removed_sections) == 0), \
             'section has net been removed'
 
@@ -2212,7 +2204,6 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-031_%d' % (randint(100, 999))
         assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
@@ -2226,20 +2217,6 @@ class TestCreateAReading(unittest.TestCase):
                 (By.ID, 'reading-title')
             )
         )
-        self.teacher.find(By.ID, 'reading-title'). \
-            send_keys(assignment_name)
-        self.teacher.find(
-            By.XPATH,
-            '//div[contains(@class,"assignment-description")]//textarea' +
-            '[contains(@class,"form-control")]'). \
-            send_keys('description')
-        # set due dates
-        self.teacher.find(By.ID, "hide-periods-radio").click()
-        today = datetime.date.today()
-        opens_on = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
-        assignment.assign_periods(
-            self.teacher.driver, {'all': [opens_on, closes_on]})
         # add reading sections to the assignment
         self.teacher.find(By.ID, 'reading-select').click()
         self.teacher.wait.until(
@@ -2253,12 +2230,6 @@ class TestCreateAReading(unittest.TestCase):
         Assignment.scroll_to(self.teacher.driver, element)
         self.teacher.driver.execute_script('window.scrollBy(0, -80);')
         element.click()
-        # publish
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//button[contains(@class,"-publish")]')
-            )
-        )
         sections = self.teacher.find_all(
             By.XPATH, '//li[@class="selected-section"]')
         self.teacher.find(
@@ -2266,20 +2237,6 @@ class TestCreateAReading(unittest.TestCase):
         sections_new = self.teacher.find_all(
             By.XPATH, '//li[@class="selected-section"]')
         assert (len(sections) == len(sections_new)+1), 'section not removed'
-        self.teacher.find(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
-        try:
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
-            )
-        except NoSuchElementException:
-            self.teacher.find(
-                By.XPATH, "//a[contains(@class, 'header-control next')]"
-            ).click()
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
-            )
-
         self.ps.test_updates['passed'] = True
 
     # Case C8023 - 032 - Teacher | Reorder the selected reading sections
@@ -2303,46 +2260,37 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'reading-032_%d' % (randint(100, 999))
-        today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='reading',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'reading_list': ['ch1'],
-                                        'status': 'publish'
-                                        })
-        try:
-            self.teacher.wait.until(
-                expect.presence_of_element_located(
-                    (By.XPATH,
-                     '//div[@class="month-wrapper"]')
-                )
-            )
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
-            ).click()
-        except NoSuchElementException:
-            self.teacher.find(
-                By.XPATH, "//a[contains(@class, 'header-control next')]"
-            ).click()
-            self.teacher.wait.until(
-                expect.presence_of_element_located(
-                    (By.XPATH,
-                     '//div[@class="month-wrapper"]')
-                )
-            )
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
-            ).click()
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
+        )
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
+                (By.ID, 'reading-title')
             )
+        )
+        # add sections to a reading.
+        self.teacher.find(By.ID, 'reading-select').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"reading-plan")]')
+            )
+        )
+        chapter = '2'
+        data_chapter = self.teacher.find(
+            By.XPATH,
+            '//a//span[@data-chapter-section="%s"]' % chapter
+        )
+        data_chapter.find_element(
+            By.XPATH, "../../span[@class='chapter-checkbox']"
         ).click()
+        element = self.teacher.find(
+            By.XPATH, '//button[text()="Add Readings"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
+        # remove a section
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
@@ -2361,20 +2309,6 @@ class TestCreateAReading(unittest.TestCase):
         new_first_sec = sections_new[0].get_attribute('data-chapter-section')
         assert(second_sec == new_first_sec),\
             'did not rearrange sections'
-        self.teacher.find(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
-        try:
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
-            )
-        except NoSuchElementException:
-            self.teacher.find(
-                By.XPATH, "//a[contains(@class, 'header-control next')]"
-            ).click()
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]"
-            )
-
         self.ps.test_updates['passed'] = True
 
     # Case C8024 - 033 - Teacher | Change all fields in an unopened, published
