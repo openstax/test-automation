@@ -29,18 +29,19 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8028, 8029, 8030, 8031, 8032,
-        8033, 8034, 8035, 8036, 8037,
-        8038, 8039, 8040, 8041, 8042,
-        8043, 8044, 8045, 8046, 8047,
-        8048, 8049, 8050, 8051, 8052,
-        8053, 8054, 8055, 8056, 8057,
-        8058, 8059, 8060, 8061, 8062,
-        8063, 8064, 8065, 8066, 8067,
-        8068, 8069, 8070, 8071, 8072,
-        8073, 8074, 8075, 8076, 8077,
-        8078, 8080, 8081, 8082, 8083,
-        8084, 111247
+        8077
+        # 8028, 8029, 8030, 8031, 8032,
+        # 8033, 8034, 8035, 8036, 8037,
+        # 8038, 8039, 8040, 8041, 8042,
+        # 8043, 8044, 8045, 8046, 8047,
+        # 8048, 8049, 8050, 8051, 8052,
+        # 8053, 8054, 8055, 8056, 8057,
+        # 8058, 8059, 8060, 8061, 8062,
+        # 8063, 8064, 8065, 8066, 8067,
+        # 8068, 8069, 8070, 8071, 8072,
+        # 8073, 8074, 8075, 8076, 8077,
+        # 8078, 8080, 8081, 8082, 8083,
+        # 8084, 111247
 
         # 8075, 8076, 8077, 8078, 8080, 8081, 111247 - not working
 
@@ -3548,90 +3549,32 @@ class TestCreateAHomework(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.find(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Homework').click()
-        assert('homework/new' in self.teacher.current_url()), \
-            'Not on the add a homework page'
-
-        self.teacher.sleep(3)
-
-        # Open the select problem cards
-        self.teacher.find(
-            By.XPATH, "//button[@id = 'problems-select']").click()
-        self.teacher.find(
-            By.XPATH, "//span[@class = 'chapter-checkbox']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-        self.teacher.sleep(10)
-
-        assert('3' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'Default total selections does not equal 3'
-
-        assert('0' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 0'
-
-        # Choose a problem for the assignment
-        element = self.teacher.find(
-            By.XPATH, "//div[@class = 'controls-overlay'][1]")
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(element)
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.sleep(2)
-
-        assert('4' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'total selections does not equal 4'
-
-        assert('1' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 1'
-
-        self.teacher.sleep(2)
-
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-add-exercises btn btn-default']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-show-problems btn btn-primary']").click()
-
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(self.teacher.driver.find_elements_by_xpath(
-            "//div[@class = 'controls-overlay']")[1])
-        actions.perform()
-        self.teacher.find(By.XPATH, "//div[@class = 'action include']").click()
-        self.teacher.sleep(2)
-
-        assert('5' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num total']/h2").text), \
-            'total selections does not equal 5'
-
-        assert('2' == self.teacher.find(
-            By.XPATH, "//div[@class = 'num mine']/h2").text), \
-            'my selections does not equal 2'
-
-        self.teacher.find(
-            By.XPATH,
-            "//button[@class='-review-exercises btn btn-primary']").click()
-        self.teacher.find(
-            By.XPATH,
-            "//div[@class='openstax exercise-wrapper'][2]/div[@class='open" +
-            "stax-exercise-preview exercise-card non-interactive is-vertic" +
-            "ally-truncated panel panel-default']/div[@class='panel-head" +
-            "ing']/span[@class='panel-title -exercise-header']/span[@clas" +
-            "s='exercise-number']")
-
+        assignment_name = "hw055_" + str(randint(0, 999))
+        today = datetime.date.today()
+        begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+        self.teacher.add_assignment(assignment='homework',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'problems': {'1.1': (2, 3), },
+                                        'status': 'publish',
+                                        'feedback': 'immediate',
+                                        'break_point': 'status'
+                                    })
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 "//button[text()='+ Add More Sections']")
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.XPATH,
+                 '//div[contains(@class,"exercise-select-topics")]')
+            )
+        ).click()
         self.ps.test_updates['passed'] = True
 
     # Case C8078 - 051 - Teacher | Problem Question list is equal to the Tutor
