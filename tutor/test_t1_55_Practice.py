@@ -31,6 +31,7 @@ TESTS = os.getenv(
         8297, 8298, 8299, 8300, 8301,
         8302, 8303, 8304, 8305, 8306,
         8307, 8308, 8309, 8310
+        # 8307, 8308 - not working because errata reporting broken
     ])
 )
 
@@ -54,7 +55,7 @@ class TestPractice(unittest.TestCase):
                 use_env_vars=True
             )
         self.student.login()
-        self.student.select_course(appearance='physics')
+        self.student.select_course(title='College Physics with Courseware')
         self.wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
         self.wait.until(
             expect.visibility_of_element_located((
