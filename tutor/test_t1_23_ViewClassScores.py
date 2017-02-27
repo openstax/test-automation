@@ -31,15 +31,14 @@ TESTS = os.getenv(
     str([
         8156, 8157, 8158, 8159, 8160,
         8161, 8162, 8163, 8164, 8165,
-        8166, 8167, 8168, 8169, 8170,
-        8171, 8172, 8173, 8174, 8175,
-        8176, 8177, 8178, 8179, 8180,
-        8181
+        8166, 8167, 8168, 8170, 8171,
+        8172, 8173, 8174, 8175, 8176,
+        8177, 8178, 8179, 8180, 8181,
+        111252
     ])
 
-    # 8165, 8166 - sorting not working on site
+    # 8165 - sorting not working on site
     # 8169 - overall score not being displayed on site
-    # 8179 - issues finding the elements
 )
 
 
@@ -353,7 +352,7 @@ class TestViewClassScores(unittest.TestCase):
             )
         ).click()
         self.teacher.driver.find_element(
-            By.LINK_TEXT, 'Return To Scores').click()
+            By.LINK_TEXT, 'Return to Scores').click()
         assert('scores' in self.teacher.current_url()), \
             'Not viewing Student Scores'
 
@@ -416,6 +415,7 @@ class TestViewClassScores(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
@@ -591,6 +591,7 @@ class TestViewClassScores(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8169 - 014 - Teacher | A homework with responses shows the period
     # average
     @pytest.mark.skipif(str(8169) not in TESTS, reason='Excluded')
@@ -647,6 +648,7 @@ class TestViewClassScores(unittest.TestCase):
                 actions.perform()
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C8170 - 015 - Teacher | An external assignment shows the number of
     # students who have clicked on it
@@ -690,7 +692,6 @@ class TestViewClassScores(unittest.TestCase):
                 actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
-
 
         self.ps.test_updates['passed'] = True
 
@@ -1349,7 +1350,10 @@ class TestViewClassScores(unittest.TestCase):
         element.click()
         actions = ActionChains(self.teacher.driver)
         actions.move_to_element(element)
-        actions.move_by_offset(-60, 10)
+        for _ in range(90):
+            actions.move_by_offset(-1, 0)
+        for _ in range(15):
+            actions.move_by_offset(0, 1)
         actions.click()
         actions.perform()
 
@@ -1475,5 +1479,25 @@ class TestViewClassScores(unittest.TestCase):
 
         assert('task' in self.teacher.current_url()), \
             'Not viewing student "work" for external assignment'
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C111252 - 027 - Teacher | Student score columns show the assignment
+    # due date
+    @pytest.mark.skipif(str(111252) not in TESTS, reason='Excluded')
+    def test_teacher_student_score_columns_show_the_assignment_du_111252(self):
+        """Student score colums show the assignemnt due date.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.23.027' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.23', 't1.23.027', '111252']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True

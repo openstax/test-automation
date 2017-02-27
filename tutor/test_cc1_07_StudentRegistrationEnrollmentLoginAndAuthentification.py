@@ -33,17 +33,14 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        7631, 7632, 7633, 7634, 7635,
-        7636, 7637, 7638, 7639, 7640,
-        7641, 7642, 7643, 7644, 7645,
-        7646, 7647, 7648, 7650, 87364,
-        87365
+        7631, 7632, 7634, 7635, 7636,
+        7637, 7639, 7640, 7641, 7642,
+        7643, 7644, 7645, 7648, 7650,
+        87364, 87365
     ])
     # issues:
     # 7650 - assistive tech, not registering tab key to move from elements
-    # 7638 - says DEL on test rail make sure that means delete it,
-    #          left it with exception raised
-    # 87364, 87365 - no steps testrail. are they imlemented on tutor yet?
+    # 87364, 87365 - no steps testrail.
 )
 
 
@@ -357,6 +354,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         ).click()
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7633 - 003 - Student | Register for a class using a provided
     # registration code - Twitter login
     @pytest.mark.skipif(str(7633) not in TESTS, reason='Excluded')
@@ -442,6 +440,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
             )
         )
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C7634 - 004 - Student | Register for a class using a provided
     # registration code - Google login
@@ -796,7 +795,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         )
         self.ps.test_updates['passed'] = True
 
-    # DEL?
+    '''
     # Case C7638 - 008 - Student | Able to change period in the same course
     @pytest.mark.skipif(str(7638) not in TESTS, reason='Excluded')
     def test_student_able_to_change_period_in_the_same_course_7638(self):
@@ -834,6 +833,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C7639 - 009- Student | Able to enroll in more than one CC course
     @pytest.mark.skipif(str(7639) not in TESTS, reason='Excluded')
@@ -1452,6 +1452,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7646 - 016 - Student | Re-presented the current privacy policy
     # if not accepted previously
     @pytest.mark.skipif(str(7646) not in TESTS, reason='Excluded')
@@ -1514,12 +1515,14 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.student.find(By.ID, 'signup_i_agree').click()
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7647 - 017 - Student | Re-presented the current terms of service
     # if not accepted previously
     @pytest.mark.skipif(str(7647) not in TESTS, reason='Excluded')
     def test_student_represented_the_current_terms_of_service_7647(self):
-        """Re-presented the current terms of service if not accepted previously.
+        """Re-presented current terms of service if not accepted previously.
 
         Steps:
         Go to Tutor
@@ -1573,6 +1576,7 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
         self.student.find(By.ID, 'signup_i_agree').click()
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C7648 - 018 - Student | Able to edit their OpenStax Accounts profile
     @pytest.mark.skipif(str(7648) not in TESTS, reason='Excluded')

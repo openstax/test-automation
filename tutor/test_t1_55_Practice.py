@@ -43,18 +43,23 @@ class TestPractice(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.student = Student(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.student = Student(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.student = Student(
+                use_env_vars=True
+            )
         self.student.login()
         self.student.select_course(appearance='physics')
         self.wait = WebDriverWait(self.student.driver, Assignment.WAIT_TIME)
         self.wait.until(
             expect.visibility_of_element_located((
                 By.XPATH,
-                '//button[contains(@class,"practice")]//span'
+                '//button[contains(@class,"practice")]'
             ))
         ).click()
 
@@ -113,14 +118,12 @@ class TestPractice(unittest.TestCase):
         sections = self.student.find_all(
             By.XPATH, '//span[contains(@class,"breadcrumbs")]')
         section = sections[-2]
-        chapter = section.get_attribute("data-reactid")
         section.click()
         self.student.find(
             By.XPATH,
             '//div[contains(@data-question-number,"%s")]' %
-            (int(chapter[-1]) + 1)
+            (len(sections) - 1)
         )
-
         self.ps.test_updates['passed'] = True
 
     # Case C8299 - 003 - Student | Scrolling the window up reveals the header
@@ -148,7 +151,7 @@ class TestPractice(unittest.TestCase):
                 By.TAG_NAME, 'textarea').send_keys("hello")
             self.wait.until(
                 expect.visibility_of_element_located(
-                    (By.XPATH, '//button/span[contains(text(),"Answer")]')
+                    (By.XPATH, '//button[contains(text(),"Answer")]')
                 )
             ).click()
         except NoSuchElementException:
@@ -190,7 +193,7 @@ class TestPractice(unittest.TestCase):
                     element.send_keys(i)
                 self.wait.until(
                     expect.element_to_be_clickable(
-                        (By.XPATH, '//button/span[contains(text(),"Answer")]')
+                        (By.XPATH, '//button[contains(text(),"Answer")]')
                     )
                 )
                 break
@@ -233,7 +236,7 @@ class TestPractice(unittest.TestCase):
                     element.send_keys(i)
                 self.wait.until(
                     expect.element_to_be_clickable(
-                        (By.XPATH, '//button/span[contains(text(),"Answer")]')
+                        (By.XPATH, '//button[contains(text(),"Answer")]')
                     )
                 ).click()
                 break
@@ -283,7 +286,7 @@ class TestPractice(unittest.TestCase):
                 element.send_keys(i)
             self.wait.until(
                 expect.visibility_of_element_located(
-                    (By.XPATH, '//button/span[contains(text(),"Answer")]')
+                    (By.XPATH, '//button[contains(text(),"Answer")]')
                 )
             ).click()
         except NoSuchElementException:
@@ -301,7 +304,7 @@ class TestPractice(unittest.TestCase):
         element.click()
         self.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//button/span[contains(text(),"Submit")]')
+                (By.XPATH, '//button[contains(text(),"Submit")]')
             )
         )
 
@@ -335,7 +338,7 @@ class TestPractice(unittest.TestCase):
                 element.send_keys(i)
             self.wait.until(
                 expect.visibility_of_element_located(
-                    (By.XPATH, '//button/span[contains(text(),"Answer")]')
+                    (By.XPATH, '//button[contains(text(),"Answer")]')
                 )
             ).click()
         except NoSuchElementException:
@@ -353,12 +356,12 @@ class TestPractice(unittest.TestCase):
         element.click()
         self.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '//button/span[contains(text(),"Submit")]')
+                (By.XPATH, '//button[contains(text(),"Submit")]')
             )
         ).click()
         self.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '//button/span[contains(text(),"Next Question")]')
+                (By.XPATH, '//button[contains(text(),"Next Question")]')
             )
         )
 
@@ -393,7 +396,7 @@ class TestPractice(unittest.TestCase):
                 element.send_keys(i)
             self.wait.until(
                 expect.visibility_of_element_located(
-                    (By.XPATH, '//button/span[contains(text(),"Answer")]')
+                    (By.XPATH, '//button[contains(text(),"Answer")]')
                 )
             ).click()
         except NoSuchElementException:
@@ -411,7 +414,7 @@ class TestPractice(unittest.TestCase):
         element.click()
         self.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '//button/span[contains(text(),"Submit")]')
+                (By.XPATH, '//button[contains(text(),"Submit")]')
             )
         ).click()
         self.wait.until(
@@ -454,7 +457,7 @@ class TestPractice(unittest.TestCase):
                 element.send_keys(i)
             self.wait.until(
                 expect.visibility_of_element_located(
-                    (By.XPATH, '//button/span[contains(text(),"Answer")]')
+                    (By.XPATH, '//button[contains(text(),"Answer")]')
                 )
             ).click()
         except NoSuchElementException:
@@ -472,7 +475,7 @@ class TestPractice(unittest.TestCase):
         element.click()
         self.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '//button/span[contains(text(),"Submit")]')
+                (By.XPATH, '//button[contains(text(),"Submit")]')
             )
         ).click()
         self.wait.until(
@@ -501,14 +504,11 @@ class TestPractice(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//span[contains(text(),"ID#")]')
-            )
-        )
-        self.student.find(
-            By.XPATH, '//span[contains(text(),"@")]')
-
+        text = self.student.find(
+            By.XPATH,
+            '//span[@class="exercise-identifier-link"]').text
+        assert("ID#" in text), "ID# not displayed"
+        assert("@" in text), "version not displayed"
         self.ps.test_updates['passed'] = True
 
     # Case C8307 - 011 - Student | Clicking on Report an error renders the
@@ -531,8 +531,8 @@ class TestPractice(unittest.TestCase):
         # Test steps and verification assertions
         id_num = self.student.find(
             By.XPATH,
-            '//span[contains(@class,"exercise-identifier-link")]//span[2]'
-        ).text
+            '//span[@class="exercise-identifier-link"]'
+        ).text.split(" |")[0]
         self.wait.until(
             expect.visibility_of_element_located(
                 (By.LINK_TEXT, 'Report an error')
@@ -545,7 +545,7 @@ class TestPractice(unittest.TestCase):
             By.XPATH, '//div[contains(text(),"Report Content Errors")]')
         text_box = self.student.find(
             By.XPATH, '//input[contains(@aria-label,"ID is required")]')
-        assert(text_box.get_attribute('value') == id_num), \
+        assert(text_box.get_attribute('value') == id_num[4:]), \
             'form not prefilled correctly'
 
         self.ps.test_updates['passed'] = True
@@ -632,7 +632,7 @@ class TestPractice(unittest.TestCase):
                     element.send_keys(i)
                 self.wait.until(
                     expect.visibility_of_element_located(
-                        (By.XPATH, '//button/span[contains(text(),"Answer")]')
+                        (By.XPATH, '//button[contains(text(),"Answer")]')
                     )
                 ).click()
             except NoSuchElementException:
@@ -651,13 +651,13 @@ class TestPractice(unittest.TestCase):
             element.click()
             self.wait.until(
                 expect.visibility_of_element_located(
-                    (By.XPATH, '//button/span[contains(text(),"Submit")]')
+                    (By.XPATH, '//button[contains(text(),"Submit")]')
                 )
             ).click()
             self.wait.until(
                 expect.visibility_of_element_located(
                     (By.XPATH,
-                     '//button/span[contains(text(),"Next Question")]')
+                     '//button[contains(text(),"Next Question")]')
                 )
             ).click()
         self.wait.until(
@@ -665,21 +665,16 @@ class TestPractice(unittest.TestCase):
                 (By.XPATH, '//span[contains(@class,"breadcrumb-end")]')
             )
         ).click()
-        self.wait.until(
+        text = self.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '//div[contains(@class,"completed-message")]')
+                (By.XPATH, '//div[contains(@class,"completed-message")]/h3')
             )
-        ).click()
-        self.student.find(
-            By.XPATH,
-            '//div[contains(@class,"completed-message")]' +
-            '//span[contains(@data-reactid,"0.1") and contains(text(),"' +
-            str(stop_point) + '")]')
-        self.student.find(
-            By.XPATH,
-            '//div[contains(@class,"completed-message")]' +
-            '//span[contains(@data-reactid,"0.3") and contains(text(),"' +
-            str(len(sections) - 1) + '")]')
+        ).text
+        print(text)
+        q_answered = text.lstrip("You have answered ").\
+            rstrip(" questions.").split(" of ")
+        assert(str(stop_point) in q_answered[0]), "error"
+        assert(str(len(sections)-1) in q_answered[1]), "error"
 
         self.ps.test_updates['passed'] = True
 
@@ -714,7 +709,7 @@ class TestPractice(unittest.TestCase):
                     element.send_keys(i)
                 self.wait.until(
                     expect.visibility_of_element_located(
-                        (By.XPATH, '//button/span[contains(text(),"Answer")]')
+                        (By.XPATH, '//button[contains(text(),"Answer")]')
                     )
                 ).click()
             except NoSuchElementException:
@@ -733,13 +728,13 @@ class TestPractice(unittest.TestCase):
             element.click()
             self.wait.until(
                 expect.visibility_of_element_located(
-                    (By.XPATH, '//button/span[contains(text(),"Submit")]')
+                    (By.XPATH, '//button[contains(text(),"Submit")]')
                 )
             ).click()
             self.wait.until(
                 expect.visibility_of_element_located(
                     (By.XPATH,
-                     '//button/span[contains(text(),"Next Question")]')
+                     '//button[contains(text(),"Next Question")]')
                 )
             ).click()
         self.wait.until(
@@ -747,7 +742,10 @@ class TestPractice(unittest.TestCase):
                 (By.XPATH, '//a[contains(text(),"Back to Dashboard")]')
             )
         ).click()
-        assert('list' in self.student.current_url()), \
-            'Not returned to list dashboard'
+        self.wait.until(
+            expect.visibility_of_element_located(
+                (By.CLASS_NAME, 'student-dashboard ')
+            )
+        ).click()
 
         self.ps.test_updates['passed'] = True

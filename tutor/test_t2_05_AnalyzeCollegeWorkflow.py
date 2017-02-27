@@ -28,7 +28,6 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         14645, 14646, 14647, 14648, 14649,
-        14650
     ])
 )
 
@@ -467,6 +466,7 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
         if deleted:
             self.ps.test_updates['passed'] = True
 
+    '''
     # 14650 - 006 - Teacher | View instructions on how to export summary grade
     # for my student's OpenStax practice to my LMS
     @pytest.mark.skipif(str(14650) not in TESTS, reason='Excluded')
@@ -493,3 +493,4 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''

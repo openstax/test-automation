@@ -26,7 +26,7 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14747, 14748, 14749
+        14748,
     ])
 )
 
@@ -57,6 +57,7 @@ class TestImprovePracticeAndForecast(unittest.TestCase):
         except:
             pass
 
+    '''
     # 14747 - 001 - Teacher | View how much students have practiced
     @pytest.mark.skipif(str(14747) not in TESTS, reason='Excluded')
     def test_teacher_view_how_much_students_have_practiced_14747(self):
@@ -82,6 +83,7 @@ class TestImprovePracticeAndForecast(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # 14748 - 002 - Student | View changes in Performance Forecast at the end
     # of a retrieval practice in readings, hw, and previous practice
@@ -110,6 +112,7 @@ class TestImprovePracticeAndForecast(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # 14749 - 003 - Teacher | Assign practice
     @pytest.mark.skipif(str(14749) not in TESTS, reason='Excluded')
     def test_teacher_assign_practice_14749(self):
@@ -135,3 +138,4 @@ class TestImprovePracticeAndForecast(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''

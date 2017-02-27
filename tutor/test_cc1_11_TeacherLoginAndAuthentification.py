@@ -26,7 +26,7 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        7688, 7689, 7690
+        7688, 7689
     ])
 )
 
@@ -135,6 +135,7 @@ class TestTeacherLoginAndAuthentification(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7690 - 003 - Teacher | Can log into Tutor and be redirected to CC
     @pytest.mark.skipif(str(7690) not in TESTS, reason='Excluded')
     def test_teacher_can_log_into_tutor_and_be_redirected_to_cc_7690(self):
@@ -168,3 +169,4 @@ class TestTeacherLoginAndAuthentification(unittest.TestCase):
             'Not viewing the cc dashboard'
 
         self.ps.test_updates['passed'] = True
+    '''

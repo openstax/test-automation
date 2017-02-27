@@ -29,11 +29,11 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         7715, 7716, 7717, 7718, 7719,
-        7720, 7721, 7722, 58354, 7723,
-        7724, 7725, 7726, 7727, 7728,
-        7729, 7730, 7731
+        7720, 7721, 7722, 7723, 7724,
+        7725, 7726, 7727, 7728, 7729,
+        7730
     ])
-    # 7716, 7717, 7731 -- not implemented on tutor
+    # 7716, 7717 -- not implemented on tutor
 )
 
 
@@ -365,10 +365,10 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7721 - 007 - Teacher | Archive an empty period
+    # Case C7721 - 007 - Teacher | Delete an empty period
     @pytest.mark.skipif(str(7721) not in TESTS, reason='Excluded')
-    def test_teacher_remove_an_empty_period_7721(self):
-        """Remove an empty period.
+    def test_teacher_delete_an_empty_period_7721(self):
+        """Delete an empty period.
 
         Steps:
         Go to Tutor
@@ -377,11 +377,11 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         Click on the user menu
         Select course roster
         Click on tab for selected empty section
-        Click 'Archive section'
-        Click on the 'Archive' button
+        Click 'Delete section'
+        Click on the 'Delete' button
 
         Expected Result:
-        Section is archived
+        Section is deleted
         """
         self.ps.test_updates['name'] = 'cc1.10.007' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -446,7 +446,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         assert(len(archived) == 0), ' not archived'
         self.ps.test_updates['passed'] = True
 
-    # Case C7722 - 008 - Teacher | Archive a non-empty period
+    # Case C7722 - 008 - Teacher | Delete a non-empty period
     @pytest.mark.skipif(str(7722) not in TESTS, reason='Excluded')
     def test_teacher_archive_a_nonempty_periods_7722(self):
         """Error message displayed if attempting to remove a non-empty period.
@@ -458,11 +458,11 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         Click on the user menu
         Select course roster
         Click on tab for selected non-empty section
-        Click 'Archive section'
-        Click Archive
+        Click 'Delete section'
+        Click Delete
 
         Expected Result:
-        Section is archived
+        Section is deleted
         """
         self.ps.test_updates['name'] = 'cc1.10.008' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -546,6 +546,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         )
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C58354 - 009 - Teacher | Unarchive a section
     @pytest.mark.skipif(str(58354) not in TESTS, reason='Excluded')
     def test_teacher_unarchive_a_section_58354(self):
@@ -644,6 +645,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
             )
         )
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C7723 - 010 - Teacher | Rename the course
     @pytest.mark.skipif(str(7723) not in TESTS, reason='Excluded')
@@ -1266,6 +1268,7 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7731 - 018 - Teacher | Receive a notice when students register
     @pytest.mark.skipif(str(7731) not in TESTS, reason='Excluded')
     def test_teacher_receive_a_notice_when_students_register_7731(self):
@@ -1289,3 +1292,4 @@ class TestAdminAndTeacherCourseSetup(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
