@@ -152,14 +152,11 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignment option
-        Enter an Assignment name into the Assignment Name text box
         Enter date into the Open Date text feild as MM/DD/YYYY
         Enter date into the Due Date text feild as MM/DD/YYYY
-        Enter a URL into the Assignment URL text box
-        Click on the Publish button
 
         Expected Result:
-        External assignment appears on the calendar dashboard on its due date
+        External assignment dates set for all periods
         """
         self.ps.test_updates['name'] = 't1.18.003' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -173,20 +170,11 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             assignment_menu.click()
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        self.teacher.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
         )
-        self.teacher.find(
-            By.ID, 'reading-title').send_keys('ext003')
-        self.teacher.find(
-            By.XPATH,
-            '//div[contains(@class,"assignment-description")]//textarea' +
-            '[contains(@class,"form-control")]'). \
-            send_keys('external assignment description')
         # set date
         self.teacher.find(By.ID, 'hide-periods-radio').click()
         today = datetime.date.today()
@@ -240,20 +228,13 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             ' and text()="' + (opens_on[3:5]).lstrip('0') + '"]'
         ).click()
         self.teacher.sleep(0.5)
-        self.teacher.find(
-            By.CLASS_NAME, 'assign-to-label').click()
-        self.teacher.find(
-            By.ID, 'external-url').send_keys('website.com')
-        self.teacher.find(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
-        try:
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), 'ext003')]")
-        except NoSuchElementException:
-            self.teacher.find(
-                By.XPATH, '//a[@class="calendar-header-control next"]').click()
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), 'ext003')]")
+        # assert the date was changed
+        self.teacher.driver.find_element(
+            By.XPATH, '//input[@value="%s"]' % opens_on
+        )
+        self.teacher.driver.find_element(
+            By.XPATH, '//input[@value="%s"]' % closes_on
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -266,17 +247,13 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignment option
-        Enter an Assignment name into the Assignment Name text box
         Click on the Individual periods radio button
         For each period:
         * Enter date into the Open Date text feild as MM/DD/YYYY
         * Enter date into the Due Date text feild as MM/DD/YYYY
-        Enter a URL into the Assignment URL text box
-        Click on the Publish button
 
         Expected Result:
-        New external assignment appears on the calendar dashboard
-        appears across its due dates
+        External assignment dates set for periods individually
         """
         self.ps.test_updates['name'] = 't1.18.004' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -288,24 +265,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # if the Add Assignment menu is not open
         if 'open' not in assignment_menu.get_attribute('class'):
             assignment_menu.click()
-
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
         self.teacher.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
         )
-        self.teacher.find(
-            By.ID, 'reading-title').send_keys('ext004')
-        self.teacher.find(
-            By.XPATH,
-            '//div[contains(@class,"assignment-description")]//textarea' +
-            '[contains(@class,"form-control")]'). \
-            send_keys('external assignment description')
-
         # assign to periods individually
         self.teacher.find(By.ID, 'show-periods-radio').click()
         periods = self.teacher.find_all(
@@ -368,19 +335,22 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 ' and text()="' + (opens_on[3:5]).lstrip('0') + '"]'
             ).click()
             self.teacher.sleep(0.5)
-        self.teacher.find(
-            By.ID, 'external-url').send_keys('website.com')
-        self.teacher.find(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
-        try:
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), 'ext004')]")
-        except NoSuchElementException:
-            self.teacher.find(
-                By.XPATH, '//a[@class="calendar-header-control next"]').click()
-            self.teacher.find(
-                By.XPATH, "//label[contains(text(), 'ext004')]")
-
+        # Check that due dates were changed
+        for x in range(len(periods)):
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//input[@value="%s"][%d]' %
+                ((today + datetime.timedelta(days=x + 1)).
+                 strftime('%m/%d/%Y'),
+                 (x + 1))
+            )
+            self.teacher.driver.find_element(
+                By.XPATH,
+                '//input[@value="%s"][%d]' %
+                ((today + datetime.timedelta(days=(len(periods) + 5))).
+                 strftime('%m/%d/%Y'),
+                 (x + 1))
+            )
         self.ps.test_updates['passed'] = True
 
     # Case C8089 - 005 - Teacher | Save a draft external Assignment
@@ -1455,14 +1425,10 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         Steps:
         Click on the Add Assignment drop down menu
         Click on the Add External Assignment option
-        Enter an Assignment name into the Assignment Name text box
         Enter a description into the Description text box
-        Enter date into the Due Dte text feild as MM/DD/YYYY
-        Enter a URL into the Assignment URL text box
-        Click on the Publish button
 
         Expected Result:
-        Assignment is on calendar dashboard
+        Assignment description is changed.
         """
         self.ps.test_updates['name'] = 't1.18.021' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1470,8 +1436,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = "ext021_" + str(randint(0, 999))
-        assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
@@ -1480,39 +1444,22 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        self.teacher.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
         )
         self.teacher.find(
-            By.ID, 'reading-title').send_keys(assignment_name)
-        self.teacher.find(
             By.XPATH,
-            '//div[contains(@class,"assignment-description")]//textarea' +
-            '[contains(@class,"form-control")]'). \
-            send_keys('external Assignment description')
-        today = datetime.date.today()
-        opens_on = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        assignment.assign_periods(
-            self.teacher.driver, {'all': (opens_on, closes_on)})
-        self.teacher.find(
-            By.ID, 'external-url').send_keys('website.com')
-        self.teacher.find(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
-        try:
-            self.teacher.find(
-                By.XPATH,
-                "//label[contains(text(), '" + assignment_name + "')]")
-        except NoSuchElementException:
-            self.teacher.find(
-                By.XPATH, '//a[@class="calendar-header-control next"]').click()
-            self.teacher.find(
-                By.XPATH,
-                "//label[contains(text(), '" + assignment_name + "')]")
+            '//div[contains(@class,"assignment-description")]//textarea'
+        ).send_keys('description')
+        self.teacher.sleep(0.5)
+        # Check that description was added
+        description = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]//textarea'
+        ).text
+        assert(description == 'description'), "description not added"
 
         self.ps.test_updates['passed'] = True
 
@@ -1585,12 +1532,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
-            send_keys('NEW external Assignment description')
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//button[contains(@class,"-save")]')
-            )
-        ).click()
+            send_keys('NEW')
+        self.teacher.sleep(0.5)
+        # Check that description was added
+        description = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]//textarea'
+        ).text
+        assert(description == 'descriptionNEW'), "description not added"
 
         self.ps.test_updates['passed'] = True
 
@@ -1668,12 +1617,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"assignment-description")]//textarea' +
             '[contains(@class,"form-control")]'). \
-            send_keys('NEW external Assignment description')
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//button[contains(@class,"-publish")]')
-            )
-        ).click()
+            send_keys('NEW')
+        self.teacher.sleep(0.5)
+        # Check that description was added
+        description = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]//textarea'
+        ).text
+        assert(description == 'descriptionNEW'), "description not added"
 
         self.ps.test_updates['passed'] = True
 
@@ -1700,7 +1651,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_name = "ext024_" + str(randint(0, 999))
-        assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
@@ -1718,30 +1668,12 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         )
         self.teacher.find(
             By.ID, 'reading-title').send_keys(assignment_name)
-        self.teacher.find(
-            By.XPATH,
-            '//div[contains(@class,"assignment-description")]//textarea' +
-            '[contains(@class,"form-control")]'). \
-            send_keys('external Assignment description')
-        today = datetime.date.today()
-        opens_on = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        assignment.assign_periods(
-            self.teacher.driver, {'all': (opens_on, closes_on)})
-        self.teacher.find(
-            By.ID, 'external-url').send_keys('website.com')
-        self.teacher.find(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
-        try:
-            self.teacher.find(
-                By.XPATH,
-                "//label[contains(text(), '" + assignment_name + "')]")
-        except NoSuchElementException:
-            self.teacher.find(
-                By.XPATH, '//a[@class="calendar-header-control-next"]').click()
-            self.teacher.find(
-                By.XPATH,
-                "//label[contains(text(), '" + assignment_name + "')]")
+        self.teacher.sleep(0.5)
+        new_assignment_name = self.teacher.find(
+            By.ID, 'reading-title'
+        ).get_attribute('value')
+        assert(new_assignment_name == assignment_name), \
+            "assignment name not added"
 
         self.ps.test_updates['passed'] = True
 
@@ -1807,20 +1739,12 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         )
         self.teacher.find(
             By.ID, 'reading-title').send_keys("NEW")
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//button[contains(@class,"-save")]')
-            )
-        ).click()
-        self.teacher.sleep(2)
-        try:
-            self.teacher.find(
-                By.XPATH, "//label[text()= '" + assignment_name + "NEW']")
-        except NoSuchElementException:
-            self.teacher.find(
-                By.XPATH, '//a[@class="calendar-header-control next"]').click()
-            self.teacher.find(
-                By.XPATH, "//label[text()= 'NEW" + assignment_name + "']")
+        self.teacher.sleep(0.5)
+        new_assignment_name = self.teacher.find(
+            By.ID, 'reading-title'
+        ).get_attribute('value')
+        assert(new_assignment_name == assignment_name + "NEW"), \
+            "assignment name not added"
 
         self.ps.test_updates['passed'] = True
 
@@ -1893,22 +1817,12 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         )
         self.teacher.find(
             By.ID, 'reading-title').send_keys("NEW")
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//button[contains(@class,"-publish")]')
-            )
-        ).click()
-        self.teacher.sleep(3)
-        try:
-            self.teacher.find(
-                By.XPATH,
-                "//label[contains(text(), '" + assignment_name + "NEW')]")
-        except NoSuchElementException:
-            self.teacher.find(
-                By.XPATH, '//a[@class="calendar-header-control next"]').click()
-            self.teacher.find(
-                By.XPATH,
-                "//label[contains(text(), 'NEW" + assignment_name + "')]")
+        self.teacher.sleep(0.5)
+        new_assignment_name = self.teacher.find(
+            By.ID, 'reading-title'
+        ).get_attribute('value')
+        assert(new_assignment_name == assignment_name + "NEW"), \
+            "assignment name not added"
 
         self.ps.test_updates['passed'] = True
 
@@ -1934,8 +1848,6 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = "ext027_" + str(randint(0, 999))
-        assignment = Assignment()
         assignment_menu = self.teacher.find(
             By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
         # if the Add Assignment menu is not open
@@ -1944,39 +1856,19 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
-        self.teacher.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
         )
         self.teacher.find(
-            By.ID, 'reading-title').send_keys(assignment_name)
-        self.teacher.find(
-            By.XPATH,
-            '//div[contains(@class,"assignment-description")]//textarea' +
-            '[contains(@class,"form-control")]'). \
-            send_keys('external Assignment description')
-        today = datetime.date.today()
-        opens_on = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
-        closes_on = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        assignment.assign_periods(
-            self.teacher.driver, {'all': (opens_on, closes_on)})
-        self.teacher.find(
             By.ID, 'external-url').send_keys('website.com')
-        self.teacher.find(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
-        try:
-            self.teacher.find(
-                By.XPATH,
-                "//label[contains(text(), '" + assignment_name + "')]")
-        except NoSuchElementException:
-            self.teacher.find(
-                By.XPATH, '//a[@class="calendar-header-control next"]').click()
-            self.teacher.find(
-                By.XPATH,
-                "//label[contains(text(), '" + assignment_name + "')]")
+        self.teacher.sleep(0.5)
+        new_assignment_name = self.teacher.find(
+            By.ID, 'external-url'
+        ).get_attribute('value')
+        assert(new_assignment_name == "website.com"), \
+            "assignment url not added"
 
         self.ps.test_updates['passed'] = True
 
@@ -2001,21 +1893,19 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = "ext026_" + str(randint(0, 999))
+        assignment_name = "ext028_" + str(randint(0, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(
-            assignment='external',
-            args={
-                'title': assignment_name,
-                'description': 'description',
-                'periods': {'all': (begin, end)},
-                'url': 'website.com',
-                'status': 'draft'
-            }
-        )
-        # click in the open assignment
+        self.teacher.add_assignment(assignment='external',
+                                    args={
+                                        'title': assignment_name,
+                                        'description': 'description',
+                                        'periods': {'all': (begin, end)},
+                                        'url': 'website.com',
+                                        'status': 'draft'
+                                    })
+        # click on the open assignment
         try:
             self.teacher.wait.until(
                 expect.presence_of_element_located(
@@ -2025,8 +1915,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             )
             self.teacher.find(
                 By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"' + assignment_name + '")]'
-            ).click()
+                '//label[@data-title="' + assignment_name + '"]').click()
         except NoSuchElementException:
             self.teacher.wait.until(
                 expect.presence_of_element_located(
@@ -2038,20 +1927,20 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.find(
                 By.XPATH, '//a[contains(@href,"external")]' +
-                '//label[contains(@data-title,"' + assignment_name + '")]'
-            ).click()
+                '//label[@data-title="' + assignment_name + '"]').click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
         )
         self.teacher.find(
-            By.ID, 'external-url').send_keys('new_site.com')
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//button[contains(@class,"-save")]')
-            )
-        ).click()
+            By.ID, 'external-url').send_keys('NEW')
+        self.teacher.sleep(0.5)
+        new_assignment_name = self.teacher.find(
+            By.ID, 'external-url'
+        ).get_attribute('value')
+        assert(new_assignment_name == "website.comNEW"), \
+            "assignment url not added"
 
         self.ps.test_updates['passed'] = True
 
@@ -2061,8 +1950,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         """Info icon shows definitions for the status bar.
 
         Steps:
-        Create and publish an External Assignment
-        Click on the External Assignment
+        Open Assignment menu
+        Click on Add External Assignment
         Click on the info icon
 
         Expected Result:
@@ -2074,48 +1963,19 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = "ext019_" + str(randint(0, 999))
-        today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        self.teacher.add_assignment(assignment='external',
-                                    args={
-                                        'title': assignment_name,
-                                        'description': 'description',
-                                        'periods': {'all': (begin, end)},
-                                        'url': 'website.com',
-                                        'status': 'publish'
-                                    })
-        # click in the open assignment
-        try:
-            self.teacher.wait.until(
-                expect.presence_of_element_located(
-                    (By.XPATH,
-                     '//div[@class="month-wrapper"]')
-                )
-            )
-            self.teacher.find(
-                By.XPATH,
-                '//label[contains(@data-title,"' + assignment_name + '")]'
-            ).click()
-        except NoSuchElementException:
-            self.teacher.wait.until(
-                expect.presence_of_element_located(
-                    (By.XPATH,
-                     '//div[@class="month-wrapper"]')
-                )
-            )
-            self.teacher.find(
-                By.XPATH, '//a[@class="calendar-header-control next"]').click()
-            self.teacher.find(
-                By.XPATH,
-                '//label[contains(@data-title,"' + assignment_name + '")]'
-            ).click()
+        assignment_menu = self.teacher.find(
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]')
+        # if the Add Assignment menu is not open
+        if 'open' not in assignment_menu.get_attribute('class'):
+            assignment_menu.click()
+
+        self.teacher.find(
+            By.LINK_TEXT, 'Add External Assignment').click()
         self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//a[contains(@class,"edit-assignment")]')
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
             )
-        ).click()
+        )
         self.teacher.find(
             By.XPATH, '//button[contains(@class,"-instructions")]').click()
         self.teacher.find(
@@ -2479,8 +2339,9 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
             )
         )
-        self.teacher.driver.execute_script(
-            'return arguments[0].scrollIntoView();', add_external_bar)
+        Assignment.scroll_to(
+            self.teacher.driver, add_external_bar)
+        self.teacher.driver.execute_script('window.scrollBy(0, -150);')
         self.teacher.sleep(1)
         actions = ActionChains(self.teacher.driver)
         actions.drag_and_drop(add_external_bar, calendar_date)
