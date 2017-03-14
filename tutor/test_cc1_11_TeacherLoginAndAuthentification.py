@@ -18,14 +18,15 @@ from staxing.helper import Teacher
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        7688, 7689, 7690
+        7688, 7689
     ])
 )
 
@@ -38,19 +39,25 @@ class TestTeacherLoginAndAuthentification(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.teacher = Teacher(
+                use_env_vars=True
+            )
         self.teacher.login()
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.teacher.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.teacher.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             self.teacher.delete()
         except:
@@ -128,6 +135,7 @@ class TestTeacherLoginAndAuthentification(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7690 - 003 - Teacher | Can log into Tutor and be redirected to CC
     @pytest.mark.skipif(str(7690) not in TESTS, reason='Excluded')
     def test_teacher_can_log_into_tutor_and_be_redirected_to_cc_7690(self):
@@ -161,3 +169,4 @@ class TestTeacherLoginAndAuthentification(unittest.TestCase):
             'Not viewing the cc dashboard'
 
         self.ps.test_updates['passed'] = True
+    '''

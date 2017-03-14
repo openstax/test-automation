@@ -18,15 +18,16 @@ from staxing.helper import Admin, Teacher
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14651, 14652, 14653, 14655, 14656,
-        14657, 14850, 14658, 14660, 14661
+        14651, 14657, 14850, 14658, 14660,
+        14661
     ])
 )
 
@@ -53,12 +54,13 @@ class TestImproveCourseManagement(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.teacher.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.teacher.driver.session_id),
+                **self.ps.test_updates
+            )
+        self.admin = None
         try:
-            self.admin = None
             self.teacher.delete()
         except:
             pass
@@ -111,6 +113,7 @@ class TestImproveCourseManagement(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # 14652 - 002 - Teacher | Delegate teaching tasks to supporting instructors
     @pytest.mark.skipif(str(14652) not in TESTS, reason='Excluded')
     def test_teacher_delegate_teaching_tasks_to_supporting_instruc_14652(self):
@@ -136,7 +139,9 @@ class TestImproveCourseManagement(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # 14653 - 003 - Teacher | Move a student and their data to a new section
     @pytest.mark.skipif(str(14653) not in TESTS, reason='Excluded')
     def test_teacher_move_a_student_and_their_data_to_new_section_14653(self):
@@ -318,6 +323,7 @@ class TestImproveCourseManagement(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # 14657 - 006 - Teacher | In Student Scores dropped students are not
     # displayed

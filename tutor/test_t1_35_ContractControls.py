@@ -19,16 +19,16 @@ from staxing.helper import Admin
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8228, 8229, 8230, 8231, 8232,
-        8233, 8234, 8235, 8236, 8237,
-        8389
+        8228, 8230, 8231, 8232, 8233,
+        8234, 8235, 8236, 8237
     ])
 )
 
@@ -40,19 +40,26 @@ class TestContractControls(unittest.TestCase):
     def setUp(self):
         """Pretest settings."""
         self.ps = PastaSauce()
-        self.desired_capabilities = {}
         self.desired_capabilities['name'] = self.id()
-        self.admin = Admin(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.admin = Admin(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.admin = Admin(
+                use_env_vars=True,
+            )
         self.admin.login()
         # make sure there are no new terms to accept
         try:
             self.admin.driver.find_element(
                 By.ID, 'i_agree'
             ).click()
+        except NoSuchElementException:
+            pass
+        try:
             self.admin.driver.find_element(
                 By.ID, 'agreement_submit'
             ).click()
@@ -72,10 +79,11 @@ class TestContractControls(unittest.TestCase):
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.admin.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.admin.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             self.admin.delete()
         except:
@@ -129,6 +137,7 @@ class TestContractControls(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8229 - 002 - Admin | Cancel adding a new contract
     @pytest.mark.skipif(str(8229) not in TESTS, reason='Excluded')
     def test_admin_cancel_adding_a_new_contract_8229(self):
@@ -183,6 +192,7 @@ class TestContractControls(unittest.TestCase):
         assert(len(contracts) == 0), 'contract not cancled'
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C8230 - 003 - Admin | Publish a draft contract
     @pytest.mark.skipif(str(8230) not in TESTS, reason='Excluded')
@@ -595,6 +605,7 @@ class TestContractControls(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8389 - 011 - Admin | Edit a draft contract
     @pytest.mark.skipif(str(8389) not in TESTS, reason='Excluded')
     def test_admin_edit_a_draft_contract_8389(self):
@@ -670,5 +681,5 @@ class TestContractControls(unittest.TestCase):
                  '//h2[contains(text(),"test_contract_title_011_New")]')
             )
         )
-
         self.ps.test_updates['passed'] = True
+    '''

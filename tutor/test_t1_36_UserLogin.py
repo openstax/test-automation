@@ -15,17 +15,19 @@ basic_test_env = json.dumps([
     {
         'platform': 'Windows 10',
         'browserName': 'chrome',
-        'version': '50.0',
+        'version': 'latest',
         'screenResolution': "1024x768",
     },
 ])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
         8238, 8239, 8240, 8241, 8242,
-        8243, 8244, 8245, 8246, 58271,
-        58272
+        8243, 8244, 8245, 58271, 8246,
+        58272, 96962, 96963, 96964, 96965,
+        96966, 96967
     ])
 )
 
@@ -38,16 +40,59 @@ class TestUserLogin(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.user = None
+        if not LOCAL_RUN:
+            self.admin = Admin(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.content = ContentQA(
+                existing_driver=self.admin.driver,
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.student = Student(
+                existing_driver=self.admin.driver,
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.teacher = Teacher(
+                existing_driver=self.admin.driver,
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.admin = Admin(
+                use_env_vars=True,
+            )
+            self.content = ContentQA(
+                existing_driver=self.admin.driver,
+                use_env_vars=True,
+            )
+            self.student = Student(
+                existing_driver=self.admin.driver,
+                use_env_vars=True,
+            )
+            self.teacher = Teacher(
+                existing_driver=self.admin.driver,
+                use_env_vars=True,
+            )
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.user.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.admin.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
-            self.user.delete()
+            self.teacher = None
+            self.student = None
+            self.content = None
+            self.admin.delete()
         except:
             pass
 
@@ -69,40 +114,39 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.001', '8238']
         self.ps.test_updates['passed'] = False
 
-        admin = Admin(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.user = admin
-        admin.driver.get(admin.url)
-        admin.page.wait_for_page_load()
+        self.admin.get(self.admin.url)
+        self.admin.page.wait_for_page_load()
         # check to see if the screen width is normal or condensed
-        if admin.driver.get_window_size()['width'] <= admin.CONDENSED_WIDTH:
+        if self.admin.driver.get_window_size()['width'] <= \
+                self.admin.CONDENSED_WIDTH:
             # get small-window menu toggle
-            is_collapsed = admin.driver.find_element(
+            is_collapsed = self.admin.find(
                 By.XPATH,
                 '//button[contains(@class,"navbar-toggle")]'
             )
             # check if the menu is collapsed and, if yes, open it
             if('collapsed' in is_collapsed.get_attribute('class')):
                 is_collapsed.click()
-        admin.wait.until(
+        self.admin.wait.until(
             expect.visibility_of_element_located(
                 (By.LINK_TEXT, 'Login')
             )
         ).click()
-        admin.page.wait_for_page_load()
-        admin.driver.find_element(By.ID, 'auth_key').send_keys(admin.username)
-        admin.driver.find_element(By.ID, 'password').send_keys(admin.password)
+        self.admin.page.wait_for_page_load()
+        self.admin.find(
+            By.ID, 'auth_key'
+        ).send_keys(self.admin.username)
+        self.admin.find(
+            By.ID, 'password'
+        ).send_keys(self.admin.password)
         # click on the sign in button
-        admin.driver.find_element(
+        self.admin.find(
             By.XPATH,
             '//button[text()="Sign in"]'
         ).click()
-        admin.page.wait_for_page_load()
-        assert('dashboard' in admin.current_url()), \
-            'Not taken to dashboard: %s' % admin.current_url()
+        self.admin.page.wait_for_page_load()
+        assert('dashboard' in self.admin.current_url()), \
+            'Not taken to dashboard: %s' % self.admin.current_url()
 
         self.ps.test_updates['passed'] = True
 
@@ -126,21 +170,16 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.002', '8239']
         self.ps.test_updates['passed'] = False
 
-        admin = Admin(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.user = admin
-        admin.login()
-        admin.open_user_menu()
-        admin.wait.until(
+        # self.user = admin
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Admin')
             )
         ).click()
-        admin.page.wait_for_page_load()
-        admin.driver.find_element(
+        self.admin.page.wait_for_page_load()
+        self.admin.find(
             By.XPATH, '//h1[contains(text(),"Admin Console")]')
 
         self.ps.test_updates['passed'] = True
@@ -165,21 +204,15 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.003', '8240']
         self.ps.test_updates['passed'] = False
 
-        admin = Admin(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.user = admin
-        admin.login()
-        admin.open_user_menu()
-        admin.wait.until(
+        self.admin.login()
+        self.admin.open_user_menu()
+        self.admin.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//input[contains(@value,"Log Out")]')
             )
         ).click()
-        admin.page.wait_for_page_load()
-        admin.driver.find_element(
+        self.admin.page.wait_for_page_load()
+        self.admin.find(
             By.XPATH, '//div[contains(@class,"tutor-home")]')
 
         self.ps.test_updates['passed'] = True
@@ -202,47 +235,41 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.004', '8241']
         self.ps.test_updates['passed'] = False
 
-        content = ContentQA(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.user = content
-        content.driver.get(content.url)
-        content.page.wait_for_page_load()
+        self.content.get(self.content.url)
+        self.content.page.wait_for_page_load()
         # check to see if the screen width is normal or condensed
-        if content.driver.get_window_size()['width'] <= \
-           content.CONDENSED_WIDTH:
+        if self.content.driver.get_window_size()['width'] <= \
+           self.content.CONDENSED_WIDTH:
             # get small-window menu toggle
-            is_collapsed = content.driver.find_element(
+            is_collapsed = self.content.find(
                 By.XPATH,
                 '//button[contains(@class,"navbar-toggle")]'
             )
             # check if the menu is collapsed and, if yes, open it
             if('collapsed' in is_collapsed.get_attribute('class')):
                 is_collapsed.click()
-        content.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.LINK_TEXT, 'Login')
             )
         ).click()
-        content.page.wait_for_page_load()
-        content.driver.find_element(
+        self.content.page.wait_for_page_load()
+        self.content.find(
             By.ID,
             'auth_key'
-        ).send_keys(content.username)
-        content.driver.find_element(
+        ).send_keys(self.content.username)
+        self.content.find(
             By.ID,
             'password'
-        ).send_keys(content.password)
+        ).send_keys(self.content.password)
         # click on the sign in button
-        content.driver.find_element(
+        self.content.find(
             By.XPATH,
             '//button[text()="Sign in"]'
         ).click()
-        content.page.wait_for_page_load()
-        assert('dashboard' in content.current_url()), \
-            'Not taken to dashboard: %s' % content.current_url()
+        self.content.page.wait_for_page_load()
+        assert('dashboard' in self.content.current_url()), \
+            'Not taken to dashboard: %s' % self.content.current_url()
 
         self.ps.test_updates['passed'] = True
 
@@ -266,23 +293,17 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.005', '8242']
         self.ps.test_updates['passed'] = False
 
-        content = ContentQA(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.user = content
-        content.login()
-        content.open_user_menu()
-        content.wait.until(
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.wait.until(
             expect.element_to_be_clickable((
                 By.XPATH,
                 '//a[contains(text(),"QA Content") and @role="menuitem"]'
             ))
         ).click()
-        content.page.wait_for_page_load()
-        assert('/qa' in content.current_url()), \
-            'Not taken to the QA viewer: %s' % content.current_url()
+        self.content.page.wait_for_page_load()
+        assert('/qa' in self.content.current_url()), \
+            'Not taken to the QA viewer: %s' % self.content.current_url()
 
         self.ps.test_updates['passed'] = True
 
@@ -306,22 +327,16 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.006', '8243']
         self.ps.test_updates['passed'] = False
 
-        content = ContentQA(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.user = content
-        content.login()
-        content.open_user_menu()
-        content.wait.until(
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.wait.until(
             expect.element_to_be_clickable((
                 By.XPATH,
                 '//a[contains(text(),"Content Analyst") and @role="menuitem"]'
             ))
         ).click()
-        content.page.wait_for_page_load()
-        content.driver.find_element(
+        self.content.page.wait_for_page_load()
+        self.content.find(
             By.XPATH,
             '//h1[contains(text(),"Content Analyst Console")]'
         )
@@ -348,21 +363,15 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.007', '8244']
         self.ps.test_updates['passed'] = False
 
-        content = ContentQA(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.user = content
-        content.login()
-        content.open_user_menu()
-        content.wait.until(
+        self.content.login()
+        self.content.open_user_menu()
+        self.content.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//input[contains(@value,"Log Out")]')
             )
         ).click()
-        content.page.wait_for_page_load()
-        content.driver.find_element(
+        self.content.page.wait_for_page_load()
+        self.content.find(
             By.XPATH,
             '//div[contains(@class,"tutor-home")]'
         )
@@ -387,47 +396,41 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.008', '8245']
         self.ps.test_updates['passed'] = False
 
-        student = Student(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.user = student
-        student.driver.get(student.url)
-        student.page.wait_for_page_load()
+        self.student.get(self.student.url)
+        self.student.page.wait_for_page_load()
         # check to see if the screen width is normal or condensed
-        if student.driver.get_window_size()['width'] <= \
-           student.CONDENSED_WIDTH:
+        if self.student.driver.get_window_size()['width'] <= \
+           self.student.CONDENSED_WIDTH:
             # get small-window menu toggle
-            is_collapsed = student.driver.find_element(
+            is_collapsed = self.student.find(
                 By.XPATH,
                 '//button[contains(@class,"navbar-toggle")]'
             )
             # check if the menu is collapsed and, if yes, open it
             if('collapsed' in is_collapsed.get_attribute('class')):
                 is_collapsed.click()
-        student.wait.until(
+        self.student.wait.until(
             expect.visibility_of_element_located(
                 (By.LINK_TEXT, 'Login')
             )
         ).click()
-        student.page.wait_for_page_load()
-        student.driver.find_element(
+        self.student.page.wait_for_page_load()
+        self.student.find(
             By.ID,
             'auth_key'
-        ).send_keys(student.username)
-        student.driver.find_element(
+        ).send_keys(self.student.username)
+        self.student.find(
             By.ID,
             'password'
-        ).send_keys(student.password)
+        ).send_keys(self.student.password)
         # click on the sign in button
-        student.driver.find_element(
+        self.student.find(
             By.XPATH,
             '//button[text()="Sign in"]'
         ).click()
-        student.page.wait_for_page_load()
-        assert('dashboard' in student.current_url()), \
-            'Not taken to dashboard: %s' % student.current_url()
+        self.student.page.wait_for_page_load()
+        assert('dashboard' in self.student.current_url()), \
+            'Not taken to dashboard: %s' % self.student.current_url()
 
         self.ps.test_updates['passed'] = True
 
@@ -449,47 +452,41 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.009', '8246']
         self.ps.test_updates['passed'] = False
 
-        teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.user = teacher
-        teacher.driver.get(teacher.url)
-        teacher.page.wait_for_page_load()
+        self.teacher.get(self.teacher.url)
+        self.teacher.page.wait_for_page_load()
         # check to see if the screen width is normal or condensed
-        if teacher.driver.get_window_size()['width'] <= \
-           teacher.CONDENSED_WIDTH:
+        if self.teacher.driver.get_window_size()['width'] <= \
+           self.teacher.CONDENSED_WIDTH:
             # get small-window menu toggle
-            is_collapsed = teacher.driver.find_element(
+            is_collapsed = self.teacher.find(
                 By.XPATH,
                 '//button[contains(@class,"navbar-toggle")]'
             )
             # check if the menu is collapsed and, if yes, open it
             if('collapsed' in is_collapsed.get_attribute('class')):
                 is_collapsed.click()
-        teacher.wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.LINK_TEXT, 'Login')
             )
         ).click()
-        teacher.page.wait_for_page_load()
-        teacher.driver.find_element(
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(
             By.ID,
             'auth_key'
-        ).send_keys(teacher.username)
-        teacher.driver.find_element(
+        ).send_keys(self.teacher.username)
+        self.teacher.find(
             By.ID,
             'password'
-        ).send_keys(teacher.password)
+        ).send_keys(self.teacher.password)
         # click on the sign in button
-        teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//button[text()="Sign in"]'
         ).click()
-        teacher.page.wait_for_page_load()
-        assert('dashboard' in teacher.current_url()),\
-            'Not taken to dashboard: %s' % teacher.current_url()
+        self.teacher.page.wait_for_page_load()
+        assert('dashboard' in self.teacher.current_url()),\
+            'Not taken to dashboard: %s' % self.teacher.current_url()
 
         self.ps.test_updates['passed'] = True
 
@@ -513,21 +510,15 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.010', '58271']
         self.ps.test_updates['passed'] = False
 
-        student = Student(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.user = student
-        student.login()
-        student.open_user_menu()
-        student.wait.until(
+        self.student.login()
+        self.student.open_user_menu()
+        self.student.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//input[contains(@value,"Log Out")]')
             )
         ).click()
-        student.page.wait_for_page_load()
-        student.driver.find_element(
+        self.student.page.wait_for_page_load()
+        self.student.find(
             By.XPATH,
             '//div[contains(@class,"tutor-home")]'
         )
@@ -554,23 +545,146 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.011', '58272']
         self.ps.test_updates['passed'] = False
 
-        teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.user = teacher
-        teacher.login()
-        teacher.open_user_menu()
-        teacher.wait.until(
+        self.teacher.login()
+        self.teacher.open_user_menu()
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//input[contains(@value,"Log Out")]')
             )
         ).click()
-        teacher.page.wait_for_page_load()
-        teacher.driver.find_element(
+        self.teacher.page.wait_for_page_load()
+        self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"tutor-home")]'
         )
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C96962 - 012 - Content Reviewer | Log into Exercises
+    @pytest.mark.skipif(str(96962) not in TESTS, reason='Excluded')
+    def test_content_reviewer_log_into_exercises_96962(self):
+        """Log into Exercises.
+
+        Steps:
+        Go to https://exercises-qa.openstax.org/
+        Click "SIGN IN"
+        Enter [content] into "Email or username" text box
+        Click "Next"
+        Enter [staxly16] into "password" text box
+        Click "Login"
+
+        Expected Result:
+        User is logged in
+        """
+        self.ps.test_updates['name'] = 't1.36.012' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.012', '96962']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C96963 - 013 - Content Reviewer | Access Reviewer Display
+    @pytest.mark.skipif(str(96963) not in TESTS, reason='Excluded')
+    def test_content_reviewer_access_reviewer_display_96963(self):
+        """Access Reviewer Display.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.36.013' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.013', '96963']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C96964 - 014 - Content Reviewer | Log out
+    @pytest.mark.skipif(str(96964) not in TESTS, reason='Excluded')
+    def test_content_reviewer_log_out_96964(self):
+        """Log out.
+
+        Steps:
+        go to https://exercises-qa.openstax.org/
+        Click "SIGN IN"
+        Enter [content] into "Email or username" text box
+        Click "Next"
+        Enter [staxly16] into "password" text box
+        Click "Login"
+        Click "SIGN OUT"
+
+        Expected Result:
+        User is logged out.
+        """
+        self.ps.test_updates['name'] = 't1.36.014' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.014', '96964']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C96965 - 015 - Content Editor | Log into Exercises
+    @pytest.mark.skipif(str(96965) not in TESTS, reason='Excluded')
+    def test_content_editor_log_into_exercises_96965(self):
+        """Log into Exercises.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.36.015' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.015', '96965']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C96962 - 016 - Content Editor | Access the Exercise Editor
+    @pytest.mark.skipif(str(96966) not in TESTS, reason='Excluded')
+    def test_content_editor_access_the_exercise_editor_96966(self):
+        """Access the Exercise Editor.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.36.016' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.016', '96966']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C96967 - 017 - Content Editor | Log out
+    @pytest.mark.skipif(str(96967) not in TESTS, reason='Excluded')
+    def test_content_editor_log_out_96967(self):
+        """Log out.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.36.017' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.017', '96967']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True

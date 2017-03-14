@@ -17,28 +17,21 @@ from staxing.assignment import Assignment
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Student, Teacher
 
-# for template command line testing only
-# - replace list_of_cases on line 31 with all test case IDs in this file
-# - replace CaseID on line 52 with the actual cass ID
-# - delete lines 17 - 22
-list_of_cases = 0
-CaseID = 'skip'
-
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
         8184, 8185, 8186, 8187, 8188,
         8189, 8190, 8191, 8192, 8193,
-        8194, 8195, 8196, 8197, 8198,
-        8199, 8200, 8201, 8202, 8203,
-        8204, 8205, 8206
+        8194, 8195, 8196, 8199, 8201,
+        8202, 8203, 8204, 8205, 8206
     ])
 )
 
@@ -51,21 +44,25 @@ class TestWorkAReading(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        """
-        self.student = Student(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        """
-        self.teacher = Teacher(use_env_vars=True)
-        self.student = Student(use_env_vars=True)
-        self.student.login()
+        if not LOCAL_RUN:
+            self.student = Student(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                existing_driver=self.student.driver,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.student = Student(
+                use_env_vars=True,
+            )
+            self.teacher = Teacher(
+                use_env_vars=True
+            )
         self.teacher.login()
 
         # Create a reading for the student to work
@@ -132,12 +129,15 @@ class TestWorkAReading(unittest.TestCase):
             "//button[@class='async-button -publish btn btn-primary']").click()
         self.teacher.sleep(60)
 
+        self.student.login()
+
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(
-            job_id=str(self.student.driver.session_id),
-            **self.ps.test_updates
-        )
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.student.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             # Delete the assignment
             assert('calendar' in self.teacher.current_url()), \
@@ -172,12 +172,14 @@ class TestWorkAReading(unittest.TestCase):
                         By.XPATH, "//button[@class='btn btn-primary']").click()
                     self.teacher.sleep(5)
                     break
-
+        except:
+            pass
+        try:
             self.teacher.driver.refresh()
             self.teacher.sleep(5)
 
+            self.teacher = None
             self.student.delete()
-            self.teacher.delete()
         except:
             pass
 
@@ -901,6 +903,7 @@ class TestWorkAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8195 - 012 - Student | If an assessment follows a Grasp Check,
     # answering correctly activates the Continue button
     @pytest.mark.skipif(str(8195) not in TESTS, reason='Excluded')
@@ -934,7 +937,9 @@ class TestWorkAReading(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C8196 - 013 - Student | If an assessment follows a Grasp Check,
     # answering incorrectly activates the Try Another and Move On buttons
     @pytest.mark.skipif(str(8196) not in TESTS, reason='Excluded')
@@ -968,6 +973,7 @@ class TestWorkAReading(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C8197 - 014 - Student | Select Try Another to receive a new
     # assessment
@@ -1004,6 +1010,7 @@ class TestWorkAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8198 - 015 - Student | Select Move On
     @pytest.mark.skipif(str(8198) not in TESTS, reason='Excluded')
     def test_student_select_move_on_8198(self):
@@ -1037,7 +1044,8 @@ class TestWorkAReading(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
-
+    '''
+    
     # Case C8199 - 016 - Student | If a card has a video, play the video
     @pytest.mark.skipif(str(8199) not in TESTS, reason='Excluded')
     def test_student_if_a_card_has_a_video_play_the_videio_8199(self):

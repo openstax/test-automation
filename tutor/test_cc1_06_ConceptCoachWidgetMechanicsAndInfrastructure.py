@@ -11,20 +11,21 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher
+from staxing.helper import Teacher, Student
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
-    'version': '50.0',
+    'version': 'latest',
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
@@ -39,20 +40,26 @@ class TestConceptCoachWidgetMechanicsAndInfrastructure(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.teacher = Teacher(
+                use_env_vars=True
+            )
 
     def tearDown(self):
         """Test destructor."""
-        self.ps.update_job(job_id=str(self.teacher.driver.session_id),
-                           **self.ps.test_updates)
+        if not LOCAL_RUN:
+            self.ps.update_job(
+                job_id=str(self.teacher.driver.session_id),
+                **self.ps.test_updates
+            )
         try:
             self.teacher.delete()
         except:
@@ -85,9 +92,40 @@ class TestConceptCoachWidgetMechanicsAndInfrastructure(unittest.TestCase):
         ]
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        # login and go to cc course
+        student = Student(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities,
+            username=os.getenv('STUDENT_USER'),
+            password=os.getenv('STUDENT_PASSWORD')
+        )
+        student.login()
+        student.driver.find_element(
+            By.XPATH, '//a[contains(@href,"cnx.org/contents")]'
+        ).click()
+        # go to section 1.1 then cc widget
+        student.page.wait_for_page_load()
+        student.driver.find_element(
+            By.XPATH,
+            '//button[@class="toggle btn"]//span[contains(text(),"Contents")]'
+        ).click()
+        student.sleep(0.5)
+        student.driver.find_element(
+            By.XPATH,
+            '//span[@class="chapter-number" and text()="1.1"]'
+        ).click()
+        student.page.wait_for_page_load()
+        student.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Jump to Concept Coach')
+            )
+        ).click()
+        student.driver.find_element(
+            By.XPATH,
+            '//div[@class="concept-coach-launcher"]'
+        )
+        student.delete()
         self.ps.test_updates['passed'] = True
 
     # Case C7749 - 002 - Teacher | View a Concept Coach book and see the widget
@@ -118,9 +156,40 @@ class TestConceptCoachWidgetMechanicsAndInfrastructure(unittest.TestCase):
         ]
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        # login and go to cc course
+        self.teacher.login()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+        ).click()
+        # open online book
+        self.teacher.driver.find_element(
+            By.XPATH, '//a//span[contains(text(),"Online Book")]'
+        ).click()
+        window_with_book = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_book)
+        assert('cnx' in self.teacher.current_url()), \
+            'Not viewing the textbook PDF'
+        # go to section 1.1 then cc widget
+        self.teacher.page.wait_for_page_load()
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//button[@class="toggle btn"]//span[contains(text(),"Contents")]'
+        ).click()
+        self.teacher.sleep(0.5)
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//span[@class="chapter-number" and text()="1.1"]'
+        ).click()
+        self.teacher.page.wait_for_page_load()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'Jump to Concept Coach')
+            )
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[@class="concept-coach-launcher"]'
+        )
         self.ps.test_updates['passed'] = True
 
     # Case C7750 - 003 - Student | Doesn't see end-of-page exercise sections
@@ -150,7 +219,35 @@ class TestConceptCoachWidgetMechanicsAndInfrastructure(unittest.TestCase):
         ]
         self.ps.test_updates['passed'] = False
 
-        # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        # login and go to cc course
+        student = Student(
+            use_env_vars=True,
+            pasta_user=self.ps,
+            capabilities=self.desired_capabilities,
+            username=os.getenv('STUDENT_USER'),
+            password=os.getenv('STUDENT_PASSWORD')
+        )
+        student.login()
+        student.driver.find_element(
+            By.XPATH, '//a[contains(@href,"cnx.org/contents")]'
+        ).click()
+        # go to section 1.1 then cc widget
+        student.page.wait_for_page_load()
+        student.driver.find_element(
+            By.XPATH,
+            '//button[@class="toggle btn"]//span[contains(text(),"Contents")]'
+        ).click()
+        student.sleep(0.5)
+        student.driver.find_element(
+            By.XPATH,
+            '//span[@class="chapter-number" and text()="1.1"]'
+        ).click()
+        student.page.wait_for_page_load()
+        questions = student.driver.find_elements(
+            By.XPATH,
+            '//section[@data-depth="1" and not(@class)]' +
+            '//div[@data-type="exercise"]'
+        )
+        assert(len(questions) == 0), "questions found at the end of chapter"
+        student.delete()
         self.ps.test_updates['passed'] = True
