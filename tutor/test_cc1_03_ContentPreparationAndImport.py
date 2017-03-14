@@ -23,6 +23,7 @@ basic_test_env = json.dumps([{
     'screenResolution': "1024x768",
 }])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
+LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
@@ -40,11 +41,16 @@ class TestContentPreparationAndImport(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.content = ContentQA(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities,
-        )
+        if not LOCAL_RUN:
+            self.content = ContentQA(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities,
+            )
+        else:
+            self.content = ContentQA(
+                use_env_vars=True,
+            )
 
     def tearDown(self):
         """Test destructor."""
@@ -172,13 +178,18 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        admin = ContentQA(
-            existing_driver=self.content.driver,
-            username=os.getenv('ADMIN_USER'),
-            password=os.getenv('ADMIN_PASSWORD'),
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities,
-        )
+        if not LOCAL_RUN:
+            admin = ContentQA(
+                use_env_vars=True,
+                existing_driver=self.content.driver,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities,
+            )
+        else:
+            admin = ContentQA(
+                use_env_vars=True,
+                existing_driver=self.content.driver,
+            )
         admin.login()
         admin.open_user_menu()
         admin.driver.find_element(
