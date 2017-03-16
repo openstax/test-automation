@@ -27,9 +27,7 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        7628, 7630
-        # 7625, 7627, 7628, 7630
-        # 7625, 7630 - working
+        7625, 7627, 7628, 7630
     ])
 )
 
@@ -224,7 +222,13 @@ class TestCNXNavigation(unittest.TestCase):
         self.student.login()
         self.student.driver.find_element(
             By.XPATH,
-            '//a[contains(@href,"cnx.org/contents/")]'
+            '//p[contains(text(),"OpenStax Concept Coach")]'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//a[@class="go-now"]')
+            )
         ).click()
         self.student.page.wait_for_page_load()
         self.student.driver.find_element(
@@ -274,9 +278,21 @@ class TestCNXNavigation(unittest.TestCase):
         self.student.login()
         self.student.driver.find_element(
             By.XPATH,
-            '//a[contains(@href,"cnx.org/contents/")]'
+            '//p[contains(text(),"OpenStax Concept Coach")]'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//a[@class="go-now"]')
+            )
         ).click()
         self.student.page.wait_for_page_load()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//span[text()="Contents"]')
+            )
+        ).click()
         self.student.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
