@@ -54,7 +54,8 @@ class TestTeacherViews(unittest.TestCase):
             )
         self.teacher.login()
         self.teacher.driver.find_element(
-            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+            By.XPATH,
+            '//p[contains(text(),"OpenStax Concept Coach")]'
         ).click()
 
     def tearDown(self):
@@ -90,8 +91,9 @@ class TestTeacherViews(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assert('cc-dashboard' in self.teacher.current_url()), \
-            'not at Concept Coach Dashboard'
+        self.teacher.driver.find_element(
+            By.XPATH, "//span[text()='Class Dashboard']"
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -113,21 +115,23 @@ class TestTeacherViews(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        url1 = self.teacher.current_url().split('courses')[1]
+        url1 = self.teacher.current_url().split('course')[1]
         self.teacher.driver.find_element(
             By.XPATH, '//a//i[@class="ui-brand-logo"]'
         ).click()
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a[contains(@href,"/cc-dashboard") ' +
-                'and not(contains(@href,"'+str(url1)+'"))]'
+                '//a[not(contains(@href,"' + url1 + '"))]' +
+                '/p[contains(text(),"OpenStax Concept Coach")]'
             ).click()
         except NoSuchElementException:
             print('Only one CC course, cannot go to another')
             raise Exception
-        assert('cc-dashboard' in self.teacher.current_url()), \
-            'not at Concept Coach Dashboard'
+        # assert that user at cc dashboard
+        self.teacher.driver.find_element(
+            By.XPATH, "//span[text()='Class Dashboard']"
+        )
         assert(url1 != self.teacher.current_url()), \
             'went to same course'
 
@@ -158,20 +162,26 @@ class TestTeacherViews(unittest.TestCase):
             By.XPATH, '//a[contains(text(),"Homework PDF")]'
         ).click()
         coursename = self.teacher.driver.find_element(
-            By.XPATH, '//div[@class="cc-dashboard"]/div'
+            By.XPATH, '//div[@class="cc-dashboard"]/div[@data-appearance]'
         ).get_attribute('data-appearance')
-        coursename = coursename.replace('_', '-')
+        coursename = coursename.split('_')
         home = os.getenv("HOME")
         files = os.listdir(home + '/Downloads')
         for i in range(len(files)):
-            if (coursename in files[i]) and (files[i][-4:] == '.pdf'):
+            match = True
+            for word in coursename:
+                if not ((word in files[i]) and (files[i][-4:] == '.pdf')):
+                    match = False
+                    break
+            if match:
                 break
             else:
                 if i == len(files)-1:
+                    print("textbok pdf not downloaded")
                     raise Exception
         # online book
         self.teacher.driver.find_element(
-            By.XPATH, '//a//span[contains(text(),"Online Book")]'
+            By.XPATH, '//a[contains(text(),"Online Book")]'
         ).click()
         window_with_book = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_book)
@@ -211,25 +221,15 @@ class TestTeacherViews(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.XPATH, '//a[contains(text(),"Course Settings and Roster")]'
+            By.XPATH, '//a/div[contains(text(),"Course Settings and Roster")]'
         ).click()
         self.teacher.driver.find_element(
-            By.XPATH, '//span[contains(text(),"student enrollment code")]'
+            By.XPATH, '//span[contains(text(),"enrollment")]'
         ).click()
         self.teacher.driver.find_element(
             By.XPATH,
-            '//*[contains(text(),"Send the following enrollment instruction")]'
+            '//span[contains(text(),"Send enrollment instructions")]'
         )
-
-        element = self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[contains(@class,"enrollment-code-modal")]'
-        )
-        element.find_element(
-            By.XPATH,
-            './/*[contains(text(),"To register for Concept Coach:")]'
-        )
-
         self.ps.test_updates['passed'] = True
 
     # Case C7613 - 005 - Teacher | Periods are relabeled as sections for all
@@ -255,11 +255,11 @@ class TestTeacherViews(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.XPATH, '//a[contains(text(),"Course Settings and Roster")]'
+            By.XPATH, '//a/div[contains(text(),"Course Settings and Roster")]'
         ).click()
         self.teacher.driver.find_element(
             By.XPATH,
-            '//li[contains(@class,"add-period")]//span[text()="Section"]'
+            '//button[contains(@class,"add-period")]//span[text()="Section"]'
         )
 
         self.ps.test_updates['passed'] = True
@@ -284,7 +284,7 @@ class TestTeacherViews(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.XPATH, '//a[contains(text(),"Student Scores")]'
+            By.XPATH, '//a/div[contains(text(),"Student Scores")]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -316,7 +316,7 @@ class TestTeacherViews(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.XPATH, '//a[contains(text(),"Student Scores")]'
+            By.XPATH, '//a/div[contains(text(),"Student Scores")]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
