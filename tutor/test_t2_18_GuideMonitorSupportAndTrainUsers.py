@@ -32,7 +32,6 @@ TESTS = os.getenv(
         58322, 58316, 58318, 58319, 14755,
         14750, 58336, 58337, 58348, 111250
     ])
-)
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -41,8 +40,8 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-        self.ps = PastaSauce()
-        self.desired_capabilities['name'] = self.id()
+        self.ps=PastaSauce()
+        self.desired_capabilities['name']=self.id()
         if not LOCAL_RUN:
             self.teacher = Teacher(
                 use_env_vars=True,
@@ -171,8 +170,34 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
             By.XPATH, '//a[text()="Remove"]'
         ).click()
         self.admin.driver.switch_to_alert().accept()
+        admin.find(By.XPATH, "//input[@id='message']").send_keys(
+            'automated test')
 
-        self.ps.test_updates['passed'] = True
+        admin.find(By.XPATH, "//input[@class='btn btn-default']").click()
+
+        admin.sleep(5)
+
+        # View the notification
+        self.teacher.driver.refresh()
+        self.teacher.find(By.XPATH, "//div[@class='notification system']")
+
+        # Delete the notification
+        notif = admin.driver.find_elements_by_xpath(
+            "//div[@class='col-xs-12']")
+
+        for index, n in enumerate(notif):
+            if n.text.find('automated test') >= 0:
+                admin.driver.find_elements_by_xpath(
+                    "//a[@class='btn btn-warning']")[index].click()
+                admin.sleep(5)
+                admin.driver.switch_to_alert().accept()
+                admin.sleep(5)
+                self.ps.test_updates['passed'] = True
+                break
+
+        admin.delete()
+
+        # self.ps.test_updates['passed'] = True
 
     # 14751 - 002 - Teacher | Directed to a "No Courses" page when not in any
     # courses yet
@@ -199,7 +224,6 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
             By.XPATH,
             '//p[contains(text(),' +
             '"cannot find an OpenStax course associated with your account")]')
-
         self.ps.test_updates['passed'] = True
 
     # 58279 - 003 - Teacher | View "Getting Started with Tutor" Guide
@@ -444,7 +468,6 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
                 (By.XPATH, '//div[text()="Thanks for your feedback!"]')
             )
         )
-
         self.ps.test_updates['passed'] = True
 
     # 58314 - 009 - User | Negative feedback renders a feedback popup box
@@ -622,7 +645,6 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
                 (By.XPATH, '//div[text()="Thanks for your feedback!"]')
             )
         )
-
         self.ps.test_updates['passed'] = True
 
     # 58316 - 012 - User | Cancel feedback
@@ -719,7 +741,6 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
         assert('articles' in self.teacher.current_url()), 'not at article'
         self.teacher.find(By.XPATH, '//h2[text()="Related Articles"]')
-
         self.ps.test_updates['passed'] = True
 
     # 58319 - 014 - User | Submit a question to Customer Support
@@ -783,7 +804,6 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
                  '//p[contains(text(),"Thank you for your message!")]')
             )
         )
-
         self.ps.test_updates['passed'] = True
 
     # 14755 - 015 - Teacher | View guided tutorials of Tutor
@@ -1187,10 +1207,10 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 111250 - 030 - User | Faulty URL shows a styled 404 error
+    # 111250 - 030 - User | Faulty URL shows a styled 404 error page
     @pytest.mark.skipif(str(111250) not in TESTS, reason='Excluded')
-    def test_user_faulty_url_shows_a_styled_404_error_111250(self):
-        """Faulty URL shows a styled 404 error.
+    def test_user_faulty_url_shows_styled_404_page_111250(self):
+        """Faulty URL shows a styled 404 error page.
 
         Steps:
         go to https://tutor-qa.openstax.org/not_a_real_page
