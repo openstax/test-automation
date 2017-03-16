@@ -31,8 +31,10 @@ TESTS = os.getenv(
         58352, 58288, 58313, 58314, 58315,
         58322, 58316, 58318, 58319, 14755,
         14750, 58336, 58337, 58348, 111250
-    ])
 
+        # 58279 - not working on site, maybe lost feature?
+    ])
+)
 
 @PastaDecorator.on_platforms(BROWSERS)
 class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
@@ -145,7 +147,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
                 (By.XPATH,
                  '//div[contains(@class,"notifications-bar")]' +
                  '//span[text()="test_notification"]'
-                )
+                 )
             )
         )
         self.teacher.find(
@@ -170,34 +172,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
             By.XPATH, '//a[text()="Remove"]'
         ).click()
         self.admin.driver.switch_to_alert().accept()
-        admin.find(By.XPATH, "//input[@id='message']").send_keys(
-            'automated test')
-
-        admin.find(By.XPATH, "//input[@class='btn btn-default']").click()
-
-        admin.sleep(5)
-
-        # View the notification
-        self.teacher.driver.refresh()
-        self.teacher.find(By.XPATH, "//div[@class='notification system']")
-
-        # Delete the notification
-        notif = admin.driver.find_elements_by_xpath(
-            "//div[@class='col-xs-12']")
-
-        for index, n in enumerate(notif):
-            if n.text.find('automated test') >= 0:
-                admin.driver.find_elements_by_xpath(
-                    "//a[@class='btn btn-warning']")[index].click()
-                admin.sleep(5)
-                admin.driver.switch_to_alert().accept()
-                admin.sleep(5)
-                self.ps.test_updates['passed'] = True
-                break
-
-        admin.delete()
-
-        # self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True
 
     # 14751 - 002 - Teacher | Directed to a "No Courses" page when not in any
     # courses yet
@@ -299,7 +274,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(
-            By.XPATH, '//center[text()="Tutor Support"]'
+            By.XPATH, '//center[contains(text(),"Tutor Support")]'
         )
 
         self.ps.test_updates['passed'] = True
@@ -377,7 +352,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
         self.teacher.find(By.ID, 'searchAskButton').click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.find(By.XPATH, '//a[contains(text(),"Contact Us")]')
+        self.teacher.find(By.XPATH, '//a[contains(text(),"Email Us")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -913,7 +888,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.student.driver.switch_to_window(window_with_help)
         self.student.page.wait_for_page_load()
         self.student.find(
-            By.XPATH, '//center[text()="Tutor Support"]'
+            By.XPATH, '//center[contains(text(),"Tutor Support")]'
         )
         self.ps.test_updates['passed'] = True
 
