@@ -29,7 +29,7 @@ TESTS = os.getenv(
     str([
         14752, 14751, 58279, 58280, 58284,
         58352, 58288, 58313, 58314, 58315,
-        58322, 58316, 58318, 58319, 14755,
+        # 58322, 58316, 58318, 58319, 14755,
         14750, 58336, 58337, 58348, 111250
 
         # 58279 - not working on site, maybe lost feature?
@@ -883,7 +883,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.student.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
-        self.student.sleep(1)
+        self.student.sleep(0.5)
         window_with_help = self.student.driver.window_handles[1]
         self.student.driver.switch_to_window(window_with_help)
         self.student.page.wait_for_page_load()
