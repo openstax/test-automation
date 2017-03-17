@@ -148,7 +148,7 @@ class TestTeacherLoginAndAuthentification(unittest.TestCase):
     # Case C7689 - 002 - Teacher | Logging out returns to the Concept Coach
     # landing page
     @pytest.mark.skipif(str(7689) not in TESTS, reason='Excluded')
-    def test_teacher_loggin_out_returns_to_concept_coach_landing_pa_7689(self):
+    def test_teacher_logging_out_returns_to_concept_coach_landing_p_7689(self):
         """Logging out returns to the Concept Coach landing page.
 
         Steps:
