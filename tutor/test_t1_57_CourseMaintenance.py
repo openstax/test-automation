@@ -13,9 +13,7 @@ from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Admin
-from staxing.helper import Student
-from staxing.helper import Teacher
+from staxing.helper import Admin, Student, Teacher
 
 
 basic_test_env = json.dumps([{
