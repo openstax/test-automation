@@ -33,9 +33,9 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         14676, 14677, 14678, 14800, 14680,
-        14681, 14682, 14801, 14802, 14803,
-        14804, 14805, 14685, 14686, 14687,
-        14688, 14689
+        14681, 14801, 14802, 14803, 14804,
+        14805, 14685, 14686, 14687, 14688,
+        14689
     ])
 
     # these are not implemented features - 14682, 14685, 14689
@@ -50,7 +50,6 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
         if not LOCAL_RUN:
@@ -322,7 +321,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         scroll_total_size = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
-            ).size['width']
+        ).size['width']
         bar = scroll_width
         print(scroll_total_size)
         while(bar < scroll_total_size):
@@ -410,7 +409,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         scroll_total_size = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
-            ).size['width']
+        ).size['width']
         bar = scroll_width
         while(bar < scroll_total_size):
             try:
@@ -476,7 +475,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         scroll_total_size = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
-            ).size['width']
+        ).size['width']
         bar = scroll_width
         while(bar < scroll_total_size):
             try:
@@ -499,6 +498,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 actions.perform()
         self.ps.test_updates['passed'] = True
 
+    '''
     # 14682 - 008 - Teacher | Set points per problem based on difficulty
     @pytest.mark.skipif(str(14682) not in TESTS, reason='Excluded')
     def test_teacher_set_points_per_problem_based_on_difficulty_14682(self):
@@ -517,6 +517,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # 14683 - 009 - Teacher | Delete an open assignment
     @pytest.mark.skipif(str(14683) not in TESTS, reason='Excluded')
@@ -562,7 +563,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             )
             self.teacher.find(
                 By.XPATH,
-                "//label[contains(text(), '"+assignment_name+"')]"
+                "//label[contains(text(), '" + assignment_name + "')]"
             ).click()
         except NoSuchElementException:
             self.teacher.find(
@@ -576,7 +577,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             )
             self.teacher.find(
                 By.XPATH,
-                "//label[contains(text(), '"+assignment_name+"')]"
+                "//label[contains(text(), '" + assignment_name + "')]"
             ).click()
         counter = 3
         while counter >= 0:
@@ -790,7 +791,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             )
             self.teacher.find(
                 By.XPATH,
-                "//label[contains(text(), '"+assignment_name+"')]"
+                "//label[contains(text(), '" + assignment_name + "')]"
             ).click()
         except NoSuchElementException:
             self.teacher.find(
@@ -804,7 +805,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             )
             self.teacher.find(
                 By.XPATH,
-                "//label[contains(text(), '"+assignment_name+"')]"
+                "//label[contains(text(), '" + assignment_name + "')]"
             ).click()
         counter = 3
         while counter >= 0:
@@ -887,7 +888,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             )
             self.teacher.find(
                 By.XPATH,
-                "//label[contains(text(), '"+assignment_name+"')]"
+                "//label[contains(text(), '" + assignment_name + "')]"
             ).click()
         except NoSuchElementException:
             self.teacher.find(
@@ -901,7 +902,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             )
             self.teacher.find(
                 By.XPATH,
-                "//label[contains(text(), '"+assignment_name+"')]"
+                "//label[contains(text(), '" + assignment_name + "')]"
             ).click()
         counter = 3
         while counter >= 0:
@@ -992,7 +993,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         try:
             self.teacher.find(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]'
+                '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.find(
@@ -1001,7 +1002,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             ).click()
             self.teacher.find(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]'
+                '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1070,7 +1071,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         try:
             self.teacher.find(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]'
+                '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.find(
@@ -1079,7 +1080,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             ).click()
             self.teacher.find(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]'
+                '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1184,7 +1185,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 else:
                     sections_new = self.student.find_all(
                         By.XPATH, '//div[@class="openstax-breadcrumbs-step"]')
-                    sections_new[i+1].click()
+                    sections_new[i + 1].click()
             else:
                 answer_text = "answer"
                 for i in answer_text:
@@ -1207,7 +1208,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                     '//div[@class="popover-content"]//p' +
                     '//strong[contains(text(),' +
                     '"Why do you ask me to answer twice?")]'
-                    )
+                )
                 break
         self.ps.test_updates['passed'] = True
 
@@ -1266,7 +1267,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.student.login()
         self.student.select_course(appearance='college_physics')
         self.student.find(
-            By.XPATH, '//span[contains(text(), "'+assignment_name+'")]'
+            By.XPATH, '//span[contains(text(), "' + assignment_name + '")]'
         ).click()
         # work problems untill a free response question is found
         sections = self.student.find_all(
@@ -1303,7 +1304,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                     raise Exception
                 sections_new = self.student.find_all(
                     By.XPATH, '//div[@class="openstax-breadcrumbs-step"]')
-                sections_new[i+1].click()
+                sections_new[i + 1].click()
         # click on the last problems to find a spaced practice
         sections = self.student.find_all(
             By.XPATH, '//div[@class="openstax-breadcrumbs-step"]'
@@ -1367,6 +1368,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             'Not viewing the textbook PDF'
         self.ps.test_updates['passed'] = True
 
+    '''
     # 14689 - 019 - Student | Ask for credit for late work
     @pytest.mark.skipif(str(14689) not in TESTS, reason='Excluded')
     def test_student_ask_for_credit_for_late_work_14689(self):
@@ -1379,6 +1381,121 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.ps.test_updates['name'] = 't2.10.019' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.019', '14689']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+    '''
+
+    # 113783 - 020 - Student | Show late icon for a late high school homework
+    @pytest.mark.skipif(str(113783) not in TESTS, reason='Excluded')
+    def test_student_show_late_icon_for_late_hs_homework_113783(self):
+        """Show late icon for a late high school homework.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't2.10.020' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.020', '113783']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 113784 - 021 - Student | Show late icon for a late college homework
+    @pytest.mark.skipif(str(113784) not in TESTS, reason='Excluded')
+    def test_student_show_late_icon_for_late_college_homework_113784(self):
+        """Show late icon for a late college homework.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't2.10.021' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.021', '113784']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 113785 - 022 - Student | Don't show late icon on late high school reading
+    @pytest.mark.skipif(str(113785) not in TESTS, reason='Excluded')
+    def test_student_do_not_show_late_icon_for_hs_reading_113785(self):
+        """Do not show late icon for a late high school reading.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't2.10.022' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.022', '113785']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 113788 - 023 - Student | Show late icon for a late college reading
+    @pytest.mark.skipif(str(113788) not in TESTS, reason='Excluded')
+    def test_student_show_late_icon_for_late_college_reading_113788(self):
+        """Show late icon for a late college reading.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't2.10.023' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.023', '113788']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 113786 - 024 - Student | Show late icon for late hs external assignment
+    @pytest.mark.skipif(str(113786) not in TESTS, reason='Excluded')
+    def test_student_show_late_icon_for_hs_external_113786(self):
+        """Show late icon for a late high school external assignment.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't2.10.024' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.024', '113786']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 113787 - 025 - Student | Show late icon for late college external
+    @pytest.mark.skipif(str(113787) not in TESTS, reason='Excluded')
+    def test_student_show_late_icon_for_late_college_external_113787(self):
+        """Show late icon for a late college external assignment.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't2.10.025' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.025', '113787']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions

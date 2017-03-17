@@ -27,8 +27,8 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14851, 14852, 14855, 14856, 14858,
-        14859, 100129, 100130
+        14851, 14852, 14856, 14858, 14859,
+        100129, 100130
     ])
 )
 
@@ -200,6 +200,7 @@ class TestIImproveQuestionManagement(unittest.TestCase):
         assert('is-selected' in question_excluded), 'question not excluded'
         self.ps.test_updates['passed'] = True
 
+    '''
     # 14855 - 003 - Teacher | Pin tabs on top of screen when scrolled
     @pytest.mark.skipif(str(14855) not in TESTS, reason='Excluded')
     def test_teacher_pin_tabs_on_top_of_screen_when_scrolled_14855(self):
@@ -252,6 +253,7 @@ class TestIImproveQuestionManagement(unittest.TestCase):
             )
         )
         self.ps.test_updates['passed'] = True
+    '''
 
     # 14856 - 004 - Teacher | Make section links jumpable
     @pytest.mark.skipif(str(14856) not in TESTS, reason='Excluded')

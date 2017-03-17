@@ -28,14 +28,11 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         7751, 7752, 7753, 7754, 7755,
-        7756,
-        7770, 7771, 7772, 7774,
+        7756, 7770, 7771, 7772, 7773,
     ])
-    # 7754, 7773 not done
+    # 7754 - demo video test case not working
+    # 7773 - bloked durring manual test runs, not done
 )
-# 7757, 7758, 7759, 7760,
-# 7761, 7762, 7763, 7764, 7773
-# 7775, 7765
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -219,23 +216,16 @@ class TestRecruitingTeachers(unittest.TestCase):
         window_with_book = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_book)
         self.teacher.page.wait_for_page_load()
-        self.teacher.sleep(2)
-        # self.teacher.find(
-        #     By.XPATH, '//div[@id="player"]'
-        # ).click()
+        self.teacher.sleep(1)
         title = self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//span[contains(text(),"Inelastic Collisions")]')
             )
         )
-        # self.teacher.wait.until(
-        #     expect.presence_of_element_located(
-        #         (By.ID, 'player')
-        #     )
-        # )
         actions = ActionChains(self.teacher.driver)
         actions.move_to_element(title)
-        actions.move_by_offset(0, 300)
+        for _ in range(300):
+            actions.move_by_offset(0, 1)
         actions.click()
         actions.perform()
         self.teacher.sleep(2)
@@ -243,7 +233,7 @@ class TestRecruitingTeachers(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"playing-mode")]'
         )
-        # actions.perform()
+        actions.perform()
         self.teacher.find(
             By.XPATH,
             '//div[@id="player"]/div[contains(@class,"paused-mode")]'
@@ -347,27 +337,18 @@ class TestRecruitingTeachers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
-        self.teacher.open_user_menu()
-        support = self.teacher.find(
-            By.XPATH, '//a[contains(text(),"Get Help")]'
-        )
-        support_link = support.get_attribute('href')
-        Assignment.scroll_to(self.teacher.driver, support)
-        support.click()
-        handles = len(self.teacher.driver.window_handles)
-        if handles <= 1:
-            self.teacher.driver.execute_script("window.open('');")
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[@id="headerNav"]//a[contains(text(),"support")]'
+        ).click()
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        if handles <= 1:
-            self.teacher.get(support_link)
-            self.teacher.page.wait_for_page_load()
-        self.teacher.find(
-            By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
+        self.teacher.page.wait_for_page_load()
+        self.teacher.driver.find_element(
+            By.XPATH, '//center[text()="OpenStax Concept Coach Support"]'
         )
-
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7757 - 007 - Teacher | Teacher registers to use a CC course
     @pytest.mark.skipif(str(7757) not in TESTS, reason='Excluded')
     def test_teacher_teacher_registers_to_use_a_cc_course_7757(self):
@@ -401,7 +382,9 @@ class TestRecruitingTeachers(unittest.TestCase):
             By.ID, 'signup-form'
         )
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7758 - 008 - Teacher | Teacher uses a web form to sign up for CC
     @pytest.mark.skipif(str(7758) not in TESTS, reason='Excluded')
     def test_teacher_teacher_uses_a_web_form_to_sign_up_for_cc_7758(self):
@@ -477,12 +460,14 @@ class TestRecruitingTeachers(unittest.TestCase):
             'not at thank you page after submitting form'
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7759 - 009 - Teacher | Receive error messages if required fields on
     # the sign up form are blank
     @pytest.mark.skipif(str(7759) not in TESTS, reason='Excluded')
     def test_teacher_receive_error_messages_if_required_fields_are_7759(self):
-        """Receive error messages if required fields on the sign up form are blank.
+        """Receive error messages if required fields on sign up form are blank.
 
         Steps:
         Go to the recruitment website ( http://cc.openstax.org/ )
@@ -527,7 +512,9 @@ class TestRecruitingTeachers(unittest.TestCase):
         )
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7760 - 010 - Teacher | Submit a form to supply required course info
     @pytest.mark.skipif(str(7760) not in TESTS, reason='Excluded')
     def test_teacher_submit_a_form_to_supply_required_course_info_7760(self):
@@ -607,7 +594,9 @@ class TestRecruitingTeachers(unittest.TestCase):
             'not at thank you page after submitting form'
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7761 - 011 - Teacher | Submit co-instructors, classes, names, etc.
     @pytest.mark.skipif(str(7761) not in TESTS, reason='Excluded')
     def test_teacher_submit_coinstructors_classes_names_etc_7761(self):
@@ -662,7 +651,9 @@ class TestRecruitingTeachers(unittest.TestCase):
         )
         textarea.send_keys('co teacher info')
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7762 - 012 - Teacher | Select the textbook to use in the course
     @pytest.mark.skipif(str(7762) not in TESTS, reason='Excluded')
     def test_teacher_select_the_textbook_to_use_in_the_course_7762(self):
@@ -722,7 +713,9 @@ class TestRecruitingTeachers(unittest.TestCase):
             'contains(@class,"select2-selection__rendered")]'
         )
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7763 - 013 - Teacher | Indicate whether the teacher was recruited
     # by OpenStax
     @pytest.mark.skipif(str(7763) not in TESTS, reason='Excluded')
@@ -770,7 +763,9 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.teacher.sleep(0.5)
         textarea.send_keys('recuitment info')
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7764 - 014 - Teacher | Presented a thank you page after registering
     # to use Concept Coach
     @pytest.mark.skipif(str(7764) not in TESTS, reason='Excluded')
@@ -849,7 +844,9 @@ class TestRecruitingTeachers(unittest.TestCase):
             'not at thank you page after submitting form'
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7765 - 015 - Teacher | Sign up for an OpenStax Accounts username
     @pytest.mark.skipif(str(7765) not in TESTS, reason='Excluded')
     def test_teacher_sign_up_for_an_openstax_accounts_username_7765(self):
@@ -927,6 +924,7 @@ class TestRecruitingTeachers(unittest.TestCase):
             'not at thank you page after submitting form'
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C7770 - 020 - Admin | Add co-instructors to a course
     @pytest.mark.skipif(str(7770) not in TESTS, reason='Excluded')
@@ -1051,24 +1049,39 @@ class TestRecruitingTeachers(unittest.TestCase):
                 is_collapsed.click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Login')
+                (By.LINK_TEXT, 'Log in')
             )
         ).click()
         self.teacher.page.wait_for_page_load()
         self.teacher.find(
-            By.ID,
-            'auth_key'
+            By.ID, 'login_username_or_email'
         ).send_keys(self.teacher.username)
+        self.teacher.find(By.CSS_SELECTOR, '.primary').click()
         self.teacher.find(
-            By.ID,
-            'password'
+            By.ID, 'login_password'
         ).send_keys(self.teacher.password)
-        # click on the sign in button
-        self.teacher.find(
-            By.XPATH,
-            '//button[text()="Sign in"]'
-        ).click()
+        self.teacher.find(By.CSS_SELECTOR, '.primary').click()
         self.teacher.page.wait_for_page_load()
+        # check if a password change is required
+        if 'reset your password' in self.teacher.driver.page_source.lower():
+            try:
+                self.teacher.find(By.ID, 'set_password_password') \
+                    .send_keys(self.teacher.password)
+                self.teacher.find(
+                    By.ID, 'set_password_password_confirmation') \
+                    .send_keys(self.teacher.password)
+                self.teacher.find(By.CSS_SELECTOR, '.primary').click()
+                self.teacher.sleep(1)
+                self.teacher.find(By.CSS_SELECTOR, '.primary').click()
+            except Exception as e:
+                raise e
+        self.teacher.page.wait_for_page_load()
+        source = self.teacher.driver.page_source.lower()
+        print('Reached Terms/Privacy')
+        while 'terms of use' in source or 'privacy policy' in source:
+            self.teacher.accept_contract()
+            self.teacher.page.wait_for_page_load()
+            source = self.teacher.driver.page_source.lower()
         assert('dashboard' in self.teacher.current_url()),\
             'Not taken to dashboard: %s' % self.teacher.current_url()
 
@@ -1097,17 +1110,16 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.username = os.getenv('TEACHER_USER_CC')
         self.teacher.login()
         self.teacher.find(
-            By.XPATH, '//div[text()="Concept Coach"]/preceding-sibling::a'
+            By.XPATH, '//p[text()="OpenStax Concept Coach"]'
         ).click()
+        self.teacher.page.wait_for_page_load()
         self.teacher.wait.until(
             expect.presence_of_element_located(
-                (By.CSS_SELECTOR, 'div.hide-section-legend')
+                (By.XPATH, '//span[contains(text(),"Class Dashboard")]')
             )
         )
-
         self.ps.test_updates['passed'] = True
 
     # Case C7773 - 023 - Admin | Distribute access codes for the course
@@ -1141,7 +1153,6 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         # Test steps and verification assertions
         admin = None
         if not LOCAL_RUN:
@@ -1168,6 +1179,7 @@ class TestRecruitingTeachers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7774 - 024 - Teacher | Access CC help and support during the course
     @pytest.mark.skipif(str(7774) not in TESTS, reason='Excluded')
     def test_teacher_acccess_cc_help_and_support_during_the_course_7774(self):
@@ -1224,7 +1236,9 @@ class TestRecruitingTeachers(unittest.TestCase):
         ).click()
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7775 - 025 - Teacher | Access CC help and support after course ends
     @pytest.mark.skipif(str(7775) not in TESTS, reason='Excluded')
     def test_teacher_access_cc_help_and_support_after_course_ends_7775(self):
@@ -1264,3 +1278,4 @@ class TestRecruitingTeachers(unittest.TestCase):
         ).click()
 
         self.ps.test_updates['passed'] = True
+    '''

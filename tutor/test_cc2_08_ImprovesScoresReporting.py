@@ -31,8 +31,8 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         14806, 14807, 14808, 14810, 14811,
-        14668, 14670, 14669, 14812, 14813,
-        14814, 14815, 14816
+        14668, 14670, 14669, 14813, 14814,
+        14816
     ])
     # 14812 - feature not implemented in Concept Coach
 )
@@ -543,6 +543,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
         # more on each individial thing
         self.ps.test_updates['passed'] = True
 
+    '''
     # 14812 - 009 - Teacher | Import CC Student Scores export into an LMS
     @pytest.mark.skipif(str(14812) not in TESTS, reason='Excluded')
     def test_teacher_import_cc_student_scores_export_into_an_lms_14812(self):
@@ -561,6 +562,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # 14813 - 010 - Teacher | View zeros in exported scores instead of blank
     # cells for incomplete assignments
@@ -695,6 +697,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # 14815 - 012 - Teacher | The class average info icon displays a definition
     # about scores from completed assignments
     @pytest.mark.skipif(str(14815) not in TESTS, reason='Excluded')
@@ -734,6 +737,7 @@ class TestImprovesScoresReporting(unittest.TestCase):
             'contains(text(), "Class and Overall Averages")]')
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # 14816 - 013 - Teacher | View the overall score column
     @pytest.mark.skipif(str(14816) not in TESTS, reason='Excluded')

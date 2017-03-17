@@ -28,9 +28,9 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14671, 14672, 14674, 14826, 14827,
-        14828, 14829, 14830, 14831, 14832,
-        14833, 14834, 14835, 14836
+        14671, 14827, 14828, 14829, 14830,
+        14831, 14832, 14833, 14834, 14835,
+        14836
     ])
 )
 
@@ -95,6 +95,7 @@ class TestImproveScoresReporting(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # 14672 - 002 - Teacher | Import Tutor high school Student Scores export
     # into a gradebook
     @pytest.mark.skipif(str(14672) not in TESTS, reason='Excluded')
@@ -121,7 +122,9 @@ class TestImproveScoresReporting(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # 14674 - 003 - Teacher | Import Tutor college Student Scores export into
     # an LMS
     @pytest.mark.skipif(str(14674) not in TESTS, reason='Excluded')
@@ -148,7 +151,9 @@ class TestImproveScoresReporting(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # 14826 - 004 - Teacher | Import Tutor college Student Scores into an LMS
     @pytest.mark.skipif(str(14826) not in TESTS, reason='Excluded')
     def test_teacher_import_tutor_college_student_scores_into_lms_14826(self):
@@ -174,6 +179,7 @@ class TestImproveScoresReporting(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # 14827 - 005 - Teacher | View the overall score column
     @pytest.mark.skipif(str(14827) not in TESTS, reason='Excluded')
