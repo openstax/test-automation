@@ -246,7 +246,7 @@ class TestViewStudentPerformance(unittest.TestCase):
         Steps:
         Go to Tutor
         Click on the 'Login' button
-        Enter the student user account [ student532 | password ] in the
+        Enter the student user account [ student02 | password ] in the
             username and password text boxes
         Click on the 'Sign in' button
         If the user has more than one course, click on a Tutor course name
@@ -323,7 +323,7 @@ class TestViewStudentPerformance(unittest.TestCase):
         self.student.sleep(5)
 
         assert(len(weak) <= 4), \
-            'Less than four weaker sections'
+            'More than four weaker sections'
 
         self.ps.test_updates['passed'] = True
 
@@ -374,16 +374,18 @@ class TestViewStudentPerformance(unittest.TestCase):
             sections = panel.find_elements_by_class_name('sections')
             assert(len(chapter) > 0), \
                 ''
-
             assert(len(sections) > 0), \
                 ''
-
+            assert(chapter[0].location.get('x') <=
+                   sections[0].location.get('x')), \
+                'section to the left of chapter'
         self.student.sleep(5)
 
         self.ps.test_updates['passed'] = True
 
     # Case C8294 - 008 - Student | Clicking on a chapter bar brings up to
     # five practice assessments for that chapter
+
     @pytest.mark.skipif(str(8294) not in TESTS, reason='Excluded')
     def test_student_clicking_chapter_brings_up_to_five_assessments_8294(self):
         """Clicking chapter bar brings up to 5 practice assessments.
@@ -429,6 +431,11 @@ class TestViewStudentPerformance(unittest.TestCase):
             'Not presented with practice problems'
 
         self.student.sleep(5)
+        breadcrumbs = self.student.find_all(
+            By.XPATH,
+            '//span[contains(@class,"breadcrumb-exercise")]')
+        assert(len(breadcrumbs) <= 5), \
+            "more than 5 questions"
 
         self.ps.test_updates['passed'] = True
 
@@ -477,6 +484,11 @@ class TestViewStudentPerformance(unittest.TestCase):
             'Not presented with practice problems'
 
         self.student.sleep(5)
+        breadcrumbs = self.student.find_all(
+            By.XPATH,
+            '//span[contains(@class,"breadcrumb-exercise")]')
+        assert(len(breadcrumbs) <= 5), \
+            "more than 5 questions"
 
         self.ps.test_updates['passed'] = True
 
