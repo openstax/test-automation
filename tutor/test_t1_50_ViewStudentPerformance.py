@@ -47,11 +47,16 @@ class TestViewStudentPerformance(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.student = Student(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.student = Student(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.student = Student(
+                use_env_vars=True
+            )
         self.student.login()
 
     def tearDown(self):
@@ -89,9 +94,8 @@ class TestViewStudentPerformance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.select_course(appearance='physics')
-        assert('list' in self.student.current_url()), \
-            'Not viewing the calendar dashboard'
+        self.student.select_course(appearance='college_physics')
+        self.student.find(By.CSS_SELECTOR, '.student-dashboard')
 
         self.student.open_user_menu()
         self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
@@ -128,9 +132,8 @@ class TestViewStudentPerformance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.select_course(appearance='physics')
-        assert('list' in self.student.current_url()), \
-            'Not viewing the calendar dashboard'
+        self.student.select_course(appearance='college_physics')
+        self.student.find(By.CSS_SELECTOR, '.student-dashboard')
 
         self.student.open_user_menu()
         self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
@@ -171,10 +174,8 @@ class TestViewStudentPerformance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.select_course(appearance='physics')
-        assert('list' in self.student.current_url()), \
-            'Not viewing the calendar dashboard'
-
+        self.student.select_course(appearance='college_physics')
+        self.student.find(By.CSS_SELECTOR, '.student-dashboard')
         self.student.open_user_menu()
         self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.student.current_url()), \
@@ -215,9 +216,8 @@ class TestViewStudentPerformance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.select_course(appearance='physics')
-        assert('list' in self.student.current_url()), \
-            'Not viewing the calendar dashboard'
+        self.student.select_course(appearance='college_physics')
+        self.student.find(By.CSS_SELECTOR, '.student-dashboard')
 
         self.student.open_user_menu()
         self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
@@ -233,8 +233,7 @@ class TestViewStudentPerformance(unittest.TestCase):
 
         self.student.sleep(5)
 
-        assert('list' in self.student.current_url()), \
-            'Not viewing the dashboard'
+        self.student.find(By.CSS_SELECTOR, '.student-dashboard')
 
         self.ps.test_updates['passed'] = True
 
@@ -271,9 +270,10 @@ class TestViewStudentPerformance(unittest.TestCase):
         # Test steps and verification assertions
         self.student.logout()
         self.student.driver.get("https://tutor-qa.openstax.org/")
-        self.student.login(username="student532",
+        self.student.login(username="student02",
                            url="https://tutor-qa.openstax.org/")
-
+        self.student.select_course(appearance='college_physics')
+        self.student.find(By.CSS_SELECTOR, '.student-dashboard')
         self.student.open_user_menu()
         self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
         assert('guide' in self.student.current_url()), \
@@ -308,9 +308,8 @@ class TestViewStudentPerformance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.select_course(appearance='physics')
-        assert('list' in self.student.current_url()), \
-            'Not viewing the calendar dashboard'
+        self.student.select_course(appearance='college_physics')
+        self.student.find(By.CSS_SELECTOR, '.student-dashboard')
 
         self.student.open_user_menu()
         self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
@@ -323,7 +322,7 @@ class TestViewStudentPerformance(unittest.TestCase):
 
         self.student.sleep(5)
 
-        assert(len(weak) >= 1), \
+        assert(len(weak) <= 4), \
             'Less than four weaker sections'
 
         self.ps.test_updates['passed'] = True
@@ -354,9 +353,8 @@ class TestViewStudentPerformance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.select_course(appearance='physics')
-        assert('list' in self.student.current_url()), \
-            'Not viewing the calendar dashboard'
+        self.student.select_course(appearance='college_physics')
+        self.student.find(By.CSS_SELECTOR, '.student-dashboard')
 
         self.student.open_user_menu()
         self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
@@ -411,9 +409,8 @@ class TestViewStudentPerformance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
         # btn-block btn btn-default
         # Test steps and verification assertions
-        self.student.select_course(appearance='physics')
-        assert('list' in self.student.current_url()), \
-            'Not viewing the calendar dashboard'
+        self.student.select_course(appearance='college_physics')
+        self.student.find(By.CSS_SELECTOR, '.student-dashboard')
 
         self.student.open_user_menu()
         self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
@@ -463,9 +460,8 @@ class TestViewStudentPerformance(unittest.TestCase):
 
         # Test steps and verification assertions
 
-        self.student.select_course(appearance='physics')
-        assert('list' in self.student.current_url()), \
-            'Not viewing the calendar dashboard'
+        self.student.select_course(appearance='college_physics')
+        self.student.find(By.CSS_SELECTOR, '.student-dashboard')
 
         self.student.open_user_menu()
         self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
@@ -510,9 +506,8 @@ class TestViewStudentPerformance(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.select_course(appearance='physics')
-        assert('list' in self.student.current_url()), \
-            'Not viewing the calendar dashboard'
+        self.student.select_course(appearance='college_physics')
+        self.student.find(By.CSS_SELECTOR, '.student-dashboard')
 
         self.student.open_user_menu()
         self.student.find(By.PARTIAL_LINK_TEXT, 'Performance Forecast').click()
