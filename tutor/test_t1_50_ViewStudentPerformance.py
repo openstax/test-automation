@@ -270,7 +270,7 @@ class TestViewStudentPerformance(unittest.TestCase):
         # Test steps and verification assertions
         self.student.logout()
         self.student.driver.get("https://tutor-qa.openstax.org/")
-        self.student.login(username="student02",
+        self.student.login(username=os.getenv('STUDENT_NO_WORK'),
                            url="https://tutor-qa.openstax.org/")
         self.student.select_course(appearance='college_physics')
         self.student.find(By.CSS_SELECTOR, '.student-dashboard')
