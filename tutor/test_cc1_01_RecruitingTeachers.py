@@ -30,11 +30,9 @@ TESTS = os.getenv(
         7751, 7752, 7753, 7754, 7755,
         7756, 7770, 7771, 7772, 7773,
     ])
-    # 7754, 7773 not done
+    # 7754 - demo video test case not working
+    # 7773 - bloked durring manual test runs, not done
 )
-# 7757, 7758, 7759, 7760,
-# 7761, 7762, 7763, 7764, 7773
-# 7775, 7765
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -218,23 +216,16 @@ class TestRecruitingTeachers(unittest.TestCase):
         window_with_book = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_book)
         self.teacher.page.wait_for_page_load()
-        self.teacher.sleep(2)
-        # self.teacher.find(
-        #     By.XPATH, '//div[@id="player"]'
-        # ).click()
+        self.teacher.sleep(1)
         title = self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//span[contains(text(),"Inelastic Collisions")]')
             )
         )
-        # self.teacher.wait.until(
-        #     expect.presence_of_element_located(
-        #         (By.ID, 'player')
-        #     )
-        # )
         actions = ActionChains(self.teacher.driver)
         actions.move_to_element(title)
-        actions.move_by_offset(0, 300)
+        for _ in range(300):
+            actions.move_by_offset(0, 1)
         actions.click()
         actions.perform()
         self.teacher.sleep(2)
@@ -242,7 +233,7 @@ class TestRecruitingTeachers(unittest.TestCase):
             By.XPATH,
             '//div[contains(@class,"playing-mode")]'
         )
-        # actions.perform()
+        actions.perform()
         self.teacher.find(
             By.XPATH,
             '//div[@id="player"]/div[contains(@class,"paused-mode")]'
@@ -346,25 +337,15 @@ class TestRecruitingTeachers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
-        self.teacher.open_user_menu()
-        support = self.teacher.find(
-            By.XPATH, '//a[contains(text(),"Get Help")]'
-        )
-        support_link = support.get_attribute('href')
-        Assignment.scroll_to(self.teacher.driver, support)
-        support.click()
-        handles = len(self.teacher.driver.window_handles)
-        if handles <= 1:
-            self.teacher.driver.execute_script("window.open('');")
+        self.teacher.driver.find_element(
+            By.XPATH, '//div[@id="headerNav"]//a[contains(text(),"support")]'
+        ).click()
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        if handles <= 1:
-            self.teacher.get(support_link)
-            self.teacher.page.wait_for_page_load()
-        self.teacher.find(
-            By.XPATH, '//center[contains(text(),"Concept Coach Help Center")]'
+        self.teacher.page.wait_for_page_load()
+        self.teacher.driver.find_element(
+            By.XPATH, '//center[text()="OpenStax Concept Coach Support"]'
         )
-
         self.ps.test_updates['passed'] = True
 
     '''
@@ -1068,24 +1049,39 @@ class TestRecruitingTeachers(unittest.TestCase):
                 is_collapsed.click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Login')
+                (By.LINK_TEXT, 'Log in')
             )
         ).click()
         self.teacher.page.wait_for_page_load()
         self.teacher.find(
-            By.ID,
-            'auth_key'
+            By.ID, 'login_username_or_email'
         ).send_keys(self.teacher.username)
+        self.teacher.find(By.CSS_SELECTOR, '.primary').click()
         self.teacher.find(
-            By.ID,
-            'password'
+            By.ID, 'login_password'
         ).send_keys(self.teacher.password)
-        # click on the sign in button
-        self.teacher.find(
-            By.XPATH,
-            '//button[text()="Sign in"]'
-        ).click()
+        self.teacher.find(By.CSS_SELECTOR, '.primary').click()
         self.teacher.page.wait_for_page_load()
+        # check if a password change is required
+        if 'reset your password' in self.teacher.driver.page_source.lower():
+            try:
+                self.teacher.find(By.ID, 'set_password_password') \
+                    .send_keys(self.teacher.password)
+                self.teacher.find(
+                    By.ID, 'set_password_password_confirmation') \
+                    .send_keys(self.teacher.password)
+                self.teacher.find(By.CSS_SELECTOR, '.primary').click()
+                self.teacher.sleep(1)
+                self.teacher.find(By.CSS_SELECTOR, '.primary').click()
+            except Exception as e:
+                raise e
+        self.teacher.page.wait_for_page_load()
+        source = self.teacher.driver.page_source.lower()
+        print('Reached Terms/Privacy')
+        while 'terms of use' in source or 'privacy policy' in source:
+            self.teacher.accept_contract()
+            self.teacher.page.wait_for_page_load()
+            source = self.teacher.driver.page_source.lower()
         assert('dashboard' in self.teacher.current_url()),\
             'Not taken to dashboard: %s' % self.teacher.current_url()
 
@@ -1114,17 +1110,16 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.username = os.getenv('TEACHER_USER_CC')
         self.teacher.login()
         self.teacher.find(
-            By.XPATH, '//div[text()="Concept Coach"]/preceding-sibling::a'
+            By.XPATH, '//p[text()="OpenStax Concept Coach"]'
         ).click()
+        self.teacher.page.wait_for_page_load()
         self.teacher.wait.until(
             expect.presence_of_element_located(
-                (By.CSS_SELECTOR, 'div.hide-section-legend')
+                (By.XPATH, '//span[contains(text(),"Class Dashboard")]')
             )
         )
-
         self.ps.test_updates['passed'] = True
 
     # Case C7773 - 023 - Admin | Distribute access codes for the course
@@ -1158,7 +1153,6 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         # Test steps and verification assertions
         admin = None
         if not LOCAL_RUN:

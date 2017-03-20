@@ -27,7 +27,7 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         14651, 14657, 14850, 14658, 14660,
-        14661
+        14661, 116648
     ])
 )
 
@@ -697,5 +697,46 @@ class TestImproveCourseManagement(unittest.TestCase):
 
         # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 116648 - 011 - Admin | View the start and end dates from the
+    # admin console course list
+    @pytest.mark.skipif(str(116648) not in TESTS, reason='Excluded')
+    def test_admin_view_start_end_dates_from_course_list_116648(self):
+        """View the start and end dates from the admin console course list.
+
+        Steps:
+
+
+        Expected Result:
+
+        """
+        self.ps.test_updates['name'] = 't2.07.011' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't2',
+            't2.07',
+            't2.07.011',
+            '116648'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.admin.login()
+        self.admin.goto_admin_control()
+        self.admin.sleep(5)
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Course Organization')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Courses')
+            )
+        ).click()
+        self.admin.sleep(3)
+        self.admin.find(By.XPATH, "//div[@class='course-duration']")
 
         self.ps.test_updates['passed'] = True

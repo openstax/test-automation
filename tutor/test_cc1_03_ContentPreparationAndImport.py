@@ -48,7 +48,7 @@ class TestContentPreparationAndImport(unittest.TestCase):
                 capabilities=self.desired_capabilities
             )
         else:
-            self.teacher = ContentQA(
+            self.content = ContentQA(
                 use_env_vars=True
             )
 
@@ -179,13 +179,18 @@ class TestContentPreparationAndImport(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        admin = Admin(
-            existing_driver=self.content.driver,
-            username=os.getenv('ADMIN_USER'),
-            password=os.getenv('ADMIN_PASSWORD'),
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities,
-        )
+        if not LOCAL_RUN:
+            admin = ContentQA(
+                use_env_vars=True,
+                existing_driver=self.content.driver,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities,
+            )
+        else:
+            admin = ContentQA(
+                use_env_vars=True,
+                existing_driver=self.content.driver,
+            )
         admin.login()
         admin.open_user_menu()
         admin.driver.find_element(

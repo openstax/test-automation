@@ -90,13 +90,13 @@ class TestCNXNavigation(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.driver.get(self.student.url)
+        self.student.get(self.student.url)
         self.student.page.wait_for_page_load()
         # check to see if the screen width is normal or condensed
         if self.student.driver.get_window_size()['width'] <= \
            self.student.CONDENSED_WIDTH:
             # get small-window menu toggle
-            is_collapsed = self.student.driver.find_element(
+            is_collapsed = self.student.find(
                 By.XPATH,
                 '//button[contains(@class,"navbar-toggle")]'
             )
@@ -105,32 +105,51 @@ class TestCNXNavigation(unittest.TestCase):
                 is_collapsed.click()
         self.student.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Login')
+                (By.LINK_TEXT, 'Log in')
             )
         ).click()
         self.student.page.wait_for_page_load()
-        self.student.driver.find_element(
-            By.ID,
-            'auth_key'
+        self.student.find(
+            By.ID, 'login_username_or_email'
         ).send_keys(self.student.username)
-        self.student.driver.find_element(
-            By.ID,
-            'password'
+        self.student.find(By.CSS_SELECTOR, '.primary').click()
+        self.student.find(
+            By.ID, 'login_password'
         ).send_keys(self.student.password)
-        # click on the sign in button
-        self.student.driver.find_element(
-            By.XPATH,
-            '//button[text()="Sign in"]'
-        ).click()
+        self.student.find(By.CSS_SELECTOR, '.primary').click()
         self.student.page.wait_for_page_load()
-        assert('dashboard' in self.student.current_url()), \
+        # check if a password change is required
+        if 'reset your password' in self.student.driver.page_source.lower():
+            try:
+                self.student.find(By.ID, 'set_password_password') \
+                    .send_keys(self.student.password)
+                self.student.find(
+                    By.ID, 'set_password_password_confirmation') \
+                    .send_keys(self.student.password)
+                self.student.find(By.CSS_SELECTOR, '.primary').click()
+                self.student.sleep(1)
+                self.student.find(By.CSS_SELECTOR, '.primary').click()
+            except Exception as e:
+                raise e
+        self.student.page.wait_for_page_load()
+        source = self.student.driver.page_source.lower()
+        print('Reached Terms/Privacy')
+        while 'terms of use' in source or 'privacy policy' in source:
+            self.student.accept_contract()
+            self.student.page.wait_for_page_load()
+            source = self.student.driver.page_source.lower()
+        assert('dashboard' in self.student.current_url()),\
             'Not taken to dashboard: %s' % self.student.current_url()
+
         self.student.driver.find_element(
             By.XPATH,
-            '//a[contains(@href,"cnx.org/contents/")]'
+            '//p[contains(text(),"OpenStax Concept Coach")]'
         ).click()
-        assert('cnx.org/contents/' in self.student.current_url()), \
-            'Not taken to dashboard: %s' % self.student.current_url()
+        self.student.driver.find_element(
+            By.XPATH,
+            '//div[contains(text(),' +
+            '"You are being redirected to your Concept Coach textbook")]'
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -203,7 +222,13 @@ class TestCNXNavigation(unittest.TestCase):
         self.student.login()
         self.student.driver.find_element(
             By.XPATH,
-            '//a[contains(@href,"cnx.org/contents/")]'
+            '//p[contains(text(),"OpenStax Concept Coach")]'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//a[@class="go-now"]')
+            )
         ).click()
         self.student.page.wait_for_page_load()
         self.student.driver.find_element(
@@ -253,9 +278,21 @@ class TestCNXNavigation(unittest.TestCase):
         self.student.login()
         self.student.driver.find_element(
             By.XPATH,
-            '//a[contains(@href,"cnx.org/contents/")]'
+            '//p[contains(text(),"OpenStax Concept Coach")]'
+        ).click()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//a[@class="go-now"]')
+            )
         ).click()
         self.student.page.wait_for_page_load()
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//span[text()="Contents"]')
+            )
+        ).click()
         self.student.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,

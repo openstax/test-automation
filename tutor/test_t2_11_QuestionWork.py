@@ -52,6 +52,7 @@ class TestQuestionWork(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
+
         self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
@@ -3273,7 +3274,61 @@ class TestQuestionWork(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.content.sleep(5)
+
+        # Select Multiple Choice radio if not already selected
+        """
+        if not self.content.find(
+            By.XPATH, "//div[@class='form-group'][1]/div[@class='radio']"
+        ).is_selected():
+            self.content.find(
+                By.XPATH,
+                "//div[@class='form-group'][1]/div[@class='radio']" +
+                "/label/span").click()"""
+
+        self.content.find(
+            By.XPATH, "//input[@id='input-multiple-choice']").click()
+
+        self.content.sleep(3)
+
+        # Fill in required fields
+        self.content.find(By.XPATH, "//div[3]/textarea").send_keys('Stem')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[2]").send_keys('Feedback')
+
+        # Save draft and publish
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.content.sleep(3)
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button publish btn btn-primary']").click()
+        self.content.find(
+            By.XPATH,
+            "//div[@class='popover-content']/div[@class='controls']/button" +
+            "[@class='btn btn-primary']").click()
+        self.content.sleep(3)
+
+        # Verify
+        page = self.content.driver.page_source
+        assert('has published successfully' in page), \
+            'Exercise not successfully published'
+
+        self.content.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
 
         self.ps.test_updates['passed'] = True
 
