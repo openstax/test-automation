@@ -5,6 +5,7 @@ import json
 import os
 import pytest
 import unittest
+import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
@@ -27,12 +28,13 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8341, 8342, 8343, 8344, 8345,
-        8346, 8347, 8348, 8349, 8350,
-        8351, 8352, 8353, 8354, 8355,
-        8356, 8357, 8358, 8359, 8360,
-        100135, 100136, 100137, 100138, 100139,
-        100140
+        8349
+        # 8341, 8342, 8343, 8344, 8345,
+        # 8346, 8347, 8348, 8349, 8350,
+        # 8351, 8352, 8353, 8354, 8355,
+        # 8356, 8357, 8358, 8359, 8360,
+        # 100135, 100136, 100137, 100138,
+        # 100139, 100140
     ])
 )
 
@@ -46,14 +48,18 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         # login as admin, go to user menu, click admin option
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.admin = Admin(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.admin = Admin(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.admin = Admin(
+                use_env_vars=True,
+            )
         self.admin.login()
         self.admin.goto_admin_control()
-        self.admin.sleep(5)
 
     def tearDown(self):
         """Test destructor."""
@@ -99,24 +105,23 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             )
         ).click()
 
-        self.admin.find(By.XPATH, "//a[@class='btn btn-primary']").click()
-        self.admin.find(By.XPATH, "//input[@id='district_name']").send_keys(
-            'automated test')
+        self.admin.find(By.XPATH, "//a[text()='Add district']").click()
         self.admin.find(
-            By.XPATH, "//form/input[@class='btn btn-primary']").click()
+            By.ID, "district_name"
+        ).send_keys('automated test district')
+        self.admin.find(
+            By.XPATH, "//input[@value='Save']").click()
 
         # Delete the district
-        districts = self.admin.driver.find_elements_by_xpath("//tr")
-        for index, district in enumerate(districts):
-            if district.text.find('automated test edit') >= 0:
-                self.admin.sleep(2)
-                self.admin.driver.find_elements_by_partial_link_text(
-                    'delete')[index - 1].click()
-                self.admin.sleep(5)
-                self.admin.driver.switch_to_alert().accept()
-                self.admin.sleep(2)
-                self.ps.test_updates['passed'] = True
-                break
+        district = self.admin.driver.find_element(
+            By.XPATH, "//tr/td[text()='automated test district']")
+        district.find_element(
+            By.XPATH, '..//a[text()="delete"]'
+        ).click()
+        self.admin.sleep(0.5)
+        self.admin.driver.switch_to_alert().accept()
+        self.admin.sleep(0.5)
+        self.ps.test_updates['passed'] = True
 
     # Case C8342 - 002 - Admin | Change a district's name
     @pytest.mark.skipif(str(8342) not in TESTS, reason='Excluded')
@@ -150,39 +155,33 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             )
         ).click()
 
-        self.admin.find(By.XPATH, "//a[@class='btn btn-primary']").click()
-        self.admin.find(By.XPATH, "//input[@id='district_name']").send_keys(
-            'automated test')
+        self.admin.find(By.XPATH, "//a[text()='Add district']").click()
         self.admin.find(
-            By.XPATH, "//form/input[@class='btn btn-primary']").click()
+            By.ID, "district_name"
+        ).send_keys('automated test district')
+        self.admin.find(
+            By.XPATH, "//input[@value='Save']").click()
 
         # Edit the district name
-        districts = self.admin.driver.find_elements_by_xpath("//tr")
-        for index, district in enumerate(districts):
-            if district.text.find('automated test') >= 0:
-                self.admin.sleep(2)
-                self.admin.driver.find_elements_by_link_text(
-                    'edit')[index - 1].click()
-                self.admin.sleep(5)
-                self.admin.find(
-                    By.XPATH, "//input[@id='school_name']").send_keys(' edit')
-                self.admin.find(
-                    By.XPATH, "//input[@class='btn btn-primary']").click()
-                self.admin.sleep(5)
-                break
+        district = self.admin.driver.find_element(
+            By.XPATH, "//tr/td[text()='automated test district']")
+        district.find_element(
+            By.XPATH, '..//a[text()="edit"]'
+        ).click()
+        self.admin.find(By.ID, "district_name").send_keys(' edit')
+        self.admin.find(
+            By.XPATH, "//input[@value='Save']").click()
 
         # Delete the district
-        districts = self.admin.driver.find_elements_by_xpath("//tr")
-        for index, district in enumerate(districts):
-            if district.text.find('automated test edit') >= 0:
-                self.admin.sleep(2)
-                self.admin.driver.find_elements_by_partial_link_text(
-                    'delete')[index - 1].click()
-                self.admin.sleep(5)
-                self.admin.driver.switch_to_alert().accept()
-                self.admin.sleep(2)
-                self.ps.test_updates['passed'] = True
-                break
+        district = self.admin.driver.find_element(
+            By.XPATH, "//tr/td[text()='automated test district edit']")
+        district.find_element(
+            By.XPATH, '..//a[text()="delete"]'
+        ).click()
+        self.admin.sleep(0.5)
+        self.admin.driver.switch_to_alert().accept()
+        self.admin.sleep(0.5)
+        self.ps.test_updates['passed'] = True
 
     # Case C8343 - 003 - Admin | Delete an exisiting district
     @pytest.mark.skipif(str(8343) not in TESTS, reason='Excluded')
@@ -215,24 +214,23 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             )
         ).click()
 
-        self.admin.find(By.XPATH, "//a[@class='btn btn-primary']").click()
-        self.admin.find(By.XPATH, "//input[@id='district_name']").send_keys(
-            'automated test')
+        self.admin.find(By.XPATH, "//a[text()='Add district']").click()
         self.admin.find(
-            By.XPATH, "//form/input[@class='btn btn-primary']").click()
+            By.ID, "district_name"
+        ).send_keys('automated test district')
+        self.admin.find(
+            By.XPATH, "//input[@value='Save']").click()
 
         # Delete the district
-        districts = self.admin.driver.find_elements_by_xpath("//tr")
-        for index, district in enumerate(districts):
-            if district.text.find('automated test edit') >= 0:
-                self.admin.sleep(2)
-                self.admin.driver.find_elements_by_partial_link_text(
-                    'delete')[index - 1].click()
-                self.admin.sleep(5)
-                self.admin.driver.switch_to_alert().accept()
-                self.admin.sleep(2)
-                self.ps.test_updates['passed'] = True
-                break
+        district = self.admin.driver.find_element(
+            By.XPATH, "//tr/td[text()='automated test district']")
+        district.find_element(
+            By.XPATH, '..//a[text()="delete"]'
+        ).click()
+        self.admin.sleep(0.5)
+        self.admin.driver.switch_to_alert().accept()
+        self.admin.sleep(0.5)
+        self.ps.test_updates['passed'] = True
 
     # Case C8344 - 004 - Admin | Add a new school
     @pytest.mark.skipif(str(8344) not in TESTS, reason='Excluded')
@@ -267,23 +265,24 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             )
         ).click()
 
-        self.admin.find(By.XPATH, "//a[@class='btn btn-primary']").click()
-        self.admin.find(By.XPATH, "//input[@id='school_name']").send_keys(
-            'automated test')
-        self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
+        # add a school
+        self.admin.find(By.XPATH, "//a[text()='Add school']").click()
+        self.admin.find(
+            By.ID, "school_name"
+        ).send_keys('automated test school')
+        self.admin.find(
+            By.XPATH, "//input[@value='Save']").click()
 
         # Delete the school
-        schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for index, school in enumerate(schools):
-            if school.text.find('automated test') >= 0:
-                self.admin.sleep(2)
-                self.admin.driver.find_elements_by_partial_link_text(
-                    'delete')[index - 1].click()
-                self.admin.sleep(5)
-                self.admin.driver.switch_to_alert().accept()
-                self.admin.sleep(2)
-                self.ps.test_updates['passed'] = True
-                break
+        school = self.admin.driver.find_element(
+            By.XPATH, "//tr/td[text()='automated test school']")
+        school.find_element(
+            By.XPATH, '..//a[text()="delete"]'
+        ).click()
+        self.admin.sleep(0.5)
+        self.admin.driver.switch_to_alert().accept()
+        self.admin.sleep(0.5)
+        self.ps.test_updates['passed'] = True
 
     # Case C8345 - 005 - Admin | Change a school's name
     @pytest.mark.skipif(str(8345) not in TESTS, reason='Excluded')
@@ -317,40 +316,33 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             )
         ).click()
 
-        self.admin.find(By.XPATH, "//a[@class='btn btn-primary']").click()
+        self.admin.find(By.XPATH, "//a[text()='Add school']").click()
         self.admin.find(
-            By.XPATH,
-            "//input[@id='school_name']"
-        ).send_keys('automated test')
-        self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
+            By.ID, "school_name"
+        ).send_keys('automated test school')
+        self.admin.find(
+            By.XPATH, "//input[@value='Save']").click()
 
-        # Edit the school's name
-        schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for index, school in enumerate(schools):
-            if school.text.find('automated test') >= 0:
-                self.admin.sleep(2)
-                self.admin.driver.find_elements_by_link_text(
-                    'edit')[index - 1].click()
-                self.admin.sleep(5)
-                self.admin.find(
-                    By.XPATH, "//input[@id='school_name']").send_keys(' edit')
-                self.admin.find(
-                    By.XPATH, "//input[@class='btn btn-primary']").click()
-                self.admin.sleep(5)
-                break
+        # Edit the school name
+        district = self.admin.driver.find_element(
+            By.XPATH, "//tr/td[text()='automated test school']")
+        district.find_element(
+            By.XPATH, '..//a[text()="edit"]'
+        ).click()
+        self.admin.find(By.ID, "school_name").send_keys(' edit')
+        self.admin.find(
+            By.XPATH, "//input[@value='Save']").click()
 
         # Delete the school
-        schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for index, school in enumerate(schools):
-            if school.text.find('automated test edit') >= 0:
-                self.admin.sleep(2)
-                self.admin.driver.find_elements_by_partial_link_text(
-                    'delete')[index - 1].click()
-                self.admin.sleep(5)
-                self.admin.driver.switch_to_alert().accept()
-                self.admin.sleep(2)
-                self.ps.test_updates['passed'] = True
-                break
+        school = self.admin.driver.find_element(
+            By.XPATH, "//tr/td[text()='automated test school edit']")
+        school.find_element(
+            By.XPATH, '..//a[text()="delete"]'
+        ).click()
+        self.admin.sleep(0.5)
+        self.admin.driver.switch_to_alert().accept()
+        self.admin.sleep(0.5)
+        self.ps.test_updates['passed'] = True
 
     # Case C8346 - 006 - Admin | Change a school's district
     @pytest.mark.skipif(str(8346) not in TESTS, reason='Excluded')
@@ -384,40 +376,38 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             )
         ).click()
 
-        self.admin.find(By.XPATH, "//a[@class='btn btn-primary']").click()
-        self.admin.find(By.XPATH, "//input[@id='school_name']").send_keys(
-            'automated test')
-        self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
+        self.admin.find(By.XPATH, "//a[text()='Add school']").click()
+        self.admin.find(
+            By.ID, "school_name"
+        ).send_keys('automated test school')
+        self.admin.find(
+            By.XPATH, "//input[@value='Save']").click()
 
-        # Edit the school's district
-        schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for index, school in enumerate(schools):
-            if school.text.find('automated test') >= 0:
-                self.admin.sleep(2)
-                self.admin.driver.find_elements_by_link_text(
-                    'edit')[index - 1].click()
-                self.admin.sleep(5)
-                self.admin.find(
-                    By.XPATH,
-                    "//select[@id='school_school_district_district_id']"
-                ).send_keys("OpenStax")
-                self.admin.find(
-                    By.XPATH, "//input[@class='btn btn-primary']").click()
-                self.admin.sleep(5)
-                break
+        # Edit the school district
+        district = self.admin.driver.find_element(
+            By.XPATH, "//tr/td[text()='automated test school']")
+        district.find_element(
+            By.XPATH, '..//a[text()="edit"]'
+        ).click()
+        self.admin.find(
+            By.ID, "school_school_district_district_id"
+        ).click()
+        self.admin.find(
+            By.XPATH, "//select/option[2]"
+        ).click()
+        self.admin.find(
+            By.XPATH, "//input[@value='Save']").click()
 
         # Delete the school
-        schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for index, school in enumerate(schools):
-            if school.text.find('automated test') >= 0:
-                self.admin.sleep(2)
-                self.admin.driver.find_elements_by_partial_link_text(
-                    'delete')[index - 1].click()
-                self.admin.sleep(5)
-                self.admin.driver.switch_to_alert().accept()
-                self.admin.sleep(2)
-                self.ps.test_updates['passed'] = True
-                break
+        school = self.admin.driver.find_element(
+            By.XPATH, "//tr/td[text()='automated test school']")
+        school.find_element(
+            By.XPATH, '..//a[text()="delete"]'
+        ).click()
+        self.admin.sleep(0.5)
+        self.admin.driver.switch_to_alert().accept()
+        self.admin.sleep(0.5)
+        self.ps.test_updates['passed'] = True
 
     # Case C8347 - 007 - Admin | Delete an exisiting school
     @pytest.mark.skipif(str(8347) not in TESTS, reason='Excluded')
@@ -451,25 +441,23 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         ).click()
 
         # Create the school
-        self.admin.find(By.XPATH, "//a[@class='btn btn-primary']").click()
+        self.admin.find(By.XPATH, "//a[text()='Add school']").click()
         self.admin.find(
-            By.XPATH,
-            "//input[@id='school_name']"
-        ).send_keys('automated test')
-        self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
+            By.ID, "school_name"
+        ).send_keys('automated test school')
+        self.admin.find(
+            By.XPATH, "//input[@value='Save']").click()
 
         # Delete the school
-        schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for index, school in enumerate(schools):
-            if school.text.find('automated test') >= 0:
-                self.admin.sleep(2)
-                self.admin.driver.find_elements_by_partial_link_text(
-                    'delete')[index - 1].click()
-                self.admin.sleep(5)
-                self.admin.driver.switch_to_alert().accept()
-                self.admin.sleep(2)
-                self.ps.test_updates['passed'] = True
-                break
+        school = self.admin.driver.find_element(
+            By.XPATH, "//tr/td[text()='automated test school']")
+        school.find_element(
+            By.XPATH, '..//a[text()="delete"]'
+        ).click()
+        self.admin.sleep(0.5)
+        self.admin.driver.switch_to_alert().accept()
+        self.admin.sleep(0.5)
+        self.ps.test_updates['passed'] = True
 
     # Case C8348 - 008 - Admin | Add a new course
     @pytest.mark.skipif(str(8348) not in TESTS, reason='Excluded')
@@ -505,38 +493,29 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             )
         ).click()
 
-        self.admin.sleep(2)
-
         # Create the course
-        self.admin.find(By.XPATH, "//a[@class='btn btn-primary']").click()
+        self.admin.find(By.XPATH, "//a[text()='Add Course']").click()
         self.admin.find(By.XPATH, "//input[@id='course_name']").send_keys(
-            "automated test")
-        self.admin.find(
-            By.XPATH,
-            "//select[@id='course_school_district_school_id']"
-        ).send_keys("Denver University")
-        self.admin.find(
-            By.XPATH,
-            "//select[@id='course_catalog_offering_id']").send_keys("Calculus")
-        self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
+            "automated test course")
+        self.admin.find(By.XPATH, "//input[@value='Save']").click()
 
         # Delete the course
-        delete = 0
-        courses = self.admin.driver.find_elements_by_xpath("//tr")
-        for course in courses:
-            if course.text.find('automated test') >= 0:
-                self.admin.sleep(2)
-                self.admin.driver.find_elements_by_link_text(
-                    'Delete')[delete].click()
-                self.admin.sleep(12)
-                self.admin.driver.switch_to_alert().accept()
-                self.admin.sleep(5)
-                self.ps.test_updates['passed'] = True
-                break
-
-            else:
-                if course.text.find('Delete') >= 0:
-                    delete += 1
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
+            )
+        ).click()
+        course = self.admin.driver.find_element(
+            By.XPATH,
+            "//div[@class='stats-card']" +
+            "//span[text()=' automated test course']")
+        course.find_element(
+            By.XPATH, '../..//a[text()="Delete"]'
+        ).click()
+        self.admin.sleep(0.5)
+        self.admin.driver.switch_to_alert().accept()
+        self.admin.sleep(0.5)
+        self.ps.test_updates['passed'] = True
 
     # Case C8349 - 009 - Admin | Edit course settings
     @pytest.mark.skipif(str(8349) not in TESTS, reason='Excluded')
@@ -574,58 +553,65 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
         self.admin.sleep(2)
 
         # Create the course
-        self.admin.find(By.XPATH, "//a[@class='btn btn-primary']").click()
+        self.admin.find(By.XPATH, "//a[text()='Add Course']").click()
         self.admin.find(By.XPATH, "//input[@id='course_name']").send_keys(
-            "automated test")
-        self.admin.find(
-            By.XPATH,
-            "//select[@id='course_school_district_school_id']").send_keys(
-            "Denver University")
-        self.admin.find(
-            By.XPATH,
-            "//select[@id='course_catalog_offering_id']").send_keys("Calculus")
-        self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
+            "automated test course")
+        self.admin.find(By.XPATH, "//input[@value='Save']").click()
 
         # Edit the course
-        schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for index, school in enumerate(schools):
-            if school.text.find('automated test') >= 0:
-                self.admin.sleep(2)
-                self.admin.driver.find_elements_by_link_text(
-                    'Edit')[index - 1].click()
-                self.admin.sleep(5)
-                self.admin.find(
-                    By.XPATH, "//input[@id='course_name']").send_keys(' edit')
-                self.admin.find(
-                    By.XPATH,
-                    "//select[@id='course_school_district_school_id']"
-                ).send_keys("OpenStax Ed")
-                self.admin.find(
-                    By.XPATH,
-                    "//select[@id='course_catalog_offering_id']").send_keys(
-                    "CC Biology")
-                self.admin.find(
-                    By.XPATH, "//input[@class='btn btn-primary']").click()
-                self.admin.sleep(5)
-                break
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
+            )
+        ).click()
+        course = self.admin.driver.find_element(
+            By.XPATH,
+            "//div[@class='stats-card']" +
+            "//span[text()=' automated test course']")
+        course.find_element(
+            By.XPATH, '../..//a[text()="Edit"]'
+        ).click()
+        self.admin.find(By.ID, "course_name").send_keys(
+            " edit")
+        self.admin.find(
+            By.ID, "course_term").click()
+        self.admin.find(
+            By.XPATH,
+            "//select[@id='course_term']/option[2]"
+        ).click()
+        self.admin.find(By.XPATH, "//input[@id='course_year']").send_keys(
+            (Keys.DELETE * 4) + str(datetime.date.today().year))
+        self.admin.find(
+            By.ID, "course_catalog_offering_id").click()
+        self.admin.find(
+            By.XPATH,
+            "//select[@id='course_catalog_offering_id']/option[2]"
+        ).click()
+        self.admin.find(
+            By.ID, "course_school_district_school_id").click()
+        self.admin.find(
+            By.XPATH,
+            "//select[@id='course_school_district_school_id']/option[2]"
+        ).click()
+        self.admin.find(By.XPATH, "//input[@value='Save']").click()
 
         # Delete the course
-        delete = 0
-        courses = self.admin.driver.find_elements_by_xpath("//tr")
-        for course in courses:
-            if course.text.find('automated test edit') >= 0:
-                self.admin.sleep(2)
-                self.admin.driver.find_elements_by_link_text(
-                    'Delete')[delete].click()
-                self.admin.sleep(5)
-                self.admin.driver.switch_to_alert().accept()
-                self.admin.sleep(10)
-                self.ps.test_updates['passed'] = True
-                break
-
-            else:
-                if course.text.find('Delete') >= 0:
-                    delete += 1
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
+            )
+        ).click()
+        course = self.admin.driver.find_element(
+            By.XPATH,
+            "//div[@class='stats-card']" +
+            "//span[text()=' automated test course edit']")
+        course.find_element(
+            By.XPATH, '../..//a[text()="Delete"]'
+        ).click()
+        self.admin.sleep(0.5)
+        self.admin.driver.switch_to_alert().accept()
+        self.admin.sleep(0.5)
+        self.ps.test_updates['passed'] = True
 
     # Case C8350 - 010 - Admin | Add a teacher to a course
     @pytest.mark.skipif(str(8350) not in TESTS, reason='Excluded')
@@ -660,65 +646,65 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             )
         ).click()
 
-        self.admin.sleep(2)
-
         # Create the course
-        self.admin.find(By.XPATH, "//a[@class='btn btn-primary']").click()
+        self.admin.find(By.XPATH, "//a[text()='Add Course']").click()
         self.admin.find(By.XPATH, "//input[@id='course_name']").send_keys(
-            "automated test")
-        self.admin.find(
-            By.XPATH,
-            "//select[@id='course_school_district_school_id']").send_keys(
-            "Denver University")
-        self.admin.find(
-            By.XPATH, "//select[@id='course_catalog_offering_id']").send_keys(
-            "Calculus")
-        self.admin.find(By.XPATH, "//input[@class='btn btn-primary']").click()
+            "automated test course")
+        self.admin.find(By.XPATH, "//input[@value='Save']").click()
 
         # Edit the course
-        schools = self.admin.driver.find_elements_by_xpath("//tr")
-        for index, school in enumerate(schools):
-            if school.text.find('automated test') >= 0:
-                self.admin.sleep(2)
-                self.admin.driver.find_elements_by_link_text(
-                    'Edit')[index - 1].click()
-                self.admin.sleep(5)
-                self.admin.find(By.PARTIAL_LINK_TEXT, "Teachers").click()
-                self.admin.find(
-                    By.XPATH, "//input[@id='course_teacher']").send_keys(
-                    'teacher01')
-                self.admin.sleep(5)
-                self.admin.find(
-                    By.XPATH,
-                    "//input[@id='course_teacher']").send_keys(
-                    Keys.RETURN)
-                self.admin.find(
-                    By.PARTIAL_LINK_TEXT, "Remove from course").click()
-                self.admin.driver.switch_to_alert().accept()
-                self.admin.sleep(2)
-                self.admin.find(By.PARTIAL_LINK_TEXT, "Edit course").click()
-                self.admin.find(
-                    By.XPATH, "//input[@class='btn btn-primary']").click()
-                self.admin.sleep(5)
-                break
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
+            )
+        ).click()
+        course = self.admin.driver.find_element(
+            By.XPATH,
+            "//div[@class='stats-card']" +
+            "//span[text()=' automated test course']")
+        course.find_element(
+            By.XPATH, '../..//a[text()="Edit"]'
+        ).click()
+        # Add a Teacher
+        self.admin.driver.find_element(
+            By.XPATH, '//a[@role="tab" and @aria-controls="teachers"]'
+        ).click()
+        self.admin.driver.find_element(
+            By.ID, 'course_teacher').send_keys("teacher")
+        self.admin.sleep(1)
+        self.admin.driver.find_element(
+            By.ID, 'course_teacher').send_keys(Keys.RETURN)
+        # assert that a teacher was added
+        self.admin.driver.find_element(By.XPATH, '//div[@id="teachers"]//tbody/tr')
 
         # Delete the course
-        delete = 0
-        courses = self.admin.driver.find_elements_by_xpath("//tr")
-        for course in courses:
-            if course.text.find('automated test') >= 0:
-                self.admin.sleep(2)
-                self.admin.driver.find_elements_by_link_text(
-                    'Delete')[delete].click()
-                self.admin.sleep(5)
-                self.admin.driver.switch_to_alert().accept()
-                self.admin.sleep(10)
-                self.ps.test_updates['passed'] = True
-                break
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Course Organization')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.PARTIAL_LINK_TEXT, 'Courses')
+            )
+        ).click()
+        self.admin.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
+            )
+        ).click()
+        course = self.admin.driver.find_element(
+            By.XPATH,
+            "//div[@class='stats-card']" +
+            "//span[text()=' automated test course edit']")
+        course.find_element(
+            By.XPATH, '../..//a[text()="Delete"]'
+        ).click()
+        self.admin.sleep(0.5)
+        self.admin.driver.switch_to_alert().accept()
+        self.admin.sleep(0.5)
+        self.ps.test_updates['passed'] = True
 
-            else:
-                if course.text.find('Delete') >= 0:
-                    delete += 1
 
     # Case C8351 - 011 - Admin | Remove a teacher from a course
     @pytest.mark.skipif(str(8351) not in TESTS, reason='Excluded')
