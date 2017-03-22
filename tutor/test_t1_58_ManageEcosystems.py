@@ -1695,18 +1695,52 @@ class TestManageEcosystems(unittest.TestCase):
         Expected Result:
         Exercises are displayed.
         """
-        self.ps.test_updates['name'] = 't1.58.026' \
+        self.ps.test_updates['name'] = 't1.58.027' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             't1',
             't1.58',
-            't1.58.026',
-            '111270'
+            't1.58.027',
+            '111271'
         ]
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
+                )
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        self.content.find(By.XPATH,
+                          '//span[text()="APUSH"]').click()
+        try:
+            self.content.find(By.XPATH,
+                              '//ul[@aria-labelledby=available-books"]')
+            self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        except:
+            pass
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.CSS_SELECTOR, ('.title'))))
+        self.content.find(By.XPATH,
+                          '//a[contains(@href,"/section/1.2")' +
+                          'and contains(@tabindex,"0")]').click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"openstax-question")]')))
+
+        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -1717,8 +1751,14 @@ class TestManageEcosystems(unittest.TestCase):
         """Verify question availability for College Biology.
 
         Steps:
+        Log in as Content Analyst
+        Open the drop-down menu
+        Click "QA Contents"
+        Select "Biology" in the "available-books drop-down list"
+        Click a non-introductory section
 
         Expected Result:
+        Exercises are displayed.
         """
         self.ps.test_updates['name'] = 't1.58.027' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -1731,7 +1771,46 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
+                )
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.CSS_SELECTOR, ('.title'))))
+
+        self.content.find(By.XPATH,
+                          '//span[text()="Biology"]').click()
+        self.content.sleep(1)
+        try:
+            self.content.find(By.XPATH,
+                              '//ul[@aria-labelledby=available-books"]')
+            self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        except:
+            pass
+        self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        self.content.sleep(1)
+
+        self.content.find(By.XPATH,
+                          '//a[contains(@href,"/section/1.2")' +
+                          'and contains(@tabindex,"0")]').click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"openstax-question")]')))
+
+        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -1742,21 +1821,61 @@ class TestManageEcosystems(unittest.TestCase):
         """Verify question availability for College Physics.
 
         Steps:
+        Log in as Content Analyst
+        Open the drop-down menu
+        Click "QA Contents"
+        Select "Biology" in the "available-books drop-down list"
+        Click a non-introductory section
 
         Expected Result:
+        Exercises are displayed.
         """
-        self.ps.test_updates['name'] = 't1.58.028' \
+        self.ps.test_updates['name'] = 't1.58.027' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             't1',
             't1.58',
-            't1.58.028',
-            '111272'
+            't1.58.027',
+            '111271'
         ]
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
+                )
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        self.content.find(By.XPATH,
+                          '//span[text()="College Physics"]').click()
+        try:
+            self.content.find(By.XPATH,
+                              '//ul[@aria-labelledby=available-books"]')
+            self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        except:
+            pass
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.CSS_SELECTOR, ('.title'))))
+        self.content.find(By.XPATH,
+                          '//a[contains(@href,"/section/1.2")' +
+                          'and contains(@tabindex,"0")]').click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"openstax-question")]')))
+
+        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -1764,26 +1883,65 @@ class TestManageEcosystems(unittest.TestCase):
     # for Introduction to Sociology 2e with Courseware
     @pytest.mark.skipif(str(111273) not in TESTS, reason='Excluded')
     def test_content_analyst_verify_sociology_2e_questions_111273(self):
-        """Verify question availability for Introduction to.
-
-        Sociology 2e with Courseware.
+        """Verify question availability for Introduction to Sociology 2e.
 
         Steps:
+        Log in as Content Analyst
+        Open the drop-down menu
+        Click "QA Contents"
+        Select "Introduction to Sociology 2e" in
+         the "available-books drop-down list"
+        Click a non-introductory section
 
         Expected Result:
+        Exercises are displayed.
         """
-        self.ps.test_updates['name'] = 't1.58.029' \
+        self.ps.test_updates['name'] = 't1.58.027' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             't1',
             't1.58',
-            't1.58.029',
-            '111273'
+            't1.58.027',
+            '111271'
         ]
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
+                )
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        self.content.find(
+            By.XPATH, '//span[text()="Introduction to Sociology 2e"]').click()
+        try:
+            self.content.find(By.XPATH,
+                              '//ul[@aria-labelledby=available-books"]')
+            self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        except:
+            pass
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.CSS_SELECTOR, ('.title'))))
+        self.content.find(By.XPATH,
+                          '//a[contains(@href,"/section/1.2")' +
+                          'and contains(@tabindex,"0")]').click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"openstax-question")]')))
+
+        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -1794,21 +1952,62 @@ class TestManageEcosystems(unittest.TestCase):
         """Verify question availability for Biology for AP Courses.
 
         Steps:
+        Log in as Content Analyst
+        Open the drop-down menu
+        Click "QA Contents"
+        Select "Biology For AP® Courses" in
+         the "available-books drop-down list"
+        Click a non-introductory section
 
         Expected Result:
+        Exercises are displayed.
         """
-        self.ps.test_updates['name'] = 't1.58.030' \
+        self.ps.test_updates['name'] = 't1.58.027' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             't1',
             't1.58',
-            't1.58.030',
-            '111274'
+            't1.58.027',
+            '111271'
         ]
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
+                )
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        self.content.find(By.XPATH,
+                          '//span[text()="Biology For AP® Courses"]').click()
+        try:
+            self.content.find(By.XPATH,
+                              '//ul[@aria-labelledby=available-books"]')
+            self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        except:
+            pass
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.CSS_SELECTOR, ('.title'))))
+        self.content.find(By.XPATH,
+                          '//a[contains(@href,"/section/1.2")' +
+                          'and contains(@tabindex,"0")]').click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"openstax-question")]')))
+
+        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -1816,24 +2015,64 @@ class TestManageEcosystems(unittest.TestCase):
     # for High School Physics
     @pytest.mark.skipif(str(111275) not in TESTS, reason='Excluded')
     def test_content_analyst_verify_hs_physics_questions_111275(self):
-        """Verify question availability for High School Physics.
-
+        """Verify question availability for High School Physics
         Steps:
+        Log in as Content Analyst
+        Open the drop-down menu
+        Click "QA Contents"
+        Select "Physics" in
+         the "available-books drop-down list"
+        Click a non-introductory section
 
         Expected Result:
+        Exercises are displayed.
         """
-        self.ps.test_updates['name'] = 't1.58.031' \
+        self.ps.test_updates['name'] = 't1.58.027' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             't1',
             't1.58',
-            't1.58.031',
-            '111275'
+            't1.58.027',
+            '111271'
         ]
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
+                )
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        self.content.find(By.XPATH,
+                          '//span[text()="Physics"]').click()
+        try:
+            self.content.find(By.XPATH,
+                              '//ul[@aria-labelledby=available-books"]')
+            self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        except:
+            pass
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.CSS_SELECTOR, ('.title'))))
+        self.content.find(By.XPATH,
+                          '//a[contains(@href,"/section/1.2")' +
+                          'and contains(@tabindex,"0")]').click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"openstax-question")]')))
+
+        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -1842,23 +2081,63 @@ class TestManageEcosystems(unittest.TestCase):
     @pytest.mark.skipif(str(111276) not in TESTS, reason='Excluded')
     def test_content_analyst_verify_college_physics_questions_111276(self):
         """Verify question availability for College Physics with Courseware.
-
         Steps:
+        Log in as Content Analyst
+        Open the drop-down menu
+        Click "QA Contents"
+        Select "College Physics" in
+         the "available-books drop-down list"
+        Click a non-introductory section
 
         Expected Result:
+        Exercises are displayed.
         """
-        self.ps.test_updates['name'] = 't1.58.032' \
+        self.ps.test_updates['name'] = 't1.58.027' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             't1',
             't1.58',
-            't1.58.032',
-            '111276'
+            't1.58.027',
+            '111271'
         ]
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
+                )
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        self.content.find(By.XPATH,
+                          '//span[text()="College Physics"]').click()
+        try:
+            self.content.find(By.XPATH,
+                              '//ul[@aria-labelledby=available-books"]')
+            self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        except:
+            pass
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.CSS_SELECTOR, ('.title'))))
+        self.content.find(By.XPATH,
+                          '//a[contains(@href,"/section/1.2")' +
+                          'and contains(@tabindex,"0")]').click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"openstax-question")]')))
+
+        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -1866,23 +2145,28 @@ class TestManageEcosystems(unittest.TestCase):
     # for College Biology with Courseware
     @pytest.mark.skipif(str(111277) not in TESTS, reason='Excluded')
     def test_content_analyst_verify_college_bio_questions_111277(self):
-        """Verify question availability for College Biology with Courseware.
-
+        """Verify question availability for College Biology Courses.
         Steps:
+        Log in as Content Analyst
+        Open the drop-down menu
+        Click "QA Contents"
+        Select "Biology For AP® Courses" in
+         the "available-books drop-down list"
+        Click a non-introductory section
 
         Expected Result:
+        Exercises are displayed.
         """
-        self.ps.test_updates['name'] = 't1.58.033' \
+        self.ps.test_updates['name'] = 't1.58.027' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             't1',
             't1.58',
-            't1.58.033',
-            '111277'
+            't1.58.027',
+            '111271'
         ]
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        """College Biology for Courseware does not exist in QA Content"""
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
-        self.ps.test_updates['passed'] = True
