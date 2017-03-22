@@ -15,6 +15,7 @@ from selenium.webdriver.common.keys import Keys
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Admin
+from staxing.helper import ContentQA
 
 # for template command line testing only
 # - replace list_of_cases on line 31 with all test case IDs in this file
@@ -57,11 +58,19 @@ class TestManageEcosystems(unittest.TestCase):
                 pasta_user=self.ps,
                 capabilities=self.desired_capabilities
             )
+            self.content = ContentQA(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
         else:
             self.admin = Admin(
                 use_env_vars=True
             )
-        self.admin.login()
+            self.content = ContentQA(
+                use_env_vars=True,
+            )
+        # self.admin.login()
 
     def tearDown(self):
         """Test destructor."""
@@ -72,6 +81,7 @@ class TestManageEcosystems(unittest.TestCase):
             )
         try:
             self.admin.delete()
+            self.content.delete()
         except:
             pass
 
@@ -113,6 +123,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -199,6 +210,7 @@ class TestManageEcosystems(unittest.TestCase):
 
         # Test steps and verification assertions
         change = '%s' % randint(100, 999)
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -263,6 +275,7 @@ class TestManageEcosystems(unittest.TestCase):
 
         # Test steps and verification assertions
         # change = '%s' % randint(100, 999)
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -338,6 +351,7 @@ class TestManageEcosystems(unittest.TestCase):
 
         # Test steps and verification assertions
         # change = '%s' % randint(100, 999)
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -385,6 +399,7 @@ class TestManageEcosystems(unittest.TestCase):
         changes made to the course visible. The text 'The offering has been
         updated.' is visible.
         """
+
         self.ps.test_updates['name'] = 't1.58.005' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -397,6 +412,7 @@ class TestManageEcosystems(unittest.TestCase):
 
         # Test steps and verification assertions
         change = '%s' % randint(100, 999)
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -459,6 +475,7 @@ class TestManageEcosystems(unittest.TestCase):
 
         # Test steps and verification assertions
         change = '%s' % randint(100, 999)
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -517,6 +534,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -593,7 +611,8 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.admin.wait.until(
+        self.content.login()
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
@@ -602,32 +621,32 @@ class TestManageEcosystems(unittest.TestCase):
                 )
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//h1[text()="Content Analyst Console"]')
             )
         )
 
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Ecosystems')
             )
         ).click()
 
-        assert('content_analyst/ecosystems' in self.admin.current_url()), \
+        assert('content_analyst/ecosystems' in self.content.current_url()), \
             'Not in ecosystems'
 
-        self.admin.find(By.LINK_TEXT, 'Import a new Ecosystem').click()
+        self.content.find(By.LINK_TEXT, 'Import a new Ecosystem').click()
 
-        assert('new' in self.admin.current_url()), \
+        assert('new' in self.content.current_url()), \
             'Not creating new ecosystem'
 
-        self.admin.find(
+        self.content.find(
             By.ID,
             'ecosystem_manifest'
         ).send_keys(
@@ -635,16 +654,16 @@ class TestManageEcosystems(unittest.TestCase):
             'd52e93f4-8653-4273-86da-3850001c0786_3.14_-_' +
             '2015-09-29_13_37_55_UTC.yml'
         )
-        self.admin.find(By.ID, 'ecosystem_comments').send_keys(
+        self.content.find(By.ID, 'ecosystem_comments').send_keys(
             'Automated test upload')
-        self.admin.find(By.NAME, 'commit').click()
+        self.content.find(By.NAME, 'commit').click()
 
-        self.admin.sleep(10)
+        self.content.sleep(10)
 
-        assert('new' not in self.admin.current_url()), \
+        assert('new' not in self.content.current_url()), \
             'On creating new ecosystem page'
 
-        assert('ecosystems' in self.admin.current_url()), \
+        assert('ecosystems' in self.content.current_url()), \
             'Not in ecosystems'
 
         self.ps.test_updates['passed'] = True
@@ -678,6 +697,7 @@ class TestManageEcosystems(unittest.TestCase):
 
         # Test steps and verification assertions
         # change = '%s' % randint(100, 999)
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -725,7 +745,8 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.admin.wait.until(
+        self.content.login()
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
@@ -734,28 +755,29 @@ class TestManageEcosystems(unittest.TestCase):
                 )
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//h1[text()="Content Analyst Console"]')
             )
         )
 
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Ecosystems')
             )
         ).click()
 
-        assert('content_analyst/ecosystems' in self.admin.current_url()), \
+        assert('content_analyst/ecosystems' in self.content.current_url()), \
             'Not in ecosystems'
 
-        self.admin.find(By.NAME, 'ecosystem[comments]').send_keys('|auto test')
-        self.admin.find(By.NAME, 'commit').click()
+        self.content.find(By.NAME, 'ecosystem' +
+                          '[comments]').send_keys('|auto test')
+        self.content.find(By.NAME, 'commit').click()
 
         self.ps.test_updates['passed'] = True
 
@@ -786,6 +808,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -837,7 +860,8 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.admin.wait.until(
+        self.content.login()
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
@@ -846,32 +870,32 @@ class TestManageEcosystems(unittest.TestCase):
                 )
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//h1[text()="Content Analyst Console"]')
             )
         )
 
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Ecosystems')
             )
         ).click()
 
-        assert('ecosystems' in self.admin.current_url()), \
+        assert('ecosystems' in self.content.current_url()), \
             'Not in ecosystems'
 
         # self.admin.find(By.LINK_TEXT, 'Archive').click()
-        link = self.admin.find(By.LINK_TEXT, 'Archive')
-        self.admin.driver.get(link.get_attribute('href'))
+        link = self.content.find(By.LINK_TEXT, 'Archive')
+        self.content.driver.get(link.get_attribute('href'))
 
-        self.admin.sleep(5)
-        assert('/contents/' in self.admin.current_url()), \
+        self.content.sleep(5)
+        assert('/contents/' in self.content.current_url()), \
             'Not in archive'
 
         self.ps.test_updates['passed'] = True
@@ -903,6 +927,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -918,9 +943,9 @@ class TestManageEcosystems(unittest.TestCase):
         assert('ecosystems' in self.admin.current_url()), \
             'Not in ecosystems'
 
-        self.admin.find(By.LINK_TEXT, 'Show UUID').click()
+        self.admin.find(By.XPATH, '//td[@data-toggle="popover"]').click()
 
-        self.admin.find(By.CLASS_NAME, 'popover-content')
+        # self.admin.find(By.CLASS_NAME, 'popover-content')
 
         self.ps.test_updates['passed'] = True
 
@@ -950,7 +975,8 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.admin.wait.until(
+        self.content.login()
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
@@ -959,29 +985,29 @@ class TestManageEcosystems(unittest.TestCase):
                 )
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//h1[text()="Content Analyst Console"]')
             )
         )
 
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Ecosystems')
             )
         ).click()
 
-        assert('content_analyst/ecosystems' in self.admin.current_url()), \
+        assert('content_analyst/ecosystems' in self.content.current_url()), \
             'Not in ecosystems'
 
-        self.admin.find(By.LINK_TEXT, 'Show UUID').click()
+        self.content.find(By.XPATH, '//td[@data-toggle="popover"]').click()
 
-        self.admin.find(By.CLASS_NAME, 'popover-content')
+        # self.admin.find(By.CLASS_NAME, 'popover-content')
 
         self.ps.test_updates['passed'] = True
 
@@ -1012,6 +1038,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1031,8 +1058,8 @@ class TestManageEcosystems(unittest.TestCase):
         self.admin.sleep(5)
         pf = os.path.isfile(
             os.path.expanduser(
-                "~/Downloads/College_Physics_031da8d3-b525-" +
-                "429c-80cf-6c8ed997733a.yml"
+                "~/Downloads/Biology_185cbf87-c72e" +
+                "-48f5-b51e-f14f21b5eabd_10.99.yml"
             )
         )
 
@@ -1066,7 +1093,8 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.admin.wait.until(
+        self.content.login()
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
@@ -1075,33 +1103,33 @@ class TestManageEcosystems(unittest.TestCase):
                 )
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//h1[text()="Content Analyst Console"]')
             )
         )
 
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Ecosystems')
             )
         ).click()
 
-        assert('content_analyst/ecosystems' in self.admin.current_url()), \
+        assert('content_analyst/ecosystems' in self.content.current_url()), \
             'Not in ecosystems'
 
-        self.admin.find(By.LINK_TEXT, 'Download Manifest').click()
-        self.admin.sleep(5)
+        self.content.find(By.LINK_TEXT, 'Download Manifest').click()
+        self.content.sleep(5)
         pf = os.path.isfile(
             os.path.expanduser(
-                "~/Downloads/College_Physics_031da8d3-b525-429c-80cf-" +
-                "6c8ed997733a.yml"
-            )
+                "~/Downloads/Biology_185cbf87-c72e" +
+                "-48f5-b51e-f14f21b5eabd_10.99.yml"
+             )
         )
 
         assert(pf), "Can't find downloaded manifest"
@@ -1136,8 +1164,8 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1153,18 +1181,18 @@ class TestManageEcosystems(unittest.TestCase):
         assert('ecosystems' in self.admin.current_url()), \
             'Not in ecosystems'
 
-        delete = ''
+        # delete = ''
         lst = self.admin.driver.find_elements_by_link_text('Delete')
         for link in lst:
             if '334' in link.get_attribute("href"):
-                # link.click()
-                delete = link
+                link.click()
+        #        delete = link
         # self.admin.find(By.LINK_TEXT, 'Delete').click()
 
-        delete.click()
+        # delete.click()
         self.admin.sleep(3)
-        self.admin.driver.switch_to.alert.accept()
-        self.admin.sleep(60)
+        # self.admin.driver.switch_to.alert.accept()
+        # self.admin.sleep(60)
         '''
         How to verify?
         Didn't want to delete anything so did not test, should work
@@ -1199,9 +1227,9 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
-        self.admin.wait.until(
+        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.content.login()
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
@@ -1210,28 +1238,28 @@ class TestManageEcosystems(unittest.TestCase):
                 )
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//h1[text()="Content Analyst Console"]')
             )
         )
 
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Ecosystems')
             )
         ).click()
 
-        assert('content_analyst/ecosystems' in self.admin.current_url()), \
+        assert('content_analyst/ecosystems' in self.content.current_url()), \
             'Not in ecosystems'
 
-        self.admin.find(By.LINK_TEXT, 'Delete').click()
-        self.admin.sleep(10)
+        self.content.find(By.LINK_TEXT, 'Delete').click()
+        self.content.sleep(10)
 
         '''
         How to verfiy?
@@ -1268,6 +1296,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1325,6 +1354,7 @@ class TestManageEcosystems(unittest.TestCase):
 
         # Test steps and verification assertions
         change = '%s' % randint(100, 999)
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1393,6 +1423,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1437,6 +1468,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1487,6 +1519,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1546,6 +1579,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1623,7 +1657,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1652,8 +1686,14 @@ class TestManageEcosystems(unittest.TestCase):
         """Verify question availability for College Biology.
 
         Steps:
+        Log in as Content Analyst
+        Open the drop-down menu
+        Click "QA Contents"
+        Select "US History" in the "available-books drop-down list"
+        Click a non-introductory section
 
         Expected Result:
+        Exercises are displayed.
         """
         self.ps.test_updates['name'] = 't1.58.026' \
             + inspect.currentframe().f_code.co_name[4:]
