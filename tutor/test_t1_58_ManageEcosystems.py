@@ -51,11 +51,16 @@ class TestManageEcosystems(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.admin = Admin(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.admin = Admin(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.admin = Admin(
+                use_env_vars=True
+            )
         self.admin.login()
 
     def tearDown(self):
@@ -215,7 +220,6 @@ class TestManageEcosystems(unittest.TestCase):
         assert('#offering_21' in self.admin.current_url()), \
             'Not editing the Automation course'
 
-        self.admin.find(By.NAME, 'offering[salesforce_book_name]').clear()
         self.admin.find(By.NAME, 'offering[salesforce_book_name]').send_keys(
             'Automation' + change)
         self.admin.find(By.NAME, 'offering[appearance_code]').clear()
@@ -593,14 +597,14 @@ class TestManageEcosystems(unittest.TestCase):
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
-                    ('//li[contains(@class,"-hamburger-menu")]/',
-                     'a[@type="button"]')
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
                 )
             )
         ).click()
         self.admin.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Customer Analyst')
+                (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
         self.admin.wait.until(
@@ -725,14 +729,14 @@ class TestManageEcosystems(unittest.TestCase):
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
-                    ('//li[contains(@class,"-hamburger-menu")]/',
-                     'a[@type="button"]')
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
                 )
             )
         ).click()
         self.admin.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Customer Analyst')
+                (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
         self.admin.wait.until(
@@ -837,14 +841,14 @@ class TestManageEcosystems(unittest.TestCase):
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
-                    ('//li[contains(@class,"-hamburger-menu")]/',
-                     'a[@type="button"]')
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
                 )
             )
         ).click()
         self.admin.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Customer Analyst')
+                (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
         self.admin.wait.until(
@@ -950,14 +954,14 @@ class TestManageEcosystems(unittest.TestCase):
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
-                    ('//li[contains(@class,"-hamburger-menu")]/',
-                     'a[@type="button"]')
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
                 )
             )
         ).click()
         self.admin.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Customer Analyst')
+                (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
         self.admin.wait.until(
@@ -1066,14 +1070,14 @@ class TestManageEcosystems(unittest.TestCase):
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
-                    ('//li[contains(@class,"-hamburger-menu")]/',
-                     'a[@type="button"]')
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
                 )
             )
         ).click()
         self.admin.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Customer Analyst')
+                (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
         self.admin.wait.until(
@@ -1201,14 +1205,14 @@ class TestManageEcosystems(unittest.TestCase):
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
-                    ('//li[contains(@class,"-hamburger-menu")]/',
-                     'a[@type="button"]')
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
                 )
             )
         ).click()
         self.admin.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Customer Analyst')
+                (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
         self.admin.wait.until(
