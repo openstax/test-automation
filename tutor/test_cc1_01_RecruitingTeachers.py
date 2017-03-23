@@ -7,14 +7,13 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-# from random import randint
+from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.common.action_chains import ActionChains
-from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher, Admin
+from staxing.helper import Admin, Teacher
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -199,45 +198,77 @@ class TestRecruitingTeachers(unittest.TestCase):
         ]
         self.ps.test_updates['passed'] = False
 
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
         # Test steps and verification assertions
+        # Load demo site
         self.teacher.get('http://cc.openstax.org/')
         self.teacher.page.wait_for_page_load()
-        demo_link = self.teacher.find(
-            By.XPATH,
-            '//section[@id="interactive-demo"]' +
-            '//a[@class="btn" and contains(@href,"cc-mockup-physics")]'
-        )
-        self.teacher.driver.execute_script(
-            'return arguments[0].scrollIntoView();', demo_link)
-        self.teacher.driver.execute_script('window.scrollBy(0, -80);')
+
+        # Use the physics demo
+        demo_link = self.teacher.find(By.CSS_SELECTOR, 'a[href*="physics"]')
+        self.teacher.scroll_to(demo_link)
         self.teacher.sleep(1)
         demo_link.click()
-        window_with_book = self.teacher.driver.window_handles[1]
+
+        # Switch tab/window to show the physics demo course
+        target_window = len(self.teacher.driver.window_handles) - 1
+        window_with_book = self.teacher.driver.window_handles[target_window]
         self.teacher.driver.switch_to_window(window_with_book)
         self.teacher.page.wait_for_page_load()
         self.teacher.sleep(1)
-        title = self.teacher.wait.until(
+
+        # Grab the iframe tag for manipulation
+        video = self.teacher.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH, '//span[contains(text(),"Inelastic Collisions")]')
+                (By.TAG_NAME, 'iframe')
             )
         )
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(title)
-        for _ in range(300):
-            actions.move_by_offset(0, 1)
-        actions.click()
-        actions.perform()
-        self.teacher.sleep(2)
-        self.teacher.find(
-            By.XPATH,
-            '//div[contains(@class,"playing-mode")]'
+        self.teacher.scroll_to(video)
+
+        # Retrieve IDs and enable the YouTube javascript API
+        self.teacher.driver.switch_to_default_content()
+        video_id = video.get_attribute('id')
+        content_id = video.get_attribute('src').split('/')[-1]
+        print('Video: {0}, Content: {1}'.format(video_id, content_id))
+        set_src = video.get_attribute('src') + '?enablejsapi=1'
+        self.teacher.driver.execute_script(
+            "arguments[0].src = arguments[1];", video, set_src
         )
-        actions.perform()
-        self.teacher.find(
-            By.XPATH,
-            '//div[@id="player"]/div[contains(@class,"paused-mode")]'
+        self.teacher.driver.execute_script(
+            "arguments[0].setAttribute('enablejsapi', '1');", video
         )
+        states = {
+            '-1': 'Unstarted',
+            '0': 'Ended',
+            '1': 'Playing',
+            '2': 'Paused',
+            '3': 'Buffering',
+            '5': 'Video cued',
+        }
+
+        # Run the API control to play the demo video
+        app_script = '''
+        var tag = document.createElement("script");
+        tag.src = "https://www.youtube.com/iframe_api";
+        tag.type = "text/javascript";
+        var firstScriptTag = document.getElementsByTagName("script")[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        window.onYouTubeIframeAPIReady = function() {
+            window.player = new YT.Player("''' + video_id + '''", {
+                videoId: "''' + content_id + '''",
+                events: { "onReady": onPlayerReady }
+            });
+        }
+        function onPlayerReady(event) { event.target.playVideo(); }
+        '''
+        self.teacher.driver.execute_script(app_script)
+
+        # Wait a bit then check the video status to see if it is playing
+        self.teacher.sleep(2.5)
+        state = self.teacher.driver.execute_script(
+            'return player.getPlayerState();'
+        )
+        assert((int(state) if state is not None else state) == 1), \
+            'Video player is %s, not Playing' % states[state]
 
         self.ps.test_updates['passed'] = True
 
@@ -1111,15 +1142,18 @@ class TestRecruitingTeachers(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.find(
-            By.XPATH, '//p[text()="OpenStax Concept Coach"]'
-        ).click()
+        courses = self.teacher.find_all(
+            By.XPATH, '//a/p[contains(text(),"Concept Coach")]'
+        )
+        courses.click() if isinstance(courses, list) \
+            else courses[randint(0, len(courses))].click()
         self.teacher.page.wait_for_page_load()
         self.teacher.wait.until(
             expect.presence_of_element_located(
                 (By.XPATH, '//span[contains(text(),"Class Dashboard")]')
             )
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C7773 - 023 - Admin | Distribute access codes for the course
