@@ -39,8 +39,9 @@ TESTS = os.getenv(
         8321, 8322, 8323, 8324, 8325,
         8326, 8327, 8328, 8329, 8330,
         8331, 8332, 8333, 8334, 8335,
-        8336, 8337, 8338, 8339, 8340
-    ])
+        8336, 8337, 8338, 8339, 8340,
+        111270, 111271, 111272,
+        111273, 111274, 111275, 111276])
 )
 
 
@@ -1722,8 +1723,15 @@ class TestManageEcosystems(unittest.TestCase):
             )
         ).click()
         self.content.find(By.CSS_SELECTOR, '#available-books').click()
-        self.content.find(By.XPATH,
-                          '//span[text()="APUSH"]').click()
+        book = self.content.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//a[contains(@class,"book")]' +
+                 '/div[@class="title-version"]' +
+                 '/span[text()="APUSH"]')
+            )
+         )
+        self.content.driver.execute_script("arguments[0].click();", book)
         try:
             self.content.find(By.XPATH,
                               '//ul[@aria-labelledby=available-books"]')
@@ -1791,8 +1799,12 @@ class TestManageEcosystems(unittest.TestCase):
             expect.visibility_of_element_located(
                 (By.CSS_SELECTOR, ('.title'))))
 
-        self.content.find(By.XPATH,
-                          '//span[text()="Biology"]').click()
+        book = self.content.find(By.XPATH,
+                                 '//a[contains(@class,"book")]' +
+                                 '/div[@class="title-version"]' +
+                                 '/span[text()="Biology"]')
+        # bookop.click()
+        self.content.driver.execute_script("arguments[0].click();", book)
         self.content.sleep(1)
         try:
             self.content.find(By.XPATH,
@@ -1824,7 +1836,7 @@ class TestManageEcosystems(unittest.TestCase):
         Log in as Content Analyst
         Open the drop-down menu
         Click "QA Contents"
-        Select "Biology" in the "available-books drop-down list"
+        Select "College Physics" in the "available-books drop-down list"
         Click a non-introductory section
 
         Expected Result:
@@ -1857,8 +1869,16 @@ class TestManageEcosystems(unittest.TestCase):
             )
         ).click()
         self.content.find(By.CSS_SELECTOR, '#available-books').click()
-        self.content.find(By.XPATH,
-                          '//span[text()="College Physics"]').click()
+        book = self.content.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//a[contains(@class,"book")]' +
+                 '/div[@class="title-version"]' +
+                 '/span[text()="College Physics"]')
+            )
+         )
+        # bookop.click()
+        self.content.driver.execute_script("arguments[0].click();", book)
         try:
             self.content.find(By.XPATH,
                               '//ul[@aria-labelledby=available-books"]')
@@ -1923,8 +1943,15 @@ class TestManageEcosystems(unittest.TestCase):
             )
         ).click()
         self.content.find(By.CSS_SELECTOR, '#available-books').click()
-        self.content.find(
-            By.XPATH, '//span[text()="Introduction to Sociology 2e"]').click()
+        book = self.content.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//a[contains(@class,"book")]' +
+                 '/div[@class="title-version"]' +
+                 '/span[text()="Introduction to Sociology 2e"]')
+            )
+         )
+        self.content.driver.execute_script("arguments[0].click();", book)
         try:
             self.content.find(By.XPATH,
                               '//ul[@aria-labelledby=available-books"]')
@@ -1989,8 +2016,15 @@ class TestManageEcosystems(unittest.TestCase):
             )
         ).click()
         self.content.find(By.CSS_SELECTOR, '#available-books').click()
-        self.content.find(By.XPATH,
-                          '//span[text()="Biology For AP® Courses"]').click()
+        book = self.content.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//a[contains(@class,"book")]' +
+                 '/div[@class="title-version"]' +
+                 '/span[text()="Biology For AP® Courses"]')
+            )
+         )
+        self.content.driver.execute_script("arguments[0].click();", book)
         try:
             self.content.find(By.XPATH,
                               '//ul[@aria-labelledby=available-books"]')
@@ -2054,8 +2088,15 @@ class TestManageEcosystems(unittest.TestCase):
             )
         ).click()
         self.content.find(By.CSS_SELECTOR, '#available-books').click()
-        self.content.find(By.XPATH,
-                          '//span[text()="Physics"]').click()
+        book = self.content.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//a[contains(@class,"book")]' +
+                 '/div[@class="title-version"]' +
+                 '/span[text()="Physics"]')
+            )
+         )
+        self.content.driver.execute_script("arguments[0].click();", book)
         try:
             self.content.find(By.XPATH,
                               '//ul[@aria-labelledby=available-books"]')
@@ -2119,8 +2160,15 @@ class TestManageEcosystems(unittest.TestCase):
             )
         ).click()
         self.content.find(By.CSS_SELECTOR, '#available-books').click()
-        self.content.find(By.XPATH,
-                          '//span[text()="College Physics"]').click()
+        book = self.content.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//a[contains(@class,"book")]' +
+                 '/div[@class="title-version"]' +
+                 '/span[text()="College Physics"]')
+            )
+         )
+        self.content.driver.execute_script("arguments[0].click();", book)
         try:
             self.content.find(By.XPATH,
                               '//ul[@aria-labelledby=available-books"]')
