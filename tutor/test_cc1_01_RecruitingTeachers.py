@@ -27,10 +27,9 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         7751, 7752, 7753, 7754, 7755,
-        7756, 7770, 7771, 7772, 7773,
+        7756, 7770, 7771, 7772,
     ])
-    # 7754 - demo video test case not working
-    # 7773 - bloked durring manual test runs, not done
+    # 7773 - CC in sunset; implementation not necessary
 )
 
 
@@ -987,39 +986,45 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.login(
-            username=os.getenv('ADMIN_USER'),
-            password=os.getenv('ADMIN_PASSWORD'))
-        self.teacher.open_user_menu()
-        self.teacher.find(
-            By.XPATH, '//a[@role="menuitem" and contains(text(),"Admin")]'
-        ).click()
-        self.teacher.wait.until(
+        if not LOCAL_RUN:
+            admin = Admin(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            admin = Admin(
+                use_env_vars=True
+            )
+        admin.login()
+        admin.open_user_menu()
+        admin.find(By.CSS_SELECTOR, '[href*=admin]').click()
+        admin.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Course Organization')
             )
         ).click()
-        self.teacher.wait.until(
+        admin.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Courses')
             )
         ).click()
-        self.teacher.wait.until(
+        admin.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Edit')
             )
         ).click()
-        self.teacher.wait.until(
+        admin.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Teachers')
             )
         ).click()
-        self.teacher.wait.until(
+        admin.wait.until(
             expect.visibility_of_element_located(
                 (By.ID, 'course_teacher')
             )
         ).send_keys('teacher0')
-        element = self.teacher.wait.until(
+        element = admin.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//ul[contains(@class,"ui-autocomplete")]' +
@@ -1030,7 +1035,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         element.click()
         # check that the teacher has been added to the table
         print(teacher_name)
-        self.teacher.wait.until(
+        admin.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//td[contains(text(),"' + teacher_name + '")]')
             )
@@ -1141,12 +1146,37 @@ class TestRecruitingTeachers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.teacher.get('https://cc.openstax.org/')
+        self.teacher.sleep(2)
+        try:
+            self.teacher.find(
+                By.CSS_SELECTOR,
+                '#headerNav [href*="tutor"]'
+            ).click()
+        except:
+            self.teacher.find_all(
+                By.CSS_SELECTOR,
+                '.mobile-nav-toggle-label'
+            )[1].click()
+            self.teacher.sleep(0.5)
+            self.teacher.find(
+                By.CSS_SELECTOR,
+                '#sidecarNav [href*="tutor"]'
+            ).click()
         self.teacher.login()
         courses = self.teacher.find_all(
-            By.XPATH, '//a/p[contains(text(),"Concept Coach")]'
+            By.XPATH,
+            '//*[@class="course-listing-current"]' +
+            '//a[p[contains(text(),"Concept Coach")]]'
         )
-        courses.click() if isinstance(courses, list) \
-            else courses[randint(0, len(courses))].click()
+        if not isinstance(courses, list):
+            courses.click()
+        elif len(courses) == 1:
+            courses[0].click()
+        else:
+            course_id = randint(0, len(courses))
+            print(len(courses), course_id, courses)
+            courses[course_id].click()
         self.teacher.page.wait_for_page_load()
         self.teacher.wait.until(
             expect.presence_of_element_located(
@@ -1156,6 +1186,7 @@ class TestRecruitingTeachers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7773 - 023 - Admin | Distribute access codes for the course
     @pytest.mark.skipif(str(7773) not in TESTS, reason='Excluded')
     def test_admin_distribute_access_codes_for_the_course_7773(self):
@@ -1212,6 +1243,7 @@ class TestRecruitingTeachers(unittest.TestCase):
         ).click()
 
         self.ps.test_updates['passed'] = True
+    '''
 
     '''
     # Case C7774 - 024 - Teacher | Access CC help and support during the course
