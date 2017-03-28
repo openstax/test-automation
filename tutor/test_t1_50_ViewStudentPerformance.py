@@ -372,10 +372,8 @@ class TestViewStudentPerformance(unittest.TestCase):
         for panel in panels:
             chapter = panel.find_elements_by_class_name('chapter')
             sections = panel.find_elements_by_class_name('sections')
-            assert(len(chapter) > 0), \
-                ''
             assert(len(sections) > 0), \
-                ''
+                'no sections found'
             assert(chapter[0].location.get('x') <=
                    sections[0].location.get('x')), \
                 'section to the left of chapter'
