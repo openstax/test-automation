@@ -29,10 +29,8 @@ TESTS = os.getenv(
     str([
         14752, 14751, 58279, 58280, 58284,
         58352, 58288, 58313, 58314, 58315,
-        # 58322, 58316, 58318, 58319, 14755,
+        58322, 58316, 58318, 58319, 14755,
         14750, 58336, 58337, 58348, 111250
-
-        # 58279 - not working on site, maybe lost feature?
     ])
 )
 
@@ -758,7 +756,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.teacher.find(By.ID, 'searchAskButton').click()
         self.teacher.page.wait_for_page_load()
         contact = self.teacher.find(
-            By.XPATH, '//a[contains(text(),"Contact Us")]'
+            By.XPATH, '//a[contains(text(),"Email Us")]'
         )
         Assignment.scroll_to(self.teacher.driver, contact)
         contact.click()
@@ -783,7 +781,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
     # 14755 - 015 - Teacher | View guided tutorials of Tutor
     @pytest.mark.skipif(str(14755) not in TESTS, reason='Excluded')
-    def test_teacher_view_guided_tutorials_of_concept_coach_14755(self):
+    def test_teacher_view_guided_tutorials_of_tutor_14755(self):
         """View guided tutorials of Tutor.
 
         Steps:
@@ -1163,7 +1161,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
     # 58348 - 029 - Student | View guided tutorials of Tutor
     @pytest.mark.skipif(str(58348) not in TESTS, reason='Excluded')
-    def test_student_view_guided_tutorials_of_concept_coach_58348(self):
+    def test_student_view_guided_tutorials_of_tutor_58348(self):
         """View guided tutorial of Tutor.
 
         Steps:
