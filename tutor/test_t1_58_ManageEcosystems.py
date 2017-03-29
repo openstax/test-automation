@@ -40,8 +40,8 @@ TESTS = os.getenv(
         8326, 8327, 8328, 8329, 8330,
         8331, 8332, 8333, 8334, 8335,
         8336, 8337, 8338, 8339, 8340,
-        111270, 111271, 111272,
-        111273, 111274, 111275, 111276])
+        111270, 111271, 111272, 111273, 111274,
+        111275, 111276])
 )
 
 
@@ -60,6 +60,7 @@ class TestManageEcosystems(unittest.TestCase):
                 capabilities=self.desired_capabilities
             )
             self.content = ContentQA(
+                existing_driver=self.admin.driver,
                 use_env_vars=True,
                 pasta_user=self.ps,
                 capabilities=self.desired_capabilities
@@ -70,6 +71,7 @@ class TestManageEcosystems(unittest.TestCase):
             )
             self.content = ContentQA(
                 use_env_vars=True,
+                existing_driver=self.admin.driver
             )
         # self.admin.login()
 
@@ -82,7 +84,7 @@ class TestManageEcosystems(unittest.TestCase):
             )
         try:
             self.admin.delete()
-            self.content.delete()
+            # self.content.delete()
         except:
             pass
 
@@ -1696,13 +1698,13 @@ class TestManageEcosystems(unittest.TestCase):
         Expected Result:
         Exercises are displayed.
         """
-        self.ps.test_updates['name'] = 't1.58.027' \
+        self.ps.test_updates['name'] = 't1.58.026' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             't1',
             't1.58',
-            't1.58.027',
-            '111271'
+            't1.58.026',
+            '111270'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1805,14 +1807,14 @@ class TestManageEcosystems(unittest.TestCase):
                                  '/span[text()="Biology"]')
         # bookop.click()
         self.content.driver.execute_script("arguments[0].click();", book)
-        self.content.sleep(1)
+        self.content.sleep(3)
         try:
             self.content.find(By.XPATH,
-                              '//ul[@aria-labelledby=available-books"]')
+                              '//li[@class="available-books dropdown open"]')
             self.content.find(By.CSS_SELECTOR, '#available-books').click()
         except:
             pass
-        self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        # self.content.find(By.CSS_SELECTOR, '#available-books').click()
         self.content.sleep(1)
 
         self.content.find(By.XPATH,
@@ -1842,13 +1844,13 @@ class TestManageEcosystems(unittest.TestCase):
         Expected Result:
         Exercises are displayed.
         """
-        self.ps.test_updates['name'] = 't1.58.027' \
+        self.ps.test_updates['name'] = 't1.58.028' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             't1',
             't1.58',
-            't1.58.027',
-            '111271'
+            't1.58.028',
+            '111272'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1881,7 +1883,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.content.driver.execute_script("arguments[0].click();", book)
         try:
             self.content.find(By.XPATH,
-                              '//ul[@aria-labelledby=available-books"]')
+                              '//li[@class="available-books dropdown open"]')
             self.content.find(By.CSS_SELECTOR, '#available-books').click()
         except:
             pass
@@ -1916,13 +1918,13 @@ class TestManageEcosystems(unittest.TestCase):
         Expected Result:
         Exercises are displayed.
         """
-        self.ps.test_updates['name'] = 't1.58.027' \
+        self.ps.test_updates['name'] = 't1.58.029' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             't1',
             't1.58',
-            't1.58.027',
-            '111271'
+            't1.58.029',
+            '111273'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -1944,7 +1946,7 @@ class TestManageEcosystems(unittest.TestCase):
         ).click()
         self.content.find(By.CSS_SELECTOR, '#available-books').click()
         book = self.content.wait.until(
-            expect.element_to_be_clickable(
+            expect.element_to_be_visible(
                 (By.XPATH,
                  '//a[contains(@class,"book")]' +
                  '/div[@class="title-version"]' +
@@ -1954,7 +1956,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.content.driver.execute_script("arguments[0].click();", book)
         try:
             self.content.find(By.XPATH,
-                              '//ul[@aria-labelledby=available-books"]')
+                              '//li[@class="available-books dropdown open"]')
             self.content.find(By.CSS_SELECTOR, '#available-books').click()
         except:
             pass
@@ -1989,13 +1991,13 @@ class TestManageEcosystems(unittest.TestCase):
         Expected Result:
         Exercises are displayed.
         """
-        self.ps.test_updates['name'] = 't1.58.027' \
+        self.ps.test_updates['name'] = 't1.58.030' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             't1',
             't1.58',
-            't1.58.027',
-            '111271'
+            't1.58.030',
+            '111274'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -2027,7 +2029,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.content.driver.execute_script("arguments[0].click();", book)
         try:
             self.content.find(By.XPATH,
-                              '//ul[@aria-labelledby=available-books"]')
+                              '//li[@class="available-books dropdown open"]')
             self.content.find(By.CSS_SELECTOR, '#available-books').click()
         except:
             pass
@@ -2061,13 +2063,13 @@ class TestManageEcosystems(unittest.TestCase):
         Expected Result:
         Exercises are displayed.
         """
-        self.ps.test_updates['name'] = 't1.58.027' \
+        self.ps.test_updates['name'] = 't1.58.031' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             't1',
             't1.58',
-            't1.58.027',
-            '111271'
+            't1.58.031',
+            '111275'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -2099,7 +2101,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.content.driver.execute_script("arguments[0].click();", book)
         try:
             self.content.find(By.XPATH,
-                              '//ul[@aria-labelledby=available-books"]')
+                              '//li[@class="available-books dropdown open"]')
             self.content.find(By.CSS_SELECTOR, '#available-books').click()
         except:
             pass
@@ -2133,13 +2135,13 @@ class TestManageEcosystems(unittest.TestCase):
         Expected Result:
         Exercises are displayed.
         """
-        self.ps.test_updates['name'] = 't1.58.027' \
+        self.ps.test_updates['name'] = 't1.58.032' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             't1',
             't1.58',
-            't1.58.027',
-            '111271'
+            't1.58.032',
+            '111276'
         ]
         self.ps.test_updates['passed'] = False
 
@@ -2171,7 +2173,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.content.driver.execute_script("arguments[0].click();", book)
         try:
             self.content.find(By.XPATH,
-                              '//ul[@aria-labelledby=available-books"]')
+                              '//li[@class="available-books dropdown open"]')
             self.content.find(By.CSS_SELECTOR, '#available-books').click()
         except:
             pass
@@ -2205,16 +2207,18 @@ class TestManageEcosystems(unittest.TestCase):
         Expected Result:
         Exercises are displayed.
         """
-        self.ps.test_updates['name'] = 't1.58.027' \
+        self.ps.test_updates['name'] = 't1.58.033' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
             't1',
             't1.58',
             't1.58.027',
-            '111271'
+            '111277'
         ]
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
         """College Biology for Courseware does not exist in QA Content"""
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
