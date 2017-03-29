@@ -32,8 +32,8 @@ TESTS = os.getenv(
         8346, 8347, 8348, 8349, 8350,
         8351, 8352, 8353, 8354, 8355,
         8356, 8357, 8358, 8359, 8360,
-        100135, 100136, 100137, 100138,
-        100139, 100140
+        100135, 100136, 100137, 100138, 100139,
+        100140
     ])
 )
 
@@ -112,7 +112,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, "//input[@value='Save']").click()
 
         # Delete the district
-        district = self.admin.driver.find_element(
+        district = self.admin.find(
             By.XPATH, "//tr/td[text()='automated test district']")
         district.find_element(
             By.XPATH, '..//a[text()="delete"]'
@@ -154,26 +154,26 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             )
         ).click()
 
-        self.admin.find(By.XPATH, "//a[text()='Add district']").click()
+        self.admin.find(By.XPATH, '//a[text()="Add district"]').click()
         self.admin.find(
             By.ID, "district_name"
         ).send_keys('automated test district')
         self.admin.find(
-            By.XPATH, "//input[@value='Save']").click()
+            By.XPATH, '//input[@value="Save"]').click()
 
         # Edit the district name
-        district = self.admin.driver.find_element(
-            By.XPATH, "//tr/td[text()='automated test district']")
+        district = self.admin.find(
+            By.XPATH, '//tr/td[text()="automated test district"]')
         district.find_element(
             By.XPATH, '..//a[text()="edit"]'
         ).click()
         self.admin.find(By.ID, "district_name").send_keys(' edit')
         self.admin.find(
-            By.XPATH, "//input[@value='Save']").click()
+            By.XPATH, '//input[@value="Save"]').click()
 
         # Delete the district
-        district = self.admin.driver.find_element(
-            By.XPATH, "//tr/td[text()='automated test district edit']")
+        district = self.admin.find(
+            By.XPATH, '//tr/td[text()="automated test district edit"]')
         district.find_element(
             By.XPATH, '..//a[text()="delete"]'
         ).click()
@@ -221,7 +221,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, "//input[@value='Save']").click()
 
         # Delete the district
-        district = self.admin.driver.find_element(
+        district = self.admin.find(
             By.XPATH, "//tr/td[text()='automated test district']")
         district.find_element(
             By.XPATH, '..//a[text()="delete"]'
@@ -270,10 +270,10 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.ID, "school_name"
         ).send_keys('automated test school')
         self.admin.find(
-            By.XPATH, "//input[@value='Save']").click()
+            By.XPATH, '//input[@value="Save"]').click()
 
         # Delete the school
-        school = self.admin.driver.find_element(
+        school = self.admin.find(
             By.XPATH, "//tr/td[text()='automated test school']")
         school.find_element(
             By.XPATH, '..//a[text()="delete"]'
@@ -323,7 +323,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, "//input[@value='Save']").click()
 
         # Edit the school name
-        district = self.admin.driver.find_element(
+        district = self.admin.find(
             By.XPATH, "//tr/td[text()='automated test school']")
         district.find_element(
             By.XPATH, '..//a[text()="edit"]'
@@ -333,7 +333,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, "//input[@value='Save']").click()
 
         # Delete the school
-        school = self.admin.driver.find_element(
+        school = self.admin.find(
             By.XPATH, "//tr/td[text()='automated test school edit']")
         school.find_element(
             By.XPATH, '..//a[text()="delete"]'
@@ -383,7 +383,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, "//input[@value='Save']").click()
 
         # Edit the school district
-        district = self.admin.driver.find_element(
+        district = self.admin.find(
             By.XPATH, "//tr/td[text()='automated test school']")
         district.find_element(
             By.XPATH, '..//a[text()="edit"]'
@@ -398,7 +398,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, "//input[@value='Save']").click()
 
         # Delete the school
-        school = self.admin.driver.find_element(
+        school = self.admin.find(
             By.XPATH, "//tr/td[text()='automated test school']")
         school.find_element(
             By.XPATH, '..//a[text()="delete"]'
@@ -448,7 +448,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, "//input[@value='Save']").click()
 
         # Delete the school
-        school = self.admin.driver.find_element(
+        school = self.admin.find(
             By.XPATH, "//tr/td[text()='automated test school']")
         school.find_element(
             By.XPATH, '..//a[text()="delete"]'
@@ -504,7 +504,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' automated test course']")
@@ -561,7 +561,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' automated test course']")
@@ -598,7 +598,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' automated test course edit']")
@@ -655,7 +655,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' automated test course']")
@@ -663,19 +663,19 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, '../..//a[text()="Edit"]'
         ).click()
         # Add a Teacher
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[@role="tab" and @aria-controls="teachers"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'course_teacher').send_keys("teacher")
         self.admin.sleep(1)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'course_teacher').send_keys(Keys.RETURN)
         # assert that a teacher was added
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//div[@id="teachers"]//tbody/tr')
         # delete the teacher
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[text()="Remove from course"]').click()
         self.admin.sleep(0.5)
         self.admin.driver.switch_to_alert().accept()
@@ -697,7 +697,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' automated test course']")
@@ -754,7 +754,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' automated test course']")
@@ -762,19 +762,19 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, '../..//a[text()="Edit"]'
         ).click()
         # Add a Teacher
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[@role="tab" and @aria-controls="teachers"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'course_teacher').send_keys("teacher")
         self.admin.sleep(1)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'course_teacher').send_keys(Keys.RETURN)
         # assert that a teacher was added
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//div[@id="teachers"]//tbody/tr')
         # delete the teacher
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[text()="Remove from course"]').click()
         self.admin.sleep(0.5)
         self.admin.driver.switch_to_alert().accept()
@@ -796,7 +796,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' automated test course']")
@@ -853,7 +853,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' automated test course']")
@@ -861,19 +861,19 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, '../..//a[text()="Edit"]'
         ).click()
         # Set Ecosystem
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[@role="tab" and @aria-controls="content"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'ecosystem_id').click()
         self.admin.find(
             By.XPATH,
             "//select[@id='ecosystem_id']/option[2]"
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Submit"]').click()
         # assert that that ecostystem was queued
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//div[contains(@class,"alert")]')
 
         # Delete the course
@@ -892,7 +892,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' automated test course']")
@@ -949,7 +949,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' automated test course']")
@@ -957,26 +957,26 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, '../..//a[text()="Edit"]'
         ).click()
         # Set Ecosystem
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[@role="tab" and @aria-controls="content"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'ecosystem_id').click()
         self.admin.find(
             By.XPATH,
             "//select[@id='ecosystem_id']/option[2]"
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Submit"]').click()
         # assert that that ecostystem was queued
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//div[contains(@class,"alert")]')
         # Set a new Ecosystem
         self.admin.find(
             By.XPATH,
             "//select[@id='ecosystem_id']/option[3]"
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Submit"]').click()
 
         # Delete the course
@@ -995,7 +995,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' automated test course']")
@@ -1053,7 +1053,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' automated test course']")
@@ -1061,20 +1061,20 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, '../..//a[text()="Edit"]'
         ).click()
         # Add a period
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[@role="tab" and @aria-controls="periods"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//div[@id="periods"]//a[text()="Add period"]').click()
         self.admin.find(
             By.ID, "period_name").send_keys("period test")
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Save"]').click()
         # assert that that period was added
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//div[@id="periods"]//td[text()="period test"]')
         # archive the period
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH,
             '//div[@id="periods"]//td[text()="period test"]' +
             '/..//a[text()="Archive"]'
@@ -1096,7 +1096,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' automated test course']")
@@ -1154,7 +1154,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' automated test course']")
@@ -1162,33 +1162,33 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, '../..//a[text()="Edit"]'
         ).click()
         # Add a period
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[@role="tab" and @aria-controls="periods"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//div[@id="periods"]//a[text()="Add period"]').click()
         self.admin.find(
             By.ID, "period_name").send_keys("period test")
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Save"]').click()
         # assert that that period was added
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//div[@id="periods"]//td[text()="period test"]')
         # Edit the period
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH,
             '//div[@id="periods"]//td[text()="period test"]' +
             '/..//a[text()="Edit"]'
         ).click()
         self.admin.find(
             By.ID, "period_name").send_keys(" edit")
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Save"]').click()
         # assert that that period was edited
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//div[@id="periods"]//td[text()="period test edit"]')
         # archive the period
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH,
             '//div[@id="periods"]//td[text()="period test edit"]' +
             '/..//a[text()="Archive"]'
@@ -1210,7 +1210,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' automated test course']")
@@ -1267,7 +1267,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' automated test course']")
@@ -1275,20 +1275,20 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, '../..//a[text()="Edit"]'
         ).click()
         # Add a period
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[@role="tab" and @aria-controls="periods"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//div[@id="periods"]//a[text()="Add period"]').click()
         self.admin.find(
             By.ID, "period_name").send_keys("period test")
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Save"]').click()
         # assert that that period was added
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//div[@id="periods"]//td[text()="period test"]')
         # archive the period
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH,
             '//div[@id="periods"]//td[text()="period test"]' +
             '/..//a[text()="Archive"]'
@@ -1310,7 +1310,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' automated test course']")
@@ -1370,7 +1370,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' %s']" % course_name)
@@ -1378,14 +1378,14 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, '../..//a[text()="Edit"]'
         ).click()
         # Add a period
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[@role="tab" and @aria-controls="periods"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//div[@id="periods"]//a[text()="Add period"]').click()
         self.admin.find(
             By.ID, "period_name").send_keys("period test")
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Save"]').click()
         # Create a file to upload to roster
         roster_file = open(os.getenv("HOME") + "/roster.csv", "w")
@@ -1396,13 +1396,13 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             "Charles,Mayfare,s_01,password")
         roster_file.close()
         # upload the file to the roster
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[@role="tab" and @aria-controls="roster"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'student_roster'
         ).send_keys(os.getenv("HOME") + "/roster.csv")
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Upload"]').click()
 
         # archive the period, and delete the teacher
@@ -1421,17 +1421,17 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' %s']" % course_name)
         course.find_element(
             By.XPATH, '../..//a[text()="Edit"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[@role="tab" and @aria-controls="periods"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH,
             '//div[@id="periods"]//td[text()="period test"]' +
             '/..//a[text()="Archive"]'
@@ -1486,7 +1486,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' %s']" % course_name)
@@ -1494,14 +1494,14 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             By.XPATH, '../..//a[text()="Edit"]'
         ).click()
         # Add a period
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[@role="tab" and @aria-controls="periods"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//div[@id="periods"]//a[text()="Add period"]').click()
         self.admin.find(
             By.ID, "period_name").send_keys("period test")
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Save"]').click()
         # Create a file to upload to roster
         roster_file = open(os.getenv("HOME") + "/roster.csv", "w")
@@ -1512,45 +1512,45 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             "Charles,Mayfare,s_01,password")
         roster_file.close()
         # upload the file to the roster
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[@role="tab" and @aria-controls="roster"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'student_roster'
         ).send_keys(os.getenv("HOME") + "/roster.csv")
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//input[@value="Upload"]').click()
         # add a teacher to the course
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[@role="tab" and @aria-controls="teachers"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'course_teacher').send_keys("teacher01")
         self.admin.sleep(1)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.ID, 'course_teacher').send_keys(Keys.RETURN)
 
         # login as that teacher and check that the student has been added
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[@class="dropdown-toggle" and text()="admin "]'
         ).click()
-        self.admin.driver.find_element(By.LINK_TEXT, 'Sign out!').click()
+        self.admin.find(By.LINK_TEXT, 'Sign out!').click()
         self.admin.login(username="teacher01")
         self.admin.sleep(3)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//div[@data-title="' + course_name + '"]'
         ).click()
         self.admin.open_user_menu()
         self.admin.sleep(0.5)
-        self.admin.driver.find_element(
+        self.admin.find(
             By.LINK_TEXT, 'Course Settings and Roster'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH,
             '//table//td[text()="Charles"]/../td[text()="Mayfare"]' +
             '/..//a[@aria-describedby="drop-student"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//div[@id="drop-student"]//button'
         ).click()
         self.admin.logout()
@@ -1573,25 +1573,25 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' %s']" % course_name)
         course.find_element(
             By.XPATH, '../..//a[text()="Edit"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[@role="tab" and @aria-controls="periods"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH,
             '//div[@id="periods"]//td[text()="period test"]' +
             '/..//a[text()="Archive"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[@role="tab" and @aria-controls="teachers"]'
         ).click()
-        self.admin.driver.find_element(
+        self.admin.find(
             By.XPATH, '//a[text()="Remove from course"]').click()
         self.admin.sleep(0.5)
         self.admin.driver.switch_to_alert().accept()
@@ -1646,7 +1646,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
             )
         ).click()
         self.admin.find(By.ID, "courses_select_all").click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' %s']" % course_name)
@@ -1668,7 +1668,7 @@ class TestManageDistricsSchoolsAndCourses(unittest.TestCase):
                 (By.XPATH, '//div[@class="pagination"]//a[not(@rel)][last()]')
             )
         ).click()
-        course = self.admin.driver.find_element(
+        course = self.admin.find(
             By.XPATH,
             "//div[@class='stats-card']" +
             "//span[text()=' " + course_name + "']")
