@@ -419,17 +419,19 @@ class TestAccountMaintenance(unittest.TestCase):
             By.XPATH, '//input[@value="Search"]').click()
         element = self.admin.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//td[text()="Atticus Finch"]')
+                (By.XPATH, '//td[text()="student01"]')
             )
         )
+        name = element.find_element(
+            By.XPATH, '../td[2]'
+        ).text
         element.find_element(
             By.XPATH,
             '..//a[contains(text(),"Sign in as")]'
         ).click()
         self.admin.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//span[contains(text(),"Atticus Finch")]')
+                (By.XPATH, '//span[contains(text(),"' + name + '")]')
             )
         )
-
         self.ps.test_updates['passed'] = True
