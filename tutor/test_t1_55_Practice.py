@@ -31,7 +31,6 @@ TESTS = os.getenv(
         8297, 8298, 8299, 8300, 8301,
         8302, 8303, 8304, 8305, 8306,
         8307, 8308, 8309, 8310
-        # 8307, 8308 - not working because errata reporting broken
     ])
 )
 
@@ -542,11 +541,11 @@ class TestPractice(unittest.TestCase):
         window_with_form = self.student.driver.window_handles[1]
         self.student.driver.switch_to_window(window_with_form)
         self.student.page.wait_for_page_load()
-        self.student.find(
-            By.XPATH, '//div[contains(text(),"Report Content Errors")]')
+        assert("errata" in self.student.current_url()), \
+            'not taken to assesmant errat form'
         text_box = self.student.find(
-            By.XPATH, '//input[contains(@aria-label,"ID is required")]')
-        assert(text_box.get_attribute('value') == id_num[4:]), \
+            By.XPATH, '//input[@name="location"]')
+        assert(id_num[4:] in text_box.get_attribute('value')), \
             'form not prefilled correctly'
 
         self.ps.test_updates['passed'] = True
@@ -579,24 +578,25 @@ class TestPractice(unittest.TestCase):
         self.student.driver.switch_to_window(window_with_form)
         self.student.page.wait_for_page_load()
         # fill out form
+        self.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//h1[contains(text(),"Suggest a Correction")]')
+            )
+        )
         self.student.find(
-            By.TAG_NAME, 'textarea').send_keys('qa test')
-        self.student.find(
-            By.XPATH, '//div[@data-value="Minor" and @role="radio"]').click()
-        self.student.find(
-            By.XPATH, '//div[@data-value="other" and @role="radio"]').click()
+            By.XPATH, '//input[@type="radio" and @value="Typo"]').click()
         self.student.find(
             By.XPATH,
-            '//div[contains(@data-value,"Biology") and @role="radio"]'
-        ).click()
+            '//textarea[@name="detail"]'
+        ).send_keys('automated qa test')
         self.student.find(
-            By.XPATH, '//div[@data-value="Safari" and @role="radio"]').click()
-        self.student.find(
-            By.XPATH, '//span[text()="Submit"]').click()
+            By.XPATH, '//input[@type="submit"]').click()
         # find submitted message
-        self.student.find(
-            By.XPATH,
-            '//div[contains(text(),"Thank you")]')
+        self.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//h1[contains(text(),"Thanks for your help!")]')
+            )
+        )
 
         self.ps.test_updates['passed'] = True
 
