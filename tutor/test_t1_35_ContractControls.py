@@ -27,9 +27,8 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8228, 8229, 8230, 8231, 8232,
-        8233, 8234, 8235, 8236, 8237,
-        8389
+        8228, 8230, 8231, 8232, 8233,
+        8234, 8235, 8236, 8237
     ])
 )
 
@@ -138,6 +137,7 @@ class TestContractControls(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8229 - 002 - Admin | Cancel adding a new contract
     @pytest.mark.skipif(str(8229) not in TESTS, reason='Excluded')
     def test_admin_cancel_adding_a_new_contract_8229(self):
@@ -192,6 +192,7 @@ class TestContractControls(unittest.TestCase):
         assert(len(contracts) == 0), 'contract not cancled'
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C8230 - 003 - Admin | Publish a draft contract
     @pytest.mark.skipif(str(8230) not in TESTS, reason='Excluded')
@@ -604,6 +605,7 @@ class TestContractControls(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8389 - 011 - Admin | Edit a draft contract
     @pytest.mark.skipif(str(8389) not in TESTS, reason='Excluded')
     def test_admin_edit_a_draft_contract_8389(self):
@@ -679,5 +681,5 @@ class TestContractControls(unittest.TestCase):
                  '//h2[contains(text(),"test_contract_title_011_New")]')
             )
         )
-
         self.ps.test_updates['passed'] = True
+    '''

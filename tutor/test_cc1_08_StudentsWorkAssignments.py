@@ -28,7 +28,7 @@ TESTS = os.getenv(
     str([
         7691, 7692, 7693, 7694, 7695,
         7696, 7697, 7698, 7699, 7700,
-        7701, 7702, 7703
+        7701, 7702, 100131, 100132
     ])
 )
 
@@ -1159,6 +1159,7 @@ class TestStudentsWorkAssignments(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7703 - 013 - Student | Sees product error modals
     @pytest.mark.skipif(str(7703) not in TESTS, reason='Excluded')  # NOQA
     def test_student_sees_product_error_modals_7703(self):
@@ -1177,6 +1178,59 @@ class TestStudentsWorkAssignments(unittest.TestCase):
             'cc1.08',
             'cc1.08.013',
             '7703'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+    '''
+
+    # Case C100131 - 014 - Student | Work a two-step assessment
+    @pytest.mark.skipif(str(100131) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_work_a_two_step_assessment_100131(self):
+        """Work a two-step assessment.
+
+        Steps:
+
+
+        Expected Result:
+
+        """
+        self.ps.test_updates['name'] = 'cc1.08.014' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.08',
+            'cc1.08.014',
+            '100131'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C100132 - 015 - Student | Work a multiple-choice-only assessment
+    @pytest.mark.skipif(str(100131) not in TESTS, reason='Excluded')  # NOQA
+    def test_student_work_a_multiple_choice_only_assessment_100132(self):
+        """Work a multiple-choice-only assessment.
+
+        Steps:
+
+
+        Expected Result:
+
+        """
+        self.ps.test_updates['name'] = 'cc1.08.015' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            'cc1',
+            'cc1.08',
+            'cc1.08.015',
+            '100131'
         ]
         self.ps.test_updates['passed'] = False
 

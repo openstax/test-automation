@@ -116,11 +116,11 @@ class TestTeacherViews(unittest.TestCase):
 
         # Test steps and verification assertions
         url1 = self.teacher.current_url().split('course')[1]
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a//i[@class="ui-brand-logo"]'
         ).click()
         try:
-            self.teacher.driver.find_element(
+            self.teacher.find(
                 By.XPATH,
                 '//a[not(contains(@href,"' + url1 + '"))]' +
                 '/p[contains(text(),"OpenStax Concept Coach")]'
@@ -220,16 +220,17 @@ class TestTeacherViews(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.open_user_menu()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//a/div[contains(text(),"Course Settings and Roster")]'
         ).click()
         self.teacher.driver.find_element(
             By.XPATH, '//span[contains(text(),"enrollment")]'
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//span[contains(text(),"Send enrollment instructions")]'
         )
+
         self.ps.test_updates['passed'] = True
 
     # Case C7613 - 005 - Teacher | Periods are relabeled as sections for all
@@ -257,7 +258,7 @@ class TestTeacherViews(unittest.TestCase):
         self.teacher.driver.find_element(
             By.XPATH, '//a/div[contains(text(),"Course Settings and Roster")]'
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH,
             '//button[contains(@class,"add-period")]//span[text()="Section"]'
         )
@@ -558,7 +559,7 @@ class TestTeacherViews(unittest.TestCase):
                 (By.XPATH, '//span[text()="Student Scores"]')
             )
         )
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.XPATH, '//div[contains(@class,"export-button")]//button'
         ).click()
         # wait for it to export. It says generating when still not done
@@ -568,17 +569,22 @@ class TestTeacherViews(unittest.TestCase):
                  '//div[contains(@class,"export-button")]//button')
             )
         )
+        # sleep to make sure the contents is downloaded
+        self.teacher.sleep(5)
+
         # check that it was downloaded
         coursename = self.teacher.driver.find_element(
             By.XPATH, '//div[@class="course-name"]').text
-        coursename = coursename.replace(' ', '_') + "_Scores"
+        coursename = coursename.split(' ')[0].replace(' ', '')
         home = os.getenv("HOME")
         files = os.listdir(home + '/Downloads')
         for i in range(len(files)):
-            if (coursename in files[i]) and (files[i][-5:] == '.xlsx'):
+            if (coursename in files[i]) and ('Scores' in files[i]) \
+                    and (files[i][-5:] == '.xlsx'):
                 break
             else:
                 if i == len(files)-1:
+                    print(coursename)
                     raise Exception
 
         self.ps.test_updates['passed'] = True
@@ -613,14 +619,6 @@ class TestTeacherViews(unittest.TestCase):
                 (By.XPATH, '//span[text()="Student Scores"]')
             )
         )
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[contains(@class,"scores-cell")]' +
-            '/div[@class="score"]'
-        ).click()
-        breadcrumbs = self.teacher.driver.find_elements(
-            By.XPATH, '//span[contains(@class,"openstax-breadcrumbs-")]'
-        )
         for i in range(len(breadcrumbs)-1):
             self.teacher.driver.find_element(
                 By.XPATH,
@@ -654,6 +652,19 @@ class TestTeacherViews(unittest.TestCase):
             '111251'
         ]
         self.ps.test_updates['passed'] = False
+
+        self.teacher.open_user_menu()
+        self.teacher.find(
+            By.XPATH, '//a[contains(text(),"Student Scores")]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Student Scores"]')
+            )
+        )
+
+        assert(len(self.teacher.find_all(By.CSS_SELECTOR, 'div.Due')) == 0), \
+            'Due date is present'
 
         # Test steps and verification assertions
         self.teacher.open_user_menu()

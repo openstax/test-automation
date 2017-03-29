@@ -26,9 +26,8 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8258, 8259, 8260, 8261, 8262,
-        8263, 8264, 8265, 8266, 8267,
-        58356
+        8258, 8259, 8261, 8262, 8263,
+        8264, 8265, 8266, 8267
     ])
 )
 
@@ -221,6 +220,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8260 - 003 - Teacher | Remove the last instructor from the course
     @pytest.mark.skipif(str(8260) not in TESTS, reason='Excluded')
     def test_teacher_remove_the_last_instructor_from_the_course_8260(self):
@@ -305,6 +305,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         assert(len(deleted_teacher) == 0), 'teacher not deleted'
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C8261 - 004 - Teacher | Add a period
     @pytest.mark.skipif(str(8261) not in TESTS, reason='Excluded')
@@ -399,18 +400,18 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8263 - 006 - Teacher | Archive an empty period
+    # Case C8263 - 006 - Teacher | Delete an empty period
     @pytest.mark.skipif(str(8263) not in TESTS, reason='Excluded')
     def test_teacher_archive_an_empt_period_8263(self):
         """Archive an empty period.
 
         Steps:
         Click on an empty period
-        Click "Archive Period"
-        Click "Archive" on the dialogue box
+        Click "Delete Period"
+        Click "Delete" on the dialogue box
 
         Expected Result:
-        An empty period is archived.
+        An empty period is deleted.
         """
         self.ps.test_updates['name'] = 't1.42.006' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -449,18 +450,18 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8264 - 007 - Teacher | Archive a non-empty period
+    # Case C8264 - 007 - Teacher | Delete a non-empty period
     @pytest.mark.skipif(str(8264) not in TESTS, reason='Excluded')
-    def test_teacher_archive_a_non_empty_period_8264(self):
-        """Archive a non-empty period.
+    def test_teacher_delete_a_non_empty_period_8264(self):
+        """Delete a non-empty period.
 
         Steps:
         Click on a non-empty period
-        Click "Archive Period"
-        Click Archive
+        Click "Delete Period"
+        Click Delete
 
         Expected Result:
-        Period is archived
+        Period is deleted
         """
         self.ps.test_updates['name'] = 't1.42.007' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -617,6 +618,7 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C58356 - 011 - Teacher | Unarchive an empty period
     @pytest.mark.skipif(str(58356) not in TESTS, reason='Excluded')
     def test_teacher_unarchive_an_empty_period_58356(self):
@@ -694,3 +696,4 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
             By.XPATH, '//a[contains(text(),"'+period_name+'")]')
 
         self.ps.test_updates['passed'] = True
+    '''

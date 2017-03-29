@@ -31,10 +31,10 @@ TESTS = os.getenv(
     str([
         8156, 8157, 8158, 8159, 8160,
         8161, 8162, 8163, 8164, 8165,
-        8166, 8167, 8168, 8169, 8170,
-        8171, 8172, 8173, 8174, 8175,
-        8176, 8177, 8178, 8179, 8180,
-        8181
+        8166, 8167, 8168, 8170, 8171,
+        8172, 8173, 8174, 8175, 8176,
+        8177, 8178, 8179, 8180, 8181,
+        111252
     ])
 
     # 8165 - sorting not working on site
@@ -170,7 +170,7 @@ class TestViewClassScores(unittest.TestCase):
             if (coursename in files[i]) and (files[i][-5:] == '.xlsx'):
                 break
             else:
-                if i == len(files)-1:
+                if i == len(files) - 1:
                     raise Exception
 
         self.ps.test_updates['passed'] = True
@@ -216,7 +216,7 @@ class TestViewClassScores(unittest.TestCase):
             if (coursename in files[i]) and (files[i][-5:] == '.xlsx'):
                 break
             else:
-                if i == len(files)-1:
+                if i == len(files) - 1:
                     raise Exception
         self.ps.test_updates['passed'] = True
 
@@ -255,7 +255,7 @@ class TestViewClassScores(unittest.TestCase):
     # Performance Forecast drop down menu
     @pytest.mark.skipif(str(8161) not in TESTS, reason='Excluded')
     def test_teacher_select_a_student_from_the_individual_drop_down_8161(self):
-        """Select a student from individual Performance Forecast drop down menu
+        """Select a student from individual Performance Forecast drop down menu.
 
         Steps:
         Click on the "Student Scores" button
@@ -290,7 +290,7 @@ class TestViewClassScores(unittest.TestCase):
             )
         ).click()
         self.teacher.driver.find_element(
-            By.XPATH, '//span[contains(text(), "'+name+'")]')
+            By.XPATH, '//span[contains(text(), "' + name + '")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -500,7 +500,7 @@ class TestViewClassScores(unittest.TestCase):
         scroll_total_size = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
-            ).size['width']
+        ).size['width']
         bar = scroll_width
         while(bar < scroll_total_size):
             try:
@@ -562,7 +562,7 @@ class TestViewClassScores(unittest.TestCase):
         scroll_total_size = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
-            ).size['width']
+        ).size['width']
         bar = scroll_width
         while(bar < scroll_total_size):
             try:
@@ -591,6 +591,7 @@ class TestViewClassScores(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8169 - 014 - Teacher | A homework with responses shows the period
     # average
     @pytest.mark.skipif(str(8169) not in TESTS, reason='Excluded')
@@ -647,12 +648,13 @@ class TestViewClassScores(unittest.TestCase):
                 actions.perform()
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C8170 - 015 - Teacher | An external assignment shows the number of
     # students who have clicked on it
     @pytest.mark.skipif(str(8170) not in TESTS, reason='Excluded')
     def test_teacher_external_shows_number_of_students_who_clicked_8170(self):
-        """An external assignment shows the number of students who have clicked
+        """An external assignment shows the number of students who have clicked.
 
         Steps:
         Click on the "Student Scores" button
@@ -668,7 +670,7 @@ class TestViewClassScores(unittest.TestCase):
         scroll_total_size = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
-            ).size['width']
+        ).size['width']
         bar = scroll_width
         while(bar < scroll_total_size):
             try:
@@ -697,7 +699,7 @@ class TestViewClassScores(unittest.TestCase):
     # breadcrumbs
     @pytest.mark.skipif(str(8171) not in TESTS, reason='Excluded')
     def test_teacher_navigate_reading_using_the_section_breadcrumbs_8171(self):
-        """Navigate a reading review using the section breadcrumbs
+        """Navigate a reading review using the section breadcrumbs.
 
         Steps:
         Click on the "Student Scores" button
@@ -728,7 +730,7 @@ class TestViewClassScores(unittest.TestCase):
         scroll_total_size = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
-            ).size['width']
+        ).size['width']
         bar = scroll_width
         while(bar < scroll_total_size):
             try:
@@ -776,7 +778,7 @@ class TestViewClassScores(unittest.TestCase):
     # question breadcrumbs
     @pytest.mark.skipif(str(8172) not in TESTS, reason='Excluded')
     def test_teacher_naviget_a_hw_review_using_question_breadcrumbs_8172(self):
-        """Navigate a homework review using the question breadcrumbs
+        """Navigate a homework review using the question breadcrumbs.
 
         Steps:
         Click on the "Student Scores" button
@@ -807,7 +809,7 @@ class TestViewClassScores(unittest.TestCase):
         scroll_total_size = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
-            ).size['width']
+        ).size['width']
         bar = scroll_width
         while(bar < scroll_total_size):
             try:
@@ -854,7 +856,7 @@ class TestViewClassScores(unittest.TestCase):
     # Case C8173 - 018 - Teacher | Period tabs are shown in assignment review
     @pytest.mark.skipif(str(8173) not in TESTS, reason='Excluded')
     def test_teacher_period_tabs_are_shown_in_assignemnt_review_8173(self):
-        """Period tabs are shown in the assignment review
+        """Period tabs are shown in the assignment review.
 
         Steps:
         Click on the "Student Scores" button
@@ -883,7 +885,7 @@ class TestViewClassScores(unittest.TestCase):
         scroll_total_size = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
-            ).size['width']
+        ).size['width']
         bar = scroll_width
         while(bar < scroll_total_size):
             try:
@@ -923,7 +925,7 @@ class TestViewClassScores(unittest.TestCase):
     # and Not Started counts
     @pytest.mark.skipif(str(8174) not in TESTS, reason='Excluded')
     def test_teacher_view_complete_in_progress_not_started_counts_8174(self):
-        """View the Complete, In Progress, and Not Started counts for a period
+        """View the Complete, In Progress, and Not Started counts for a period.
 
         Steps:
         Click on the "Student Scores" button
@@ -953,7 +955,7 @@ class TestViewClassScores(unittest.TestCase):
         scroll_total_size = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
-            ).size['width']
+        ).size['width']
         bar = scroll_width
         while(bar < scroll_total_size):
             try:
@@ -1002,7 +1004,7 @@ class TestViewClassScores(unittest.TestCase):
     # breadcrumbs
     @pytest.mark.skipif(str(8175) not in TESTS, reason='Excluded')
     def test_teacher_section_numbers_match_section_breadcrumbs_8175(self):
-        """Section numbers in review match the section breadcrumbs
+        """Section numbers in review match the section breadcrumbs.
 
         Steps:
         Click on the "Student Scores" button
@@ -1033,7 +1035,7 @@ class TestViewClassScores(unittest.TestCase):
         scroll_total_size = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
-            ).size['width']
+        ).size['width']
         bar = scroll_width
         while(bar < scroll_total_size):
             try:
@@ -1090,7 +1092,7 @@ class TestViewClassScores(unittest.TestCase):
     # displayed
     @pytest.mark.skipif(str(8176) not in TESTS, reason='Excluded')
     def test_teacher_each_assessment_has_correct_response_displayed_8176(self):
-        """Each assessment has a correct response displayed
+        """Each assessment has a correct response displayed.
 
         Steps:
         Click on the "Student Scores" button
@@ -1113,7 +1115,7 @@ class TestViewClassScores(unittest.TestCase):
         scroll_total_size = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
-            ).size['width']
+        ).size['width']
         bar = scroll_width
         while(bar < scroll_total_size):
             try:
@@ -1160,7 +1162,7 @@ class TestViewClassScores(unittest.TestCase):
     # response answers for an assessment
     @pytest.mark.skipif(str(8177) not in TESTS, reason='Excluded')
     def test_teacher_open_and_view_a_list_of_free_response_answers_8177(self):
-        """Open and view a list of student free response answers
+        """Open and view a list of student free response answers.
 
         Steps:
         Click on the "Student Scores" button
@@ -1190,7 +1192,7 @@ class TestViewClassScores(unittest.TestCase):
         scroll_total_size = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
-            ).size['width']
+        ).size['width']
         bar = scroll_width
         while(bar < scroll_total_size):
             try:
@@ -1235,7 +1237,7 @@ class TestViewClassScores(unittest.TestCase):
     # stats
     @pytest.mark.skipif(str(8178) not in TESTS, reason='Excluded')
     def test_teacher_assesment_pane_shows_interleaved_class_stats_8178(self):
-        """Assessment pane shows interleaved class stats
+        """Assessment pane shows interleaved class stats.
 
         Steps:
         Click on the "Student Scores" button
@@ -1262,7 +1264,7 @@ class TestViewClassScores(unittest.TestCase):
         scroll_total_size = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
-            ).size['width']
+        ).size['width']
         bar = scroll_width
         while(bar < scroll_total_size):
             try:
@@ -1295,7 +1297,7 @@ class TestViewClassScores(unittest.TestCase):
     # reading assignment
     @pytest.mark.skipif(str(8179) not in TESTS, reason='Excluded')
     def test_teacher_see_a_students_work_for_a_reading_assignment_8179(self):
-        """Teacher can see a student's work for a reading assignment
+        """Teacher can see a student's work for a reading assignment.
 
         Steps:
         Click on the "Student Scores" button
@@ -1308,7 +1310,6 @@ class TestViewClassScores(unittest.TestCase):
         "Continue" button, or breadcrumbs.
         Only sections student has gone through are shown.
         """
-
         scroll_bar = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
@@ -1316,7 +1317,7 @@ class TestViewClassScores(unittest.TestCase):
         scroll_total_size = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
-            ).size['width']
+        ).size['width']
         bar = scroll_width
         element = None  # ###
         while(bar < scroll_total_size):
@@ -1362,7 +1363,7 @@ class TestViewClassScores(unittest.TestCase):
     # homework assignment
     @pytest.mark.skipif(str(8180) not in TESTS, reason='Excluded')
     def test_teacher_view_a_students_work_for_a_homework_assignment_8180(self):
-        """View a student's work for a homework assignment
+        """View a student's work for a homework assignment.
 
         Steps:
         Click on the "Student Scores" button
@@ -1389,7 +1390,7 @@ class TestViewClassScores(unittest.TestCase):
         scroll_total_size = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
-            ).size['width']
+        ).size['width']
         bar = scroll_width
         while(bar < scroll_total_size):
             try:
@@ -1423,7 +1424,7 @@ class TestViewClassScores(unittest.TestCase):
     # external assignment
     @pytest.mark.skipif(str(8181) not in TESTS, reason='Excluded')
     def test_teacher_view_students_work_for_an_external_assignment_8181(self):
-        """Teacher can view a student's work for an external assignment
+        """Teacher can view a student's work for an external assignment.
 
         Steps:
         Click on the "Student Scores" button
@@ -1447,7 +1448,7 @@ class TestViewClassScores(unittest.TestCase):
         scroll_total_size = self.teacher.find(
             By.XPATH,
             '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
-            ).size['width']
+        ).size['width']
         bar = scroll_width
         while(bar < scroll_total_size):
             try:
@@ -1477,5 +1478,32 @@ class TestViewClassScores(unittest.TestCase):
 
         assert('task' in self.teacher.current_url()), \
             'Not viewing student "work" for external assignment'
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C111252 - 027 - Teacher | Student score columns show the assignment
+    # due date
+    @pytest.mark.skipif(str(111252) not in TESTS, reason='Excluded')
+    def test_teacher_student_score_columns_show_the_assignment_du_111252(self):
+        """Student score colums show the assignemnt due date.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.23.027' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.23', 't1.23.027', '111252']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.teacher.sleep(3)
+        titles = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='header-cell group title']")
+        due = self.teacher.driver.find_elements_by_xpath(
+            "//div[@class='due']")
+
+        assert(len(titles) == len(due)), \
+            'An assignment has no due date associated with it'
 
         self.ps.test_updates['passed'] = True

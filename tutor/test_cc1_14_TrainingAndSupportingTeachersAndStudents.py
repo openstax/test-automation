@@ -31,8 +31,7 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         7704, 7705, 7706, 7707, 7708,
-        7709, 7710, 7711, 7712, 7713,
-        7714
+        7709, 7710, 7711, 7713
     ])
 )
 
@@ -517,6 +516,7 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         assert('support' in self.student.current_url()), 'not at help center'
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7712 - 009 - Teacher | View instructions on how to assign CC
     @pytest.mark.skipif(str(7712) not in TESTS, reason='Excluded')
     def test_teacher_view_instructions_on_how_to_assign_cc_7712(self):
@@ -563,6 +563,7 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         assert('support' in self.teacher.current_url()), 'not at help center'
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C7713 - 010 - Student | Get help during account registration
     @pytest.mark.skipif(str(7713) not in TESTS, reason='Excluded')
@@ -588,6 +589,7 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7714 - 011 - Teacher | View instructions for Legacy users
     # transitioning to Concept Coach
     @pytest.mark.skipif(str(7714) not in TESTS, reason='Excluded')
@@ -612,3 +614,4 @@ class TestTrainingAndSupportingTeachersAndStudents(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''

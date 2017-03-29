@@ -30,9 +30,9 @@ TESTS = os.getenv(
         7651, 7652, 7653, 7654, 7655,
         7656, 7657, 7658, 7659, 7660,
         7661, 7662, 7663, 7665, 7667,
-        7669, 7670, 7672, 7673, 7674,
-        7675, 7676, 7677, 7678, 7679,
-        7681, 7682, 7683, 7686, 7687
+        7669, 7672, 7673, 7674, 7675,
+        7676, 7677, 7678, 7679, 7681,
+        7682, 7687
     ])
     # 7658, 7659 -- not working run forever/SUPER long time
     #        -- so code commented out and exception raised
@@ -1077,6 +1077,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7670 - 017 - Admin | Add the Content Analyst role to DMS user
     # accounts
     @pytest.mark.skipif(str(7670) not in TESTS, reason='Excluded')
@@ -1165,6 +1166,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
             'permission not elevated ' + element.get_attribute('innerHTML')
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C7672 - 018 - Content Analyst | In the QA exercise view render
     # the LaTex
@@ -1812,6 +1814,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C7683 - 028 - Content Analyst | Able to repair content errata
     # submitted by users
     @pytest.mark.skipif(str(7683) not in TESTS, reason='Excluded')
@@ -1846,7 +1849,9 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C7686 - 029 - Content Analyst | Publish reviewed content
     # from content creators
     @pytest.mark.skipif(str(7686) not in TESTS, reason='Excluded')
@@ -1879,6 +1884,7 @@ class TestExerciseEditingAndQA(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C7687 - 030 - Content Analyst | In the QA exercise view
     # render the Markdown

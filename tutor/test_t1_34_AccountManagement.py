@@ -1,4 +1,4 @@
-"""Product, Epic 34 - AccountManagement"""
+"""Product, Epic 34 - AccountManagement."""
 
 import inspect
 import json
@@ -27,11 +27,11 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8207, 8208, 8209, 8210, 8211,
-        8212, 8213, 8214, 8215, 8216,
-        8217, 8218, 8219, 8220, 8221,
-        8222, 8223, 8224, 8225, 8226,
-        8227, 8387, 8388
+        8207, 8208, 8209, 8211, 8212,
+        8213, 8214, 8215, 8216, 8217,
+        8218, 8219, 8220, 8221, 8222,
+        8223, 8224, 8225, 8226, 8387,
+        111266, 111267
     ])
 )
 
@@ -58,8 +58,8 @@ class TestAccountManagement(unittest.TestCase):
         self.google_password = os.getenv('GOOGLE_PASSWORD')
         self.facebook_account = os.getenv('FACEBOOK_USER')
         self.facebook_password = os.getenv('FACEBOOK_PASSWORD')
-        self.twitter_account = os.getenv('TWITTER_USER')
-        self.twitter_password = os.getenv('TWITTER_PASSWORD')
+        # self.twitter_account = os.getenv('TWITTER_USER')
+        # self.twitter_password = os.getenv('TWITTER_PASSWORD')
         self.student.get("http://accounts-qa.openstax.org")
 
     def tearDown(self):
@@ -74,10 +74,10 @@ class TestAccountManagement(unittest.TestCase):
         except:
             pass
 
-    # Case C8207 - 001 - User | Create a new Account with username and password
+    # Case C8207 - 001 - User | Create a new Account with an email and password
     @pytest.mark.skipif(str(8207) not in TESTS, reason='Excluded')
-    def test_user_create_a_new_account_with_a_username_and_password_8207(self):
-        """Create a new Account with a username and password.
+    def test_user_create_a_new_account_with_an_email_and_password_8207(self):
+        """Create a new Account with an email and password.
 
         Steps:
         Click on the Sign up link
@@ -112,7 +112,7 @@ class TestAccountManagement(unittest.TestCase):
         self.student.find(
             By.ID, 'signup_email_address').send_keys('email_001@test.com')
         self.student.find(
-            By.ID, 'signup_username').send_keys('automated_34_'+num)
+            By.ID, 'signup_username').send_keys('automated_34_' + num)
         self.student.find(
             By.ID, 'signup_password').send_keys(self.student.password)
         self.student.find(
@@ -124,7 +124,8 @@ class TestAccountManagement(unittest.TestCase):
         self.student.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
-                 '//div[@id="session-info"]//a[text()="automated_34_'+num+'"]')
+                 '//div[@id="session-info"]//a[text()="automated_34_' + num +
+                 '"]')
             )
         )
 
@@ -162,7 +163,7 @@ class TestAccountManagement(unittest.TestCase):
         self.student.find(
             By.ID, 'email').send_keys(self.facebook_account)
         self.student.find(
-            By.ID, 'pass').send_keys(self.facebook_password+Keys.RETURN)
+            By.ID, 'pass').send_keys(self.facebook_password + Keys.RETURN)
         self.student.page.wait_for_page_load()
         username = self.student.find(
             By.ID, 'signup_username').get_attribute('value')
@@ -172,7 +173,7 @@ class TestAccountManagement(unittest.TestCase):
         self.student.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
-                 '//div[@id="session-info"]//a[text()="'+username+'"]')
+                 '//div[@id="session-info"]//a[text()="' + username + '"]')
             )
         )
         # add password sign in, (and delete facebook so account can be reused)
@@ -252,7 +253,7 @@ class TestAccountManagement(unittest.TestCase):
         self.student.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
-                 '//div[@id="session-info"]//a[text()="'+username+'"]')
+                 '//div[@id="session-info"]//a[text()="' + username + '"]')
             )
         )
         # add password sign in, (and delete google so account can be reused)
@@ -286,6 +287,7 @@ class TestAccountManagement(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8210 - 004 - User | Create a new Account with Twitter
     @pytest.mark.skipif(str(8210) not in TESTS, reason='Excluded')
     def test_user_create_a_new_account_with_twitter_8210(self):
@@ -362,6 +364,7 @@ class TestAccountManagement(unittest.TestCase):
         ).click()
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C8211 - 005 - User | Accept the terms of service
     @pytest.mark.skipif(str(8211) not in TESTS, reason='Excluded')
@@ -392,7 +395,7 @@ class TestAccountManagement(unittest.TestCase):
         self.student.find(
             By.ID, 'signup_email_address').send_keys('email_005@test.com')
         self.student.find(
-            By.ID, 'signup_username').send_keys('automated_34_'+num)
+            By.ID, 'signup_username').send_keys('automated_34_' + num)
         self.student.find(
             By.ID, 'signup_password').send_keys(self.student.password)
         self.student.find(
@@ -432,7 +435,7 @@ class TestAccountManagement(unittest.TestCase):
         self.student.find(
             By.ID, 'signup_email_address').send_keys('email_006@test.com')
         self.student.find(
-            By.ID, 'signup_username').send_keys('automated_34_'+num)
+            By.ID, 'signup_username').send_keys('automated_34_' + num)
         self.student.find(
             By.ID, 'signup_password').send_keys(self.student.password)
         self.student.find(
@@ -619,7 +622,7 @@ class TestAccountManagement(unittest.TestCase):
         username_edit = self.student.wait.until(
             expect.visibility_of_element_located((By.ID, 'username'))
         )
-        assert(username_edit.text == username_original+('_NEW')), \
+        assert(username_edit.text == username_original + ('_NEW')), \
             'username not changed'
         # change back
         username_edit.click()
@@ -967,10 +970,10 @@ class TestAccountManagement(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C8224 - 018 - User | Enable login with username and password
+    # Case C8224 - 018 - User | Enable login with a password
     @pytest.mark.skipif(str(8224) not in TESTS, reason='Excluded')
-    def test_user_enable_standard_login_with_username_and_password_8224(self):
-        """Enable standard login with username and password.
+    def test_user_enable_standard_login_with_a_password_8224(self):
+        """Enable standard login with a password.
 
         Steps:
         Login with something other than password
@@ -1008,7 +1011,7 @@ class TestAccountManagement(unittest.TestCase):
         self.student.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
-                 '//div[@id="session-info"]//a[text()="'+username+'"]')
+                 '//div[@id="session-info"]//a[text()="' + username + '"]')
             )
         )
         # add password sign in
@@ -1079,7 +1082,7 @@ class TestAccountManagement(unittest.TestCase):
         self.student.find(
             By.ID, 'email').send_keys(self.facebook_account)
         self.student.find(
-            By.ID, 'pass').send_keys(self.facebook_password+Keys.RETURN)
+            By.ID, 'pass').send_keys(self.facebook_password + Keys.RETURN)
         # self.student.find(
         #    By.XPATH, '//button[@name="login"]').click()
         self.student.page.wait_for_page_load()
@@ -1156,6 +1159,7 @@ class TestAccountManagement(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8227 - 021 - User | Enable Twitter login
     @pytest.mark.skipif(str(8227) not in TESTS, reason='Excluded')
     def test_user_enable_twitter_login_8227(self):
@@ -1207,6 +1211,7 @@ class TestAccountManagement(unittest.TestCase):
         ).click()
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C8387 - 022 - User | Delete login option
     @pytest.mark.skipif(str(8387) not in TESTS, reason='Excluded')
@@ -1258,6 +1263,7 @@ class TestAccountManagement(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8388 - 023 - User | Info Icon shows definiton for searchable option
     @pytest.mark.skipif(str(8388) not in TESTS, reason='Excluded')
     def test_user_info_icon_shows_definition_for_searchable_option_8388(self):
@@ -1309,5 +1315,97 @@ class TestAccountManagement(unittest.TestCase):
         self.student.find(
             By.XPATH, '//div[@class="popover-content"]' +
             '//button[contains(text(),"OK")]').click()
+
+        self.ps.test_updates['passed'] = True
+    '''
+
+    # Case C111266 - 024 - User | Add an additional email address to an account
+    @pytest.mark.skipif(str(111266) not in TESTS, reason='Excluded')
+    def test_user_add_an_additional_email_address_111266(self):
+        """Add an additional email address to an account.
+
+        Steps:
+        Enter the teacher user account in the username and password text boxes
+        Click on the Sign in button
+        Click Add an email
+        Enter email adress into the textbox
+        Click on the checkmark button
+
+        Expected Result:
+        Email adress has been added to the end of the list of email adresses
+        """
+        self.ps.test_updates['name'] = 't1.34.024' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.024', '111266']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.student.login(url='http://accounts-qa.openstax.org')
+        self.student.wait.until(
+            expect.visibility_of_element_located((By.ID, 'add-an-email'))
+        ).click()
+        self.student.find(
+            By.XPATH, '//input[@type="text"]').send_keys('email_2@test.com')
+        self.student.find(
+            By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
+        ).click()
+        email = self.student.find(
+            By.XPATH, '//span[contains(text(),"email_2@test.com")]')
+
+        # Add second email
+        self.student.wait.until(
+            expect.visibility_of_element_located((By.ID, 'add-an-email'))
+        ).click()
+        self.student.find(
+            By.XPATH, '//input[@type="text"]').send_keys('email_3@test.com')
+        self.student.find(
+            By.XPATH, '//button[@type="submit"]//i[contains(@class,"ok")]'
+        ).click()
+        email = self.student.find(
+            By.XPATH, '//span[contains(text(),"email_2@test.com")]')
+
+        self.student.sleep(5)
+
+        # delete the new emails
+        email.click()
+        self.student.find(
+            By.LINK_TEXT, 'Delete').click()
+        self.student.find(
+            By.XPATH, '//div[@class="popover-content"]' +
+            '//button[contains(text(),"OK")]').click()
+
+        self.student.sleep(3)
+        email = self.student.find(
+            By.XPATH, '//span[contains(text(),"email_3@test.com")]')
+        email.click()
+        self.student.find(
+            By.LINK_TEXT, 'Delete').click()
+
+        self.student.sleep(3)
+        self.student.find(
+            By.XPATH, '//div[@class="popover-content"]' +
+            '//button[contains(text(),"OK")]').click()
+
+        self.student.sleep(5)
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C111267 - 025 - User | Verify an email address using a
+    # confirmation URL
+    @pytest.mark.skipif(str(111267) not in TESTS, reason='Excluded')
+    def test_user_verify_email_using_confirmation_url_111267(self):
+        """Verify an email address using a confirmation URL.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't1.34.025' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.34', 't1.34.025', '111267']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True

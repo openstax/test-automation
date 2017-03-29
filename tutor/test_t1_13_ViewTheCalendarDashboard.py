@@ -32,7 +32,7 @@ TESTS = os.getenv(
     str([
         7978, 7979, 7980, 7981, 7982,
         7983, 7984, 7985, 7986, 7987,
-        7988, 7989, 7990, 7991
+        7988, 7989, 7990
     ])
 )
 
@@ -522,8 +522,9 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7991 - 014 - Teacher | CLick in the OpenStax logo to return to the
-    # dashboard
+    '''
+    # Case C7991 - 014 - Teacher | CLick in the OpenStax logo to return to
+    # the dashboard
     @pytest.mark.skipif(str(7991) not in TESTS, reason='Excluded')
     def test_teacher_clicks_openstax_logo_to_return_to_dashboard_7991(self):
         """CLick in the OpenStax logo to return to the dashboard.
@@ -565,3 +566,4 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
             'Not viewing the calendar dashboard'
 
         self.ps.test_updates['passed'] = True
+        '''
