@@ -10,7 +10,6 @@ from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
-# from staxing.assignment import Assignment
 from selenium.common.exceptions import NoSuchElementException
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
@@ -550,6 +549,12 @@ class TestTeacherViews(unittest.TestCase):
         Expected Result:
         Student scores are downloaded in an excel spreadsheet
         """
+        self.ps.test_updates['name'] = 'cc1.13.013' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.013', '7622']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
             By.XPATH, '//a/div[contains(text(),"Student Scores")]'
@@ -619,6 +624,13 @@ class TestTeacherViews(unittest.TestCase):
                 (By.XPATH, '//span[text()="Student Scores"]')
             )
         )
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="score"]')
+            )
+        ).click()
+        breadcrumbs = self.teacher.find_all(
+            By.XPATH, '//span[contains(@class,"breadcrumb")]')
         for i in range(len(breadcrumbs)-1):
             self.teacher.driver.find_element(
                 By.XPATH,
@@ -655,7 +667,7 @@ class TestTeacherViews(unittest.TestCase):
 
         self.teacher.open_user_menu()
         self.teacher.find(
-            By.XPATH, '//a[contains(text(),"Student Scores")]'
+            By.XPATH, '//a/div[contains(text(),"Student Scores")]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
