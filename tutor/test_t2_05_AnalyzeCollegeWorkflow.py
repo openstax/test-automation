@@ -179,12 +179,7 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.05.004' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.05',
-            't2.05.004',
-            '14648'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.05', 't2.05.004', '14648']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -261,12 +256,7 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
         """
         self.ps.test_updates['name'] = 't2.05.005' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.05',
-            't2.05.005',
-            '14649'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.05', 't2.05.005', '14649']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
@@ -335,18 +325,11 @@ class TestAnalyzeCollegeWorkflow(unittest.TestCase):
 
         Steps:
 
-
         Expected Result:
-
         """
         self.ps.test_updates['name'] = 't2.05.006' \
             + inspect.currentframe().f_code.co_name[4:]
-        self.ps.test_updates['tags'] = [
-            't2',
-            't2.05',
-            't2.05.006',
-            '14650'
-        ]
+        self.ps.test_updates['tags'] = ['t2', 't2.05', 't2.05.006', '14650']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
