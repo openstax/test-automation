@@ -10,7 +10,6 @@ from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
-# from staxing.assignment import Assignment
 from selenium.common.exceptions import NoSuchElementException
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
@@ -52,9 +51,11 @@ class TestTeacherViews(unittest.TestCase):
             self.teacher = Teacher(
                 use_env_vars=True
             )
-        self.teacher.username = os.getenv('TEACHER_USER_CC')
         self.teacher.login()
-        self.teacher.select_course(appearance='micro_economics')
+        self.teacher.driver.find_element(
+            By.XPATH,
+            '//p[contains(text(),"OpenStax Concept Coach")]'
+        ).click()
 
     def tearDown(self):
         """Test destructor."""
@@ -89,9 +90,9 @@ class TestTeacherViews(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.find(By.CSS_SELECTOR, '.results')
-        # assert('cc-dashboard' in self.teacher.current_url()), \
-        #     'not at Concept Coach Dashboard'
+        self.teacher.driver.find_element(
+            By.XPATH, "//span[text()='Class Dashboard']"
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -120,21 +121,16 @@ class TestTeacherViews(unittest.TestCase):
         try:
             self.teacher.find(
                 By.XPATH,
-                '//a[contains(@href,"/course") ' +
-                'and not(contains(@href,"'+str(url1)+'"))]'
+                '//a[not(contains(@href,"' + url1 + '"))]' +
+                '/p[contains(text(),"OpenStax Concept Coach")]'
             ).click()
         except NoSuchElementException:
             print('Only one CC course, cannot go to another')
             raise Exception
-        """try:
-            self.teacher.find(
-                By.XPATH,
-                '//div[contains(@class,"cc-dashboard")]')
-        except NoSuchElementException:
-            print("Not at Concept Coach Dashboard")"""
-
-        # assert('cc-dashboard' in self.teacher.current_url()), \
-        #    'not at Concept Coach Dashboard'
+        # assert that user at cc dashboard
+        self.teacher.driver.find_element(
+            By.XPATH, "//span[text()='Class Dashboard']"
+        )
         assert(url1 != self.teacher.current_url()), \
             'went to same course'
 
@@ -161,8 +157,43 @@ class TestTeacherViews(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # HW pdf
-        self.teacher.find(By.XPATH, '//a[contains(text(),"Homework PDF")]')
-        self.teacher.find(By.XPATH, '//a[contains(text(),"Online Book")]')
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Homework PDF")]'
+        ).click()
+        coursename = self.teacher.driver.find_element(
+            By.XPATH, '//div[@class="cc-dashboard"]/div[@data-appearance]'
+        ).get_attribute('data-appearance')
+        coursename = coursename.split('_')
+        home = os.getenv("HOME")
+        files = os.listdir(home + '/Downloads')
+        for i in range(len(files)):
+            match = True
+            for word in coursename:
+                if not ((word in files[i]) and (files[i][-4:] == '.pdf')):
+                    match = False
+                    break
+            if match:
+                break
+            else:
+                if i == len(files)-1:
+                    print("textbok pdf not downloaded")
+                    raise Exception
+        # online book
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Online Book")]'
+        ).click()
+        window_with_book = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(window_with_book)
+        assert('cnx' in self.teacher.current_url()), \
+            'Not viewing the textbook PDF'
+        self.teacher.driver.switch_to_window(
+            self.teacher.driver.window_handles[0])
+        # assignment links
+        self.teacher.driver.find_element(
+            By.XPATH, '//a[contains(text(),"Assignment Links")]'
+        ).click()
+        assert('assignment-links' in self.teacher.current_url()), \
+            'not viewing Assignment Links'
 
         self.ps.test_updates['passed'] = True
 
@@ -189,23 +220,14 @@ class TestTeacherViews(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.open_user_menu()
         self.teacher.find(
-            By.XPATH, '//a[contains(text(),"Course Settings and Roster")]'
+            By.XPATH, '//a/div[contains(text(),"Course Settings and Roster")]'
+        ).click()
+        self.teacher.driver.find_element(
+            By.XPATH, '//span[contains(text(),"enrollment")]'
         ).click()
         self.teacher.find(
-            By.XPATH, '//span[contains(text(),"enrollment instructions")]'
-        ).click()
-        self.teacher.find(
             By.XPATH,
-            '//*[contains(@class,"enrollment-code")]'
-        )
-
-        element = self.teacher.find(
-            By.XPATH,
-            '//textarea'
-        )
-        element.find_element(
-            By.XPATH,
-            '//*[contains(text(),"course enrollment code")]'
+            '//span[contains(text(),"Send enrollment instructions")]'
         )
 
         self.ps.test_updates['passed'] = True
@@ -233,11 +255,11 @@ class TestTeacherViews(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.XPATH, '//a[contains(text(),"Course Settings and Roster")]'
+            By.XPATH, '//a/div[contains(text(),"Course Settings and Roster")]'
         ).click()
-        self.teacher.driver.find_element(
-            By.CSS_SELECTOR,
-            '.add-period'
+        self.teacher.find(
+            By.XPATH,
+            '//button[contains(@class,"add-period")]//span[text()="Section"]'
         )
 
         self.ps.test_updates['passed'] = True
@@ -262,7 +284,7 @@ class TestTeacherViews(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.XPATH, '//a[contains(text(),"Student Scores")]'
+            By.XPATH, '//a/div[contains(text(),"Student Scores")]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -294,7 +316,7 @@ class TestTeacherViews(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.XPATH, '//a[contains(text(),"Student Scores")]'
+            By.XPATH, '//a/div[contains(text(),"Student Scores")]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -333,7 +355,7 @@ class TestTeacherViews(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.XPATH, '//a[contains(text(),"Student Scores")]'
+            By.XPATH, '//a/div[contains(text(),"Student Scores")]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -368,7 +390,7 @@ class TestTeacherViews(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.XPATH, '//a[contains(text(),"Student Scores")]'
+            By.XPATH, '//a/div[contains(text(),"Student Scores")]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -402,7 +424,7 @@ class TestTeacherViews(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.XPATH, '//a[contains(text(),"Student Scores")]'
+            By.XPATH, '//a/div[contains(text(),"Student Scores")]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -438,7 +460,7 @@ class TestTeacherViews(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.XPATH, '//a[contains(text(),"Student Scores")]'
+            By.XPATH, '//a/div[contains(text(),"Student Scores")]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -453,14 +475,12 @@ class TestTeacherViews(unittest.TestCase):
         breadcrumbs = self.teacher.driver.find_elements(
             By.XPATH, '//span[contains(@class,"openstax-breadcrumbs-")]'
         )
-        for breadcrumb in breadcrumbs:
-            breadcrumb.click()
-        """for i in range(len(breadcrumbs)-1):
+        for i in range(len(breadcrumbs)-1):
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//span[contains(@class,"openstax-breadcrumbs-")' +
-                'and contains(@style,"index' + str(i) + '")]'
-            ).click()"""
+                '//span[contains(@class,"openstax-breadcrumbs-")]' +
+                '[' + str(i + 1) + ']'
+            ).click()
 
         self.ps.test_updates['passed'] = True
 
@@ -486,7 +506,7 @@ class TestTeacherViews(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.XPATH, '//a[contains(text(),"Student Scores")]'
+            By.XPATH, '//a/div[contains(text(),"Student Scores")]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -500,8 +520,7 @@ class TestTeacherViews(unittest.TestCase):
         ).click()
         self.teacher.driver.find_element(
             By.XPATH,
-            '//span[contains(@class,"openstax-breadcrumbs-")' +
-            'and contains(@data-label,"summary")]'
+            '//span[contains(@class,"breadcrumb-end")]'
         ).click()
         self.teacher.sleep(0.5)
         breadcrumbs_answered = self.teacher.driver.find_elements(
@@ -530,9 +549,15 @@ class TestTeacherViews(unittest.TestCase):
         Expected Result:
         Student scores are downloaded in an excel spreadsheet
         """
+        self.ps.test_updates['name'] = 'cc1.13.013' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['cc1', 'cc1.13', 'cc1.13.013', '7622']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.XPATH, '//a[contains(text(),"Student Scores")]'
+            By.XPATH, '//a/div[contains(text(),"Student Scores")]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -546,10 +571,9 @@ class TestTeacherViews(unittest.TestCase):
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
-                 '//div[contains(@class,"export-button")]' +
-                 '//button[text()="Export"]')
-                )
+                 '//div[contains(@class,"export-button")]//button')
             )
+        )
         # sleep to make sure the contents is downloaded
         self.teacher.sleep(5)
 
@@ -593,48 +617,31 @@ class TestTeacherViews(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.open_user_menu()
         self.teacher.driver.find_element(
-            By.XPATH, '//a[contains(text(),"Question Library")]'
+            By.XPATH, '//a/div[contains(text(),"Student Scores")]'
         ).click()
-        self.teacher.sleep(2)
-        """self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//span[text()="Question Library"]')
-            )
-        )"""
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//span[contains(@class,"tri-state-checkbox")]'
-        ).click()
-        self.teacher.find(
-            By.XPATH,
-            '//button[contains(@class, "btn-primary")]').click()
-
         self.teacher.wait.until(
             expect.visibility_of_element_located(
-                (By.XPATH,
-                 '//div[contains(@class,"exercises-display")]'
-                 )
-                )
+                (By.XPATH, '//span[text()="Student Scores"]')
             )
-        self.teacher.find(
-            By.XPATH,
-            '//span[contains(@class,"exercise-tag") ' +
-            'and contains(text(),"ID")]')
-
-        """breadcrumbs = self.teacher.driver.find_elements(
-            By.XPATH, '//span[contains(@class,"openstax-breadcrumbs-")]'
         )
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="score"]')
+            )
+        ).click()
+        breadcrumbs = self.teacher.find_all(
+            By.XPATH, '//span[contains(@class,"breadcrumb")]')
         for i in range(len(breadcrumbs)-1):
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//span[contains(@class,"exercise-tag")]' +
-                '//span[contains(text(),"ID")]'
+                '//span[contains(@class,"exercise-identifier-link")' +
+                ' and contains(text(),"ID")]'
             )
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//span[contains(@class,"openstax-breadcrumbs-")' +
-                'and contains(@data-reactid,"step-' + str(i) + '")]'
-            ).click()"""
+                '//span[contains(@class,"openstax-breadcrumbs-")]' +
+                '[' + str(i + 2) + ']'
+            ).click()
 
         self.ps.test_updates['passed'] = True
 
@@ -660,7 +667,7 @@ class TestTeacherViews(unittest.TestCase):
 
         self.teacher.open_user_menu()
         self.teacher.find(
-            By.XPATH, '//a[contains(text(),"Student Scores")]'
+            By.XPATH, '//a/div[contains(text(),"Student Scores")]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
@@ -672,6 +679,20 @@ class TestTeacherViews(unittest.TestCase):
             'Due date is present'
 
         # Test steps and verification assertions
-        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.open_user_menu()
+        self.teacher.driver.find_element(
+            By.XPATH, '//a/div[contains(text(),"Student Scores")]'
+        ).click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//span[text()="Student Scores"]')
+            )
+        )
+        date_cells = self.teacher.find_all(
+            By.XPATH,
+            '//div[@class="header-cell-wrapper"]//div[@class="header-row"]'
+        )
+        for i in range(len(date_cells)-1):
+            assert(date_cells[i].text == ""), "date cell is not empty"
 
         self.ps.test_updates['passed'] = True
