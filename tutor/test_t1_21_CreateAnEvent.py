@@ -129,13 +129,13 @@ class TestCreateAnEvent(unittest.TestCase):
         ).click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH, '//label[contains(text(), "' + assignment_name + '")]')
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//label[contains(text(), '" + assignment_name + "')]")
+                '//label[contains(text(), "' + assignment_name + '")]')
 
         self.ps.test_updates['passed'] = True
     '''
@@ -358,11 +358,10 @@ class TestCreateAnEvent(unittest.TestCase):
             element = self.teacher.driver.find_element(
                 By.XPATH, '//div[contains(@class,"tasking-plan")]' +
                 '[' + str(x+1) + ']' +
-                # 'and contains(@data-reactid,":'+str(x+1)+'")]' +
                 '//div[contains(@class,"-due-date")]' +
                 '//div[contains(@class,"datepicker__input")]')
             self.teacher.driver.execute_script(
-                'window.scrollBy(0,'+str(element.size['height']+50)+');')
+                'window.scrollBy(0,' + str(element.size['height'] + 50) + ');')
             self.teacher.sleep(0.5)
             element.click()
             # get calendar to correct month
@@ -386,7 +385,6 @@ class TestCreateAnEvent(unittest.TestCase):
             self.teacher.driver.find_element(
                 By.XPATH, '//div[contains(@class,"tasking-plan")]' +
                 '[' + str(x+1) + ']' +
-                # ' contains(@data-reactid,":'+str(x+1)+'")]' +
                 '//div[contains(@class,"-open-date")]' +
                 '//div[contains(@class,"datepicker__input")]').click()
             # get calendar to correct month
@@ -485,13 +483,13 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//a//label[contains(text(), '" + assignment_name + "')]")
+                '//a//label[contains(text(), "' + assignment_name + '")]')
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//a//label[contains(text(), '" + assignment_name + "')]")
+                '//a//label[contains(text(), "' + assignment_name + '")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -550,13 +548,14 @@ class TestCreateAnEvent(unittest.TestCase):
         ).click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH,
+                '//label[contains(text(), "' + assignment_name + '")]')
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//label[contains(text(), '" + assignment_name + "')]")
+                '//label[contains(text(), "' + assignment_name + '")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -594,7 +593,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -603,7 +602,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -612,13 +611,14 @@ class TestCreateAnEvent(unittest.TestCase):
         ).click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH,
+                '//label[contains(text(), "' + assignment_name + '")]')
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//label[contains(text(), '" + assignment_name + "')]")
+                '//label[contains(text(), "' + assignment_name + '")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -839,7 +839,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -848,7 +848,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -896,7 +896,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -905,7 +905,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -962,7 +962,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -971,7 +971,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1025,7 +1025,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -1034,7 +1034,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1318,7 +1318,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -1327,7 +1327,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1431,7 +1431,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -1440,7 +1440,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1609,7 +1609,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -1618,7 +1618,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1817,13 +1817,13 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//label[contains(text(), 'NEW"+assignment_name+"')]")
+                '//label[contains(text(), "NEW' + assignment_name + '")]')
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//label[contains(text(), 'NEW"+assignment_name+"')]")
+                '//label[contains(text(), "NEW' + assignment_name + '")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -1864,7 +1864,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -1873,7 +1873,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a//label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1899,13 +1899,13 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//label[contains(text(), 'NEW"+assignment_name+"')]")
+                '//label[contains(text(), "NEW' + assignment_name + '")]')
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//label[contains(text(), 'NEW"+assignment_name+"')]")
+                '//label[contains(text(), "NEW' + assignment_name + '")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -2004,14 +2004,14 @@ class TestCreateAnEvent(unittest.TestCase):
             By.XPATH, '//button[contains(@class,"-publish")]').click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), 'NEW" +
-                assignment_name + "')]")
+                By.XPATH, '//label[contains(text(), "NEW' +
+                assignment_name + '")]')
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), 'NEW" +
-                assignment_name + "')]")
+                By.XPATH, '//label[contains(text(), "NEW' +
+                assignment_name + '")]')
 
         self.ps.test_updates['passed'] = True
 
