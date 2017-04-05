@@ -8,7 +8,7 @@ import unittest
 import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
-# from random import randint
+from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 from staxing.assignment import Assignment
@@ -159,11 +159,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
-        )
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        Assignment().open_assignment_menu(self.teacher.driver)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Add Event')
@@ -202,12 +198,13 @@ class TestCreateAnEvent(unittest.TestCase):
             'return arguments[0].scrollIntoView();', calendar_date)
         self.teacher.sleep(1)
         actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(calendar_date)
-        actions.move_by_offset(0, -35)
-        actions.click()
-        actions.move_by_offset(30, 100)
+        actions.move_to_element_with_offset(calendar_date, 50, 10)
         actions.click()
         actions.perform()
+        self.teacher.find(
+            By.XPATH,
+            '//ul[@class="new-assignments"]//a[contains(text(),"Add Event")]'
+        ).click()
         assert('event/new' in self.teacher.current_url()),\
             'not at Add Event page'
 
@@ -239,11 +236,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
-        )
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        Assignment().open_assignment_menu(self.teacher.driver)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Add Event')
@@ -340,11 +333,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
-        )
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        Assignment().open_assignment_menu(self.teacher.driver)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Add Event')
@@ -420,19 +409,22 @@ class TestCreateAnEvent(unittest.TestCase):
             self.teacher.sleep(0.5)
         # Check that due dates were changed
         for x in range(len(periods)):
-            self.teacher.driver.find_element(
+            period = self.teacher.driver.find_element(
                 By.XPATH,
-                '//input[@value="%s"][%d]' %
-                ((today + datetime.timedelta(days=x)).
-                 strftime('%m/%d/%Y'),
-                 (x + 1))
+                '//div[contains(@class,"tutor-date-input row")][%s]' %
+                (x + 1)
             )
-            self.teacher.driver.find_element(
+            period.find_element(
                 By.XPATH,
-                '//input[@value="%s"][%d]' %
-                ((today + datetime.timedelta(days=(len(periods) + 5))).
-                 strftime('%m/%d/%Y'),
-                 (x + 1))
+                '//input[@value="%s"]' %
+                (today + datetime.timedelta(days=x)).
+                strftime('%m/%d/%Y')
+            )
+            period.find_element(
+                By.XPATH,
+                '//input[@value="%s"]' %
+                (today + datetime.timedelta(days=(len(periods) + 5))).
+                strftime('%m/%d/%Y')
             )
 
         self.ps.test_updates['passed'] = True
@@ -461,18 +453,14 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'event006'
-        assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
-        )
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        assignment_name = 'event006-%s' % randint(0, 1000)
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.sleep(1)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Add Event')
             )
         ).click()
-        self.teacher.sleep(1)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
@@ -496,13 +484,14 @@ class TestCreateAnEvent(unittest.TestCase):
         ).click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//a/label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH,
+                "//a//label[contains(text(), '" + assignment_name + "')]")
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//a/label[contains(text(), '" + assignment_name + "')]")
+                "//a//label[contains(text(), '" + assignment_name + "')]")
 
         self.ps.test_updates['passed'] = True
 
@@ -530,12 +519,8 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'event007'
-        assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
-        )
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        assignment_name = 'event007-%s' % randint(0, 1000)
+        Assignment().open_assignment_menu(self.teacher.driver)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Add Event')
@@ -609,7 +594,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -618,7 +603,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -658,11 +643,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
-        )
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        Assignment().open_assignment_menu(self.teacher.driver)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Add Event')
@@ -705,11 +686,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
-        )
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        Assignment().open_assignment_menu(self.teacher.driver)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Add Event')
@@ -757,11 +734,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
-        )
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        Assignment().open_assignment_menu(self.teacher.driver)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Add Event')
@@ -803,11 +776,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
-        )
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        Assignment().open_assignment_menu(self.teacher.driver)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Add Event')
@@ -855,7 +824,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'event013'
+        assignment_name = 'event013-%s' % randint(0, 1000)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -870,7 +839,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -879,7 +848,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -912,7 +881,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'event014'
+        assignment_name = 'event014-%s' % randint(0, 1000)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -927,7 +896,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -936,7 +905,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -993,7 +962,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -1002,7 +971,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1056,7 +1025,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -1065,7 +1034,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1110,11 +1079,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
-        )
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        Assignment().open_assignment_menu(self.teacher.driver)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Add Event')
@@ -1154,11 +1119,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
-        )
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        Assignment().open_assignment_menu(self.teacher.driver)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Add Event')
@@ -1357,7 +1318,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -1366,7 +1327,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1410,11 +1371,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
-        )
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        Assignment().open_assignment_menu(self.teacher.driver)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Add Event')
@@ -1474,7 +1431,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -1483,7 +1440,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1597,11 +1554,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
-        )
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        Assignment().open_assignment_menu(self.teacher.driver)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Add Event')
@@ -1656,7 +1609,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -1665,7 +1618,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1769,11 +1722,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"sidebar-toggle")]'
-        )
-        if 'open' not in assignment_menu.get_attribute('class'):
-            assignment_menu.click()
+        Assignment().open_assignment_menu(self.teacher.driver)
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.LINK_TEXT, 'Add Event')
@@ -1915,7 +1864,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -1924,7 +1873,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"'+assignment_name+'")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -2086,5 +2035,21 @@ class TestCreateAnEvent(unittest.TestCase):
 
         # Test steps and verification assertions
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        # Assignment().open_assignment_menu(self.teacher.driver)
+        # self.teacher.sleep(1)
+        # calendar_date = self.teacher.wait.until(
+        #     expect.element_to_be_clickable(
+        #         (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
+        #     )
+        # )
+        # add_event = self.teacher.find(
+        #     By.XPATH,
+        #     '//ul[@class="new-assignments"]//a[contains(text(),"Add Event")]'
+        # )
+        # actions = ActionChains(self.teacher.driver)
+        # actions.drag_and_drop(add_event, calendar_date)
+        # actions.perform
+        # self.teacher.sleep(4)
+        # assert('event/new' in self.teacher.current_url()),\
+        #     'not at Add Event Assignment page'
         self.ps.test_updates['passed'] = True
