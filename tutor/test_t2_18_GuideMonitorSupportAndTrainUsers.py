@@ -34,14 +34,15 @@ TESTS = os.getenv(
     ])
 )
 
+
 @PastaDecorator.on_platforms(BROWSERS)
 class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
     """T2.18 - Guide, Monitor, Support, and Train Users."""
 
     def setUp(self):
         """Pretest settings."""
-        self.ps=PastaSauce()
-        self.desired_capabilities['name']=self.id()
+        self.ps = PastaSauce()
+        self.desired_capabilities['name'] = self.id()
         if not LOCAL_RUN:
             self.teacher = Teacher(
                 use_env_vars=True,
