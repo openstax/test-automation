@@ -27,12 +27,13 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14752, 14751, 58279, 58280, 58284,
+        14752, 14751, 58280, 58284,
         58352, 58288, 58313, 58314, 58315,
-        58322, 58316, 58318, 58319, 14755,
-        14750, 58336, 58337, 58348, 111250
+        58322, 58316, 58318, 58319,
+        14750, 58337, 111250
     ])
 )
+# Not implemented: 58279, 14755, 58336, 58348,
 
 
 @PastaDecorator.on_platforms(BROWSERS)
@@ -81,12 +82,15 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
                 job_id=str(self.teacher.driver.session_id),
                 **self.ps.test_updates
             )
+
         try:
+            self.student.driver = None
+            self.admin.driver = None
             self.teacher.delete()
         except:
             pass
 
-    # 14752 - 001 - User | In-app Notification of downtime
+    # C14752 - 001 - User | In-app Notification of downtime
     @pytest.mark.skipif(str(14752) not in TESTS, reason='Excluded')
     def test_user_inapp_notification_of_downtime_14752(self):
         """In-app Notification of downtime.
@@ -115,39 +119,24 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         # create notification
         self.admin.login()
         self.admin.open_user_menu()
-        self.admin.find(
-            By.LINK_TEXT, 'Admin'
-        ).click()
-        self.admin.find(
-            By.XPATH, '//a[text()="System Setting"]'
-        ).click()
-        self.admin.find(
-            By.XPATH, '//a[text()="Notifications"]'
-        ).click()
-        self.admin.find(
-            By.ID, 'message'
-        ).send_keys("test_notification")
-        self.admin.find(
-            By.XPATH, '//input[@value="Add"]'
-        ).click()
-        self.admin.find(
-            By.XPATH, '//a[text()="admin "]'
-        ).click()
-        self.admin.find(
-            By.XPATH, '//a[text()="Sign out!"]'
-        ).click()
-        # check that notification appears
+        self.admin.find(By.LINK_TEXT, 'Admin').click()
+        self.admin.find(By.XPATH, '//a[text()="System Setting"]').click()
+        self.admin.find(By.XPATH, '//a[text()="Notifications"]').click()
+        self.admin.find(By.ID, 'message') \
+            .send_keys("test_notification")
+        self.admin.find(By.XPATH, '//input[@value="Add"]').click()
+        self.admin.find(By.XPATH, '//a[text()="admin "]').click()
+        self.admin.find(By.XPATH, '//a[text()="Sign out!"]').click()
+
+        # check that the notification appears
         self.teacher.login()
-        self.teacher.find(
-            By.XPATH, '//p[@data-is-beta="true"]'
-        ).click()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
         self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH,
-                 '//div[contains(@class,"notifications-bar")]' +
-                 '//span[text()="test_notification"]'
-                 )
-            )
+            expect.visibility_of_element_located((
+                By.XPATH,
+                '//div[contains(@class,"notifications-bar")]' +
+                '//span[text()="test_notification"]'
+            ))
         )
         self.teacher.find(
             By.XPATH,
@@ -155,37 +144,31 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
             '//span[text()="test_notification"]'
         )
         self.teacher.logout()
+
         # remove notification
         self.admin.login()
         self.admin.open_user_menu()
-        self.admin.find(
-            By.LINK_TEXT, 'Admin'
-        ).click()
-        self.admin.find(
-            By.XPATH, '//a[text()="System Setting"]'
-        ).click()
-        self.admin.find(
-            By.XPATH, '//a[text()="Notifications"]'
-        ).click()
-        self.admin.find(
-            By.XPATH, '//a[text()="Remove"]'
-        ).click()
+        self.admin.find(By.LINK_TEXT, 'Admin').click()
+        self.admin.find(By.XPATH, '//a[text()="System Setting"]').click()
+        self.admin.find(By.XPATH, '//a[text()="Notifications"]').click()
+        self.admin.find(By.XPATH, '//a[text()="Remove"]').click()
         self.admin.driver.switch_to_alert().accept()
+
         self.ps.test_updates['passed'] = True
 
-    # 14751 - 002 - Teacher | Directed to a "No Courses" page when not in any
+    # C14751 - 002 - Teacher | Directed to a "No Courses" page when not in any
     # courses yet
     @pytest.mark.skipif(str(14751) not in TESTS, reason='Excluded')
     def test_teacher_directed_to_a_no_courses_page_when_not_in_any_14751(self):
         """Directed to a "No Courses" page when not in any courses yet.
 
         Steps:
-        Go to tutor-qa.openstax.org
-        Sign in as demo_teacher; password
+        Go to Tutor
+        Sign in as a teacher without a course
 
         Expected Result:
         The message "We cannot find an OpenStax course associated with your
-        account" displays with help links below
+        account" displays with help links below.
         """
         self.ps.test_updates['name'] = 't2.18.002' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -193,14 +176,23 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.login(username='demo_teacher')
-        self.teacher.find(
-            By.XPATH,
-            '//p[contains(text(),' +
-            '"cannot find an OpenStax course associated with your account")]')
+        self.teacher.login(
+            username='demo_teacher',
+            password=os.getenv('CONTENT_PASSWORD')
+        )
+        self.teacher.page.wait_for_page_load()
+
+        self.teacher.wait.until(
+            expect.visibility_of_element_located((
+                By.XPATH,
+                '//p[contains(text(),"cannot find an ' +
+                'OpenStax course associated")]'
+            ))
+        )
+
         self.ps.test_updates['passed'] = True
 
-    # 58279 - 003 - Teacher | View "Getting Started with Tutor" Guide
+    # C58279 - 003 - Teacher | View "Getting Started with Tutor" Guide
     @pytest.mark.skipif(str(58279) not in TESTS, reason='Excluded')
     def test_teacher_view_getting_started_with_tutor_guide_58279(self):
         """View "Getting Started with Tutor" Guide.
@@ -218,28 +210,26 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.find(
-            By.XPATH, '//p[@data-is-beta="true"]'
-        ).click()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
         self.teacher.open_user_menu()
-        self.teacher.find(
-            By.LINK_TEXT, 'Get Help'
-        ).click()
+        self.teacher.find(By.LINK_TEXT, 'Get Help').click()
         self.teacher.sleep(1)
+
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        self.teacher.find(By.ID, 'searchAskInput').send_keys('getting started')
+        self.teacher.find(By.ID, 'searchAskInput') \
+            .send_keys('getting started')
         self.teacher.find(By.ID, 'searchAskButton').click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
-        self.teacher.find(
-            By.XPATH, '//h1[contains(text(), "Getting Started")]'
-        )
+
+        self.teacher.find(By.CSS_SELECTOR, '.article a').click()
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.teacher.find(By.XPATH, '//h1[contains(text(),"Getting Started")]')
         assert('articles' in self.teacher.current_url()), 'not at article'
 
         self.ps.test_updates['passed'] = True
 
-    # 58280 - 004 - Teacher | Access Tutor Help Center after registering for
+    # C58280 - 004 - Teacher | Access Tutor Help Center after registering for
     # a course
     @pytest.mark.skipif(str(58280) not in TESTS, reason='Excluded')
     def test_teacher_access_tutor_help_center_after_registering_58280(self):
@@ -262,23 +252,21 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.find(
-            By.XPATH, '//p[@data-is-beta="true"]'
-        ).click()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
         self.teacher.open_user_menu()
-        self.teacher.find(
-            By.LINK_TEXT, 'Get Help'
-        ).click()
+        self.teacher.find(By.LINK_TEXT, 'Get Help').click()
         self.teacher.sleep(1)
+
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(
-            By.XPATH, '//center[contains(text(),"Tutor Support")]'
+            By.XPATH,
+            '//center[contains(text(),"Tutor Support")]'
         )
 
         self.ps.test_updates['passed'] = True
 
-    # 58284 - 005 - User | Submit a question
+    # C58284 - 005 - User | Submit a question
     @pytest.mark.skipif(str(58284) not in TESTS, reason='Excluded')
     def test_user_submit_a_question_58284(self):
         """Submit a question.
@@ -298,21 +286,20 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.find(
-            By.XPATH, '//p[@data-is-beta="true"]'
-        ).click()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
         self.teacher.open_user_menu()
-        self.teacher.find(
-            By.LINK_TEXT, 'Get Help'
-        ).click()
+        self.teacher.find(By.LINK_TEXT, 'Get Help').click()
         self.teacher.sleep(1)
+
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskInput') \
+            .send_keys('question')
         self.teacher.find(By.ID, 'searchAskButton').click()
         self.teacher.page.wait_for_page_load()
+
         self.teacher.find(By.ID, 'results')
-        self.teacher.find(By.XPATH, '//div[@class="article "]')
+        self.teacher.find(By.CSS_SELECTOR, 'div.article')
 
         self.ps.test_updates['passed'] = True
 
@@ -338,24 +325,23 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.find(
-            By.XPATH, '//p[@data-is-beta="true"]'
-        ).click()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
         self.teacher.open_user_menu()
-        self.teacher.find(
-            By.LINK_TEXT, 'Get Help'
-        ).click()
+        self.teacher.find(By.LINK_TEXT, 'Get Help').click()
         self.teacher.sleep(1)
+
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskInput') \
+            .send_keys('question')
         self.teacher.find(By.ID, 'searchAskButton').click()
         self.teacher.page.wait_for_page_load()
+
         self.teacher.find(By.XPATH, '//a[contains(text(),"Email Us")]')
 
         self.ps.test_updates['passed'] = True
 
-    # 58288 - 007 - User | View an article after submitting a question
+    # C58288 - 007 - User | View an article after submitting a question
     @pytest.mark.skipif(str(58288) not in TESTS, reason='Excluded')
     def test_user_view_an_article_after_submitting_a_question_58288(self):
         """View an article after submitting a question.
@@ -377,26 +363,25 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.find(
-            By.XPATH, '//p[@data-is-beta="true"]'
-        ).click()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
         self.teacher.open_user_menu()
-        self.teacher.find(
-            By.LINK_TEXT, 'Get Help'
-        ).click()
+        self.teacher.find(By.LINK_TEXT, 'Get Help').click()
         self.teacher.sleep(1)
+
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskInput') \
+            .send_keys('question')
         self.teacher.find(By.ID, 'searchAskButton').click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
+
+        self.teacher.find(By.CSS_SELECTOR, 'div.article a').click()
         self.teacher.find(By.ID, 'articleContainer')
         assert('articles' in self.teacher.current_url()), 'not at article'
 
         self.ps.test_updates['passed'] = True
 
-    # 58313 - 008 - User | Indicate that the article was helpful
+    # C58313 - 008 - User | Indicate that the article was helpful
     @pytest.mark.skipif(str(58313) not in TESTS, reason='Excluded')
     def test_user_indicate_that_the_article_was_helpful_58313(self):
         """Indicate that the article was helpful.
@@ -419,32 +404,32 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.find(
-            By.XPATH, '//p[@data-is-beta="true"]'
-        ).click()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
         self.teacher.open_user_menu()
-        self.teacher.find(
-            By.LINK_TEXT, 'Get Help'
-        ).click()
+        self.teacher.find(By.LINK_TEXT, 'Get Help').click()
         self.teacher.sleep(1)
+
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskInput') \
+            .send_keys('question')
         self.teacher.find(By.ID, 'searchAskButton').click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
-        assert('articles' in self.teacher.current_url()), 'not at article'
-        self.teacher.find(
-            By.XPATH, '//div[@id="feedback"]//input[@value="Yes"]'
-        ).click()
+
+        self.teacher.find(By.CSS_SELECTOR, '.article a').click()
+        assert('articles' in self.teacher.current_url()), 'not at the article'
+
+        self.teacher.find(By.CSS_SELECTOR, '#feedback [value="Yes"]').click()
         self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//div[text()="Thanks for your feedback!"]')
-            )
+            expect.visibility_of_element_located((
+                By.XPATH,
+                '//div[contains(text(),"Thanks for your feedback!")]'
+            ))
         )
+
         self.ps.test_updates['passed'] = True
 
-    # 58314 - 009 - User | Negative feedback renders a feedback popup box
+    # C58314 - 009 - User | Negative feedback renders a feedback popup box
     @pytest.mark.skipif(str(58314) not in TESTS, reason='Excluded')
     def test_user_negative_feedback_renders_feedback_popup_box_58314(self):
         """Negative feedback renders a feedback popup box.
@@ -468,33 +453,32 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.find(
-            By.XPATH, '//p[@data-is-beta="true"]'
-        ).click()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
         self.teacher.open_user_menu()
-        self.teacher.find(
-            By.LINK_TEXT, 'Get Help'
-        ).click()
+        self.teacher.find(By.LINK_TEXT, 'Get Help').click()
         self.teacher.sleep(1)
+
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskInput') \
+            .send_keys('question')
         self.teacher.find(By.ID, 'searchAskButton').click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
-        assert('articles' in self.teacher.current_url()), 'not at article'
-        self.teacher.find(
-            By.XPATH, '//div[@id="feedback"]//input[@value="No"]'
-        ).click()
+
+        self.teacher.find(By.CSS_SELECTOR, '.article a').click()
+        assert('articles' in self.teacher.current_url()), 'not at the article'
+
+        self.teacher.find(By.CSS_SELECTOR, '#feedback [value="No"]').click()
         self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'feedbackDialog')
-            )
+            expect.visibility_of_element_located((
+                By.ID,
+                'feedbackDialog'
+            ))
         )
 
         self.ps.test_updates['passed'] = True
 
-    # 58315 - 010 - User | Submit feedback for an article
+    # C58315 - 010 - User | Submit feedback for an article
     @pytest.mark.skipif(str(58315) not in TESTS, reason='Excluded')
     def test_user_submit_feedback_for_an_article_58315(self):
         """Submit feedback for an article.
@@ -519,42 +503,41 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.find(
-            By.XPATH, '//p[@data-is-beta="true"]'
-        ).click()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
         self.teacher.open_user_menu()
-        self.teacher.find(
-            By.LINK_TEXT, 'Get Help'
-        ).click()
+        self.teacher.find(By.LINK_TEXT, 'Get Help').click()
         self.teacher.sleep(1)
+
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskInput') \
+            .send_keys('question')
         self.teacher.find(By.ID, 'searchAskButton').click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
-        assert('articles' in self.teacher.current_url()), 'not at article'
-        self.teacher.find(
-            By.XPATH, '//div[@id="feedback"]//input[@value="No"]'
-        ).click()
+
+        self.teacher.find(By.CSS_SELECTOR, '.article a').click()
+        assert('articles' in self.teacher.current_url()), 'not at the article'
+
+        self.teacher.find(By.CSS_SELECTOR, '#feedback [value="No"]').click()
         self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'feedbackDialog')
-            )
+            expect.visibility_of_element_located((
+                By.ID,
+                'feedbackDialog'
+            ))
         )
-        self.teacher.find(
-            By.ID, 'feedbackTextArea'
-        ).send_keys('qa automated test feedback')
-        self.teacher.find(By.XPATH, '//input[@value="Submit"]').click()
+        self.teacher.find(By.ID, 'feedbackTextArea') \
+            .send_keys('qa automated test feedback')
+        self.teacher.find(By.CSS_SELECTOR, '[value="Submit"]').click()
         self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//p[text()="Thanks for your feedback!"]')
-            )
+            expect.visibility_of_element_located((
+                By.XPATH,
+                '//p[text()="Thanks for your feedback!"]'
+            ))
         )
 
         self.ps.test_updates['passed'] = True
 
-    # 58322 - 011 - User | Close window after submitting feedback for an
+    # C58322 - 011 - User | Close window after submitting feedback for an
     # article
     @pytest.mark.skipif(str(58322) not in TESTS, reason='Excluded')
     def test_user_close_window_after_submitting_feedback_for_58322(self):
@@ -582,46 +565,46 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.find(
-            By.XPATH, '//p[@data-is-beta="true"]'
-        ).click()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
         self.teacher.open_user_menu()
-        self.teacher.find(
-            By.LINK_TEXT, 'Get Help'
-        ).click()
+        self.teacher.find(By.LINK_TEXT, 'Get Help').click()
         self.teacher.sleep(1)
+
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskInput') \
+            .send_keys('question')
         self.teacher.find(By.ID, 'searchAskButton').click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
-        assert('articles' in self.teacher.current_url()), 'not at article'
-        self.teacher.find(
-            By.XPATH, '//div[@id="feedback"]//input[@value="No"]'
+
+        self.teacher.find(By.CSS_SELECTOR, '.article a').click()
+        assert('articles' in self.teacher.current_url()), 'not at the article'
+        self.teacher.find(By.CSS_SELECTOR, '#feedback [value="No"]').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located((
+                By.ID,
+                'feedbackDialog'
+            ))
+        )
+        self.teacher.find(By.ID, 'feedbackTextArea') \
+            .send_keys('qa automated test feedback')
+        self.teacher.find(By.CSS_SELECTOR, '[value="Submit"]').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located((
+                By.XPATH,
+                '//a[text()="close window"]'
+            ))
         ).click()
         self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'feedbackDialog')
-            )
+            expect.visibility_of_element_located((
+                By.XPATH,
+                '//div[text()="Thanks for your feedback!"]'
+            ))
         )
-        self.teacher.find(
-            By.ID, 'feedbackTextArea'
-        ).send_keys('qa automated test feedback')
-        self.teacher.find(By.XPATH, '//input[@value="Submit"]').click()
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//a[text()="close window"]')
-            )
-        ).click()
-        self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//div[text()="Thanks for your feedback!"]')
-            )
-        )
+
         self.ps.test_updates['passed'] = True
 
-    # 58316 - 012 - User | Cancel feedback
+    # C58316 - 012 - User | Cancel feedback
     @pytest.mark.skipif(str(58316) not in TESTS, reason='Excluded')
     def test_user_cancel_feedback_before_making_changes_58316(self):
         """Cancel feedback.
@@ -646,37 +629,35 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.find(
-            By.XPATH, '//p[@data-is-beta="true"]'
-        ).click()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
         self.teacher.open_user_menu()
-        self.teacher.find(
-            By.LINK_TEXT, 'Get Help'
-        ).click()
+        self.teacher.find(By.LINK_TEXT, 'Get Help').click()
         self.teacher.sleep(1)
+
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskInput') \
+            .send_keys('question')
         self.teacher.find(By.ID, 'searchAskButton').click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
-        assert('articles' in self.teacher.current_url()), 'not at article'
-        self.teacher.find(
-            By.XPATH, '//div[@id="feedback"]//input[@value="No"]'
-        ).click()
+
+        self.teacher.find(By.CSS_SELECTOR, '.article a').click()
+        assert('articles' in self.teacher.current_url()), 'not at the article'
+
+        self.teacher.find(By.CSS_SELECTOR, '#feedback [value="No"]').click()
         self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.ID, 'feedbackDialog')
-            )
+            expect.visibility_of_element_located((
+                By.ID,
+                'feedbackDialog'
+            ))
         )
-        self.teacher.find(By.XPATH, '//input[@value="Cancel"]').click()
+        self.teacher.find(By.CSS_SELECTOR, '[value="Cancel"]').click()
         with self.assertRaises(ElementNotVisibleException):
-            self.teacher.find(
-                By.ID, 'feedbackDialog').click()
+            self.teacher.find(By.ID, 'feedbackDialog').click()
 
         self.ps.test_updates['passed'] = True
 
-    # 58318 - 013 - User | View related articles
+    # C58318 - 013 - User | View related articles
     @pytest.mark.skipif(str(58318) not in TESTS, reason='Excluded')
     def test_user_view_related_articles_58318(self):
         """View related articles.
@@ -699,25 +680,26 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.find(
-            By.XPATH, '//p[@data-is-beta="true"]'
-        ).click()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
         self.teacher.open_user_menu()
-        self.teacher.find(
-            By.LINK_TEXT, 'Get Help'
-        ).click()
+        self.teacher.find(By.LINK_TEXT, 'Get Help').click()
         self.teacher.sleep(1)
+
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskInput') \
+            .send_keys('question')
         self.teacher.find(By.ID, 'searchAskButton').click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.find(By.XPATH, '//div[@class="article "]/a').click()
-        assert('articles' in self.teacher.current_url()), 'not at article'
+
+        self.teacher.find(By.CSS_SELECTOR, '.article a').click()
+        assert('articles' in self.teacher.current_url()), 'not at the article'
+
         self.teacher.find(By.XPATH, '//h2[text()="Related Articles"]')
+
         self.ps.test_updates['passed'] = True
 
-    # 58319 - 014 - User | Submit a question to Customer Support
+    # C58319 - 014 - User | Submit a question to Customer Support
     @pytest.mark.skipif(str(58319) not in TESTS, reason='Excluded')
     def test_user_submit_a_question_to_customer_support_58319(self):
         """Submit a question to Customer Support.
@@ -743,25 +725,25 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.find(
-            By.XPATH, '//p[@data-is-beta="true"]'
-        ).click()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
         self.teacher.open_user_menu()
-        self.teacher.find(
-            By.LINK_TEXT, 'Get Help'
-        ).click()
+        self.teacher.find(By.LINK_TEXT, 'Get Help').click()
         self.teacher.sleep(1)
+
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
-        self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
+        self.teacher.find(By.ID, 'searchAskInput') \
+            .send_keys('question')
         self.teacher.find(By.ID, 'searchAskButton').click()
         self.teacher.page.wait_for_page_load()
         contact = self.teacher.find(
-            By.XPATH, '//a[contains(text(),"Email Us")]'
+            By.XPATH,
+            '//a[contains(text(),"Email Us")]'
         )
         Assignment.scroll_to(self.teacher.driver, contact)
         contact.click()
         self.teacher.page.wait_for_page_load()
+
         self.teacher.find(
             By.XPATH, '//input[contains(@name,"contactUsForm:firstName")]'
         ).send_keys('qa_test_first_name')
@@ -771,16 +753,17 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.teacher.find(
             By.XPATH, '//input[contains(@name,"contactUsForm:email")]'
         ).send_keys('qa_test@email.com')
-        self.teacher.find(By.XPATH, '//input[@value="Submit"]').click()
+        self.teacher.find(By.CSS_SELECTOR, '[value="Submit"]').click()
         self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH,
-                 '//p[contains(text(),"Thank you for your message!")]')
-            )
+            expect.visibility_of_element_located((
+                By.XPATH,
+                '//p[contains(text(),"Thank you for your message!")]'
+            ))
         )
+
         self.ps.test_updates['passed'] = True
 
-    # 14755 - 015 - Teacher | View guided tutorials of Tutor
+    # C14755 - 015 - Teacher | View guided tutorials of Tutor
     @pytest.mark.skipif(str(14755) not in TESTS, reason='Excluded')
     def test_teacher_view_guided_tutorials_of_tutor_14755(self):
         """View guided tutorials of Tutor.
@@ -799,7 +782,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 14750 - 016 - Student | Directed to a "No Courses" page when not in any
+    # C14750 - 016 - Student | Directed to a "No Courses" page when not in any
     # courses yet
     @pytest.mark.skipif(str(14750) not in TESTS, reason='Excluded')
     def test_student_directed_to_a_no_courses_page_when_not_in_any_14750(self):
@@ -819,19 +802,22 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.login(username='qa_student_37003')
+        self.student.login(
+            username='qa_student_37003',
+            password=os.getenv('CONTENT_PASSWORD')
+        )
+        self.student.page.wait_for_page_load()
+
         self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH,
-                 '//p[contains(text(),' +
-                 '"We cannot find an OpenStax course ' +
-                 'associated with your account.")]')
-            )
+            expect.visibility_of_element_located((
+                By.CSS_SELECTOR,
+                '.panel-body .lead:first-of-type'
+            ))
         )
 
         self.ps.test_updates['passed'] = True
 
-    # 58336 - 017 - Student | View "Getting Started with Tutor" Guide
+    # C58336 - 017 - Student | View "Getting Started with Tutor" Guide
     @pytest.mark.skipif(str(58336) not in TESTS, reason='Excluded')
     def test_student_view_getting_started_with_tutor_guide_58336(self):
         """View "Getting Started with Tutor" Guide.
@@ -852,7 +838,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58337 - 018 - Student | Access Tutor Help Center after registering for a
+    # C58337 - 018 - Student | Access Tutor Help Center after registering for a
     # course
     @pytest.mark.skipif(str(58337) not in TESTS, reason='Excluded')
     def test_student_access_tutor_help_center_after_registering_fo_58337(self):
@@ -874,25 +860,30 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.login()
-        self.student.find(
-            By.XPATH, '//p[@data-is-beta="true"]'
-        ).click()
+        self.student.login(
+            username='student01',
+            password=os.getenv('CONTENT_PASSWORD')
+        )
+        self.student.page.wait_for_page_load()
+
+        self.student.find(By.XPATH, '//a[p[@data-is-beta="true"]]').click()
         self.student.open_user_menu()
-        self.student.find(
-            By.LINK_TEXT, 'Get Help'
-        ).click()
+        self.student.find(By.LINK_TEXT, 'Get Help').click()
         self.student.sleep(0.5)
+
         window_with_help = self.student.driver.window_handles[1]
         self.student.driver.switch_to_window(window_with_help)
         self.student.page.wait_for_page_load()
+
         self.student.find(
-            By.XPATH, '//center[contains(text(),"Tutor Support")]'
+            By.XPATH,
+            '//center[contains(text(),"Tutor Support")]'
         )
+
         self.ps.test_updates['passed'] = True
 
     '''
-    # 58338 - 019 - Student | Submit a question
+    # C58338 - 019 - Student | Submit a question
     @pytest.mark.skipif(str(58338) not in TESTS, reason='Excluded')
     def test_student_submit_a_question_58338(self):
         """Submit a question.
@@ -915,7 +906,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58353 - 020 - Student | View "Contact Us" button after submitting a
+    # C58353 - 020 - Student | View "Contact Us" button after submitting a
     # question
     @pytest.mark.skipif(str(58353) not in TESTS, reason='Excluded')
     def test_student_view_contact_us_button_after_submitting_quest_58353(self):
@@ -940,7 +931,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58339 - 021 - Student | View an article after submitting a question
+    # C58339 - 021 - Student | View an article after submitting a question
     @pytest.mark.skipif(str(58339) not in TESTS, reason='Excluded')
     def test_student_view_an_article_after_submitting_a_question_58339(self):
         """View an article after submitting a question.
@@ -964,7 +955,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58340 - 022 - Student | Indicate that the article was helpful
+    # C58340 - 022 - Student | Indicate that the article was helpful
     @pytest.mark.skipif(str(58340) not in TESTS, reason='Excluded')
     def test_student_indicate_that_the_article_was_helpful_58340(self):
         """Indicate that the article was helpful.
@@ -990,7 +981,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58341 - 023 - Student | Negative feedback renders a feedback popup box
+    # C58341 - 023 - Student | Negative feedback renders a feedback popup box
     @pytest.mark.skipif(str(58341) not in TESTS, reason='Excluded')
     def test_student_negative_feedback_renders_feedback_popup_box_58341(self):
         """Negative feedback renders a feedback popup box.
@@ -1017,7 +1008,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58342 - 024 - Student | Submit feedback for an article
+    # C58342 - 024 - Student | Submit feedback for an article
     @pytest.mark.skipif(str(58342) not in TESTS, reason='Excluded')
     def test_student_submit_feedback_for_an_article_58342(self):
         """Submit feedback for an article.
@@ -1045,7 +1036,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58343 - 025 - Student | Close window after submitting feedback for an
+    # C58343 - 025 - Student | Close window after submitting feedback for an
     # article
     @pytest.mark.skipif(str(58343) not in TESTS, reason='Excluded')
     def test_student_close_window_after_submitting_feedback_for_58343(self):
@@ -1076,7 +1067,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58344 - 026 - Student | Cancel feedback
+    # C58344 - 026 - Student | Cancel feedback
     @pytest.mark.skipif(str(58344) not in TESTS, reason='Excluded')
     def test_student_cancel_feedback_58344(self):
         """Cancel feedback.
@@ -1104,7 +1095,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58346 - 027 - Student | View related articles
+    # C58346 - 027 - Student | View related articles
     @pytest.mark.skipif(str(58346) not in TESTS, reason='Excluded')
     def test_student_view_related_articles_58346(self):
         """View related articles.
@@ -1130,7 +1121,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 58347 - 028 - Student | Submit a question to Customer Support
+    # C58347 - 028 - Student | Submit a question to Customer Support
     @pytest.mark.skipif(str(58347) not in TESTS, reason='Excluded')
     def test_student_submit_a_question_to_customer_support_58347(self):
         """Submit a question to Customer Support.
@@ -1160,7 +1151,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.ps.test_updates['passed'] = True
     '''
 
-    # 58348 - 029 - Student | View guided tutorials of Tutor
+    # C58348 - 029 - Student | View guided tutorials of Tutor
     @pytest.mark.skipif(str(58348) not in TESTS, reason='Excluded')
     def test_student_view_guided_tutorials_of_tutor_58348(self):
         """View guided tutorial of Tutor.
@@ -1181,7 +1172,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # 111250 - 030 - User | Faulty URL shows a styled 404 error page
+    # C111250 - 030 - User | Faulty URL shows a styled 404 error page
     @pytest.mark.skipif(str(111250) not in TESTS, reason='Excluded')
     def test_user_faulty_url_shows_styled_404_page_111250(self):
         """Faulty URL shows a styled 404 error page.
@@ -1201,9 +1192,10 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.teacher.login()
         self.teacher.get('https://tutor-qa.openstax.org/not_a_real_page')
         self.teacher.wait.until(
-            expect.presence_of_element_located(
-                (By.XPATH,
-                 '//h1[contains(text(),"Uh-oh, no page here")]')
-            )
+            expect.presence_of_element_located((
+                By.CSS_SELECTOR,
+                '.invalid-page'
+            ))
         )
+
         self.ps.test_updates['passed'] = True
