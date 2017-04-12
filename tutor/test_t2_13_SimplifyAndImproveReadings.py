@@ -12,7 +12,8 @@ from pastasauce import PastaSauce, PastaDecorator
 from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
-# from staxing.assignment import Assignment
+from selenium.webdriver import ActionChains
+from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher, Student
@@ -49,6 +50,8 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         )
         # create a reading for the student to work
         self.teacher.login()
+        self.teacher.driver.execute_script("window.resizeTo(1920,1080)")
+        self.teacher.select_course(appearance='ap_biology')
         self.assignment_name = 't1.18 reading-%s' % randint(100, 999)
         today = datetime.date.today()
         begin = today.strftime('%m/%d/%Y')
@@ -60,7 +63,7 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
                 'title': self.assignment_name,
                 'description': chomsky(),
                 'periods': {'all': (begin, end)},
-                'reading_list': ['1.1', '1.2'],
+                'reading_list': ['1.1'],
                 'status': 'publish',
             }
         )
@@ -78,6 +81,7 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
             capabilities=self.desired_capabilities
         )
         self.student.login()
+        self.student.select_course(appearance='ap_biology')
         self.student.wait.until(
             expect.visibility_of_element_located(
                 (By.LINK_TEXT, 'This Week')
@@ -85,7 +89,7 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         )
         reading = self.student.driver.find_element(
             By.XPATH,
-            '//span[text()="%s"]' % self.assignment_name
+            '//div[text()="%s"]' % self.assignment_name
         )
         self.teacher.driver.execute_script(
             'return arguments[0].scrollIntoView();',
@@ -93,6 +97,7 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         )
         self.teacher.driver.execute_script('window.scrollBy(0, -80);')
         reading.click()
+        self.student.driver.set_window_size(width=1300, height=1200)
 
     def tearDown(self):
         """Test destructor."""
@@ -160,28 +165,44 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         # Test steps and verification assertions
         self.student.find(By.CSS_SELECTOR, 'a.paging-control.next').click()
         self.student.sleep(1)
-        self.student.find(By.CSS_SELECTOR, 'a.milestones-toggle').click()
+        self.student.find(By.CSS_SELECTOR, 'a.paging-control.next').click()
         self.student.sleep(1)
+        self.student.find(By.CSS_SELECTOR, 'a.paging-control.next').click()
+        self.student.sleep(1)
+        self.student.find(By.CSS_SELECTOR, 'a.paging-control.next').click()
+        self.student.sleep(5)
+        self.student.driver.execute_script("window.scrollTo(0, 0);")
+        element = self.student.find(
+            By.XPATH, "//a[@class='milestones-toggle']")
+        actions = ActionChains(self.student.driver)
+        actions.move_to_element(element)
+        actions.click()
+        actions.perform()
+        self.student.sleep(1)
+        self.student.driver.execute_script("window.scrollTo(0, 0);")
         cards = self.student.find_all(
-            By.CSS_SELECTOR,
-            'div[class="milestone"]'
+            By.XPATH,
+            "//div[@class='milestone milestone-reading']"
         )
-        preview = ''
+        # preview = ''
         if not isinstance(cards, list):
-            preview = cards.find_element(
-                By.XPATH,
-                '/div[@class="milestone-preview"]'
-            ).text
+            # preview = cards.find_element(
+            #    By.XPATH,
+            #    "//div[@class='milestone milestone-reading']"
+            # ).text
             cards.click()
         else:
-            card = randint(0, len(cards) - 1)
-            preview = cards[card].find_element(
-                By.XPATH,
-                '/div[@class="milestone-preview"]'
-            ).text
+            card = randint(0, len(cards))
+            # preview = cards[card].find_element(
+            #    By.XPATH,
+            #    "//div[@class='milestone milestone-reading']"
+            # ).text
             cards[card].click()
-        # Issue: section titles are not in the content
-        preview
+
+        string = "step/" + str(card + 1)
+
+        assert(self.student.driver.current_url.find(string) >= 0), \
+            'Something'
 
         self.ps.test_updates['passed'] = True
 
@@ -206,7 +227,79 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        while(1):
+            while ('paging-control next' in self.student.driver.page_source and
+                    'Concept Coach' not in self.student.driver.page_source and
+                    'exercise-multiple-choice'
+                    not in self.student.driver.page_source and
+                    'textarea' not in self.student.driver.page_source):
+                self.student.find(
+                    By.XPATH,
+                    "//a[@class='paging-control next']"
+                ).click()
+
+            # multiple choice case
+            if('exercise-multiple-choice' in self.student.driver.page_source):
+
+                answers = self.student.driver.find_elements(
+                    By.CLASS_NAME, 'answer-letter')
+                self.student.sleep(0.8)
+                rand = randint(0, len(answers) - 1)
+                answer = chr(ord('a') + rand)
+                Assignment.scroll_to(self.student.driver, answers[0])
+                if answer == 'a':
+                    self.student.driver.execute_script(
+                        'window.scrollBy(0, -160);')
+                elif answer == 'd':
+                    self.student.driver.execute_script(
+                        'window.scrollBy(0, 160);')
+                answers[rand].click()
+
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button")' +
+                            ' and contains(@class,"continue")]')
+                    )
+                ).click()
+                self.student.sleep(5)
+                page = self.student.driver.page_source
+                assert('question-feedback bottom' in page), \
+                    'Did not submit MC'
+
+                self.student.find(
+                    By.XPATH,
+                    "//button[@class='async-button continue btn btn-primary']"
+                ).click()
+
+            # free response case
+            elif('textarea' in self.student.driver.page_source):
+                self.student.find(
+                    By.TAG_NAME, 'textarea').send_keys(
+                    'An answer for this textarea')
+                self.student.sleep(2)
+                self.student.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//button[contains(@class,"async-button")' +
+                            ' and contains(@class,"continue")]')
+                    )
+                ).click()
+
+                self.student.wait.until(
+                    expect.visibility_of_element_located(
+                        (By.CLASS_NAME, 'exercise-multiple-choice')
+                    )
+                )
+
+                self.student.sleep(2)
+
+            # Reached Concept Coach card
+            if('Spaced Practice' in self.student.driver.page_source and
+                    'spaced-practice-intro'
+                    in self.student.driver.page_source):
+                self.student.sleep(5)
+                break
+
+            self.student.sleep(2)
 
         self.ps.test_updates['passed'] = True
 
@@ -214,8 +307,7 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
     # new section in a reading assignment
     @pytest.mark.skipif(str(100126) not in TESTS, reason='Excluded')
     def test_student_section_number_is_seen_st_the_beginning_of_e_100126(self):
-        """Section number is seen at the beginning of each new section in a
-        reading assignment.
+        """Section number seen at beginning of each new section in a reading.
 
         Steps:
         Login as a student
@@ -232,7 +324,8 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.find(By.XPATH, "//span[@class='section']")
+        self.student.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -257,7 +350,18 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.logout()
+        self.teacher.login()
+        self.teacher.select_course(appearance='ap_biology')
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, "Browse the Book").click()
+        self.teacher.sleep(5)
+        self.teacher.driver.switch_to_window(
+            self.student.driver.window_handles[-1])
+        self.teacher.find(
+            By.XPATH, "//li[3]/ul[@class='section']/li/a").click()
+        self.teacher.find(By.XPATH, "//span[@class='section']")
+        self.teacher.sleep(3)
 
         self.ps.test_updates['passed'] = True
 
@@ -282,6 +386,14 @@ class TestSimplifyAndImproveReadings(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        self.student.open_user_menu()
+        self.student.find(By.LINK_TEXT, "Browse the Book").click()
+        self.student.sleep(5)
+        self.student.driver.switch_to_window(
+            self.student.driver.window_handles[-1])
+        self.student.find(
+            By.XPATH, "//li[3]/ul[@class='section']/li/a").click()
+        self.student.find(By.XPATH, "//span[@class='section']")
+        self.student.sleep(3)
 
         self.ps.test_updates['passed'] = True
