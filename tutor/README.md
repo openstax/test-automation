@@ -93,6 +93,13 @@ source /usr/local/bin/virtualenvwrapper.sh
 close() { deactivate && cd; }
 ```
 
+Initialize the Wrapper
+----------------------
+
+Activate the changes to your profile
+
+```source <profile-path>/<profile-filename>```
+
 Repository
 ----------
 
