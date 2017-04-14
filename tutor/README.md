@@ -96,9 +96,11 @@ close() { deactivate && cd; }
 Initialize the Wrapper
 ----------------------
 
-Activate the changes to your profile
+Either activate the changes to your profile in your current terminal session by:
 
 ```source <profile-path>/<profile-filename>```
+
+or close the terminal and start a new one.
 
 Repository
 ----------
