@@ -74,6 +74,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.student = None
         try:
             self.teacher.delete()
+            self.student.delete()
         except:
             pass
 
@@ -125,7 +126,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.find(
-            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+            By.XPATH, '//p[text()="OpenStax Concept Coach"]'
         ).click()
         self.teacher.open_user_menu()
         self.teacher.find(
@@ -159,16 +160,17 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.find(
-            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+            By.XPATH, '//p[text()="OpenStax Concept Coach"]'
         ).click()
         self.teacher.open_user_menu()
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(0.5)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(
-            By.XPATH, '//center[text()="Concept Coach Help Center"]'
+            By.XPATH, '//center[text()="OpenStax Concept Coach Support"]'
         )
 
         self.ps.test_updates['passed'] = True
@@ -194,12 +196,13 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.find(
-            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+            By.XPATH, '//p[text()="OpenStax Concept Coach"]'
         ).click()
         self.teacher.open_user_menu()
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(0.5)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -232,18 +235,19 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.find(
-            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+            By.XPATH, '//p[text()="OpenStax Concept Coach"]'
         ).click()
         self.teacher.open_user_menu()
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(0.5)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
         self.teacher.find(By.ID, 'searchAskButton').click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.find(By.XPATH, '//a[contains(text(),"Contact Us")]')
+        self.teacher.find(By.XPATH, '//a[contains(text(), "Email Us")]')
         self.ps.test_updates['passed'] = True
 
     # 58286 - 006 - User | View an article after submitting a question
@@ -268,12 +272,13 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.find(
-            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+            By.XPATH, '//p[text()="OpenStax Concept Coach"]'
         ).click()
         self.teacher.open_user_menu()
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(0.5)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -308,12 +313,13 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.find(
-            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+            By.XPATH, '//p[text()="OpenStax Concept Coach"]'
         ).click()
         self.teacher.open_user_menu()
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(0.5)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -356,12 +362,13 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.find(
-            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+            By.XPATH, '//p[text()="OpenStax Concept Coach"]'
         ).click()
         self.teacher.open_user_menu()
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(0.5)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -405,12 +412,13 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.find(
-            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+            By.XPATH, '//p[text()="OpenStax Concept Coach"]'
         ).click()
         self.teacher.open_user_menu()
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(0.5)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -466,12 +474,13 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.find(
-            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+            By.XPATH, '//p[text()="OpenStax Concept Coach"]'
         ).click()
         self.teacher.open_user_menu()
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(0.5)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -529,12 +538,13 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.find(
-            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+            By.XPATH, '//p[text()="OpenStax Concept Coach"]'
         ).click()
         self.teacher.open_user_menu()
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(0.5)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -579,12 +589,13 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.find(
-            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+            By.XPATH, '//p[text()="OpenStax Concept Coach"]'
         ).click()
         self.teacher.open_user_menu()
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(0.5)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
@@ -623,19 +634,20 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.find(
-            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+            By.XPATH, '//p[text()="OpenStax Concept Coach"]'
         ).click()
         self.teacher.open_user_menu()
         self.teacher.find(
             By.LINK_TEXT, 'Get Help'
         ).click()
+        self.teacher.sleep(0.5)
         window_with_help = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_help)
         self.teacher.find(By.ID, 'searchAskInput').send_keys('question')
         self.teacher.find(By.ID, 'searchAskButton').click()
         self.teacher.page.wait_for_page_load()
         contact = self.teacher.find(
-            By.XPATH, '//a[contains(text(),"Contact Us")]'
+            By.XPATH, '//a[contains(text(), "Email Us")]'
         )
         Assignment.scroll_to(self.teacher.driver, contact)
         contact.click()
@@ -702,7 +714,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         # Test steps and verification assertions
         self.teacher.login()
         self.teacher.find(
-            By.XPATH, '//a[contains(@href,"/cc-dashboard")]'
+            By.XPATH, '//p[text()="OpenStax Concept Coach"]'
         ).click()
         self.teacher.find(By.LINK_TEXT, 'Assignment Links').click()
         assert('assignment-links' in self.teacher.current_url()), \
@@ -811,7 +823,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.student.driver.switch_to_window(window_with_help)
         self.student.page.wait_for_page_load()
         self.student.find(
-            By.XPATH, '//center[text()="Concept Coach Help Center"]'
+            By.XPATH, '//center[text()="OpenStax Concept Coach Support"]'
         )
         self.ps.test_updates['passed'] = True
 
@@ -883,7 +895,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.student.find(By.ID, 'searchAskInput').send_keys('question')
         self.student.find(By.ID, 'searchAskButton').click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.find(By.XPATH, '//a[contains(text(),"Contact Us")]')
+        self.teacher.find(By.XPATH, '//a[contains(text(), "Email Us")]')
         self.ps.test_updates['passed'] = True
 
     # 58326 - 021 - Student | View an article after submitting a question
@@ -1263,7 +1275,7 @@ class TestGuideMonitorSupportAndTrainUsers(unittest.TestCase):
         self.student.find(By.ID, 'searchAskButton').click()
         self.student.page.wait_for_page_load()
         contact = self.student.find(
-            By.XPATH, '//a[contains(text(),"Contact Us")]'
+            By.XPATH, '//a[contains(text(), "Email Us")]'
         )
         Assignment.scroll_to(self.student.driver, contact)
         contact.click()
