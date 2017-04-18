@@ -24,10 +24,17 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
-    str([8238, 8239, 8240, 8241, 8242,
+    str([
+        8238, 8239, 8240, 8241, 8242,
         8243, 8244, 8245, 58271, 8246,
-        58272, 96962, 96963, 96964, 96965,
-        96966, 96967])
+        58272, 96964
+    ])
+    # Not implemented:
+    # 96962
+    # 96963
+    # 96965
+    # 96966
+    # 96967
 )
 
 
@@ -101,7 +108,7 @@ class TestUserLogin(unittest.TestCase):
         """Log into Tutor.
 
         Steps:
-        Click on the 'Login' button
+        Click on the 'Log in' button
         Enter the admin account in the username and password text boxes
         Click on the 'Sign in' button
 
@@ -115,6 +122,7 @@ class TestUserLogin(unittest.TestCase):
 
         self.admin.get(self.admin.url)
         self.admin.page.wait_for_page_load()
+
         # check to see if the screen width is normal or condensed
         if self.admin.driver.get_window_size()['width'] <= \
                 self.admin.CONDENSED_WIDTH:
@@ -128,21 +136,19 @@ class TestUserLogin(unittest.TestCase):
                 is_collapsed.click()
         self.admin.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Login')
+                (By.LINK_TEXT, 'Log in')
             )
         ).click()
         self.admin.page.wait_for_page_load()
-        self.admin.find(
-            By.ID, 'auth_key'
-        ).send_keys(self.admin.username)
-        self.admin.find(
-            By.ID, 'password'
-        ).send_keys(self.admin.password)
+
+        self.admin.find(By.ID, 'login_username_or_email') \
+            .send_keys(self.admin.username)
+        self.admin.find(By.XPATH, "//input[@value='Next']").click()
+        self.admin.find(By.ID, 'login_password') \
+            .send_keys(self.admin.password)
+
         # click on the sign in button
-        self.admin.find(
-            By.XPATH,
-            '//button[text()="Sign in"]'
-        ).click()
+        self.admin.find(By.XPATH, "//input[@value='Log in']").click()
         self.admin.page.wait_for_page_load()
         assert('dashboard' in self.admin.current_url()), \
             'Not taken to dashboard: %s' % self.admin.current_url()
@@ -155,7 +161,7 @@ class TestUserLogin(unittest.TestCase):
         """Access the Admin console.
 
         Steps:
-        Click on the 'Login' button
+        Click on the 'Log in' button
         Enter the admin account in the username and password text boxes
         Click on the 'Sign in' button
         Click on the user menu
@@ -169,7 +175,6 @@ class TestUserLogin(unittest.TestCase):
         self.ps.test_updates['tags'] = ['t1', 't1.36', 't1.36.002', '8239']
         self.ps.test_updates['passed'] = False
 
-        # self.user = admin
         self.admin.login()
         self.admin.open_user_menu()
         self.admin.wait.until(
@@ -179,7 +184,9 @@ class TestUserLogin(unittest.TestCase):
         ).click()
         self.admin.page.wait_for_page_load()
         self.admin.find(
-            By.XPATH, '//h1[contains(text(),"Admin Console")]')
+            By.XPATH,
+            '//h1[contains(text(),"Admin Console")]'
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -189,7 +196,7 @@ class TestUserLogin(unittest.TestCase):
         """Log out.
 
         Steps:
-        Click on the 'Login' button
+        Click on the 'Log in' button
         Enter the admin account in the username and password text boxes
         Click on the 'Sign in' button
         Click on the user menu
@@ -207,12 +214,15 @@ class TestUserLogin(unittest.TestCase):
         self.admin.open_user_menu()
         self.admin.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//input[contains(@value,"Log Out")]')
+                (By.XPATH, '//input[contains(@value,"Log out")]')
             )
         ).click()
         self.admin.page.wait_for_page_load()
+
         self.admin.find(
-            By.XPATH, '//div[contains(@class,"tutor-home")]')
+            By.XPATH,
+            '//div[contains(@class,"tutor-home")]'
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -222,7 +232,7 @@ class TestUserLogin(unittest.TestCase):
         """Log into Tutor.
 
         Steps:
-        Click on the 'Login' button
+        Click on the 'Log in' button
         Enter the content analyst account in the username and password boxes
         Click on the 'Sign in' button
 
@@ -236,6 +246,7 @@ class TestUserLogin(unittest.TestCase):
 
         self.content.get(self.content.url)
         self.content.page.wait_for_page_load()
+
         # check to see if the screen width is normal or condensed
         if self.content.driver.get_window_size()['width'] <= \
            self.content.CONDENSED_WIDTH:
@@ -249,24 +260,21 @@ class TestUserLogin(unittest.TestCase):
                 is_collapsed.click()
         self.content.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Login')
+                (By.LINK_TEXT, 'Log in')
             )
         ).click()
         self.content.page.wait_for_page_load()
-        self.content.find(
-            By.ID,
-            'auth_key'
-        ).send_keys(self.content.username)
-        self.content.find(
-            By.ID,
-            'password'
-        ).send_keys(self.content.password)
+
+        self.content.find(By.ID, 'login_username_or_email') \
+            .send_keys(self.content.username)
+        self.content.find(By.XPATH, "//input[@value='Next']").click()
+        self.content.find(By.ID, 'login_password') \
+            .send_keys(self.content.password)
+
         # click on the sign in button
-        self.content.find(
-            By.XPATH,
-            '//button[text()="Sign in"]'
-        ).click()
+        self.content.find(By.XPATH, "//input[@value='Log in']").click()
         self.content.page.wait_for_page_load()
+
         assert('dashboard' in self.content.current_url()), \
             'Not taken to dashboard: %s' % self.content.current_url()
 
@@ -278,7 +286,7 @@ class TestUserLogin(unittest.TestCase):
         """Access the QA Viewer.
 
         Steps:
-        Click on the 'Login' button
+        Click on the 'Log in' button
         Enter the content analyst account in the username and password boxes
         Click on the 'Sign in' button
         Click on the user menu
@@ -297,10 +305,11 @@ class TestUserLogin(unittest.TestCase):
         self.content.wait.until(
             expect.element_to_be_clickable((
                 By.XPATH,
-                '//a[contains(text(),"QA Content") and @role="menuitem"]'
+                '//div[contains(text(),"QA Content")]'
             ))
         ).click()
         self.content.page.wait_for_page_load()
+
         assert('/qa' in self.content.current_url()), \
             'Not taken to the QA viewer: %s' % self.content.current_url()
 
@@ -312,7 +321,7 @@ class TestUserLogin(unittest.TestCase):
         """Access the Content Annalyst Console.
 
         Steps:
-        Click on the 'Login' button
+        Click on the 'Log in' button
         Enter the content analyst account in the username and password boxes
         Click on the 'Sign in' button
         Click on the user menu
@@ -331,11 +340,13 @@ class TestUserLogin(unittest.TestCase):
         self.content.wait.until(
             expect.element_to_be_clickable((
                 By.XPATH,
-                '//a[contains(text(),"Content Analyst") and @role="menuitem"]'
+                '//div[contains(text(),"Content Analyst")]'
             ))
         ).click()
         self.content.page.wait_for_page_load()
+
         self.content.find(
+
             By.XPATH,
             '//h1[contains(text(),"Content Analyst Console")]'
         )
@@ -348,7 +359,7 @@ class TestUserLogin(unittest.TestCase):
         """Log out.
 
         Steps:
-        Click on the 'Login' button
+        Click on the 'Log in' button
         Enter the content analyst account in the username and password boxes
         Click on the 'Sign in' button
         Click on the user menu
@@ -366,10 +377,11 @@ class TestUserLogin(unittest.TestCase):
         self.content.open_user_menu()
         self.content.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//input[contains(@value,"Log Out")]')
+                (By.XPATH, '//input[contains(@value,"Log out")]')
             )
         ).click()
         self.content.page.wait_for_page_load()
+
         self.content.find(
             By.XPATH,
             '//div[contains(@class,"tutor-home")]'
@@ -383,7 +395,7 @@ class TestUserLogin(unittest.TestCase):
         """Log into Tutor.
 
         Steps:
-        Click on the 'Login' button
+        Click on the 'Log in' button
         Enter the student account in the username and password text boxes
         Click on the 'Sign in' button
 
@@ -397,6 +409,7 @@ class TestUserLogin(unittest.TestCase):
 
         self.student.get(self.student.url)
         self.student.page.wait_for_page_load()
+
         # check to see if the screen width is normal or condensed
         if self.student.driver.get_window_size()['width'] <= \
            self.student.CONDENSED_WIDTH:
@@ -410,24 +423,22 @@ class TestUserLogin(unittest.TestCase):
                 is_collapsed.click()
         self.student.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Login')
+                (By.LINK_TEXT, 'Log in')
             )
         ).click()
         self.student.page.wait_for_page_load()
-        self.student.find(
-            By.ID,
-            'auth_key'
-        ).send_keys(self.student.username)
-        self.student.find(
-            By.ID,
-            'password'
-        ).send_keys(self.student.password)
+
+        self.student.find(By.ID, 'login_username_or_email') \
+            .send_keys(self.student.username)
+        self.student.find(By.XPATH, "//input[@value='Next']") \
+            .click()
+        self.student.find(By.ID, 'login_password') \
+            .send_keys(self.student.password)
+
         # click on the sign in button
-        self.student.find(
-            By.XPATH,
-            '//button[text()="Sign in"]'
-        ).click()
+        self.student.find(By.XPATH, "//input[@value='Log in']").click()
         self.student.page.wait_for_page_load()
+
         assert('dashboard' in self.student.current_url()), \
             'Not taken to dashboard: %s' % self.student.current_url()
 
@@ -439,7 +450,7 @@ class TestUserLogin(unittest.TestCase):
         """Log into Tutor.
 
         Steps:
-        Click on the 'Login' button
+        Click on the 'Log in' button
         Enter the teacher account in the username and password text boxes
         Click on the 'Sign in' button
 
@@ -453,6 +464,7 @@ class TestUserLogin(unittest.TestCase):
 
         self.teacher.get(self.teacher.url)
         self.teacher.page.wait_for_page_load()
+
         # check to see if the screen width is normal or condensed
         if self.teacher.driver.get_window_size()['width'] <= \
            self.teacher.CONDENSED_WIDTH:
@@ -466,24 +478,21 @@ class TestUserLogin(unittest.TestCase):
                 is_collapsed.click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Login')
+                (By.LINK_TEXT, 'Log in')
             )
         ).click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.find(
-            By.ID,
-            'auth_key'
-        ).send_keys(self.teacher.username)
-        self.teacher.find(
-            By.ID,
-            'password'
-        ).send_keys(self.teacher.password)
+
+        self.teacher.find(By.ID, 'login_username_or_email') \
+            .send_keys(self.teacher.username)
+        self.teacher.find(By.XPATH, "//input[@value='Next']").click()
+        self.teacher.find(By.ID, 'login_password') \
+            .send_keys(self.teacher.password)
+
         # click on the sign in button
-        self.teacher.find(
-            By.XPATH,
-            '//button[text()="Sign in"]'
-        ).click()
+        self.teacher.find(By.XPATH, "//input[@value='Log in']").click()
         self.teacher.page.wait_for_page_load()
+
         assert('dashboard' in self.teacher.current_url()),\
             'Not taken to dashboard: %s' % self.teacher.current_url()
 
@@ -495,7 +504,7 @@ class TestUserLogin(unittest.TestCase):
         """Log out.
 
         Steps:
-        Click on the 'Login' button
+        Click on the 'Log in' button
         Enter the student account in the username and password boxes
         Click on the 'Sign in' button
         Click on the user menu
@@ -513,14 +522,12 @@ class TestUserLogin(unittest.TestCase):
         self.student.open_user_menu()
         self.student.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//input[contains(@value,"Log Out")]')
+                (By.XPATH, '//input[contains(@value,"Log out")]')
             )
         ).click()
         self.student.page.wait_for_page_load()
-        self.student.find(
-            By.XPATH,
-            '//div[contains(@class,"tutor-home")]'
-        )
+
+        self.student.find(By.XPATH, '//div[contains(@class,"tutor-home")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -530,7 +537,7 @@ class TestUserLogin(unittest.TestCase):
         """Log out.
 
         Steps:
-        Click on the 'Login' button
+        Click on the 'Log in' button
         Enter the teacher account in the username and password boxes
         Click on the 'Sign in' button
         Click on the user menu
@@ -548,14 +555,12 @@ class TestUserLogin(unittest.TestCase):
         self.teacher.open_user_menu()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//input[contains(@value,"Log Out")]')
+                (By.XPATH, '//input[contains(@value,"Log out")]')
             )
         ).click()
         self.teacher.page.wait_for_page_load()
-        self.teacher.find(
-            By.XPATH,
-            '//div[contains(@class,"tutor-home")]'
-        )
+
+        self.teacher.find(By.XPATH, '//div[contains(@class,"tutor-home")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -567,9 +572,9 @@ class TestUserLogin(unittest.TestCase):
         Steps:
         Go to https://exercises-qa.openstax.org/
         Click "SIGN IN"
-        Enter [content] into "Email or username" text box
+        Enter the Content username into "Email or username" text box
         Click "Next"
-        Enter [staxly16] into "password" text box
+        Enter the Content password into "password" text box
         Click "Login"
 
         Expected Result:
@@ -583,19 +588,20 @@ class TestUserLogin(unittest.TestCase):
         # Test steps and verification assertions
         self.content.driver.get("https://exercises-qa.openstax.org/")
         self.content.sleep(3)
+
         self.content.find(By.LINK_TEXT, "SIGN IN").click()
-        self.content.find(
-            By.XPATH, "//input[@id='login_username_or_email']").send_keys(
-            os.getenv('CONTENT_USER'))
-        self.content.find(
-            By.XPATH, "//input[@id='login_username_or_email']").send_keys(
-            Keys.RETURN)
+        self.content.find(By.XPATH, "//input[@id='login_username_or_email']") \
+            .send_keys(os.getenv('CONTENT_USER'))
+        self.content.find(By.XPATH, "//input[@id='login_username_or_email']") \
+            .send_keys(Keys.RETURN)
         self.content.sleep(2)
-        self.content.find(By.XPATH, "//input[@id='login_password']").send_keys(
-            os.getenv('CONTENT_PASSWORD'))
-        self.content.find(By.XPATH, "//input[@id='login_password']").send_keys(
-            Keys.RETURN)
+
+        self.content.find(By.XPATH, "//input[@id='login_password']") \
+            .send_keys(os.getenv('CONTENT_PASSWORD'))
+        self.content.find(By.XPATH, "//input[@id='login_password']") \
+            .send_keys(Keys.RETURN)
         self.content.sleep(3)
+
         self.content.find(By.LINK_TEXT, "SIGN OUT")
 
         self.ps.test_updates['passed'] = True
@@ -644,21 +650,23 @@ class TestUserLogin(unittest.TestCase):
         # Test steps and verification assertions
         self.content.driver.get("https://exercises-qa.openstax.org/")
         self.content.sleep(3)
+
         self.content.find(By.LINK_TEXT, "SIGN IN").click()
-        self.content.find(
-            By.XPATH, "//input[@id='login_username_or_email']").send_keys(
-            os.getenv('CONTENT_USER'))
-        self.content.find(
-            By.XPATH, "//input[@id='login_username_or_email']").send_keys(
-            Keys.RETURN)
+        self.content.find(By.XPATH, "//input[@id='login_username_or_email']") \
+            .send_keys(os.getenv('CONTENT_USER'))
+        self.content.find(By.XPATH, "//input[@id='login_username_or_email']") \
+            .send_keys(Keys.RETURN)
         self.content.sleep(2)
-        self.content.find(By.XPATH, "//input[@id='login_password']").send_keys(
-            os.getenv('CONTENT_PASSWORD'))
-        self.content.find(By.XPATH, "//input[@id='login_password']").send_keys(
-            Keys.RETURN)
+
+        self.content.find(By.XPATH, "//input[@id='login_password']") \
+            .send_keys(os.getenv('CONTENT_PASSWORD'))
+        self.content.find(By.XPATH, "//input[@id='login_password']") \
+            .send_keys(Keys.RETURN)
         self.content.sleep(3)
+
         self.content.find(By.LINK_TEXT, "SIGN OUT").click()
         self.content.sleep(2)
+
         self.content.find(By.LINK_TEXT, "SIGN IN")
 
         self.ps.test_updates['passed'] = True
