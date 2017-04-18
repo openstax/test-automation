@@ -1,33 +1,34 @@
 import unittest
-import subprocess
+# import subprocess
 import inspection
 import contextlib
 import os
-from utils import working_directory
+
+
 @contextlib.contextmanager
 def capture():
     import sys
     from cStringIO import StringIO
-    oldout,olderr = sys.stdout, sys.stderr
+    oldout, olderr = sys.stdout, sys.stderr
     try:
-        out=[StringIO(), StringIO()]
-        sys.stdout,sys.stderr = out
+        out = [StringIO(), StringIO()]
+        sys.stdout, sys.stderr = out
         yield out
     finally:
-        sys.stdout,sys.stderr = oldout, olderr
+        sys.stdout, sys.stderr = oldout, olderr
         out[0] = out[0].getvalue()
         out[1] = out[1].getvalue()
+
 
 class Core(unittest.TestCase):
 
     def target(self, run):
-        with working_directory(os.path.dirname(os.path.realpath(__file__))):
-            command = run.split()
-            with capture() as output:
-                command[-1] = os.path.join("data/test",command[-1])
-                command[-2] = os.path.join("data/test",command[-2])
-                command.insert(0,'--debug')
-                inspection.main(command)
+        command = run.split()
+        with capture() as output:
+            command[-1] = os.path.join("inspection/data/test", command[-1])
+            command[-2] = os.path.join("inspection/data/test", command[-2])
+            command.insert(0, '--debug')
+            inspection.main(command)
         result = eval(output[0])
         return result
 
@@ -45,8 +46,6 @@ class Core(unittest.TestCase):
                   (10, 10), ]
         result = self.target(run)
         self.assertEqual(expect, result)
-
-
 
     def test_page_removed(self):
         run = "A.pdf B.pdf"
@@ -149,6 +148,7 @@ class Core(unittest.TestCase):
                   (10, 10), ]
         result = self.target(run)
         self.assertEqual(expect, result)
+
     @unittest.skip("need better testing cases")
     def test_multiple_changes(self):
         run = "python inspection.py data/test/A.pdf data/test/F.pdf"
@@ -172,7 +172,6 @@ class Core(unittest.TestCase):
                   (10, 8), ]
         result = self.target(run)
         self.assertEqual(expect, result)
-
 
 
 if __name__ == '__main__':
