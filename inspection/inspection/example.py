@@ -118,7 +118,6 @@ class RGB(framework.PDFCV):
         self.measure = cv2.compareHist(hist_flatten_i, hist_flatten_j, cv.CV_COMP_CORREL)
 
         self.assertGreater(self.measure, self.threshold)
-        print self.measure
 
 
 class MSE(framework.PDFCV):

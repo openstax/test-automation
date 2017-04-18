@@ -43,8 +43,9 @@ var argumentOptions = {
   b: {
     alias: 'browsers',
     default: [
-      'chrome:36:Windows',
-      'firefox:36:Windows',
+      'safari'
+      //'chrome:36:Windows',
+      //'firefox:36:Windows',
       // 'internet explorer:10:Windows 7'
     ],
     describe: 'What browsers should the tests run in?',
@@ -52,7 +53,8 @@ var argumentOptions = {
   },
   s: {
     alias: 'server',
-    describe: 'What server should the tests run against?'
+    describe: 'What server should the tests run against?',
+    default: 'qa'
   }
 };
 
