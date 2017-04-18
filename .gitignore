@@ -2,11 +2,18 @@
 *.pyc
 webserver.py
 result*.xml
+result*.html
+t*.xml
+cc*.xml
 *.cache
 .cache/*
 tmp/
 webserver*.py
 .DS_Store
+res.txt
+res
+result*.xml
+*.sublime*
 
 .bashrc
 .zshrc
@@ -50,6 +57,7 @@ include/
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+pip-selfcheck.json
 
 # Unit test / coverage reports
 htmlcov/

@@ -1,0 +1,26 @@
+
+    # Case C{CaseID} - {story} - <User Type> | <Story Text>
+    @pytest.mark.skipif(str({CaseID}) not in TESTS, reason='Excluded')
+    def test_<user_type>_<story_text>_{CaseID}(self):
+        """<Story Text (command)>.
+
+        Steps:
+        <Steps>
+
+        Expected Result:
+        <Result>
+        """
+        self.ps.test_updates['name'] = '{product}.{epic}.{story}' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            '{product}',
+            '{product}.{epic}',
+            '{product}.{epic}.{story}',
+            '{CaseID}'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
