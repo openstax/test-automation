@@ -85,10 +85,10 @@ def main(argv=None):
     cases = set([case_key_from_id(test.id()) for test in tests])
 
     for case in cases:
-        # import ipdb; ipdb.set_trace()
+        #        import ipdb; ipdb.set_trace()
 
         checked_tests = []
-        # print("{}: test begginning indexs".format(case))
+#        print("{}: test begginning indexs".format(case))
         test_cases = [
             test for test in tests if case_key_from_id(test.id()) == case
         ]
@@ -123,7 +123,7 @@ def main(argv=None):
                     checked_tests.append(ft)
                 start_index = start_index + 1
 
-        # print("{}: test end indexs".format(case))
+#        print("{}: test end indexs".format(case))
         # end_tests = []
         while start_index <= m_end and start_index <= n_end:
             for test in test_cases:
@@ -138,7 +138,8 @@ def main(argv=None):
                 f.write(test.id() + " ... ok\n")
                 fail_tests = [
                     t for t in test_cases if (
-                        t.page_i == test.page_i or t.page_j == test.page_j
+                        t.page_i == test.page_i or
+                        t.page_j == test.page_j
                     ) and
                     t != test
                 ]
@@ -148,19 +149,16 @@ def main(argv=None):
                     checked_tests.append(ft)
                 m_end = m_end - 1
                 n_end = n_end - 1
-        # remove duplicate tests
-        checked_tests = list(set(checked_tests))
+        checked_tests = list(set(checked_tests))  # remove duplicate tests
         # FYI duplicates were never run
         remaining_tests = [t for t in test_cases if t not in checked_tests]
         test_suite = unittest.TestSuite()
         test_suite.addTests(remaining_tests)
-        changed_item_results = unittest.TextTestRunner(
-            verbosity=3,
-            stream=f,
-            buffer=True,
-            failfast=False
-        ).run(test_suite)
-
+        changed_item_results = unittest.TextTestRunner(verbosity=3,
+                                                       stream=f,
+                                                       buffer=True,
+                                                       failfast=False) \
+            .run(test_suite)
         for test, errr in changed_item_results.failures:
             results.addFailure(test, (None, None, None))
         for (test, err) in changed_item_results.errors:
@@ -183,7 +181,7 @@ def main(argv=None):
 #               result.addFailure(
 #            if result:
 #                break
-        # while start <= m_end and start <= n_end and X[start] = Y[start]:
+        #while start <= m_end and start <= n_end and X[start] = Y[start]:
         #    start_index = start_index + 1
 
 
@@ -210,6 +208,8 @@ def main(argv=None):
 #             for t in tests:
 #                 if t.page_i == test.page_i ^ t.page_j == test.page_j:
 
+
+
 #    print("Test End")
 #    end_tests = []
 #    while start_index <= m_end and start_index <= n_end:
@@ -233,11 +233,11 @@ def main(argv=None):
 #                                      failfast=True).run(end_cases)
     # changed items
 #    print("Test Changed Items")
-#    changed_item_tests = [
-# test for test in load_tests._tests if start_index - 1 <= test.page_i and te
-st.page_i <= m_end
-#                                        and start_index - 1 <= test.page_j an
-d test.page_j <= n_end ]
+#    changed_item_tests = [ test for test in load_tests._tests
+#                                    if start_index - 1 <= test.page_i and
+ test.page_i <= m_end
+#                                        and start_index - 1 <= test.page_j and
+ test.page_j <= n_end ]
 #    changed_item_cases = unittest.TestSuite()
 #    changed_item_cases.addTests(changed_item_cases)
 #    changed_item_results = unittest.TextTestRunner(verbosity=3,
@@ -247,29 +247,28 @@ d test.page_j <= n_end ]
 
 
 
-#    results.errors = beginning_results.errors + end_results.errors + chan
-ged_item_results.errors
-#    results.skipped = beginning_results.skipped + end_results.skipped + cha
-nged_item_results.skipped
+#    results.errors = beginning_results.errors + end_results.errors +
+ changed_item_results.errors
+#    results.skipped = beginning_results.skipped + end_results.skipped +
+ changed_item_results.skipped
 #    for test in beginning_tests:
 #        failures = [ t for (t,e,m) in beginning_results.failures ]
 #        if test in failures:
 #            break
 #        else:
-#           results.failures = results.failures + [ (t,None,None) for t in te
-sts if (t.page_i == test.page_i ^
-#                                                                      t.p
-age_j == test.page_j ) ]
+#           results.failures = results.failures + [ (t,None,None) for t in
+ tests if (t.page_i == test.page_i ^
+t.page_j == test.page_j ) ]
 #
 #    for test in end_tests:
 #        failures = [ t for (t,e,m) in end_results.failures]
 #        if test in failures:
 #            break
 #        else:
-#           results.failures = results.failures + [ (t,None,None) for t in t
-ests if (t.page_i == test.page_i ^
-#                                                                      t.pa
-ge_j == test.page_j ) ]
+#           results.failures = results.failures + [ (t,None,None) for t in
+ tests if (t.page_i == test.page_i ^
+#                                                                      t.page_j
+ == test.page_j ) ]
 #    results.failures = results.failures + changed_item_results.failures
 
 
