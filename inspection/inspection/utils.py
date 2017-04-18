@@ -6,8 +6,8 @@ import pyPdf
 import PythonMagick
 import cv2
 import cv
-import numpy
-import functools
+# import functools
+from os import file
 
 
 images_dict = {}
@@ -26,10 +26,16 @@ def load_pdf_page(filepath, page_number):
     images_dict[pdf_image_key] = image
     return image
 
+
 def generate_tests(settings):
     """create parameterized tests"""
     test_cases = unittest.TestSuite()
-    cases = import_module("inspection."+settings['cases'])
+    try:
+        cases = import_module("inspection."+settings['cases'])
+    except ImportError:
+        cases = import_module(settings['cases'])
+    except ImportError:
+        raise RuntimeError("module {} not found".format(settings['cases']))
     pdf_a_im = pyPdf.PdfFileReader(file(settings['pdf_a'], "rb"))
     total_a_pages = pdf_a_im.getNumPages()
     pdf_b_im = pyPdf.PdfFileReader(file(settings['pdf_b'], "rb"))
@@ -58,9 +64,10 @@ def generate_tests(settings):
 def case_key_from_id(ident):
     return ident.split('(')[0]
 
+
 def generate_info_matrix(tests, results):
 
-    cases = set([ test.id().split('(')[0] for test in tests])
+    cases = set([case_key_from_id(test.id()) for test in tests])
     pages_a = set([test.page_i for test in tests])
     pages_b = set([test.page_j for test in tests])
 
@@ -106,6 +113,7 @@ def generate_info_matrix(tests, results):
         info_matrix[x, y, z] = 's'
 
     return info_matrix
+
 
 def generate_comp_matrix(info_matrix, operation, skip=False):
 
@@ -162,70 +170,63 @@ def backtrack(length_matrix, comp_matrix, i, j, accumulator=[]):
         if i == 0 or j == 0:
             return accumulator
         elif comp_matrix[i, j]:
-            (length_matrix, comp_matrix, i, j, accumulator) = (length_matrix, comp_matrix, i - 1, j - 1, accumulator+[(i, j)])
+            (length_matrix, comp_matrix, i, j, accumulator) = \
+                (length_matrix, comp_matrix, i - 1, j - 1,
+                 accumulator + [(i, j)])
             continue
         else:
             if length_matrix[i, j - 1] > length_matrix[i - 1, j]:
-                (length_matrix, comp_matrix, i, j , accumulator) = (length_matrix, comp_matrix, i, j - 1, accumulator)
+                (length_matrix, comp_matrix, i, j, accumulator) = \
+                    (length_matrix, comp_matrix, i, j - 1, accumulator)
                 continue
             else:
-                (length_matrix, comp_matrix, i, j , accumulator) = (length_matrix, comp_matrix, i - 1, j, accumulator)
+                (length_matrix, comp_matrix, i, j, accumulator) = \
+                    (length_matrix, comp_matrix, i - 1, j, accumulator)
                 continue
         break
 
-def lcs_images( results_matrix, require='ANY'):
 
-    comp_matrix = generate_comp_matrix(results_matrix, require)
+def lcs_images(tests, results, require='ANY'):
+    info_matrix = generate_info_matrix(tests, results)
+    comp_matrix = generate_comp_matrix(info_matrix, require)
     length_matrix = lcs_length(comp_matrix)
     (M, N) = length_matrix.shape
     lcs = backtrack(length_matrix, comp_matrix, M - 1, N - 1)
     lcs.reverse()
     return lcs
 
-def diff_images(results_matrix, require='ANY'):
-    comp_matrix = generate_comp_matrix(results_matrix, require)
+
+def diff_images(tests, results, require='ANY'):
+    info_matrix = generate_info_matrix(tests, results)
+    comp_matrix = generate_comp_matrix(info_matrix, require)
     length_matrix = lcs_length(comp_matrix)
     (M, N) = length_matrix.shape
     diff = printDiff(length_matrix, comp_matrix, M - 1, N - 1)
     diff = diff.split('\n')
     diff.reverse()
     diff = '\n'.join(diff)
-    diff = diff.strip()
     return diff
 
-def printDiff(C, XY, i, j, accumulator = ''):
+
+def printDiff(C, XY, i, j, accumulator=''):
     while True:
         if i > 0 and j > 0 and XY[i][j] == 1:
-            (C, XY, i, j, accumulator) = (C, XY, i-1, j-1,diff_statement(accumulator,'',i))
+            (C, XY, i, j, accumulator) = \
+                (C, XY, i - 1, j - 1, diff_statement(accumulator, '', i))
             continue
         else:
-            if j > 0 and (i == 0 or C[i][j-1] >= C[i-1][j]):
-                (C, XY, i, j, accumulator) = (C, XY, i, j-1,diff_statement(accumulator,'+',j))
+            if j > 0 and (i == 0 or C[i][j - 1] >= C[i - 1][j]):
+                (C, XY, i, j, accumulator) = \
+                    (C, XY, i, j - 1, diff_statement(accumulator, '+', j))
                 continue
-            elif i > 0 and (j == 0 or C[i][j-1] < C[i-1][j]):
-                (C, XY, i, j, accumulator) = (C, XY, i-1, j, diff_statement(accumulator,'-',i))
+            elif i > 0 and (j == 0 or C[i][j - 1] < C[i - 1][j]):
+                (C, XY, i, j, accumulator) = \
+                    (C, XY, i-1, j, diff_statement(accumulator, '-', i))
                 continue
             else:
                 return accumulator
         break
 
+
 def diff_statement(diff, sign, index):
-    return "{0}\n{1} {2}".format(diff or '',sign,index)
-
-import contextlib
-import os
-
-
-@contextlib.contextmanager
-def working_directory(path):
-    """A context manager which changes the working directory to the given
-    path, and then changes it back to its previous value on exit.
-
-    """
-    prev_cwd = os.getcwd()
-    os.chdir(path)
-    try:
-        yield
-    finally:
-        os.chdir(prev_cwd)
-      
+    return "{0} \n {1} {2}".format(diff or '', sign, index)

@@ -1,46 +1,38 @@
 import unittest
 import argparse
-from multiprocessing import Process
+# from multiprocessing import Process
 
-from utils import generate_tests, lcs_images, diff_images, working_directory
+from utils import generate_tests, lcs_images, diff_images, case_key_from_id
 import sys
-import os 
+import os
+# import copy
+start_dir = os.getcwd()
 
-import unittest
-from importlib import import_module
-import inspect
-import numpy
-import pyPdf
-import PythonMagick
-import cv2
-import cv
-import numpy
-import functools
-
-
-
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
 def main(argv=None):
-    
+
     parser = argparse.ArgumentParser(
         description='Return a list of related pages between two pdfs.')
-    
     parser.add_argument(
         '--include',
         action='append',
         default=['DefaultTest'],
         help="Include additional test classes (default=[DefaultTest])")
-    
     parser.add_argument(
         '--exclude', action='append', default=[], help="Exclude test classes.")
-    
+    parser.add_argument(
+        '--results',
+        type=str,
+        default='results.log',
+        help="Test results output file, "
+             "each line is a python dictionary (default=results.log).")
     parser.add_argument(
         '--cases',
         type=str,
         default='cases',
         help="Python module which stores test cases (default=cases).")
-    
     parser.add_argument(
         '--check',
         type=str,
@@ -50,136 +42,250 @@ def main(argv=None):
         default='all',
         help="Require that any/all test cases pass "
              "for pages to be related (default=all).")
-    
     parser.add_argument(
         '--diff',
         action='store_true',
         default=False,)
-    
     parser.add_argument(
         '--window',
         type=int,
         default=None,
         help="If the absolute difference of index's of two pdf pages is"
-             "greater than the window range, then pages are not related. (default = None)")
-    
+             "greater than the window range, then pages are not related."
+             "(default = None)")
     parser.add_argument(
         '--debug',
         action='store_true',
         default=False,)
-    
-    
+
     parser.add_argument('pdf_a', type=str)
     parser.add_argument('pdf_b', type=str)
-    
-    
+
     args = parser.parse_args(argv)
-    
+
     settings = vars(args)
-    
+
     if not os.path.isabs(settings['pdf_a']):
-        settings['pdf_a'] = os.path.abspath(settings['pdf_a'])
+        settings['pdf_a'] = os.path.join(start_dir, settings['pdf_a'])
     if not os.path.isabs(settings['pdf_b']):
-        settings['pdf_b'] = os.path.abspath(settings['pdf_b'])
+        settings['pdf_b'] = os.path.join(start_dir, settings['pdf_b'])
+
+    load_tests = generate_tests(settings)
+
+    terminal_out = sys.stdout
 
     if settings['debug']:
         f = sys.stderr
     else:
         f = open(os.devnull, 'w')
+        sys.stdout = f
 
-    test_results = []
+    tests = load_tests._tests
+    results = unittest.TestResult()
+    cases = set([case_key_from_id(test.id()) for test in tests])
 
-    with working_directory(os.path.dirname(os.path.realpath(__file__))):     
-        cases = import_module("inspection."+settings['cases'])
-        pdf_a_im = pyPdf.PdfFileReader(file(settings['pdf_a'], "rb"))
-        total_a_pages = pdf_a_im.getNumPages()
-        pdf_b_im = pyPdf.PdfFileReader(file(settings['pdf_b'], "rb"))
-        total_b_pages = pdf_b_im.getNumPages()
-        settings['include'] = list(
-            set(settings['include']) - set(settings['exclude']))
-        for case_name in settings['include']:
-            TestClass = cases.__getattribute__(case_name)
-            setattr(TestClass, '_settings', settings)
-            SuperClass = inspect.getmro(TestClass)[1]
-    
-            method_list = inspect.getmembers(TestClass, predicate=inspect.ismethod)
-            super_method_list = inspect.getmembers(
-                SuperClass, predicate=inspect.ismethod)
-            test_method_list = list(set(method_list) - set(super_method_list))
-            test_name_list = [method[0] for method in test_method_list if method[
-                0] != 'tearDownClass' and method[0] != 'setUpClass']
-            for test_name in test_name_list:
-                start = 1
-                m_end = total_a_pages
-                n_end = total_b_pages
-                # trim off the matching items at the beginning
-                result = unittest.TestResult()
-                while start <= m_end and start <= n_end:
-                    test = TestClass(test_name, start, start)
-                    test.run(result)
-                    if result.wasSuccessful():
-                        case_name = test.case_key_from_id()
-                        page_i = start
-                        page_j = start
-                        value = 'p'
-                        start += 1
-                        test_results.append((case_name,page_i,page_j,value))
-                        f.write("{0} ... ok\n".format(test.id()))
-                    else:
-                        break
-                # trim off the matching items at the end
-                result = unittest.TestResult()
-                while start <= m_end and start <= n_end:
-                    test = TestClass(test_name, m_end, n_end)
-                    test.run(result)
-                    if result.wasSuccessful():
-                        case_name = test.case_key_from_id()
-                        page_i = m_end 
-                        page_j = n_end
-                        value = 'p'
-                        test_results.append((case_name,page_i,page_j,value))
-                        m_end -=1
-                        n_end -=1
-                        f.write("{0} ... ok\n".format(test.id()))
-                    else:
-                        break
-                # only loop over the items that have changed
-                for page_i in range(start,m_end+1):
-                    for page_j in range(start,n_end+1):
-                        result = unittest.TestResult()
-                        test = TestClass(test_name,page_i, page_j)
-                        test.run(result)
-                        case_name = test.case_key_from_id()
-                        if result.wasSuccessful():
-                            value = 'p'
-                            f.write("{0} ... ok\n".format(test.id()))
-                        elif result.failures:
-                            value = 'f'
-                            f.write("{0} ... FAIL\n".format(test.id()))
-                        elif result.skipped:
-                            value = 's'
-                            f.write("{0} ... skip\n".format(test.id()))
-                        elif result.error:
-                            value = 'e'
-                            f.write("{0} ... ERROR\n".format(test.id()))
+    for case in cases:
+        #        import ipdb; ipdb.set_trace()
 
-                        else:
-                            raise RuntimeError("result not recognized")
-                        test_results.append((case_name,page_i,page_j,value))
-        cases = list(set([ c for (c,i,j,v) in test_results ]))
-        results_matrix = numpy.chararray((len(cases), total_a_pages + 1, total_b_pages + 1))
-        results_matrix[:] = 'f'
-        while test_results:
-             (case, page_i, page_j, value) = test_results.pop()
-             x = cases.index(case)
-             y = page_i
-             z = page_j
-             results_matrix[x, y, z] = value    
-        if settings['diff']:
-            diff = diff_images(results_matrix)
-            print(diff)
-        else:
-            related_page_list = lcs_images(results_matrix)
-            print(related_page_list)
+        checked_tests = []
+#        print("{}: test begginning indexs".format(case))
+        test_cases = [
+            test for test in tests if case_key_from_id(test.id()) == case
+        ]
+        beginning_tests = [
+            test for test in test_cases if test.page_i == test.page_j
+        ]
+        beginning_tests.sort(key=lambda test: test.page_i)
+        start_index = 1
+        m_end = max([test.page_i for test in test_cases])
+        n_end = max([test.page_j for test in test_cases])
+        while beginning_tests:
+            test = beginning_tests.pop(0)
+            current_total_failures = len(results.failures)
+            test.run(results)
+            checked_tests.append(test)
+            if current_total_failures < len(results.failures):
+                # stop testing beginning indexs
+                break
+            else:
+                f.write(test.id() + " ... ok\n")
+                # fail other pages to reduce problem
+                fail_tests = [
+                    t for t in test_cases if (
+                        t.page_i == test.page_i or
+                        t.page_j == test.page_j
+                    ) and
+                    t != test
+                ]
+                for ft in fail_tests:
+                    test_info = (AssertionError, AssertionError(""), None)
+                    results.addFailure(ft, test_info)
+                    checked_tests.append(ft)
+                start_index = start_index + 1
+
+#        print("{}: test end indexs".format(case))
+        # end_tests = []
+        while start_index <= m_end and start_index <= n_end:
+            for test in test_cases:
+                if test.page_i == m_end and test.page_j == n_end:
+                    break
+            current_total_failures = len(results.failures)
+            test.run(results)
+            checked_tests.append(test)
+            if current_total_failures < len(results.failures):
+                break
+            else:
+                f.write(test.id() + " ... ok\n")
+                fail_tests = [
+                    t for t in test_cases if (
+                        t.page_i == test.page_i or
+                        t.page_j == test.page_j
+                    ) and
+                    t != test
+                ]
+                for ft in fail_tests:
+                    test_info = (AssertionError, AssertionError(""), None)
+                    results.addFailure(ft, test_info)
+                    checked_tests.append(ft)
+                m_end = m_end - 1
+                n_end = n_end - 1
+        checked_tests = list(set(checked_tests))  # remove duplicate tests
+        # FYI duplicates were never run
+        remaining_tests = [t for t in test_cases if t not in checked_tests]
+        test_suite = unittest.TestSuite()
+        test_suite.addTests(remaining_tests)
+        changed_item_results = unittest.TextTestRunner(verbosity=3,
+                                                       stream=f,
+                                                       buffer=True,
+                                                       failfast=False) \
+            .run(test_suite)
+        for test, errr in changed_item_results.failures:
+            results.addFailure(test, (None, None, None))
+        for (test, err) in changed_item_results.errors:
+            results.addFailure(test, (None, None, None))
+        for (test, reason) in changed_item_results.skipped:
+            results.addError(test, reason)
+        '''
+#        test_suite.run(results)
+
+#            if test.page_i == m_end and test.page_j == n_end:
+#                end_tests.append(test)
+#    print("Test End")
+#    end_tests = []
+#    while start_index <= m_end and start_index <= n_end:
+#        while start <= m_end and start <= n_end:
+
+#            if results.failures:
+#                break
+#            else:
+#               result.addFailure(
+#            if result:
+#                break
+        #while start <= m_end and start <= n_end and X[start] = Y[start]:
+        #    start_index = start_index + 1
+
+
+#    print("Test Beginning")
+#    start_index = 1  # initialize start index
+#    m_end = max( [test.page_i for test in tests ])
+#    n_end = max( [test.page_j for test in tests ])
+#    beginning_tests = [ test for test in tests if test.page_i==test.page_j]
+#    beginning_tests.sort(key=lambda test:test.page_i)
+#    beginning_cases = unittest.TestSuite()
+#    beginning_cases.addTests(beginning_tests)
+#    beginning_results = unittest.TextTestRunner(verbosity=3,
+#                                      stream=f,
+#                                      buffer=True,
+#                                      failfast=True).run(beginning_cases)
+#    if beginning_results.failures:
+#        failure_object = beginning_results.failures.pop()
+#        start_index = failure_object[0].page_i
+#    else:
+#        start_index = m_end + 1
+
+#    for test in beginning_tests:
+#        if test.page_i < start_index:
+#             for t in tests:
+#                 if t.page_i == test.page_i ^ t.page_j == test.page_j:
+
+
+
+#    print("Test End")
+#    end_tests = []
+#    while start_index <= m_end and start_index <= n_end:
+#        for test in load_tests._tests:
+#            if test.page_i == m_end and test.page_j == n_end:
+#                end_tests.append(test)
+#        m_end = m_end - 1
+#        n_end = n_end - 1
+#    end_cases = unittest.TestSuite()
+#    end_cases.addTests(end_tests)
+#    end_results = unittest.TextTestRunner(verbosity=3,
+#                                      stream=f,
+#                                      buffer=True,
+#                                      failfast=True).run(end_cases)
+#    if end_results.failures:
+#        m_end = end_results.failures[0][0].page_i
+#        n_end = end_results.failures[0][0].page_j
+#    end_results = unittest.TextTestRunner(verbosity=3,
+#                                      stream=f,
+#                                      buffer=True,
+#                                      failfast=True).run(end_cases)
+    # changed items
+#    print("Test Changed Items")
+#    changed_item_tests = [ test for test in load_tests._tests
+#                                    if start_index - 1 <= test.page_i and
+ test.page_i <= m_end
+#                                        and start_index - 1 <= test.page_j and
+ test.page_j <= n_end ]
+#    changed_item_cases = unittest.TestSuite()
+#    changed_item_cases.addTests(changed_item_cases)
+#    changed_item_results = unittest.TextTestRunner(verbosity=3,
+#                                      stream=f,
+#                                      buffer=True,
+#                                      failfast=False).run(changed_item_cases)
+
+
+
+#    results.errors = beginning_results.errors + end_results.errors +
+ changed_item_results.errors
+#    results.skipped = beginning_results.skipped + end_results.skipped +
+ changed_item_results.skipped
+#    for test in beginning_tests:
+#        failures = [ t for (t,e,m) in beginning_results.failures ]
+#        if test in failures:
+#            break
+#        else:
+#           results.failures = results.failures + [ (t,None,None) for t in
+ tests if (t.page_i == test.page_i ^
+t.page_j == test.page_j ) ]
+#
+#    for test in end_tests:
+#        failures = [ t for (t,e,m) in end_results.failures]
+#        if test in failures:
+#            break
+#        else:
+#           results.failures = results.failures + [ (t,None,None) for t in
+ tests if (t.page_i == test.page_i ^
+#                                                                      t.page_j
+ == test.page_j ) ]
+#    results.failures = results.failures + changed_item_results.failures
+
+
+#    results = unittest.TextTestRunner(verbosity=3,
+#                                      stream=f,
+#                                      buffer=True,
+#                                      failfast=False).run(load_tests)
+
+#    import ipdb; ipdb.set_trace()'''
+    sys.stdout = terminal_out
+
+    if settings['diff']:
+        diff = diff_images(tests, results, settings['check'])
+        print(diff)
+    else:
+        related_page_list = lcs_images(tests, results, settings['check'])
+        print(related_page_list)
+
 if __name__ == "__main__":
     main()
