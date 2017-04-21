@@ -28,10 +28,12 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8184, 8185, 8186, 8187, 8188,
-        8189, 8190, 8191, 8192, 8193,
-        8194, 8195, 8196, 8199, 8201,
-        8202, 8203, 8204, 8205, 8206
+        8184, 8188, 8189, 8190, 8191,
+        8192, 8193, 8195, 8196, 8199,
+        8201, 8202, 8203, 8204, 8205,
+        8206
+        # not implemented
+        # 8185, 8186, 8187, 8194, 8197
     ])
 )
 
@@ -1045,7 +1047,7 @@ class TestWorkAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
     '''
-    
+
     # Case C8199 - 016 - Student | If a card has a video, play the video
     @pytest.mark.skipif(str(8199) not in TESTS, reason='Excluded')
     def test_student_if_a_card_has_a_video_play_the_videio_8199(self):

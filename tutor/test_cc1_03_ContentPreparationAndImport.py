@@ -180,14 +180,14 @@ class TestContentPreparationAndImport(unittest.TestCase):
 
         # Test steps and verification assertions
         if not LOCAL_RUN:
-            admin = ContentQA(
+            admin = Admin(
                 use_env_vars=True,
                 existing_driver=self.content.driver,
                 pasta_user=self.ps,
                 capabilities=self.desired_capabilities,
             )
         else:
-            admin = ContentQA(
+            admin = Admin(
                 use_env_vars=True,
                 existing_driver=self.content.driver,
             )

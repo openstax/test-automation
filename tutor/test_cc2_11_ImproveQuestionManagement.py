@@ -28,7 +28,8 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         14851, 14852, 14856, 14858, 14859,
-        100129, 100130
+        # not implemented
+        # 100129, 100130
     ])
 )
 
@@ -426,7 +427,6 @@ class TestIImproveQuestionManagement(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
         self.student.login()
         self.teacher.find(
             By.XPATH, '//a[contains(@href,"cnx.org/contents/")]'

@@ -12,7 +12,7 @@ from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
-from selenium.webdriver import ActionChains
+# from selenium.webdriver import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 

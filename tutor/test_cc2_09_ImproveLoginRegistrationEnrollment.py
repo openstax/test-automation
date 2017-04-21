@@ -29,6 +29,8 @@ TESTS = os.getenv(
     str([
         14819, 14759, 14862, 14771, 14821,
         14822
+        # not implemented
+        # 107585
     ])
 )
 
@@ -658,7 +660,8 @@ class TestImproveLoginRegistrationEnrollment(unittest.TestCase):
         Enter first name into the 'First Name' text box
         Enter last name into the 'Last Name' text box
         Enter school into 'School' text box
-        Click the checkbox for 'I Agree' for the Terms of Use and the Privacy Policy
+        Click the checkbox for 'I Agree' for the Terms of Use and the Privacy
+        Policy
         Click 'Create Account'
 
         Click the checkbox and click 'I Agree' for the Terms of Use

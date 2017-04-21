@@ -5,12 +5,12 @@ import json
 import os
 import pytest
 import unittest
-import datetime
+# import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as expect
+# from random import randint
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
 from staxing.helper import Teacher
 # from selenium.webdriver.support.ui import WebDriverWait
@@ -30,10 +30,11 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        105592, 105593, 105594, 105595, 105596,
-        105597, 105598, 105599, 105600, 105602,
-        107581, 107586, 107587, 107588, 107589,
-        107590, 107591, 107592, 107593, 107594
+        # not implemented
+        # 105592, 105593, 105594, 105595, 105596,
+        # 105597, 105598, 105599, 105600, 105602,
+        # 107581, 107586, 107587, 107588, 107589,
+        # 107590, 107591, 107592, 107593, 107594
     ])
 )
 

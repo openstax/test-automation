@@ -35,8 +35,7 @@ TESTS = os.getenv(
     str([
         7631, 7632, 7634, 7635, 7636,
         7637, 7639, 7640, 7641, 7642,
-        7643, 7644, 7645, 7648, 7650,
-        87364, 87365
+        7643, 7644, 7645, 7648
     ])
     # issues:
     # 7650 - assistive tech, not registering tab key to move from elements
@@ -359,7 +358,8 @@ class TestStudentRegistrationEnrollmentLoginAuthentificatio(unittest.TestCase):
     # registration code - Twitter login
     @pytest.mark.skipif(str(7633) not in TESTS, reason='Excluded')
     def test_student_register_for_a_class_using_a_provided_registra_7633(self):
-        """Register for a class using a provided registration code - Twitter login.
+        """Register for a class using a provided registration code - Twitter
+        login.
 
         Steps:
         Sign in as teacher100
