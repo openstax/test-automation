@@ -14,7 +14,7 @@ from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.common.keys import Keys
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Student, Teacher
+from staxing.helper import Admin, Student
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -47,9 +47,19 @@ class TestCNXNavigation(unittest.TestCase):
                 pasta_user=self.ps,
                 capabilities=self.desired_capabilities
             )
+            self.admin = Admin(
+                existing_driver=self.student.driver,
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
         else:
             self.student = Student(
                 use_env_vars=True,
+            )
+            self.admin = Admin(
+                use_env_vars=True,
+                existing_driver=self.student.driver,
             )
 
     def tearDown(self):
@@ -59,6 +69,7 @@ class TestCNXNavigation(unittest.TestCase):
                 job_id=str(self.student.driver.session_id),
                 **self.ps.test_updates
             )
+        self.admin = None
         try:
             self.student.delete()
         except:
@@ -402,19 +413,22 @@ class TestCNXNavigation(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.student.get('https://demo.cnx.org/scripts/settings.js')
+        self.admin.get('https://demo.cnx.org/scripts/settings.js')
+
         # get the text in the concept coach section
-        page_text = self.student.wait.until(
+        page_text = self.admin.wait.until(
             expect.visibility_of_element_located(
                 (By.TAG_NAME, 'pre')
             )
         ).text.split('uuids')[1].splitlines()
+
         # loop through the lines that are the cnx urls only
-        for i in range(1, len(page_text)-9, 2):
+        for i in range(1, len(page_text) - 9, 2):
             line_1 = page_text[i]
             line_2 = page_text[i + 1]
             print(line_1)
             print(line_2)
             assert(line_1.find("'", 14) > line_2.find("'", 14)), \
                 "CNX URLs aren't shorter"
+
         self.ps.test_updates['passed'] = True

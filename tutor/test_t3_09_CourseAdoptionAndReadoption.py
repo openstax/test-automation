@@ -1,6 +1,6 @@
 """Tutor v3, Epic 09 - Course Adoption and Readoption."""
 
-import datetime
+# import datetime
 import inspect
 import json
 import os
@@ -8,12 +8,12 @@ import pytest
 import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
-from random import randint
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as expect
-from staxing.assignment import Assignment
+# from random import randint
+# from selenium.common.exceptions import NoSuchElementException
+# from selenium.webdriver.common.action_chains import ActionChains
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.support import expected_conditions as expect
+# from staxing.assignment import Assignment
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher
@@ -28,11 +28,12 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 TESTS = os.getenv(
     'CASELIST',
     str([
-        106450, 106451, 106452, 106453, 106454,
-        106455, 106456, 106457, 106458, 106459,
-        106460, 106461, 106462, 107576, 107577,
-        107578, 107579, 107580, 107582, 107583,
-        107584, 107596, 111265
+        # not implemented
+        # 106450, 106451, 106452, 106453, 106454,
+        # 106455, 106456, 106457, 106458, 106459,
+        # 106460, 106461, 106462, 107576, 107577,
+        # 107578, 107579, 107580, 107582, 107583,
+        # 107584, 107596, 111265
     ])
 )
 
@@ -642,7 +643,8 @@ class TestCourseAdoptionAndReadoption(unittest.TestCase):
 
         Steps:
         Login as a teacher
-        Click on a course with a start date after the current date, or create one
+        Click on a course with a start date after the current date, or create
+            one
         Click on the add assignment menu
         Click on the add event option
         Click on the open date text field

@@ -12,7 +12,7 @@ from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 from staxing.assignment import Assignment
-from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.support.ui import WebDriverWait
 from staxing.helper import Teacher
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import NoSuchElementException
@@ -34,7 +34,8 @@ TESTS = os.getenv(
         8133, 8134, 8135, 8136, 8137,
         8138, 8139, 8140, 8141, 8142,
         8143, 8144, 8145, 8146, 8147,
-        111249
+        # not implemented
+        # 111249
     ])
 )
 
@@ -129,7 +130,8 @@ class TestCreateAnEvent(unittest.TestCase):
         ).click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, '//label[contains(text(), "' + assignment_name + '")]')
+                By.XPATH, '//label[contains(text(), "' + assignment_name + '")
+                ]')
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()

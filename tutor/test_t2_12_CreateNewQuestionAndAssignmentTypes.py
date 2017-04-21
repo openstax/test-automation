@@ -28,7 +28,9 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14739, 14741, 14742, 14743, 14744
+        14739, 14741, 14743, 14744
+        # not implemented
+        # 14742
     ])
 )
 # 14743, 14744 - rely on add hw helpwer which has bugs

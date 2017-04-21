@@ -41,7 +41,10 @@ TESTS = os.getenv(
         8331, 8332, 8333, 8334, 8335,
         8336, 8337, 8338, 8339, 8340,
         111270, 111271, 111272, 111273, 111274,
-        111275, 111276])
+        111275, 111276
+        # not implemented
+        # 111277
+    ])
 )
 
 
@@ -1167,7 +1170,6 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
         self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
@@ -1230,7 +1232,6 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
         self.content.login()
         self.content.wait.until(
             expect.visibility_of_element_located(
@@ -1750,8 +1751,6 @@ class TestManageEcosystems(unittest.TestCase):
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"openstax-question")]')))
 
-        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps.test_updates['passed'] = True
 
     # 111271 - 027 - Content Analyst | Verify question availability
@@ -1824,8 +1823,6 @@ class TestManageEcosystems(unittest.TestCase):
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"openstax-question")]')))
 
-        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps.test_updates['passed'] = True
 
     # 111272 - 028 - Content Analyst | Verify question availability
@@ -1896,8 +1893,6 @@ class TestManageEcosystems(unittest.TestCase):
         self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"openstax-question")]')))
-
-        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -1970,8 +1965,6 @@ class TestManageEcosystems(unittest.TestCase):
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"openstax-question")]')))
 
-        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps.test_updates['passed'] = True
 
     # 111274 - 030 - Content Analyst | Verify question availability
@@ -2043,8 +2036,6 @@ class TestManageEcosystems(unittest.TestCase):
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"openstax-question")]')))
 
-        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps.test_updates['passed'] = True
 
     # 111275 - 031 - Content Analyst | Verify question availability
@@ -2114,8 +2105,6 @@ class TestManageEcosystems(unittest.TestCase):
         self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"openstax-question")]')))
-
-        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
 
@@ -2187,8 +2176,6 @@ class TestManageEcosystems(unittest.TestCase):
             expect.visibility_of_element_located(
                 (By.XPATH, '//div[contains(@class,"openstax-question")]')))
 
-        # raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
         self.ps.test_updates['passed'] = True
 
     # 111277 - 033 - Content Analyst | Verify question availability
@@ -2200,7 +2187,7 @@ class TestManageEcosystems(unittest.TestCase):
         Log in as Content Analyst
         Open the drop-down menu
         Click "QA Contents"
-        Select "Biology For AP® Courses" in
+        Select "Biology" in
          the "available-books drop-down list"
         Click a non-introductory section
 

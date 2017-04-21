@@ -27,9 +27,10 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8311, 8312, 8313, 8314, 8315,
-        112519, 112520, 112521, 112522,
-        112523
+        8314, 8315, 112519, 112520, 112521,
+        112522, 112523
+        # not implemented
+        # 8311, 8312, 8313
     ])
 )
 

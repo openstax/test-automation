@@ -34,13 +34,14 @@ TESTS = os.getenv(
     str([
         14676, 14677, 14678, 14800, 14680,
         14681, 14801, 14802, 14803, 14804,
-        14805, 14685, 14686, 14687, 14688,
+        14805, 14686, 14688,
         14689
     ])
 
-    # these are not implemented features - 14682, 14685, 14689
+    # these are not implemented features - 14682, 14685, 14687, 14689
     # error returning to dashboard - 14802
     # issues with the add hw helper - 14687
+    # 113783, 113784, 113785, 113788, 113786, 113787
 )
 
 
