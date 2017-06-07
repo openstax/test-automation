@@ -1,72 +1,99 @@
-"""OpenStax Web, Epic 01 - About Us"""
+"""OpenStax Web, Epic 02 - About Us"""
 
 import unittest
 
+from os import getenv
+from random import randint
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome import options
 from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.support.ui import WebDriverWait
+from time import sleep
 
 
 class TestAboutUs(unittest.TestCase):
-    """01 - About Us."""
+    """02 - About Us."""
 
     def setUp(self):
         """Pretest settings."""
+        # Remove the info bars and password save alert from Chrome
+        option_set = options.Options()
+        option_set.add_argument("disable-infobars")
+        option_set.add_experimental_option(
+            'prefs', {
+                'credentials_enable_service': False,
+                'profile': {
+                    'password_manager_enabled': False
+                }
+            }
+        )
+        self.driver = webdriver.Chrome(chrome_options=option_set)
+
+        # Retrieve the defined server or default to the QA instance
+        self.driver.get(getenv('OSWEBSITE', 'https://oscms-qa.openstax.org'))
+        self.wait = WebDriverWait(self.driver, 15)
+        link = self.wait.until(
+            expect.presence_of_element_located(
+                (By.CSS_SELECTOR, '[href="/about"]')
+            )
+        )
+        self.driver.execute_script(
+            'return arguments[0].scrollIntoView();',
+            link
+        )
+        sleep(2.5)
+        link.click()
 
     def tearDown(self):
         """Test destructor."""
+        try:
+            self.driver.quit()
+        except:
+            pass
 
-    # Case C96855 - 001 - Non-user | OpenStax bio is visible
-    def test__96855(self):
-        """OpenStax bio is visible.
+    # Case C96855 - 001 - Non-user | OpenStax and staff bios are available
+    def test_openstax_and_staff_bios_are_available_96855(self):
+        """OpenStax and staff bios are available.
 
         Steps:
+        Verify bio is visible
+        Scroll to a random staff portrait
+        View the staff bio by clicking on the portrait
 
         Expected Result:
-
+        OpenStax bio is visible
+        Staff bio is displayed
         """
-
-        assert(False), 'Test not written'
-
-
-"""
-    Test C96855: Click on "About us" at the top of the page.
-    The user will be presented with a description on OpenStax
-    as well as a brief bio on each staff member and Strategic
-    advisor.
-"""
-url = 'https://oscms-qa.openstax.org/'
-
-driver = webdriver.Chrome()
-driver.maximize_window()  # required to display the header links
-driver.execute_script('window.focus()')
-driver.get(url)
-
-wait = WebDriverWait(driver, 10)
-
-# look for the link
-xpath_about = '//a[@href="/about"]'
-
-link = wait.until(
-    expect.element_to_be_clickable(
-        (By.XPATH, xpath_about)
-    )
-)
-
-# simulate a click to get around the overlay issue hiding
-# the click in the header
-link.send_keys('\n')
-
-# check if page content loads
-try:
-    wait.until(
-        expect.presence_of_element_located(
-            (By.CSS_SELexpectTOR, '.about-page')
+        # At About Us page
+        WebDriverWait(self.driver, 15).until(
+            expect.presence_of_element_located(
+                (By.CSS_SELECTOR, '[data-html=introParagraph]')
+            )
         )
-    )
-    print('PASS: About page content loaded')
-except:
-    print('FAIL: page content not loaded')
-finally:
-    driver.quit()
+
+        # OpenStax bio found; select a random, visible staff portrait
+        portraits = self.driver.find_elements(
+            By.CSS_SELECTOR,
+            '.headshot[data-id]'
+        )
+        assert(len(portraits) > 0), 'No headshots found'
+        selected = portraits[randint(0, len(portraits) - 1)]
+        self.driver.execute_script(
+            'return arguments[0].scrollIntoView();',
+            selected
+        )
+        sleep(0.5)
+        headshot_id = selected.get_attribute('data-id')
+        name = selected.find_element(By.CSS_SELECTOR, '.name') \
+            .get_attribute('innerHTML')
+        print('Using ID #%s - %s' % (headshot_id, name))
+
+        # Open the staff bio pane
+        selected.click()
+        bio = selected.find_element(By.CSS_SELECTOR, '.description') \
+            .get_attribute('innerHTML')
+        print('Bio: %s' % bio)
+
+        # Uncomment the next assertion to view the stdout print statements
+        # assert(False), 'Output test data'
