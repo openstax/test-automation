@@ -1,0 +1,6 @@
+apipkg==1.4
+execnet==1.4.1
+py==1.4.34
+pytest==3.1.1
+pytest-xdist==1.16.0
+selenium==3.4.3
