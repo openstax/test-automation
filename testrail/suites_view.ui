@@ -11,16 +11,19 @@ function show_error(message, xhr, status, error) {
     'Error: ' + message + '\n' +
     'Status: ' + status + '\n' +
     'Error: ' + error + '\n' +
-    'XHR:\n' + xhr.responseText + '\n' + xhr.responseXML);
+    'XHR:\n' + xhr.responseText + '\n' + xhr.responseXML
+  );
 }
 
 $(document).ready(function() {
   // Create the button
-  var button = $('<div class="toolbar content-header-toolbar">' +
-                 '<a class="toolbar-button toolbar-button-last ' +
-                 'toolbar-button-first content-header-button ' +
-                 'button-start" href="javascript:void(0)">' +
-                 'Breakup Suite</a></div>');
+  var button = $(
+    '<div class="toolbar content-header-toolbar">' +
+    '<a class="toolbar-button toolbar-button-last ' +
+    'toolbar-button-first content-header-button ' +
+    'button-start" href="javascript:void(0)">' +
+    'Breakup Suite</a></div>'
+  );
 
   // Add it to the toolbar
   $("#content-header .content-header-inner").prepend(button);
@@ -34,7 +37,7 @@ $(document).ready(function() {
     params.include_all = true;
     $.ajax({
       type: 'POST',
-      url:  'index.php?api/v2/add_run/' + uiscripts.context.project.id,
+      url: 'index.php?api/v2/add_run/' + uiscripts.context.project.id,
       dataType: 'json',
       data: JSON.stringify(params),
       async: false,
@@ -114,9 +117,10 @@ $(document).ready(function() {
                   .then(
                     // Success
                     function(data, status, xhr) {
-                      alert('Success: Build Job\nRun: ' + run_id + '  Status: ' +
-                            status + '\nSet: ' + index + '\nURL: ' + uri +
-                            '\nData: ' + data + '\nXHR: ' + xhr.responseText);
+                      alert(
+                        'Success: Build Job\nRun: ' + run_id + '  Status: ' +
+                        status + '\nSet: ' + index + '\nURL: ' + uri +
+                        '\nData: ' + data + '\nXHR: ' + xhr.responseText);
                     },
                     // Failure
                     function(xhr, status, error) { show_error('Build Job', xhr, status, error); }
