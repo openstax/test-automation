@@ -37,6 +37,7 @@ TESTS = os.getenv(
         132560, 132524, 132561, 132525, 132528,
         132527, 132526, 132530, 132531, 132529,
         132532, 132533, 132534, 132577
+
     ])
 )
 
@@ -332,12 +333,6 @@ class TestCreateAReading(unittest.TestCase):
 
         assert ('reading/new' in self.teacher.current_url()), \
             'not at Add Reading page'
-
-        # Test info icon
-        self.teacher.find(
-            By.XPATH, '//button[contains(@class, "footer-instructions")]'
-        ).click()
-        self.teacher.find(By.ID, 'plan-footer-popover')
 
         assignment_name = 'reading_003_%d' % (randint(100, 999))
         assignment = Assignment()
@@ -753,7 +748,169 @@ class TestCreateAReading(unittest.TestCase):
     # Case 132561 008 - Teacher | Cancel draft reading after making changes
     @pytest.mark.skipif(str(132561) not in TESTS, reason="Excluded")
     def test_teacher_cancel_a_draft_reading_after_making_changes_132561(self):
-        pass
+        """
+        Go to https://tutor-qa.openstax.org/
+        Login with a teacher username and password
+        If the user has more than one course, click on a Tutor course name
+
+        On the calendar click on a assignment that is currently a draft
+        Enter an assignment name into the Assignment name text box [user decision]
+        Click on the 'Cancel' button
+        Click on the "Yes" button
+        (Takes user back to calendar dashboard. no changes have been made to the chosen draft on the calendar dashboard)
+
+        On the calendar click on a assignment that is currently a draft
+        Enter an assignment name into the Assignment name text box
+        Click on the 'X' button
+        Click on the 'Yes' button
+        """
+        self.ps.test_updates['name'] = 't1.14.012' \
+                                       + inspect.currentframe().f_code.co_name[
+                                         4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.012', '8003']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification
+        assignment_name_1 = "reading_008_%d" % (randint(100, 999))
+        assignment_name_2 = "reading_008_%d" % (randint(100, 999))
+        today = datetime.date.today()
+        start = randint(0, 6)
+        finish = start + randint(1, 5)
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=finish)) \
+            .strftime('%m/%d/%Y')
+
+        # Add a draft reading
+        self.teacher.add_assignment(
+            assignment='reading',
+            args={
+                'title': assignment_name_1,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'reading_list': ['1.1'],
+                'status': 'draft'
+            }
+        )
+
+        # Open a draft reading
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH, '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(text(),"{0}")]'.format(assignment_name_1)
+            ).click()
+        except:
+            self.teacher.find(
+                By.XPATH,
+                '//a[contains(@class,"header-control next")]'
+            ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH, '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(text(),"{0}")]'.format(assignment_name_1)
+            ).click()
+
+        # Change title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys("changed")
+        sleep(1)
+
+        # Cancel with "Cancel" button
+        cancel_button = self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'builder-cancel-button')
+            )
+        )
+        self.teacher.scroll_to(cancel_button)
+        cancel_button.click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button[contains(@class,"ok")]')
+            )
+        ).click()
+
+        # Check if teacher is taken to user dashboard
+        self.teacher.page.wait_for_page_load()
+        assert ('month' in self.teacher.current_url()), \
+            'not back at calendar after cancelling reading'
+
+        # Add a draft reading
+        self.teacher.add_assignment(
+            assignment='reading',
+            args={
+                'title': assignment_name_2,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'reading_list': ['1.2'],
+                'status': 'draft'
+            }
+        )
+
+        # Open a draft reading
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH, '//div[@class="month-wrapper"]')
+                )
+            )
+            sleep(2)
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(text(),"{0}")]'.format(assignment_name_2)
+            ).click()
+        except:
+            self.teacher.find(
+                By.XPATH,
+                '//a[contains(@class,"header-control next")]'
+            ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH, '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(text(),"{0}")]'.format(assignment_name_2)
+            ).click()
+        sleep(1)
+
+        # Change the reading title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys("changed")
+        sleep(1)
+
+        # Cancel with "X" button
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button[contains(@class,"openstax-close-x")]')
+            )
+        ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button[contains(@class,"ok")]')
+            )
+        ).click()
+
+        # Check if the teacher is back to user dashboard
+        assert ('month' in self.teacher.current_url()), \
+            'not back at calendar after cancelling reading'
+
+        self.ps.test_updates['passed'] = True
 
     # Case 132525 009 - Teacher | Attempt to save/publish a reading with blank required fields
     @pytest.mark.skipif(str(132525) not in TESTS, reason= "Excluded")
@@ -1707,14 +1864,183 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = True
 
     # Case 132534 018 - Teacher | Info icon and training wheel
-    @pytest.mark.skipif(str(132534) not in TESTS, reason="Excluded"):
+    @pytest.mark.skipif(str(132534) not in TESTS, reason="Excluded")
     def test_teacher_reading_info_icon_and_training_wheel_132534(self):
-        pass
+        """
+        Steps:
+        Click on the 'Add Assignment' sidebar menu
+        Click on the "Add Reading" option
+        Click on the info icon at the bottom
+        (Instructions about the Publish, Cancel, and Save As Draft statuses appear)
+
+        Click on the question mark dropdown menu in the navbar
+        Select "Page Tips"
+        (A Super training wheel on "How to build a reading assignment" pops up)
+        Click on "Next"
+        (User is taken to training wheels)
+        Click "Next" until the user exits the training wheel
+
+        Click on the question mark dropdown menu in the navbar
+        Select "Page Tips"
+        Click on "Next"
+        Click "X" button on the top right corner of the training wheel
+        (User exits the training wheel)
+
+        Click on "What do students see" at the bottom of the page
+
+        Expected result:
+        A Youtube video window pops up, showing the student view of your assignment
+        """
+        self.ps.test_updates['name'] = 't1.14.001' \
+                                       + inspect.currentframe().f_code.co_name[
+                                         4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.001', '7992']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        assignment_name = 'reading_018_%d' % (randint(100, 999))
+        assignment = Assignment()
+
+        # Open Add Reading page
+        assignment.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
+        assert ('reading/new' in self.teacher.current_url()), \
+            'not at add readings screen'
+
+        # Test info icon
+        self.teacher.find(
+            By.XPATH, '//button[contains(@class, "footer-instructions")]'
+        ).click()
+        self.teacher.find(By.ID, 'plan-footer-popover')
+
+        # Test training wheel
+        self.teacher.find(
+            By.ID, 'support-menu'
+        ).click()
+        self.teacher.find(
+            By.ID, 'menu-option-page-tips'
+        ).click()
+
+        # Super training wheel is present
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class, "joyride-tooltip__main")]'
+        )
+        self.teacher.find(
+            By.XPATH, '//button[contains(@data-type, "next")]'
+        ).click()
+
+        # Walk through training wheel
+        self.teacher.find(By.CLASS_NAME, 'joyride-overlay')
+        while self.teacher.find_all(
+                By.XPATH, '//button[contains(@data-type, "next")]'):
+            self.teacher.find(By.XPATH, '//button[contains(@data-type, "next")]').click()
+            print (self.teacher.find_all(
+                By.XPATH, '//button[contains(@data-type, "next")]'))
+
+        # Exit training wheel halfway
+        self.teacher.find(
+            By.ID, 'support-menu'
+        ).click()
+        self.teacher.find(
+            By.ID, 'menu-option-page-tips'
+        ).click()
+        self.teacher.find(
+            By.XPATH, '//button[contains(@data-type, "next")]'
+        ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//button[contains(@data-type, "close")]')
+            )
+        ).click()
+
+        # Test "What do students see" button
+        self.teacher.find(
+            By.XPATH, '//button[contains(@class, "preview-btn")]'
+        ).click()
+        video_window = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(video_window)
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class, "student-preview")]'
+        )
+        sleep(2)
+        self.ps.test_updates['passed'] = True
 
     # Case 132577 019 - Teacher | Get assignment link and review metrics
-    @pytest.mark.skipif(str(132577) not in TESTS, reason="Excluded"):
+    @pytest.mark.skipif(str(132577) not in TESTS, reason="Excluded")
     def test_teacher_get_assignment_link_and_review_metrics(self):
-        pass
+        """
+        Steps
+        Go to https://tutor-qa.openstax.org/
+        Login with teacher username and password
+        If the user has more than one course, click on a Tutor course name
+
+        Click on an existing reading on the calendar
+        Click "Get assignment link"
+        (A link for the reading assignment pops up)
+
+        Click on "Review metrics" button
+        (The teacher is taken to a page that shows problems with answers in the assigned reading chapters and students' progress in this reading assignment )
+
+        Click on "Return to Dashboard" button
+
+        Expected result
+        The teacher is taken to the reading summary page
+        """
+        # Create an open reading
+        self.ps.test_updates['name'] = 't1.14.018' \
+                                       + inspect.currentframe().f_code.co_name[
+                                         4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.018', '8009']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        open_title = 'open_reading_%s' % (randint(100, 999))
+        today = datetime.date.today()
+        start = randint(2, 6)
+        finish = start + randint(1, 5)
+        begin_today = today.strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=finish)).strftime('%m/%d/%Y')
+
+        self.teacher.add_assignment(
+            assignment='reading',
+            args={
+                'title': open_title,
+                'description': 'description',
+                'periods': {'all': (begin_today, end)},
+                'reading_list': ['1.1', '1.2'],
+                'status': 'publish'
+            }
+        )
+
+        # View assignment summary
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.CLASS_NAME, 'month-wrapper')
+            )
+        )
+        self.teacher.find(
+            By.XPATH, '//label[contains(text(),"{0}")]'.format(open_title)
+        ).click()
+
+        # Get assignment link
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'lms-info-link')
+            )
+        ).click()
+        sleep(3)
+        self.teacher.find(
+            By.XPATH, '//div[contains(@id, "sharable-link-popover")]'
+        )
+
+        # Review metrics
+        self.teacher.find(
+            By.ID, 'view-metrics'
+        ).click()
+        assert ("metrics/" in self.teacher.current_url()), \
+            "not at Review Metrics page"
+
+        self.ps.test_updates['passed'] = True
 
 
 class Actions(ActionChains):
