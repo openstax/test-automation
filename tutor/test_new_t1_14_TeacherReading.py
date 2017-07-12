@@ -33,13 +33,10 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        # 201, 202, 203, 204, 205,
-#         206, 207, 208, 209, 210,
-#         211, 212, 213, 214, 215,
-#         216
-        201
-        
-
+        132519, 132520, 132521, 132522, 132523,
+        132560, 132524, 132561, 132525, 132528,
+        132527, 132526, 132530, 132531, 132529,
+        132532, 132533, 132534, 132577
     ])
 )
 
@@ -77,60 +74,9 @@ class TestCreateAReading(unittest.TestCase):
         except:
             pass
 
-    @pytest.mark.skipif(str(101) not in TESTS, reason="Excluded")
-    def test_clean_up_assignment(self):
-        """
-        Delete all assignment of one type in current and next month from the calendar
-        """
-        # drafts = self.teacher.find_all(
-        #     By.XPATH, '//div[@data-assignment-type="reading" and not(contains(@class, "is-published") or (@draggable="true"))]')
-
-        # published reading cleanup
-        drafts = self.teacher.find_all(
-            By.XPATH, '//div[@data-assignment-type="reading" and contains(@class, "is-published") and not(@draggable="true")]'
-        )
-        num = len(drafts)
-        while num > 0:
-            draft = self.teacher.find(By.XPATH,
-                                      '//div[@data-assignment-type="reading" and not(contains(@class, "is-published") or (@draggable="true"))]')
-            draft.click()
-            delete_button = self.teacher.wait.until(
-                expect.element_to_be_clickable(
-                    (By.XPATH, '//button[contains(@class,"delete-link")]')
-                )
-            )
-            self.teacher.scroll_to(delete_button)
-            sleep(1)
-            delete_button.click()
-            self.teacher.find(By.XPATH, '//button[contains(text(),"Yes")]').click()
-            sleep(3)
-            self.teacher.driver.refresh()
-            num -= 1
-        self.teacher.find(By.CSS_SELECTOR, '.calendar-header-control.next').click()
-        sleep(5)
-        drafts = self.teacher.find_all(By.XPATH,
-                                       '//div[@data-assignment-type="reading" and not(contains(@class, "is-published") or (@draggable="true"))]')
-        num = len(drafts)
-        while num > 0:
-            draft = self.teacher.find(By.XPATH,
-                                      '//div[@data-assignment-type="reading" and not(contains(@class, "is-published") or (@draggable="true"))]')
-            draft.click()
-            delete_button = self.teacher.wait.until(
-                expect.element_to_be_clickable(
-                    (By.XPATH, '//button[contains(@class,"delete-link")]')
-                )
-            )
-            self.teacher.scroll_to(delete_button)
-            sleep(1)
-            delete_button.click()
-            self.teacher.find(By.XPATH, '//button[contains(text(),"Yes")]').click()
-            sleep(3)
-            self.teacher.driver.refresh()
-            num -= 1
-
-    # Case 201 - Teacher | Add a reading with all fields filled using the "Add Assignment" sidebar menu
-    @pytest.mark.skipif(str(201) not in TESTS, reason='Excluded')
-    def test_teacher_create_and_publish_a_new_open_reading_from_sidebar_menu_201(self):
+    # Case C132519 001 - Teacher | Create and publish a new open reading for all periods
+    @pytest.mark.skipif(str(132519) not in TESTS, reason='Excluded')
+    def test_teacher_create_and_publish_a_new_open_reading_132519(self):
         """Add a reading using the Add Assignment drop down menu.
         #Steps
         Click on the 'Add Assignment' button
@@ -157,10 +103,10 @@ class TestCreateAReading(unittest.TestCase):
         ***Takes user back to calendar dashboard. An opened assignment appears on user calendar dashboard on due date with correct readings***
 
         """
-        # self.ps.test_updates['name'] = 't1.14.001' \
-        #     + inspect.currentframe().f_code.co_name[4:]
-        # self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.001', '7992']
-        # self.ps.test_updates['passed'] = False
+        self.ps.test_updates['name'] = 't1.14.001' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.001', '7992']
+        self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
         assignment_name = 'reading_001_%d' % (randint(100, 999))
@@ -229,9 +175,9 @@ class TestCreateAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case 202 - Teacher | Save a draft for individual periods
-    @pytest.mark.skipif(str(202) not in TESTS, reason='Excluded')
-    def test_teacher_save_a_draft_reading_for_individual_sections(self):
+    # Case C132520 002 - Teacher | Save a draft for individual periods
+    @pytest.mark.skipif(str(132520) not in TESTS, reason='Excluded')
+    def test_teacher_save_a_draft_reading_for_individual_sections_132520(self):
         """
         Click on the 'Add Assignment' button
         Click on the 'Add Reading' option
@@ -336,9 +282,9 @@ class TestCreateAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case 203 - Teacher | Create and publish a new unopened reading from calendar
-    @pytest.mark.skipif(str(203) not in TESTS, reason='Excluded')
-    def test_teacher_create_and_publish_new_unopened_reading_from_calendar(self):
+    # Case C132521 003 - Teacher | Create and publish a new unopened reading from calendar
+    @pytest.mark.skipif(str(132521) not in TESTS, reason='Excluded')
+    def test_teacher_create_and_publish_new_unopened_reading_from_calendar_132521(self):
         """
         Click on calendar date for desired due date
         Click on the 'Add Reading' option
@@ -455,9 +401,9 @@ class TestCreateAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case 204 - Teacher | Publish a draft reading
-    @pytest.mark.skipif(str(204) not in TESTS, reason= 'Excluded')
-    def test_teacher_publish_a_draft_reading(self):
+    # Case 132522 004 - Teacher | Publish a draft reading
+    @pytest.mark.skipif(str(132522) not in TESTS, reason= 'Excluded')
+    def test_teacher_publish_a_draft_reading_132522(self):
         """
         Publish a draft reading.
 
@@ -526,9 +472,9 @@ class TestCreateAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case 205 - Teacher | Cancel a new reading before making any changes with cancel/x buttons
-    @pytest.mark.skipif(str(205) not in TESTS, reason= "Excluded")
-    def test_teacher_cancel_a_new_reading_before_making_any_changes(self):
+    # Case 132523 005 - Teacher | Cancel a new reading before making any changes
+    @pytest.mark.skipif(str(132523) not in TESTS, reason= "Excluded")
+    def test_teacher_cancel_a_new_reading_before_making_any_changes_132523(self):
         """
         #Steps
         Click on the 'Add Assignment' drop down menu
@@ -581,9 +527,9 @@ class TestCreateAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case 206 - Teacher | Cancel a new reading AFTER making changes with cancel/x buttons
-    @pytest.mark.skipif(str(206) not in TESTS, reason= "Excluded")
-    def test_teacher_cancel_a_new_reading_after_making_changes(self):
+    # Case 132560 006 - Teacher | Cancel a new reading AFTER making changes
+    @pytest.mark.skipif(str(132560) not in TESTS, reason= "Excluded")
+    def test_teacher_cancel_a_new_reading_after_making_changes_132560(self):
         """
         Click on the 'Add Assignment' drop down menu
         Click on the 'Add Reading' option
@@ -668,9 +614,9 @@ class TestCreateAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case 207 - Teacher | Cancel draft reading before making changes with cancel/x buttons
-    @pytest.mark.skipif(str(207) not in TESTS, reason= "Excluded")
-    def test_teacher_cancel_a_draft_reading_before_making_changes(self):
+    # Case 132524 007 - Teacher | Cancel draft reading before making changes
+    @pytest.mark.skipif(str(132524) not in TESTS, reason= "Excluded")
+    def test_teacher_cancel_a_draft_reading_before_making_changes_132524(self):
         """
         On the calendar click on a assignment that is currently a draft
         Click on the 'Cancel' button
@@ -804,9 +750,14 @@ class TestCreateAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case 208 - Teacher | Attempt to save/publish a reading with blank required fields
-    @pytest.mark.skipif(str(208) not in TESTS, reason= "Excluded")
-    def test_teacher_attempt_to_save_or_publish_a_reading_with_blank_required_fields(self):
+    # Case 132561 008 - Teacher | Cancel draft reading after making changes
+    @pytest.mark.skipif(str(132561) not in TESTS, reason="Excluded")
+    def test_teacher_cancel_a_draft_reading_after_making_changes_132561(self):
+        pass
+
+    # Case 132525 009 - Teacher | Attempt to save/publish a reading with blank required fields
+    @pytest.mark.skipif(str(132525) not in TESTS, reason= "Excluded")
+    def test_teacher_attempt_to_save_or_publish_a_reading_with_blank_required_fields_132525(self):
         """
         Click on the 'Add Assignment' drop down menu
         Click on the 'Add Reading' option
@@ -864,9 +815,9 @@ class TestCreateAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case 209 - Teacher | Delete a draft reading
-    @pytest.mark.skipif(str(209) not in TESTS, reason= "Excluded")
-    def test_teacher_delete_a_draft_reading(self):
+    # Case 132528 010 - Teacher | Delete a draft reading
+    @pytest.mark.skipif(str(132528) not in TESTS, reason= "Excluded")
+    def test_teacher_delete_a_draft_reading_132528(self):
         """
         On the calendar click on a draft
         Click on the 'Delete Assignment' button
@@ -939,9 +890,9 @@ class TestCreateAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case 210 - Teacher | Delete an unopened reading
-    @pytest.mark.skipif(str(210) not in TESTS, reason="Excluded")
-    def test_teacher_delete_an_unopened_reading(self):
+    # Case 132527 011 - Teacher | Delete an unopened reading
+    @pytest.mark.skipif(str(132527) not in TESTS, reason="Excluded")
+    def test_teacher_delete_an_unopened_reading_132527(self):
         """
         On the calendar click on an unopened reading
         Click on the 'Edit Assignment' button
@@ -1017,9 +968,9 @@ class TestCreateAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case 211 - Teacher | Delete an open reading
-    @pytest.mark.skipif(str(211) not in TESTS, reason="Excluded")
-    def test_teacher_delete_an_open_reading(self):
+    # Case 132526 012 - Teacher | Delete an open reading
+    @pytest.mark.skipif(str(132526) not in TESTS, reason="Excluded")
+    def test_teacher_delete_an_open_reading_132526(self):
         """
         On the calendar click on a reading that is opened
         Click on the 'Edit Assignment' button
@@ -1091,9 +1042,9 @@ class TestCreateAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case 212 - Teacher | Change a draft reading
-    @pytest.mark.skipif(str(212) not in TESTS, reason= "Excluded")
-    def test_teacher_change_a_draft_reading(self):
+    # Case 132530 013 - Teacher | Change a draft reading
+    @pytest.mark.skipif(str(132530) not in TESTS, reason= "Excluded")
+    def test_teacher_change_a_draft_reading_132530(self):
         """
         Change all fields in a draft reading.
 
@@ -1219,9 +1170,9 @@ class TestCreateAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case 213 - Teacher | Change an unopened reading
-    @pytest.mark.skipif(str(213) not in TESTS, reason="Excluded")
-    def test_teacher_change_an_unopened_reading(self):
+    # Case 132531 014  - Teacher | Change an unopened reading
+    @pytest.mark.skipif(str(132531) not in TESTS, reason="Excluded")
+    def test_teacher_change_an_unopened_reading_132531(self):
         """
         Change all fields in an unopened, published reading.
 
@@ -1353,9 +1304,9 @@ class TestCreateAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case 214 - Teacher | Change an open reading
-    @pytest.mark.skipif(str(214) not in TESTS, reason="Excluded")
-    def test_teacher_change_an_open_reading(self):
+    # Case 132529 015 - Teacher | Change an open reading
+    @pytest.mark.skipif(str(132529) not in TESTS, reason="Excluded")
+    def test_teacher_change_an_open_reading_132529(self):
         """Change the name, description and due dates in an opened reading.
 
         Steps:
@@ -1481,9 +1432,9 @@ class TestCreateAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case 215 - Teacher | Add/Remove/Reorder reading sections and chapters
-    @pytest.mark.skipif(str(215) not in TESTS, reason="Excluded")
-    def test_teacher_rearrange_reading_sections(self):
+    # Case 132532 016 - Teacher | Add/Remove/Reorder reading sections and chapters
+    @pytest.mark.skipif(str(132532) not in TESTS, reason="Excluded")
+    def test_teacher_rearrange_reading_sections_132532(self):
         """
         Click on the 'Add Assignment' button
         Click on the 'Add Reading' option
@@ -1632,6 +1583,7 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(
             By.XPATH, '//button[text()="Add Readings"]'
         ).click()
+
         # Verify the whole chapter is removed
         removed_chapter = self.teacher.find_all(
             By.XPATH, '//span[starts-with(@data-chapter-section, %s)]' % chapter
@@ -1689,9 +1641,9 @@ class TestCreateAReading(unittest.TestCase):
                 '//label[contains(text(),"{0}")]'.format(assignment_name)
             )
 
-    # Case 216 - Teacher | Add a reading by dragging and dropping from the calendar
-    @pytest.mark.skipif(str(216) not in TESTS, reason="Excluded")
-    def test_teacher_add_a_reading_by_dragging_and_dropping(self):
+    # Case 132533 017 - Teacher | Add a reading by dragging and dropping from the calendar
+    @pytest.mark.skipif(str(132533) not in TESTS, reason="Excluded")
+    def test_teacher_add_a_reading_by_dragging_and_dropping_132533(self):
         """
         Add reading by dragging Add Reading to calendar date.
 
@@ -1754,6 +1706,15 @@ class TestCreateAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    # Case 132534 018 - Teacher | Info icon and training wheel
+    @pytest.mark.skipif(str(132534) not in TESTS, reason="Excluded"):
+    def test_teacher_reading_info_icon_and_training_wheel_132534(self):
+        pass
+
+    # Case 132577 019 - Teacher | Get assignment link and review metrics
+    @pytest.mark.skipif(str(132577) not in TESTS, reason="Excluded"):
+    def test_teacher_get_assignment_link_and_review_metrics(self):
+        pass
 
 
 class Actions(ActionChains):
