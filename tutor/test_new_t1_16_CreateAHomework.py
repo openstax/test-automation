@@ -30,7 +30,7 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([ #301, 302, 303, 304, 305,
-          310
+          317
 
     ])
 )
@@ -982,7 +982,7 @@ class TestCreateHomework(unittest.TestCase):
         ).click()
         sleep(1)
 
-        # Delete the draft reading
+        # Delete the draft homework
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"delete-link")]')
@@ -1007,41 +1007,758 @@ class TestCreateHomework(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-
     # Case C311 - Teacher | Delete an unopened homework
     @pytest.mark.skipif(str(311) not in TESTS, reason="Excluded")
     def test_teacher_delete_an_unopened_homework(self):
-        pass
+        """
+        Steps
+        Click on a published assignment that has not yet been opened for students
+        Click on the 'Edit Assignment' button
+        Click on the 'Delete' button
+        Click 'Yes' on the dialog box that pops up
+
+        Results:
+        The teacher is returned to the dashboard and the assignment is removed from the calendar.
+        """
+        self.ps.test_updates['name'] = 't1.16.018' \
+                                       + inspect.currentframe().f_code.co_name[
+                                         4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.018', '8045']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        assignment_name = 'hw_011_%s' % randint(100, 999)
+        today = datetime.date.today()
+        start = randint(0, 6)
+        finish = start + randint(1, 5)
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=finish)) \
+            .strftime('%m/%d/%Y')
+
+        # Create an unopened homework
+        self.teacher.add_assignment(
+            assignment='homework',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'problems': {'1.1': (2, 3), },
+                'status': 'publish',
+                'feedback': 'immediate',
+            }
+        )
+
+        # Open the unopened homework
+        self.teacher.find(
+            By.XPATH, '//label[contains(text(),"{0}")]'.format(assignment_name)
+        ).click()
+        self.teacher.find(
+            By.ID, 'edit-assignment-button'
+        ).click()
+        sleep(1)
+
+        # Delete the unopened homework
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class,"delete-link")]')
+            )
+        ).click()
+        self.teacher.find(
+            By.XPATH, '//button[contains(text(),"Yes")]'
+        ).click()
+
+        assert ('month' in self.teacher.current_url()), \
+            'not returned to calendar after deleting an assignment'
+        self.teacher.driver.refresh()
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.CLASS_NAME, 'month-wrapper')
+            )
+        )
+        deleted_hw = self.teacher.find_all(
+            By.XPATH, '//label[@data-title="{0}"]'.format(assignment_name)
+        )
+        assert len(deleted_hw) == 0, 'draft reading not deleted'
+
+        self.ps.test_updates['passed'] = True
 
     # Case C312 - Teacher | Delete an open homework
     @pytest.mark.skipif(str(312) not in TESTS, reason="Excluded")
     def test_teacher_delete_an_open_homework(self):
-        pass
+        """
+        Steps:
+        Click on a published assignment that has not yet been opened for students
+        Click on the 'Edit Assignment' button
+        Click on the 'Delete' button
+        Click 'Yes' on the dialog box that pops up
 
-    # Case C30 - Teacher | Change an open homework
+        Result:
+        The teacher is returned to the dashboard and the assignment is removed from the calendar.
+        """
+        self.ps.test_updates['name'] = 't1.16.018' \
+                                       + inspect.currentframe().f_code.co_name[
+                                         4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.16', 't1.16.018', '8045']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        assignment_name = 'hw_011_%s' % randint(100, 999)
+        today = datetime.date.today()
+        finish = randint(1, 5)
+        begin = today.strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=finish)) \
+            .strftime('%m/%d/%Y')
+
+        # Create an open homework
+        self.teacher.add_assignment(
+            assignment='homework',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'problems': {'1.1': (2, 3), },
+                'status': 'publish',
+                'feedback': 'immediate',
+            }
+        )
+
+        # Open edit homework page
+        self.teacher.find(
+            By.XPATH, '//label[contains(text(),"{0}")]'.format(assignment_name)
+        ).click()
+        self.teacher.find(
+            By.ID, 'edit-assignment-button'
+        ).click()
+        sleep(1)
+
+        # Delete the open homework
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class,"delete-link")]')
+            )
+        ).click()
+        self.teacher.find(
+            By.XPATH, '//button[contains(text(),"Yes")]'
+        ).click()
+
+        assert ('month' in self.teacher.current_url()), \
+            'not returned to calendar after deleting an assignment'
+        self.teacher.driver.refresh()
+        self.teacher.wait.until(
+            expect.presence_of_element_located(
+                (By.CLASS_NAME, 'month-wrapper')
+            )
+        )
+        deleted_hw = self.teacher.find_all(
+            By.XPATH, '//label[@data-title="{0}"]'.format(assignment_name)
+        )
+        assert len(deleted_hw) == 0, 'draft reading not deleted'
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C313 - Teacher | Change a draft homework
     @pytest.mark.skipif(str(313) not in TESTS, reason="Excluded")
-    def teacher_change_an_open_homework(self):
-        pass
-
-    # Case C30 - Teacher | Change a draft homework
-    @pytest.mark.skipif(str(314) not in TESTS, reason="Excluded")
     def test_teacher_change_a_draft_homework(self):
-        pass
+        """
+        Steps:
+        From the dashboard, click on a draft homework
+        Edit the text in the text box named 'Assignment name'
+        Edit the text in the text box named 'Description or special instructions'
+        Edit the open and due dates for the assignment
+        Edit the 'Show feedback' drop down menu option
+        Click the 'Save As Draft' button
 
-    # Case C30 - Teacher | Change an unopen homework
+        Result:
+        The user is returned to the dashboard. Changes to the draft are seen.
+        """
+        self.ps.test_updates['name'] = 't1.14.034' \
+                                       + inspect.currentframe().f_code.co_name[
+                                         4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.034', '8025']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        assignment_name = 'hw_013%d' % (randint(100, 999))
+        assignment = Assignment()
+        today = datetime.date.today()
+        finish = randint(1, 6)
+        begin = today.strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=finish)).strftime('%m/%d/%Y')
+
+        # Create a draft homework
+        self.teacher.add_assignment(
+            assignment='homework',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'problems': {'1.1': (2, 3), },
+                'status': 'draft',
+                'feedback': 'immediate',
+            }
+        )
+
+        # Locate the draft homework
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH, '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(text(),"{0}")]'.format(assignment_name)
+            ).click()
+        except NoSuchElementException:
+            self.teacher.find(
+                By.XPATH,
+                '//a[contains(@class,"header-control next")]'
+            ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH, '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(text(),"{0}")]'.format(assignment_name)
+            ).click()
+        sleep(1)
+
+        # Change the title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys('new')
+
+        # Change the description
+        self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]' +
+            '//textarea[contains(@class,"form-control")]'
+        ).send_keys('new')
+
+        # set new due dates
+        today = datetime.date.today()
+        start = randint(1, 6)
+        end = start + randint(1, 5)
+        opens_on = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=end)) \
+            .strftime('%m/%d/%Y')
+        assignment.assign_periods(
+            self.teacher.driver,
+            {'all': (opens_on, closes_on)}
+        )
+
+        # Remove problems from the assignment
+        self.teacher.find(
+            By.XPATH, "//button[contains(@class,'-remove-exercise')]"
+        ).click()
+        self.teacher.find(
+            By.XPATH, '//button[text()="Remove"]'
+        ).click()
+
+        # Change show feedback
+        feedback = self.teacher.find(By.ID, 'feedback-select')
+        Assignment.scroll_to(self.teacher.driver, feedback)
+        feedback.click()
+        self.teacher.find(
+            By.XPATH, '//option[@value="due_at"]'
+        ).click()
+
+        # Save
+        self.teacher.find(
+            By.XPATH,
+            '//button[contains(@class,"-save")]'
+        ).click()
+
+        try:
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(text(),"{0}")]'.format(
+                    assignment_name + 'new')
+            )
+        except NoSuchElementException:
+            self.teacher.find(
+                By.XPATH,
+                '//a[contains(@class,"header-control next")]'
+            ).click()
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(text(),"{0}")]'.format(
+                    assignment_name + 'new')
+            )
+        self.ps.test_updates['passed'] = True
+
+    # Case C315 - Teacher | Change an unopened homework
+    @pytest.mark.skipif(str(314) not in TESTS, reason="Excluded")
+    def test_change_an_unopened_homework(self):
+        """
+        Steps;
+        From the dashboard, click on a published, unopened homework
+        Click on the 'Edit Assignment' button
+        Edit the text in the text box named 'Assignment name'
+        Edit the text in the text box named 'Description or special instructions'
+        Edit the open and due dates for the assignment
+        Edit the 'Show feedback' drop down menu option
+        Click the 'Save' button
+
+        Result:
+        The user is returned to the dashboard. Changes to the homework are seen.
+        """
+        self.ps.test_updates['name'] = 't1.14.034' \
+                                       + inspect.currentframe().f_code.co_name[
+                                         4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.034', '8025']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        assignment_name = 'hw_014_%s' % randint(100, 999)
+        assignment = Assignment()
+        today = datetime.date.today()
+        start = randint(0, 3)
+        finish = start + randint(1, 5)
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=finish)) \
+            .strftime('%m/%d/%Y')
+
+        # Create a draft homework
+        self.teacher.add_assignment(
+            assignment='homework',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'problems': {'1.1': (2, 3), },
+                'status': 'publish',
+                'feedback': 'immediate',
+            }
+        )
+
+        # Locate the draft homework
+        try:
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH, '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(text(),"{0}")]'.format(assignment_name)
+            ).click()
+        except NoSuchElementException:
+            self.teacher.find(
+                By.XPATH,
+                '//a[contains(@class,"header-control next")]'
+            ).click()
+            self.teacher.wait.until(
+                expect.presence_of_element_located(
+                    (By.XPATH, '//div[@class="month-wrapper"]')
+                )
+            )
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(text(),"{0}")]'.format(assignment_name)
+            ).click()
+        self.teacher.find(By.ID, 'edit-assignment-button').click()
+        sleep(1)
+
+        # Change the title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys('new')
+
+        # Change the description
+        self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]' +
+            '//textarea[contains(@class,"form-control")]'
+        ).send_keys('new')
+
+        # set new due dates
+        today = datetime.date.today()
+        start = randint(1, 3)
+        end = start + randint(1, 6)
+        opens_on = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=end)) \
+            .strftime('%m/%d/%Y')
+        assignment.assign_periods(
+            self.teacher.driver,
+            {'all': (opens_on, closes_on)}
+        )
+        sleep(3)
+
+        # Change show feedback
+        feedback = self.teacher.find(By.ID, 'feedback-select')
+        Assignment.scroll_to(self.teacher.driver, feedback)
+        feedback.click()
+        self.teacher.find(
+            By.XPATH, '//option[@value="due_at"]'
+        ).click()
+
+        # Remove problems from the assignment
+        self.teacher.find(
+            By.XPATH, "//button[contains(@class,'-remove-exercise')]"
+        ).click()
+        self.teacher.find(
+            By.XPATH, '//button[text()="Remove"]'
+        ).click()
+        sleep(3)
+
+        # Save
+        self.teacher.find(
+            By.XPATH,
+            '//button[contains(@class,"-publish")]'
+        ).click()
+
+        try:
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(text(),"{0}")]'.format(
+                    assignment_name + 'new')
+            )
+        except NoSuchElementException:
+            self.teacher.find(
+                By.XPATH,
+                '//a[contains(@class,"header-control next")]'
+            ).click()
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(text(),"{0}")]'.format(
+                    assignment_name + 'new')
+            )
+        self.ps.test_updates['passed'] = True
+
     @pytest.mark.skipif(str(315) not in TESTS, reason="Excluded")
-    def test_change_an_unopen_homework(self):
-        pass
+    def test_change_an_open_homework_315(self):
+        """
+        Steps:
+        From the dashboard, click on an opened homework
+        Click on the 'Edit Assignment' button
+        Edit the text in the text box named 'Assignment name'
+        Edit the text in the text box named 'Description or special instructions'
+        Edit the due date for the assignment
+        Edit the 'Show feedback' drop down menu option
+        Click the 'Save' button
 
-    # Case C30 - Teacher | Show available problems
+        Result:
+        User is returned to the dashboard. Changes to the homework are seen.
+        """
+        self.ps.test_updates['name'] = 't1.14.034' \
+                                       + inspect.currentframe().f_code.co_name[
+                                         4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.034', '8025']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        assignment_name = 'hw_015_%s' % randint(100, 999)
+        assignment = Assignment()
+        today = datetime.date.today()
+        finish = randint(1, 5)
+        begin = today.strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=finish)) \
+            .strftime('%m/%d/%Y')
+
+        # Create an open homework
+        self.teacher.add_assignment(
+            assignment='homework',
+            args={
+                'title': assignment_name,
+                'description': 'description',
+                'periods': {'all': (begin, end)},
+                'problems': {'1.1': (2, 3), },
+                'status': 'publish',
+                'feedback': 'immediate',
+            }
+        )
+
+        # Open edit homework page
+        self.teacher.find(
+            By.XPATH, '//label[contains(text(),"{0}")]'.format(assignment_name)
+        ).click()
+        self.teacher.find(
+            By.ID, 'edit-assignment-button'
+        ).click()
+        sleep(1)
+
+        # Change the title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys('new')
+
+        # Change the description
+        self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]' +
+            '//textarea[contains(@class,"form-control")]'
+        ).send_keys('new')
+
+        # Set new due dates
+        end = randint(1, 5)
+        closes_on = (today + datetime.timedelta(days=end)) \
+            .strftime('%m/%d/%Y')
+        assignment.assign_date(
+            driver=self.teacher.driver, date=closes_on, is_all=True,
+            target='due'
+        )
+        # assignment.assign_periods(
+        #     self.teacher.driver,
+        #     {'all': (opens_on, closes_on)}
+        # )
+
+        # Change show feedback
+        feedback = self.teacher.find(By.ID, 'feedback-select')
+        Assignment.scroll_to(self.teacher.driver, feedback)
+        feedback.click()
+        self.teacher.find(
+            By.XPATH, '//option[@value="due_at"]'
+        ).click()
+
+        # Publish
+        self.teacher.find(
+            By.ID, 'builder-save-button'
+        ).click()
+
+        try:
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(text(),"{0}")]'.format(
+                    assignment_name + 'new')
+            )
+        except NoSuchElementException:
+            self.teacher.find(
+                By.XPATH,
+                '//a[contains(@class,"header-control next")]'
+            ).click()
+            self.teacher.find(
+                By.XPATH,
+                '//label[contains(text(),"{0}")]'.format(
+                    assignment_name + 'new')
+            )
+        self.ps.test_updates['passed'] = True
+
     @pytest.mark.skipif(str(316) not in TESTS, reason="Excluded")
     def test_show_available_problems(self):
-        pass
+        """
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select the introduction section of the chapter
+        Click the 'Show Problems' button
+        (No problems are displayed. The text 'No exercises found in the selected sections)
 
-    # Case C30 - Teacher | Select problems
+        Select one of the sections in one chapter that is not an introduction section
+        Click the 'Show Problems' button
+        (The problems for the selected section are displayed. For every displayed problem the ID# is displayed as ID#@Version. Tags for each displayed problem exist.)
+
+        Select one of the chapters
+        Click the 'Show Problems' button
+
+        Result:
+        Problems for the whole chapter are displayed
+        """
+        self.ps.test_updates['name'] = 't1.14.027' \
+                                       + inspect.currentframe().f_code.co_name[
+                                         4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.027', '8018']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        assignment_name = 'hw_16_%d' % (randint(100, 999))
+        assignment = Assignment()
+        today = datetime.date.today()
+        finish = randint(1, 6)
+        end = (today + datetime.timedelta(days=finish)).strftime('%m/%d/%Y')
+
+        # Open Add Homework page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add Homework').click()
+
+        # Fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name)
+
+        # Select the introduction section of a chapter
+        self.teacher.find(By.ID, 'problems-select').click()
+        intro_section = '2'
+        chapter = intro_section.split('.')[0]
+        data_chapter = self.teacher.find(
+            By.XPATH,
+            '//a//span[@data-chapter-section="%s"]' % chapter
+        )
+        if data_chapter.find_element(By.XPATH, "../.."). \
+                get_attribute('aria-expanded') == 'false':
+            data_chapter.click()
+
+        data_section = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % intro_section
+        )
+        if not ('selected' in data_section.find_element(By.XPATH, "..").
+                get_attribute('class')):
+            data_section.click()
+        element = self.teacher.find(
+            By.XPATH, '//button[text()="Show Problems"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
+
+        # No problems in the intro section
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//p[@class='no-exercises-found']")
+            )
+        )
+        sleep(3)
+
+        # Verify problems show exercise ID and version
+        section = '1.1'
+        self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section
+        ).click()
+        element = self.teacher.find(
+            By.XPATH, '//button[text()="Show Problems"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
+        # find IDs
+        ids = self.teacher.driver.find_elements(
+            By.XPATH,
+            "//span[@class='exercise-tag' and " +
+            "contains(text(),'ID: ') and contains(text(),'@')]")
+        cards = self.teacher.driver.find_elements(
+            By.XPATH,
+            "//div[@data-exercise-id]")
+
+        # Verify that each visible card has an ID
+        assert (len(ids) == len(cards)), \
+            'Number of IDs does not match number of visible assessment cards'
+
+        self.ps.test_updates['passed'] = True
+
+    # Case C317 - Teacher | Select problems
     @pytest.mark.skipif(str(317) not in TESTS, reason="Excluded")
     def test_select_problems(self):
-        pass
+        """
+        Steps:
+        From the dashboard, click on the 'Add Assignment' drop down menu and select 'Add Homework'
+        Click the '+ Select Problems' button
+        Select at least one chapter
+        Click the 'Show Problems' button
+        On the section marked 'Tutor Selections', change the number of assignments by clicking on the up or down arrow
+        (The number of total problems and tutor selections changes.)
+
+        Click the '+ Select Problems' button
+        Click on any of the chapters to display sections within the chapter
+        Select one of the non-introductory sections in one chapter
+        Click the 'Show Problems' button
+        Click "Add question" on at least one of the displayed problems
+        (The question is shaded blue. Number of total problems and the number of my selections increases.)
+        Click "Remove question" on at least one of the problems that have been selected.
+
+        Result:
+        The question turns back to white. The number of my selections and total problems decreases.
+        """
+        self.ps.test_updates['name'] = 't1.14.027' \
+                                       + inspect.currentframe().f_code.co_name[
+                                         4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.14', 't1.14.027', '8018']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        assignment_name = 'hw_17_%d' % (randint(100, 999))
+        assignment = Assignment()
+        today = datetime.date.today()
+        finish = randint(1, 6)
+        end = (today + datetime.timedelta(days=finish)).strftime('%m/%d/%Y')
+
+        # Open Add Homework page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add Homework').click()
+
+        # Fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name)
+
+        # Select problems
+        self.teacher.find(By.ID, 'problems-select').click()
+        section = '1.1'
+        self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"section")]' +
+            '/span[@data-chapter-section="%s"]' % section
+        ).click()
+        element = self.teacher.find(
+            By.XPATH, '//button[text()="Show Problems"]')
+        Assignment.scroll_to(self.teacher.driver, element)
+        element.click()
+
+        # Change tutor selection
+        orig_num = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 "//div[@class='tutor-selections']//h2")
+            )
+        ).text
+        self.teacher.sleep(0.5)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 "//div[@class='tutor-selections']//i[@type='chevron-up']")
+            )
+        ).click()
+        new_num = self.teacher.find(
+            By.XPATH, "//div[@class='tutor-selections']//h2"
+        ).text
+
+        assert (int(orig_num) == int(new_num) - 1), \
+            "tutor selections not changed"
+
+        # Select problems and observe problem number increase
+        orig_total = self.teacher.find(
+            By.XPATH, '//div[contains(@class,"total")]/h2'
+        ).text
+        orig_mine = self.teacher.find(
+            By.XPATH, '//div[contains(@class,"mine")]/h2'
+        ).text
+        sleep(3)
+        self.teacher.find(
+            By.XPATH, '//div[contains(@class,"include")]'
+        ).click()
+        new_total = self.teacher.find(
+            By.XPATH, '//div[contains(@class,"total")]/h2'
+        ).text
+        new_mine =self.teacher.find(
+            By.XPATH, '//div[contains(@class,"mine")]/h2'
+        ).text
+
+        assert (orig_total == new_total - 1), "total problems not increased"
+        assert (orig_mine == new_mine -1), "my selections not increased"
+
+        # Deselect problems and observe problem number decrease
+        # self.teacher.find(
+        #     By.XPATH, '//div[contains(@class,"include")]'
+        # ).click()
+        # updated_total =
+
 
     # Case C30 - Teacher | Preview feedback and report error
     @pytest.mark.skipif(str(318) not in TESTS, reason="Excluded")
