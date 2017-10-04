@@ -6,22 +6,16 @@ System:
 Title:
 User(s):
 
-
 Jacob Diaz
 7/28/17
-
 
 Corresponding Case(s):
 
 Progress:
 
-
 Work to be done/Questions:
 
-
 Merge-able with any scripts? If so, which? :
-
-
 """
 
 NOTES FOR USER:
@@ -30,14 +24,12 @@ I’ve also added next to that case the expected result that we should see
 
 The code was intentionally left separate (as basically one test method per file) and not integrated together in order to make the code easier to read. This way, there’s less clutter, and the user can pretty much tell the subject of a file from a more specific title
 
-
 MY APPROACH TO WRITING THESE TEST SCRIPTS:
-My aim with these test scripts was to make something that could run nearly all of them in one go —> the one flaw with this, however, is that they’re all one big test case. If one of them fails, then we’ll never get to the test cases that deal with a separate aspect of that subsystem and come after. However, they might be working perfectly fine. 
+My aim with these test scripts was to make something that could run nearly all of them in one go —> the one flaw with this, however, is that they’re all one big test case. If one of them fails, then we’ll never get to the test cases that deal with a separate aspect of that subsystem and come after. However, they might be working perfectly fine.
 
-The advantage of doing things this way is that once we have something that fits smoothly together you can run full through, you can break it down into further test cases. I ensure that you’d be able to do this by organizing the test cases in a very logical manner — all the test cases pertaining to a certain function in a subsystem are grouped together. This way, you can break the entire test script off  at a certain place, and with minimal setup, have it working as an independent test case. 
+The advantage of doing things this way is that once we have something that fits smoothly together you can run full through, you can break it down into further test cases. I ensure that you’d be able to do this by organizing the test cases in a very logical manner — all the test cases pertaining to a certain function in a subsystem are grouped together. This way, you can break the entire test script off  at a certain place, and with minimal setup, have it working as an independent test case.
 
 Where to set the junction points of the current test cases is a matter of the discretion of the next person to look at these scripts
-
 
 THINGS TO DO:
 Something that I didn’t include in my documentation because it applied to every single case was that these test cases still lack the test identifying number that the current test scripts have.
@@ -46,14 +38,12 @@ You might find it useful to give a sub-identifier for each waypoint in the test 
 
 Also, the code for the test scripts to update and report results to sauce labs must still be added. I couldn’t do this while we still hadn’t assigned test id’s to each script
 
-How to run the test scripts from command line 
+How to run the test scripts from command line
 LOCALRUN =true py.pytest -v -x <script name>
 -s will show the print statements from the test script
 
-
-
 FURTHER POSSIBLE WORK:
-Further modularize the test scripts so that functions that we perform often (e.g. creating a homework or reading assignment as a teacher, working through an assignment as a student, retrieving a course number or generating an assignment name), can be handled by a particular piece of code that is referenced whenever it’s needed 
+Further modularize the test scripts so that functions that we perform often (e.g. creating a homework or reading assignment as a teacher, working through an assignment as a student, retrieving a course number or generating an assignment name), can be handled by a particular piece of code that is referenced whenever it’s needed
 
 FILES:
 General:
@@ -71,7 +61,6 @@ test_custom_url_student.py
 test_performance_practice_student.py
 test_assessment errata_form_student.py
 
-
 Admin:
 test_content_tag_search.py
 test_course_offering_admin.py
@@ -83,7 +72,6 @@ test_search_job_admin.py
 test_export_research_admin.py
 test_edit_settings_admin.py
 test_view_stats_admin.py
-
 
 Teacher:
 test_homework_assignment_from_scores_teacher.py
