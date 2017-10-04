@@ -632,9 +632,9 @@ class TestUserLogin(unittest.TestCase):
         Steps:
         go to https://exercises-qa.openstax.org/
         Click "SIGN IN"
-        Enter [content] into "Email or username" text box
+        Enter into "Email or username" text box
         Click "Next"
-        Enter [staxly16] into "password" text box
+        Enter into "password" text box
         Click "Login"
         Click "SIGN OUT"
 

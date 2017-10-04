@@ -5,7 +5,7 @@ import json
 import os
 import pytest
 import unittest
-import datetime
+# import datetime
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
@@ -362,7 +362,7 @@ class TestAccountEnhancements(unittest.TestCase):
         [an email with a pin is sent, log onto email and get pin]
         Enter Pin into text box
         Click 'Confirm'
-        Enter password [staxly16] into password text box
+        Enter password into password text box
         Re-Enter password in confirm password text box
         Click Submit
         Enter first name into the 'First Name' text box
