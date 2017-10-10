@@ -14,10 +14,6 @@ from selenium.webdriver.common.keys import Keys
 
 basic_test_env = json.dumps([
     {
-        'platform': 'Windows 10',
-        'browserName': 'chrome',
-        'version': 'latest',
-        'screenResolution': "1024x768",
     },
 ])
 BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
