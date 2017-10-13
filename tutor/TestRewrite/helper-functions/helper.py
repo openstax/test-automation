@@ -1,12 +1,13 @@
 from random import randint
 import datetime
-from time import strftime
-from staxing.helper import Student, Teacher
+# from time import strftime
+# from staxing.helper import Teacher
 
 
 def current_tutor_term(current_date):
     """
-    Returns the current scholastic tutor term, which we can use in order to pick a
+    Returns the current scholastic tutor term, which we can use in order to
+    pick a
     course that's currently in session
     :param current_date:
     Today's date, in string format "mm/dd/year"
@@ -41,8 +42,10 @@ def current_tutor_term(current_date):
             season = "Fall"
     return season + ' ' + str(year)
 
-### THIS IS A METHOD
-def teacher_make_late_assignment(self, assignment_type, course_no, hw_name = None):
+
+# THIS IS A METHOD
+def teacher_make_late_assignment(self, assignment_type, course_no,
+                                 hw_name=None):
     """
     Uses: datetime, time.strftime
 
@@ -52,15 +55,16 @@ def teacher_make_late_assignment(self, assignment_type, course_no, hw_name = Non
     :param hw_name: (str) --> name that we're gonna give the assignment
     :param assignment_type: (str) --> type of assignment we want to make
         (options: homework, reading, external, event)
-    :param course_no: (str) --> course number we want to make the assignment for
+    :param course_no: (str) --> course number we want to make the assignment
+    for
     :return:
     """
     self.teacher.login()
     today = datetime.date.today()
-    begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-    end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
-    time_format = "%I %M %p"
-    time_now = strftime(time_format)
+    # begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
+    # end = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
+    # time_format = "%I %M %p"
+    # time_now = strftime(time_format)
     # of format "HH MM am/pm"
 
     if assignment_type.lower() == 'reading':
@@ -75,10 +79,14 @@ def teacher_make_late_assignment(self, assignment_type, course_no, hw_name = Non
     if assignment_type.lower() == 'event':
         heading = 'Event'
 
-    assignment_name = '{0} no.{1}: {2}'.format(heading,str(randint(0, 100)), str(today))
-
-    ### WHAT NEEDS TO BE DONE:
-    ### DECIDE HOW I'M GOGIN TO CHANGE THE ASSIGNMENT DUE DATE TO BE A MINUTE FROM NOW -->
-        ### WILL I HAVE TO DO THIS DURING THE ASSINGMNET CREATION PROCESS?
-        ### OR IWLL I HAVE TO DO THIS BY EDITING THE ASSIGNMNETM AFTER CREATING IT?
-    ### IF I'M GONNA EDIT THE ASSIGNMENT, WRITE THE CODE TO DO THIS --> OR DOES SOMEONE ALREADY HAVE IT?
+    assignment_name = '{0} no.{1}: {2}'.format(heading,
+                                               str(randint(0, 100)),
+                                               str(today))
+    print(assignment_name)
+    # WHAT NEEDS TO BE DONE:
+    # DECIDE HOW I'M GOGIN TO CHANGE THE ASSIGNMENT DUE DATE TO BE A MINUTE
+    # FROM NOW -->
+    # WILL I HAVE TO DO THIS DURING THE ASSINGMNET CREATION PROCESS?
+    # OR IWLL I HAVE TO DO THIS BY EDITING THE ASSIGNMNETM AFTER CREATING IT?
+    # IF I'M GONNA EDIT THE ASSIGNMENT, WRITE THE CODE TO DO THIS --> OR DOES
+    # SOMEONE ALREADY HAVE IT?

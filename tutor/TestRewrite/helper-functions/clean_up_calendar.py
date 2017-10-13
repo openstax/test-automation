@@ -1,12 +1,12 @@
 import json
 import os
 
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.action_chains import ActionChains
+# from selenium.common.exceptions import NoSuchElementException
+# from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
-from selenium.webdriver.support.ui import WebDriverWait
-from staxing.assignment import Assignment
+# from selenium.webdriver.support.ui import WebDriverWait
+# from staxing.assignment import Assignment
 from time import sleep
 
 from staxing.helper import Teacher
@@ -25,6 +25,7 @@ COURSE = "college_physics"
 teacher = Teacher(use_env_vars=True)
 teacher.login()
 teacher.select_course(appearance=COURSE)
+
 
 def delete_assignment(target_element, is_published):
     """
@@ -49,6 +50,7 @@ def delete_assignment(target_element, is_published):
         By.XPATH, '//button[contains(text(), "Yes")]'
     ).click()
     sleep(1)
+
 
 def find_published(assignment_type, is_all):
     """
@@ -81,13 +83,15 @@ def find_draft(assignment_type, is_all):
         draft = teacher.find_all(
             By.XPATH,
             '//div[@data-assignment-type="' + assignment_type + '"'
-            ' and not(contains(@class, "is-published")) and not(@draggable="true")]'
+            ' and not(contains(@class, "is-published")) and ' +
+            'not(@draggable="true")]'
         )
     else:
         draft = teacher.find(
             By.XPATH,
             '//div[@data-assignment-type="' + assignment_type + '"'
-            ' and not(contains(@class, "is-published")) and not(@draggable="true")]'
+            ' and not(contains(@class, "is-published")) and ' +
+            'not(@draggable="true")]'
         )
     return draft
 
@@ -98,9 +102,9 @@ def clean_up_assignment(assignment_type, is_published):
     is_published: boolean value
                   True when you want to delete published assignment
     """
-    if is_published: # clean up published
+    if is_published:  # clean up published
         all_assignment = find_published(assignment_type, True)
-    else: # if we want to clean up drafts
+    else:  # if we want to clean up drafts
         all_assignment = find_draft(assignment_type, True)
 
     num = len(all_assignment)
@@ -117,11 +121,3 @@ def clean_up_assignment(assignment_type, is_published):
             num -= 1
 
 clean_up_assignment("event", False)
-
-
-
-
-
-
-
-

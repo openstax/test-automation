@@ -277,6 +277,7 @@ class Helper(object):
         """Find elements."""
         return self.driver.find_elements(by=by, value=value)
 
+
 class WebDriverTypeException(WebDriverException):
     """Exception for unknown WebDriver types."""
 
@@ -642,15 +643,16 @@ class User(Helper):
 
     def random_course(self):
         """Picks a random Tutor course"""
-        courses = self.find_all(By.XPATH,
-            ".//*[@class='course-branding my-courses-item-brand' and contains(text(),'Tutor')]")
-        rand = randint(0,len(courses)-1)
+        courses = self.find_all(
+            By.XPATH,
+            ".//*[@class='course-branding my-courses-item-brand' and " +
+            "contains(text(),'Tutor')]")
+        rand = randint(0, len(courses) - 1)
         self.sleep(2)
         self.scroll_to(courses[rand])
         self.driver.execute_script('window.scrollBy(0,-50);')
         courses[rand].click()
         self.sleep(3)
-
 
 
 class LoginError(Exception):
@@ -750,10 +752,10 @@ class Teacher(User):
             print('Open user menu')
             self.open_user_menu()
             print('Select menu item %s' % item)
-            XPATHLINK= './/*[contains(text(),"%s")]' % (item)
+            XPATHLINK = './/*[contains(text(),"%s")]' % (item)
             self.wait.until(
                 expect.element_to_be_clickable((By.XPATH, XPATHLINK))
-            ).click() 
+            ).click()
             self.page.wait_for_page_load()
         print('Exit: goto_menu_item')
 
