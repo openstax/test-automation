@@ -1,14 +1,16 @@
 import unittest
-import cv2
-import cv
-import numpy
-import sys
-import exceptions
-import PythonMagick
-import contextlib
+# import cv2
+# import cv
+# import numpy
+# import sys
+# import exceptions
+# import PythonMagick
+# import contextlib
 import utils
-import inspect
+# import inspect
 import math
+
+
 class PDFCV(unittest.TestCase):
 
     def __init__(self, methodName, page_i=1, page_j=1):
@@ -24,12 +26,13 @@ class PDFCV(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls._casename = cls.__name__
-        
 
     def setUp(self):
         if self.page_i == 0 or self.page_j == 0:
             raise unittest.SkipTest("zero pages should be null")
-        if self._settings['window'] is not None and math.fabs(self.page_i - self.page_j ) > self._settings['window']:
+        dif = self.page_i - self.page_j
+        if self._settings['window'] is not None and \
+                math.fabs(dif) > self._settings['window']:
             raise unittest.SkipTest("pages outside window range")
         self.image_i = utils.load_pdf_page(
             self._settings['pdf_a'], self.page_i - 1)
@@ -37,6 +40,28 @@ class PDFCV(unittest.TestCase):
             self._settings['pdf_b'], self.page_j - 1)
         self.threshold = None
         self.measure = None
-    def case_key_from_id(self):
-        return self.id().split('(')[0]
 
+#    def tearDown(self):
+#        sys_info = sys.exc_info()
+#        result = None
+#        test_info = {}
+#        if sys_info == (None, None, None):
+#            result = "pass"
+#        elif isinstance(sys_info[1], exceptions.AssertionError):
+#            result = "fail"
+#        elif isinstance(sys_info[1], unittest.case.SkipTest):
+#            result = "skip"
+#        else:
+#            result = "error"
+
+#        test_info['result'] = result
+#        test_info['page_i'] = self.page_i
+#        test_info['page_j'] = self.page_j
+#        test_info['test'] = self.methodName
+#        test_info['case'] = self._casename
+#        test_info['threshold'] = self.threshold
+#        test_info['measure'] = self.measure
+
+    @classmethod
+    def tearDownClass(self):
+        pass

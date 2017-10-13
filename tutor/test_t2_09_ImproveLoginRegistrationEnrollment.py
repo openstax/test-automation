@@ -8,12 +8,12 @@ import unittest
 
 from pastasauce import PastaSauce, PastaDecorator
 # from random import randint
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as expect
 # from staxing.assignment import Assignment
-
+from selenium.webdriver.common.keys import Keys
 # select user types: Admin, ContentQA, Teacher, and/or Student
-from staxing.helper import Teacher
+from staxing.helper import Teacher, Student, Admin
 
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
@@ -26,13 +26,12 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        14758, 14760, 14761, 14762, 14763,
-        14764, 14767, 14768, 14772, 14773,
-        14774, 14776, 14777, 14778, 14779,
-        14780, 14781, 14782, 14783, 14784,
-        14785, 14786, 14787, 14788, 14789,
-        14790, 14791, 14792, 14793, 14794,
-        14795, 14796
+        14761, 14796, 85292
+        # not implemented
+        # 14762, 14763, 14764, 14767,
+        # 14768, 14783, 14784, 14787, 14789,
+        # 14790, 14791, 14792, 14793, 14794,
+        # 14795,
     ])
 )
 
@@ -45,11 +44,34 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.Teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.student = Student(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.admin = Admin(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.teacher = Teacher(
+                use_env_vars=True,
+            )
+            self.student = Student(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver
+            )
+            self.admin = Admin(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver
+            )
 
     def tearDown(self):
         """Test destructor."""
@@ -63,6 +85,7 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         except:
             pass
 
+    '''
     # C14758 - 001 - User | Create an account that maps to the OS Product I use
     @pytest.mark.skipif(str(14758) not in TESTS, reason='Excluded')
     def test_teacher_view_a_scores_export_for_my_students_work_14758(self):
@@ -88,7 +111,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14760 - 002 - User | Create an openstax.org account and get directed to
     # Concept Coach or Tutor
     @pytest.mark.skipif(str(14760) not in TESTS, reason='Excluded')
@@ -115,6 +140,7 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # C14761 - 003 - Teacher | Create a custom URL for student registration
     @pytest.mark.skipif(str(14761) not in TESTS, reason='Excluded')
@@ -144,8 +170,17 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.teacher.login()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, 'Course Settings and Roster').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//span[@class="enrollment-code-link"]' +
+                 '//input[contains(@value,"openstax.org/enroll/")]')
+            )
+        )
         self.ps.test_updates['passed'] = True
 
     # C14762 - 004 - Student | Register for Tutor with a custom URL
@@ -176,6 +211,22 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        # get url as a teacher
+        self.teacher.login()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, 'Course Settings and Roster').click()
+        url = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH,
+                 '//span[@class="enrollment-code-link"]//input')
+            )
+        ).get_attribute("value")
+        self.teacher.logout()
+        # use the url as a student
+        self.teacher.get(url)
+
+        self.student.sleep(5)
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
@@ -297,6 +348,7 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # C14772 - 009 - Student | Agree to join or drop from each research
     # protocol that is running in my course
     @pytest.mark.skipif(str(14772) not in TESTS, reason='Excluded')
@@ -323,7 +375,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14773 - 010 - Researcher | Gather electronic parental consent for minors
     @pytest.mark.skipif(str(14773) not in TESTS, reason='Excluded')
     def test_researcher_gather_electronic_parental_consent_from_mi_14773(self):
@@ -349,7 +403,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14774 - 011 - Admin | Gather electronic parental consent from minors
     @pytest.mark.skipif(str(14774) not in TESTS, reason='Excluded')
     def test_admin_gather_electronic_parental_consent_from_minors_14774(self):
@@ -375,7 +431,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14776 - 012 - Researcher | Enable/Disable 'ask me later' for consent
     @pytest.mark.skipif(str(14776) not in TESTS, reason='Excluded')
     def test_researcher_enable_or_disable_ask_me_later_for_consent_14776(self):
@@ -401,7 +459,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14777 - 013 - Admin | Enable/Disable 'ask me later' for consent
     @pytest.mark.skipif(str(14777) not in TESTS, reason='Excluded')
     def test_admin_enable_or_disable_ask_me_later_for_consent_14777(self):
@@ -427,7 +487,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14778 - 014 - Researcher | Reprompt 'ask me later' to students on a
     # schedule
     @pytest.mark.skipif(str(14778) not in TESTS, reason='Excluded')
@@ -454,7 +516,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14779 - 015 - Admit | Reprompt 'ask me later' to students on a
     # schedule
     @pytest.mark.skipif(str(14779) not in TESTS, reason='Excluded')
@@ -481,7 +545,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14780 - 016 - Student | Reprompt 'ask me later' by pressing a button
     @pytest.mark.skipif(str(14780) not in TESTS, reason='Excluded')
     def test_student_reprompt_ask_me_later_by_pressing_a_button_14780(self):
@@ -507,7 +573,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14781 - 017 - Researcher | View number of students who have opted-in,
     # opted-out, ask-me-later
     @pytest.mark.skipif(str(14781) not in TESTS, reason='Excluded')
@@ -534,7 +602,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14782 - 018 - Admin | View number of students who have opted-in,
     # opted-out, ask-me-latered
     @pytest.mark.skipif(str(14782) not in TESTS, reason='Excluded')
@@ -561,6 +631,7 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # C14783 - 019 -  Researcher | Apply one protocol to multiple courses
     @pytest.mark.skipif(str(14783) not in TESTS, reason='Excluded')
@@ -614,6 +685,7 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # C14785 - 021 - Researcher | Set time bounds on when students can be asked
     # for consent
     @pytest.mark.skipif(str(14785) not in TESTS, reason='Excluded')
@@ -640,7 +712,9 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # C14786 - 022 - Admin | Set time bounds on when students can be asked
     # for consent
     @pytest.mark.skipif(str(14786) not in TESTS, reason='Excluded')
@@ -667,6 +741,7 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # C14787 - 023 - Researcher | Set if a protocol requires an e-signature
     @pytest.mark.skipif(str(14787) not in TESTS, reason='Excluded')
@@ -694,6 +769,7 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # C14788 - 024 -  Admin | Set if a protocol requires an e-signature
     @pytest.mark.skipif(str(14788) not in TESTS, reason='Excluded')
     def test_admin_set_if_a_protocol_requires_an_esignature_14788(self):
@@ -719,6 +795,7 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # C14789 - 025 - User | Reset password with an unverified email address
     @pytest.mark.skipif(str(14789) not in TESTS, reason='Excluded')
@@ -919,10 +996,11 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         """Correct a student ID.
 
         Steps:
-
+        Navigate to the Course Roster and Settings.
+        In the Student ID column, double click to change it.
 
         Expected Result:
-
+        Student ID is corrected.
         """
         self.ps.test_updates['name'] = 't2.09.032' \
             + inspect.currentframe().f_code.co_name[4:]
@@ -935,6 +1013,118 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # change student id
+        self.teacher.login()
+        self.teacher.find(By.XPATH, '//p[@data-is-beta="true"]').click()
+        self.teacher.open_user_menu()
+        self.teacher.find(By.LINK_TEXT, 'Course Settings and Roster').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="student-id"]//i[@type="edit"]')
+            )
+        ).click()
+        old_id = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="student-id"]//input[@type="text"]')
+            )
+        ).get_attribute("value")
+        self.teacher.find(
+            By.XPATH, '//div[@class="student-id"]//input[@type="text"]'
+        ).send_keys(Keys.RIGHT)
+        for i in "new_student_id":
+            self.teacher.find(
+                By.XPATH, '//div[@class="student-id"]//input[@type="text"]'
+            ).send_keys(i)
+        self.teacher.find(
+            By.XPATH, '//div[@class="student-id"]//i[@type="edit"]'
+        ).click()
+        # check that the id was changed
+        self.teacher.sleep(2)
+        self.teacher.find(
+            By.XPATH, '//div[@class="student-id"]//i[@type="edit"]'
+        ).click()
+        new_id = self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[@class="student-id"]//input[@type="text"]')
+            )
+        ).get_attribute("value")
+        assert(old_id+"new_student_id" == new_id), "ID not changed"
+        # change the id back
+        self.teacher.find(
+            By.XPATH, '//div[@class="student-id"]//input[@type="text"]'
+        ).send_keys(Keys.RIGHT)
+        for _ in range(14):
+            self.teacher.find(
+                By.XPATH, '//div[@class="student-id"]//input[@type="text"]'
+            ).send_keys(Keys.BACKSPACE)
+        self.teacher.find(
+            By.XPATH, '//div[@class="student-id"]//i[@type="edit"]'
+        ).click()
+        self.ps.test_updates['passed'] = True
+
+    # C85292 - 033 - Student | Change user ID
+    @pytest.mark.skipif(str(85292) not in TESTS, reason='Excluded')
+    def test_student_change_user_id_85292(self):
+        """Change user ID.
+
+        Steps:
+        Login as a student.
+        Click on a course
+        Open the user menu
+        Click on "Change Student ID"
+        Enter an new Student ID
+        Click save
+
+        Expected Result:
+        Able to modify the username and login successfully with it
+        """
+        self.ps.test_updates['name'] = 't2.09.033' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't2',
+            't2.09',
+            't2.09.033',
+            '85292'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        # change student ID
+        self.student.login()
+        self.student.find(By.XPATH, '//p[@data-is-beta="true"]').click()
+        self.student.open_user_menu()
+        self.student.find(By.LINK_TEXT, 'Change Student ID').click()
+        old_id = self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//input[@placeholder="School issued ID"]')
+            )
+        ).get_attribute("value")
+        self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//input[@placeholder="School issued ID"]')
+            )
+        ).send_keys("new_student_id")
+        self.student.find(
+            By.XPATH, '//button[text()="Save"]'
+        ).click()
+        # change the student ID back
+        self.student.sleep(3)
+        self.student.open_user_menu()
+        self.student.find(By.LINK_TEXT, 'Change Student ID').click()
+        new_id = self.student.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//input[@placeholder="School issued ID"]')
+            )
+        ).get_attribute("value")
+        assert(old_id+"new_student_id" == new_id), "ID not changed"
+        for _ in range(14):
+            self.student.wait.until(
+                expect.visibility_of_element_located(
+                    (By.XPATH, '//input[@placeholder="School issued ID"]')
+                )
+            ).send_keys(Keys.BACKSPACE)
+        self.student.find(
+            By.XPATH, '//button[text()="Save"]'
+        ).click()
 
         self.ps.test_updates['passed'] = True

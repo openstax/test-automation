@@ -39,11 +39,16 @@ class TestAccountMaintenance(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.admin = Admin(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.admin = Admin(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.admin = Admin(
+                use_env_vars=True,
+            )
         self.admin.login()
         self.admin.wait = WebDriverWait(self.admin.driver, 15)
         self.admin.open_user_menu()
@@ -412,15 +417,21 @@ class TestAccountMaintenance(unittest.TestCase):
         self.admin.driver.find_element(By.ID, 'query').send_keys('student01')
         self.admin.driver.find_element(
             By.XPATH, '//input[@value="Search"]').click()
-        self.admin.wait.until(
+        element = self.admin.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(text(),"Sign in as")]')
+                (By.XPATH, '//td[text()="student01"]')
             )
+        )
+        name = element.find_element(
+            By.XPATH, '../td[2]'
+        ).text
+        element.find_element(
+            By.XPATH,
+            '..//a[contains(text(),"Sign in as")]'
         ).click()
         self.admin.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//span[contains(text(),"Atticus Finch")]')
+                (By.XPATH, '//span[contains(text(),"' + name + '")]')
             )
         )
-
         self.ps.test_updates['passed'] = True

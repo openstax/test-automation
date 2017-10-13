@@ -6,14 +6,13 @@ import os
 import pytest
 import unittest
 import datetime
-import time
 
 from pastasauce import PastaSauce, PastaDecorator
-# from random import randint
+from random import randint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 from staxing.assignment import Assignment
-from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.support.ui import WebDriverWait
 from staxing.helper import Teacher
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import NoSuchElementException
@@ -29,13 +28,14 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8117, 8118, 8119, 8120, 8121,
-        8122, 8123, 8124, 8125, 8126,
-        8127, 8128, 8129, 8130, 8131,
-        8132, 8133, 8134, 8135, 8136,
-        8137, 8138, 8139, 8140, 8141,
-        8142, 8143, 8144, 8145, 8146,
-        8147
+        8118, 8119, 8120, 8121, 8122,
+        8123, 8124, 8125, 8126, 8127,
+        8128, 8129, 8130, 8131, 8132,
+        8133, 8134, 8135, 8136, 8137,
+        8138, 8139, 8140, 8141, 8142,
+        8143, 8144, 8145, 8146, 8147,
+        # not implemented
+        # 111249
     ])
 )
 
@@ -73,9 +73,10 @@ class TestCreateAnEvent(unittest.TestCase):
         except:
             pass
 
+    '''
     # Case C8117 - 001 - Teacher | Teacher creates an event
     @pytest.mark.skipif(str(8117) not in TESTS, reason='Excluded')
-    def test_teacher_create_an_event_8177(self):
+    def test_teacher_create_an_event_8117(self):
         """Teacher creates an event.
 
         Steps:
@@ -100,10 +101,13 @@ class TestCreateAnEvent(unittest.TestCase):
         assignment = Assignment()
         assignment_name = 'event001'
         assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -126,15 +130,17 @@ class TestCreateAnEvent(unittest.TestCase):
         ).click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH, '//label[contains(text(), "' + assignment_name + '")
+                ]')
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//label[contains(text(), '" + assignment_name + "')]")
+                '//label[contains(text(), "' + assignment_name + '")]')
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C8118 - 002 - Teacher | Add an event using the Add Assignment
     # drop down menu
@@ -155,11 +161,14 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.teacher.driver.find_element(
-            By.ID, 'add-assignment').click()
-        self.teacher.driver.find_element(
-            By.LINK_TEXT, 'Add Event').click()
-        assert('events/new' in self.teacher.current_url()),\
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        assert('event/new' in self.teacher.current_url()),\
             'not at Add Event Assignment page'
 
         self.ps.test_updates['passed'] = True
@@ -184,20 +193,21 @@ class TestCreateAnEvent(unittest.TestCase):
         # Test steps and verification assertions
         calendar_date = self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH, '//div[contains(@class,"Day--upcoming")]/span')
+                (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
             )
         )
         self.teacher.driver.execute_script(
             'return arguments[0].scrollIntoView();', calendar_date)
-        self.teacher.driver.execute_script('window.scrollBy(0, -80);')
+        self.teacher.sleep(1)
         actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(calendar_date)
-        actions.click()
-        self.teacher.sleep(3)
-        actions.move_by_offset(30, 90)
+        actions.move_to_element_with_offset(calendar_date, 50, 10)
         actions.click()
         actions.perform()
-        assert('events/new' in self.teacher.current_url()),\
+        self.teacher.find(
+            By.XPATH,
+            '//ul[@class="new-assignments"]//a[contains(text(),"Add Event")]'
+        ).click()
+        assert('event/new' in self.teacher.current_url()),\
             'not at Add Event page'
 
         self.ps.test_updates['passed'] = True
@@ -228,28 +238,17 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'event004'
-        assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
-            assignment_menu.click()
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
         )
-        self.teacher.driver.find_element(
-            By.ID, 'reading-title').send_keys(assignment_name)
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[contains(@class,"assignment-description")]//textarea' +
-            '[contains(@class,"form-control")]'). \
-            send_keys('description')
         # assign to periods collectively
         self.teacher.driver.find_element(By.ID, 'hide-periods-radio').click()
         today = datetime.date.today()
@@ -272,9 +271,10 @@ class TestCreateAnEvent(unittest.TestCase):
                 year += 1
         self.teacher.driver.find_element(
             By.XPATH, '//div[contains(@class,"datepicker__day")' +
-            'and contains(text(),"' + (closes_on[3:5]).lstrip('0') + '")]'
+            ' and not(contains(@class,"disabled")) ' +
+            ' and contains(text(),"' + (closes_on[3:5]).lstrip('0') + '")]'
         ).click()
-        time.sleep(0.5)
+        self.teacher.sleep(0.5)
         self.teacher.driver.find_element(
             By.CLASS_NAME, 'assign-to-label').click()
         self.teacher.driver.find_element(
@@ -293,23 +293,17 @@ class TestCreateAnEvent(unittest.TestCase):
                 year += 1
         self.teacher.driver.find_element(
             By.XPATH, '//div[contains(@class,"datepicker__day")' +
+            ' and not(contains(@class,"disabled")) ' +
             'and contains(text(),"' + (opens_on[3:5]).lstrip('0') + '")]'
         ).click()
-        time.sleep(0.5)
+        self.teacher.sleep(0.5)
+        # assert the date was changed
         self.teacher.driver.find_element(
-            By.CLASS_NAME, 'assign-to-label').click()
-
+            By.XPATH, '//input[@value="%s"]' % opens_on
+        )
         self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
-        try:
-            self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
-        except NoSuchElementException:
-            self.teacher.driver.find_element(
-                By.XPATH, '//a[@class="calendar-header-control next"]').click()
-            self.teacher.driver.find_element(
-                By.XPATH,
-                "//label[contains(text(), '" + assignment_name + "')]")
+            By.XPATH, '//input[@value="%s"]' % closes_on
+        )
 
         self.ps.test_updates['passed'] = True
 
@@ -341,29 +335,17 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'event005'
-        assignment_menu = self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]')
-        # if the Add Assignment menu is not open
-        if 'open' not in assignment_menu.find_element(By.XPATH, '..'). \
-                get_attribute('class'):
-            assignment_menu.click()
-
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
         )
-        self.teacher.driver.find_element(
-            By.ID, 'reading-title').send_keys('event005')
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[contains(@class,"assignment-description")]//textarea' +
-            '[contains(@class,"form-control")]'). \
-            send_keys('event description')
         # assign to periods individually
         self.teacher.driver.find_element(By.ID, 'show-periods-radio').click()
         periods = self.teacher.driver.find_elements(
@@ -376,13 +358,13 @@ class TestCreateAnEvent(unittest.TestCase):
                 today + datetime.timedelta(days=(len(periods)+5))
             ).strftime('%m/%d/%Y')
             element = self.teacher.driver.find_element(
-                By.XPATH, '//div[contains(@class,"tasking-plan")' +
-                'and contains(@data-reactid,":'+str(x+1)+'")]' +
+                By.XPATH, '//div[contains(@class,"tasking-plan")]' +
+                '[' + str(x+1) + ']' +
                 '//div[contains(@class,"-due-date")]' +
                 '//div[contains(@class,"datepicker__input")]')
             self.teacher.driver.execute_script(
-                'window.scrollBy(0,'+str(element.size['height']+50)+');')
-            time.sleep(0.5)
+                'window.scrollBy(0,' + str(element.size['height'] + 50) + ');')
+            self.teacher.sleep(0.5)
             element.click()
             # get calendar to correct month
             month = today.month
@@ -398,12 +380,13 @@ class TestCreateAnEvent(unittest.TestCase):
                     year += 1
             self.teacher.driver.find_element(
                 By.XPATH, '//div[contains(@class,"datepicker__day")' +
+                ' and not(contains(@class,"disabled")) ' +
                 'and contains(text(),"' + (closes_on[3:5]).lstrip('0') + '")]'
             ).click()
-            time.sleep(0.5)
+            self.teacher.sleep(0.5)
             self.teacher.driver.find_element(
-                By.XPATH, '//div[contains(@class,"tasking-plan") and' +
-                ' contains(@data-reactid,":'+str(x+1)+'")]' +
+                By.XPATH, '//div[contains(@class,"tasking-plan")]' +
+                '[' + str(x+1) + ']' +
                 '//div[contains(@class,"-open-date")]' +
                 '//div[contains(@class,"datepicker__input")]').click()
             # get calendar to correct month
@@ -420,20 +403,29 @@ class TestCreateAnEvent(unittest.TestCase):
                     year += 1
             self.teacher.driver.find_element(
                 By.XPATH, '//div[contains(@class,"datepicker__day")' +
+                ' and not(contains(@class,"disabled")) ' +
                 'and contains(text(),"' + (opens_on[3:5]).lstrip('0') + '")]'
             ).click()
-            time.sleep(0.5)
-        self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
-        try:
-            self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
-        except NoSuchElementException:
-            self.teacher.driver.find_element(
-                By.XPATH, '//a[@class="calendar-header-control next"]').click()
-            self.teacher.driver.find_element(
+            self.teacher.sleep(0.5)
+        # Check that due dates were changed
+        for x in range(len(periods)):
+            period = self.teacher.driver.find_element(
                 By.XPATH,
-                "//label[contains(text(), '" + assignment_name + "')]")
+                '//div[contains(@class,"tutor-date-input row")][%s]' %
+                (x + 1)
+            )
+            period.find_element(
+                By.XPATH,
+                '//input[@value="%s"]' %
+                (today + datetime.timedelta(days=x)).
+                strftime('%m/%d/%Y')
+            )
+            period.find_element(
+                By.XPATH,
+                '//input[@value="%s"]' %
+                (today + datetime.timedelta(days=(len(periods) + 5))).
+                strftime('%m/%d/%Y')
+            )
 
         self.ps.test_updates['passed'] = True
 
@@ -461,13 +453,15 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment = Assignment()
-        assignment_name = 'event006'
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        assignment_name = 'event006-%s' % randint(0, 1000)
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -482,21 +476,22 @@ class TestCreateAnEvent(unittest.TestCase):
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
-        wait.until(
+        Assignment().assign_periods(self.teacher.driver, {'all': [begin, end]})
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class," -save")]')
             )
         ).click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH,
+                '//a//label[contains(text(), "' + assignment_name + '")]')
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//label[contains(text(), '" + assignment_name + "')]")
+                '//a//label[contains(text(), "' + assignment_name + '")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -524,13 +519,15 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment = Assignment()
-        assignment_name = 'event007'
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        assignment_name = 'event007-%s' % randint(0, 1000)
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -545,21 +542,22 @@ class TestCreateAnEvent(unittest.TestCase):
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
-        wait.until(
+        Assignment().assign_periods(self.teacher.driver, {'all': [begin, end]})
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class," -publish")]')
             )
         ).click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH,
+                '//label[contains(text(), "' + assignment_name + '")]')
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//label[contains(text(), '" + assignment_name + "')]")
+                '//label[contains(text(), "' + assignment_name + '")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -597,7 +595,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -606,7 +604,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -615,13 +613,14 @@ class TestCreateAnEvent(unittest.TestCase):
         ).click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+                By.XPATH,
+                '//label[contains(text(), "' + assignment_name + '")]')
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//label[contains(text(), '" + assignment_name + "')]")
+                '//label[contains(text(), "' + assignment_name + '")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -646,21 +645,22 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment = Assignment()
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
         )
         self.teacher.driver.find_element(
-            By.XPATH,
-            '//button[contains(@aria-role,"close") and text()="Cancel"]'
+            By.XPATH, '//button[text()="Cancel"]'
         ).click()
-        assert('calendar' in self.teacher.current_url()),\
+        assert('month' in self.teacher.current_url()),\
             'not back at calendar dashboard after canceling assignment'
 
         self.ps.test_updates['passed'] = True
@@ -688,12 +688,14 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment = Assignment()
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -701,15 +703,14 @@ class TestCreateAnEvent(unittest.TestCase):
         self.teacher.driver.find_element(
             By.ID, 'reading-title').send_keys('event name')
         self.teacher.driver.find_element(
-            By.XPATH,
-            '//button[contains(@aria-role,"close") and text()="Cancel"]'
+            By.XPATH, '//button[text()="Cancel"]'
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
         ).click()
-        assert('calendar' in self.teacher.current_url()),\
+        assert('month' in self.teacher.current_url()),\
             'not back at calendar dashboard after canceling assignment'
 
         self.ps.test_updates['passed'] = True
@@ -735,22 +736,23 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment = Assignment()
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
         )
         self.teacher.driver.find_element(
             By.XPATH,
-            '//button[contains(@aria-role,"close") and ' +
-            'contains(@class,"close-x")]'
+            '//button[contains(@class,"close-x")]'
         ).click()
-        assert('calendar' in self.teacher.current_url()),\
+        assert('month' in self.teacher.current_url()),\
             'not back at calendar dashboard after canceling assignment'
 
         self.ps.test_updates['passed'] = True
@@ -776,12 +778,14 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment = Assignment()
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
@@ -790,15 +794,14 @@ class TestCreateAnEvent(unittest.TestCase):
             By.ID, 'reading-title').send_keys('event name')
         self.teacher.driver.find_element(
             By.XPATH,
-            '//button[contains(@aria-role,"close") and ' +
-            'contains(@class,"close-x")]'
+            '//button[contains(@class,"close-x")]'
         ).click()
-        wait.until(
+        self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
         ).click()
-        assert('calendar' in self.teacher.current_url()),\
+        assert('month' in self.teacher.current_url()),\
             'not back at calendar dashboard after canceling assignment'
 
         self.ps.test_updates['passed'] = True
@@ -823,7 +826,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'event013'
+        assignment_name = 'event013-%s' % randint(0, 1000)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -838,7 +841,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -847,15 +850,14 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.XPATH,
-                 '//button[contains(@aria-role,"close") and text()="Cancel"]')
+                (By.XPATH, '//button[text()="Cancel"]')
             )
         ).click()
-        assert('calendar' in self.teacher.current_url()),\
+        assert('month' in self.teacher.current_url()),\
             'not back at calendar dashboard after canceling draft'
 
         self.ps.test_updates['passed'] = True
@@ -881,7 +883,7 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment_name = 'event014'
+        assignment_name = 'event014-%s' % randint(0, 1000)
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
@@ -896,7 +898,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -905,7 +907,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -915,15 +917,14 @@ class TestCreateAnEvent(unittest.TestCase):
         self.teacher.driver.find_element(
             By.ID, 'reading-title').send_keys('event name')
         self.teacher.driver.find_element(
-            By.XPATH,
-            '//button[contains(@aria-role,"close") and text()="Cancel"]'
+            By.XPATH, '//button[text()="Cancel"]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
         ).click()
-        assert('calendar' in self.teacher.current_url()),\
+        assert('month' in self.teacher.current_url()),\
             'not back at calendar dashboard after canceling assignment'
 
         self.ps.test_updates['passed'] = True
@@ -963,7 +964,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -972,7 +973,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -981,10 +982,9 @@ class TestCreateAnEvent(unittest.TestCase):
         )
         self.teacher.driver.find_element(
             By.XPATH,
-            '//button[contains(@aria-role,"close") and ' +
-            'contains(@class,"close-x")]'
+            '//button[contains(@class,"close-x")]'
         ).click()
-        assert('calendar' in self.teacher.current_url()),\
+        assert('month' in self.teacher.current_url()),\
             'not back at calendar dashboard after canceling draft'
 
         self.ps.test_updates['passed'] = True
@@ -1027,7 +1027,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -1036,7 +1036,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1047,15 +1047,14 @@ class TestCreateAnEvent(unittest.TestCase):
             By.ID, 'reading-title').send_keys('event name')
         self.teacher.driver.find_element(
             By.XPATH,
-            '//button[contains(@aria-role,"close") and ' +
-            'contains(@class,"close-x")]'
+            '//button[contains(@class,"close-x")]'
         ).click()
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
         ).click()
-        assert('calendar' in self.teacher.current_url()),\
+        assert('month' in self.teacher.current_url()),\
             'not back at calendar dashboard after canceling draft'
 
         self.ps.test_updates['passed'] = True
@@ -1082,23 +1081,22 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment = Assignment()
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
         )
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(@class,"-publish")]').click()
-        assert('events/new' in self.teacher.current_url()),\
+        assert('event/new' in self.teacher.current_url()),\
             'left add event page despite blank required feilds'
-        self.teacher.driver.find_element(
-            By.XPATH, '//span[contains(text(),"Required Field")]')
-
         self.ps.test_updates['passed'] = True
 
     # Case C8134 - 018 - Teacher | Attempt to save a draft event with blank
@@ -1123,23 +1121,22 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment = Assignment()
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
         )
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(@class,"-save")]').click()
-        assert('events/new' in self.teacher.current_url()),\
+        assert('event/new' in self.teacher.current_url()),\
             'left add event page despite blank required feilds'
-        self.teacher.driver.find_element(
-            By.XPATH, '//span[contains(text(),"Required Field")]')
-
         self.ps.test_updates['passed'] = True
 
     # Case C8135 - 019 - Teacher | Delete an unopened event
@@ -1203,7 +1200,7 @@ class TestCreateAnEvent(unittest.TestCase):
         ).click()
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(text(),"Yes")]').click()
-        assert('calendar' in self.teacher.current_url()),\
+        assert('month' in self.teacher.current_url()),\
             'not back at calendar after deleting an event'
         self.teacher.driver.get(self.teacher.current_url())
         self.teacher.page.wait_for_page_load()
@@ -1275,7 +1272,7 @@ class TestCreateAnEvent(unittest.TestCase):
         ).click()
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(text(),"Yes")]').click()
-        assert('calendar' in self.teacher.current_url()),\
+        assert('month' in self.teacher.current_url()),\
             'not back at calendar after deleting an event'
         self.teacher.driver.get(self.teacher.current_url())
         self.teacher.page.wait_for_page_load()
@@ -1323,7 +1320,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -1332,7 +1329,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1341,7 +1338,7 @@ class TestCreateAnEvent(unittest.TestCase):
         ).click()
         self.teacher.driver.find_element(
             By.XPATH, '//button[contains(text(),"Yes")]').click()
-        assert('calendar' in self.teacher.current_url()),\
+        assert('month' in self.teacher.current_url()),\
             'not back at calendar after deleting an event'
         self.teacher.driver.get(self.teacher.current_url())
         self.teacher.page.wait_for_page_load()
@@ -1376,41 +1373,28 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment = Assignment()
-        assignment_name = 'event022'
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
         )
         self.teacher.driver.find_element(
-            By.ID, 'reading-title').send_keys(assignment_name)
-        self.teacher.driver.find_element(
             By.XPATH,
-            '//div[contains(@class,"assignment-description")]//textarea' +
-            '[contains(@class,"form-control")]'). \
-            send_keys('description')
-        today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
-        wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//button[contains(@class,"-publish")]')
-            )
-        ).click()
-        try:
-            self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
-        except NoSuchElementException:
-            self.teacher.driver.find_element(
-                By.XPATH, '//a[@class="calendar-header-control next"]').click()
-            self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+            '//div[contains(@class,"assignment-description")]//textarea'
+        ).send_keys('description')
+        self.teacher.sleep(0.5)
+        description = self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]//textarea'
+        ).text
+        assert(description == 'description'), "description not added"
 
         self.ps.test_updates['passed'] = True
 
@@ -1449,7 +1433,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -1458,7 +1442,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1467,15 +1451,14 @@ class TestCreateAnEvent(unittest.TestCase):
         )
         self.teacher.driver.find_element(
             By.XPATH,
-            '//div[contains(@class,"assignment-description")]//textarea' +
-            '[contains(@class,"form-control")]'). \
-            send_keys('New description')
-        # option for save as draft not here, change if brough back
-        self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
-        self.teacher.sleep(3)
-        assert('calendar' in self.teacher.current_url()),\
-            'not taken back to calendar after updating description'
+            '//div[contains(@class,"assignment-description")]//textarea'
+        ).send_keys('NEW')
+        self.teacher.sleep(0.5)
+        description = self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]//textarea'
+        ).text
+        assert(description == 'descriptionNEW'), "description not added"
 
         self.ps.test_updates['passed'] = True
 
@@ -1538,14 +1521,14 @@ class TestCreateAnEvent(unittest.TestCase):
         )
         self.teacher.driver.find_element(
             By.XPATH,
-            '//div[contains(@class,"assignment-description")]//textarea' +
-            '[contains(@class,"form-control")]'). \
-            send_keys('New description')
-        self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
-        self.teacher.sleep(3)
-        assert('calendar' in self.teacher.current_url()),\
-            'not taken back to calendar after updating description'
+            '//div[contains(@class,"assignment-description")]//textarea'
+        ).send_keys('NEW')
+        self.teacher.sleep(0.5)
+        description = self.teacher.driver.find_element(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]//textarea'
+        ).text
+        assert(description == 'descriptionNEW'), "description not added"
 
         self.ps.test_updates['passed'] = True
 
@@ -1573,41 +1556,23 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment = Assignment()
-        assignment_name = 'event025'
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'reading-title')
             )
         )
         self.teacher.driver.find_element(
-            By.ID, 'reading-title').send_keys(assignment_name)
-        self.teacher.driver.find_element(
-            By.XPATH,
-            '//div[contains(@class,"assignment-description")]//textarea' +
-            '[contains(@class,"form-control")]'). \
-            send_keys('description')
-        today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
-        end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
-        wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH, '//button[contains(@class,"-publish")]')
-            )
-        ).click()
-        try:
-            self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
-        except NoSuchElementException:
-            self.teacher.driver.find_element(
-                By.XPATH, '//a[@class="calendar-header-control next"]').click()
-            self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), '"+assignment_name+"')]")
+            By.ID, 'reading-title').send_keys('assignment_name')
+        self.teacher.sleep(0.5)
+        assignment_name = self.teacher.driver.find_element(
+            By.ID, 'reading-title').get_attribute("value")
+        assert(assignment_name == 'assignment_name'), "description not added"
 
         self.ps.test_updates['passed'] = True
 
@@ -1646,7 +1611,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -1655,7 +1620,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1663,14 +1628,12 @@ class TestCreateAnEvent(unittest.TestCase):
             )
         )
         self.teacher.driver.find_element(
-            By.ID, 'reading-title').send_keys('NEW'+assignment_name)
-        self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
-        self.teacher.sleep(2)
-        assert('calendar' in self.teacher.current_url()),\
-            'not taken back to calendar after updating description'
-        self.teacher.driver.find_element(
-            By.XPATH, '//label[contains(text(),"NEW'+assignment_name+'")]')
+            By.ID, 'reading-title').send_keys('NEW')
+        self.teacher.sleep(0.5)
+        new_assignment_name = self.teacher.driver.find_element(
+            By.ID, 'reading-title').get_attribute("value")
+        assert(new_assignment_name == assignment_name + "NEW"), \
+            "description not added"
 
         self.ps.test_updates['passed'] = True
 
@@ -1732,14 +1695,12 @@ class TestCreateAnEvent(unittest.TestCase):
             )
         )
         self.teacher.driver.find_element(
-            By.ID, 'reading-title').send_keys('NEW'+assignment_name)
-        self.teacher.driver.find_element(
-            By.XPATH, '//button[contains(@class,"-publish")]').click()
-        self.teacher.sleep(2)
-        assert('calendar' in self.teacher.current_url()),\
-            'not taken back to calendar after updating description'
-        self.teacher.driver.find_element(
-            By.XPATH, '//label[contains(text(),"NEW'+assignment_name+'")]')
+            By.ID, 'reading-title').send_keys('NEW')
+        self.teacher.sleep(0.5)
+        new_assignment_name = self.teacher.driver.find_element(
+            By.ID, 'reading-title').get_attribute("value")
+        assert(new_assignment_name == assignment_name + "NEW"), \
+            "description not added"
 
         self.ps.test_updates['passed'] = True
 
@@ -1763,12 +1724,14 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment = Assignment()
-        assignment.open_assignment_menu(self.teacher.driver)
-        self.teacher.driver.find_element(By.LINK_TEXT, 'Add Event').click()
-        time.sleep(1)
-        wait = WebDriverWait(self.teacher.driver, Assignment.WAIT_TIME * 3)
-        wait.until(
+        Assignment().open_assignment_menu(self.teacher.driver)
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.LINK_TEXT, 'Add Event')
+            )
+        ).click()
+        self.teacher.sleep(1)
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//button[contains(@class,"footer-instructions")]')
             )
@@ -1802,7 +1765,6 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment = Assignment()
         assignment_name = "event029"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=1)).strftime('%m/%d/%Y')
@@ -1848,7 +1810,7 @@ class TestCreateAnEvent(unittest.TestCase):
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=6)).strftime('%m/%d/%Y')
-        assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
+        Assignment().assign_periods(self.teacher.driver, {'all': [begin, end]})
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"-publish")]')
@@ -1857,13 +1819,13 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//label[contains(text(), 'NEW"+assignment_name+"')]")
+                '//label[contains(text(), "NEW' + assignment_name + '")]')
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//label[contains(text(), 'NEW"+assignment_name+"')]")
+                '//label[contains(text(), "NEW' + assignment_name + '")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -1890,7 +1852,6 @@ class TestCreateAnEvent(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        assignment = Assignment()
         assignment_name = "event030"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
@@ -1905,7 +1866,7 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.driver.find_element(
@@ -1914,7 +1875,7 @@ class TestCreateAnEvent(unittest.TestCase):
             ).click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                '//a/label[contains(@data-title,"'+assignment_name+'")]'
+                '//a//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1929,9 +1890,9 @@ class TestCreateAnEvent(unittest.TestCase):
             '[contains(@class,"form-control")]'). \
             send_keys('NEWdescription')
         today = datetime.date.today()
-        begin = (today + datetime.timedelta(days=7)).strftime('%m/%d/%Y')
+        begin = (today + datetime.timedelta(days=3)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=8)).strftime('%m/%d/%Y')
-        assignment.assign_periods(self.teacher.driver, {'all': [begin, end]})
+        Assignment().assign_periods(self.teacher.driver, {'all': [begin, end]})
         self.teacher.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//button[contains(@class,"-publish")]')
@@ -1940,13 +1901,13 @@ class TestCreateAnEvent(unittest.TestCase):
         try:
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//label[contains(text(), 'NEW"+assignment_name+"')]")
+                '//label[contains(text(), "NEW' + assignment_name + '")]')
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
                 By.XPATH,
-                "//label[contains(text(), 'NEW"+assignment_name+"')]")
+                '//label[contains(text(), "NEW' + assignment_name + '")]')
 
         self.ps.test_updates['passed'] = True
 
@@ -2037,7 +1998,7 @@ class TestCreateAnEvent(unittest.TestCase):
             By.XPATH, '//div[contains(@class,"datepicker__day")' +
             'and contains(text(),"' + (closes_on[3:5]).lstrip('0') + '")]'
         ).click()
-        time.sleep(0.5)
+        self.teacher.sleep(0.5)
         self.teacher.driver.find_element(
             By.CLASS_NAME, 'assign-to-label').click()
         # publish changes
@@ -2045,13 +2006,52 @@ class TestCreateAnEvent(unittest.TestCase):
             By.XPATH, '//button[contains(@class,"-publish")]').click()
         try:
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), 'NEW" +
-                assignment_name + "')]")
+                By.XPATH, '//label[contains(text(), "NEW' +
+                assignment_name + '")]')
         except NoSuchElementException:
             self.teacher.driver.find_element(
                 By.XPATH, '//a[@class="calendar-header-control next"]').click()
             self.teacher.driver.find_element(
-                By.XPATH, "//label[contains(text(), 'NEW" +
-                assignment_name + "')]")
+                By.XPATH, '//label[contains(text(), "NEW' +
+                assignment_name + '")]')
 
+        self.ps.test_updates['passed'] = True
+
+    # Case C111249 - 032 - Teacher | Add an event by dragging Add Event to a
+    # calendar date
+    @pytest.mark.skipif(str(111249) not in TESTS, reason='Excluded')
+    def test_teacher_add_an_event_by_dragging_add_event_to_a_cale_111249(self):
+        """Add an event by dragging Add Event to a calendar date.
+
+        Steps:
+        Click on the 'Add Assignment' menu
+        Click and Drag 'Add Event' to a chosen due date
+
+        Expected Result:
+        User is taken to 'Add Event' page with the date filled in.
+        """
+        self.ps.test_updates['name'] = 't1.21.032' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t1', 't1.21', 't1.21.032', '111249']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+        # Assignment().open_assignment_menu(self.teacher.driver)
+        # self.teacher.sleep(1)
+        # calendar_date = self.teacher.wait.until(
+        #     expect.element_to_be_clickable(
+        #         (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
+        #     )
+        # )
+        # add_event = self.teacher.find(
+        #     By.XPATH,
+        #     '//ul[@class="new-assignments"]//a[contains(text(),"Add Event")]'
+        # )
+        # actions = ActionChains(self.teacher.driver)
+        # actions.drag_and_drop(add_event, calendar_date)
+        # actions.perform
+        # self.teacher.sleep(4)
+        # assert('event/new' in self.teacher.current_url()),\
+        #     'not at Add Event Assignment page'
         self.ps.test_updates['passed'] = True

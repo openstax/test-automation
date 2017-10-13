@@ -15,6 +15,7 @@ from selenium.webdriver.common.keys import Keys
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Admin
+from staxing.helper import ContentQA
 
 # for template command line testing only
 # - replace list_of_cases on line 31 with all test case IDs in this file
@@ -38,7 +39,11 @@ TESTS = os.getenv(
         8321, 8322, 8323, 8324, 8325,
         8326, 8327, 8328, 8329, 8330,
         8331, 8332, 8333, 8334, 8335,
-        8336, 8337, 8338, 8339, 8340
+        8336, 8337, 8338, 8339, 8340,
+        111270, 111271, 111272, 111273, 111274,
+        111275, 111276
+        # not implemented
+        # 111277
     ])
 )
 
@@ -51,12 +56,27 @@ class TestManageEcosystems(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.admin = Admin(
-           use_env_vars=True,
-           pasta_user=self.ps,
-           capabilities=self.desired_capabilities
-        )
-        self.admin.login()
+        if not LOCAL_RUN:
+            self.admin = Admin(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.content = ContentQA(
+                existing_driver=self.admin.driver,
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.admin = Admin(
+                use_env_vars=True
+            )
+            self.content = ContentQA(
+                use_env_vars=True,
+                existing_driver=self.admin.driver
+            )
+        # self.admin.login()
 
     def tearDown(self):
         """Test destructor."""
@@ -67,6 +87,7 @@ class TestManageEcosystems(unittest.TestCase):
             )
         try:
             self.admin.delete()
+            # self.content.delete()
         except:
             pass
 
@@ -108,6 +129,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -194,6 +216,7 @@ class TestManageEcosystems(unittest.TestCase):
 
         # Test steps and verification assertions
         change = '%s' % randint(100, 999)
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -215,7 +238,6 @@ class TestManageEcosystems(unittest.TestCase):
         assert('#offering_21' in self.admin.current_url()), \
             'Not editing the Automation course'
 
-        self.admin.find(By.NAME, 'offering[salesforce_book_name]').clear()
         self.admin.find(By.NAME, 'offering[salesforce_book_name]').send_keys(
             'Automation' + change)
         self.admin.find(By.NAME, 'offering[appearance_code]').clear()
@@ -259,6 +281,7 @@ class TestManageEcosystems(unittest.TestCase):
 
         # Test steps and verification assertions
         # change = '%s' % randint(100, 999)
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -334,6 +357,7 @@ class TestManageEcosystems(unittest.TestCase):
 
         # Test steps and verification assertions
         # change = '%s' % randint(100, 999)
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -381,6 +405,7 @@ class TestManageEcosystems(unittest.TestCase):
         changes made to the course visible. The text 'The offering has been
         updated.' is visible.
         """
+
         self.ps.test_updates['name'] = 't1.58.005' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = [
@@ -393,6 +418,7 @@ class TestManageEcosystems(unittest.TestCase):
 
         # Test steps and verification assertions
         change = '%s' % randint(100, 999)
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -455,6 +481,7 @@ class TestManageEcosystems(unittest.TestCase):
 
         # Test steps and verification assertions
         change = '%s' % randint(100, 999)
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -513,6 +540,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -589,41 +617,42 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.admin.wait.until(
+        self.content.login()
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
-                    ('//li[contains(@class,"-hamburger-menu")]/',
-                     'a[@type="button"]')
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
                 )
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Customer Analyst')
+                (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//h1[text()="Content Analyst Console"]')
             )
         )
 
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Ecosystems')
             )
         ).click()
 
-        assert('content_analyst/ecosystems' in self.admin.current_url()), \
+        assert('content_analyst/ecosystems' in self.content.current_url()), \
             'Not in ecosystems'
 
-        self.admin.find(By.LINK_TEXT, 'Import a new Ecosystem').click()
+        self.content.find(By.LINK_TEXT, 'Import a new Ecosystem').click()
 
-        assert('new' in self.admin.current_url()), \
+        assert('new' in self.content.current_url()), \
             'Not creating new ecosystem'
 
-        self.admin.find(
+        self.content.find(
             By.ID,
             'ecosystem_manifest'
         ).send_keys(
@@ -631,16 +660,16 @@ class TestManageEcosystems(unittest.TestCase):
             'd52e93f4-8653-4273-86da-3850001c0786_3.14_-_' +
             '2015-09-29_13_37_55_UTC.yml'
         )
-        self.admin.find(By.ID, 'ecosystem_comments').send_keys(
+        self.content.find(By.ID, 'ecosystem_comments').send_keys(
             'Automated test upload')
-        self.admin.find(By.NAME, 'commit').click()
+        self.content.find(By.NAME, 'commit').click()
 
-        self.admin.sleep(10)
+        self.content.sleep(10)
 
-        assert('new' not in self.admin.current_url()), \
+        assert('new' not in self.content.current_url()), \
             'On creating new ecosystem page'
 
-        assert('ecosystems' in self.admin.current_url()), \
+        assert('ecosystems' in self.content.current_url()), \
             'Not in ecosystems'
 
         self.ps.test_updates['passed'] = True
@@ -674,6 +703,7 @@ class TestManageEcosystems(unittest.TestCase):
 
         # Test steps and verification assertions
         # change = '%s' % randint(100, 999)
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -721,37 +751,39 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.admin.wait.until(
+        self.content.login()
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
-                    ('//li[contains(@class,"-hamburger-menu")]/',
-                     'a[@type="button"]')
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
                 )
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Customer Analyst')
+                (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//h1[text()="Content Analyst Console"]')
             )
         )
 
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Ecosystems')
             )
         ).click()
 
-        assert('content_analyst/ecosystems' in self.admin.current_url()), \
+        assert('content_analyst/ecosystems' in self.content.current_url()), \
             'Not in ecosystems'
 
-        self.admin.find(By.NAME, 'ecosystem[comments]').send_keys('|auto test')
-        self.admin.find(By.NAME, 'commit').click()
+        self.content.find(By.NAME, 'ecosystem' +
+                          '[comments]').send_keys('|auto test')
+        self.content.find(By.NAME, 'commit').click()
 
         self.ps.test_updates['passed'] = True
 
@@ -782,6 +814,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -833,41 +866,42 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.admin.wait.until(
+        self.content.login()
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
-                    ('//li[contains(@class,"-hamburger-menu")]/',
-                     'a[@type="button"]')
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
                 )
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Customer Analyst')
+                (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//h1[text()="Content Analyst Console"]')
             )
         )
 
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Ecosystems')
             )
         ).click()
 
-        assert('ecosystems' in self.admin.current_url()), \
+        assert('ecosystems' in self.content.current_url()), \
             'Not in ecosystems'
 
         # self.admin.find(By.LINK_TEXT, 'Archive').click()
-        link = self.admin.find(By.LINK_TEXT, 'Archive')
-        self.admin.driver.get(link.get_attribute('href'))
+        link = self.content.find(By.LINK_TEXT, 'Archive')
+        self.content.driver.get(link.get_attribute('href'))
 
-        self.admin.sleep(5)
-        assert('/contents/' in self.admin.current_url()), \
+        self.content.sleep(5)
+        assert('/contents/' in self.content.current_url()), \
             'Not in archive'
 
         self.ps.test_updates['passed'] = True
@@ -899,6 +933,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -914,9 +949,9 @@ class TestManageEcosystems(unittest.TestCase):
         assert('ecosystems' in self.admin.current_url()), \
             'Not in ecosystems'
 
-        self.admin.find(By.LINK_TEXT, 'Show UUID').click()
+        self.admin.find(By.XPATH, '//td[@data-toggle="popover"]').click()
 
-        self.admin.find(By.CLASS_NAME, 'popover-content')
+        # self.admin.find(By.CLASS_NAME, 'popover-content')
 
         self.ps.test_updates['passed'] = True
 
@@ -946,38 +981,39 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.admin.wait.until(
+        self.content.login()
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
-                    ('//li[contains(@class,"-hamburger-menu")]/',
-                     'a[@type="button"]')
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
                 )
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Customer Analyst')
+                (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//h1[text()="Content Analyst Console"]')
             )
         )
 
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Ecosystems')
             )
         ).click()
 
-        assert('content_analyst/ecosystems' in self.admin.current_url()), \
+        assert('content_analyst/ecosystems' in self.content.current_url()), \
             'Not in ecosystems'
 
-        self.admin.find(By.LINK_TEXT, 'Show UUID').click()
+        self.content.find(By.XPATH, '//td[@data-toggle="popover"]').click()
 
-        self.admin.find(By.CLASS_NAME, 'popover-content')
+        # self.admin.find(By.CLASS_NAME, 'popover-content')
 
         self.ps.test_updates['passed'] = True
 
@@ -1008,6 +1044,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1027,8 +1064,8 @@ class TestManageEcosystems(unittest.TestCase):
         self.admin.sleep(5)
         pf = os.path.isfile(
             os.path.expanduser(
-                "~/Downloads/College_Physics_031da8d3-b525-" +
-                "429c-80cf-6c8ed997733a.yml"
+                "~/Downloads/Biology_185cbf87-c72e" +
+                "-48f5-b51e-f14f21b5eabd_10.99.yml"
             )
         )
 
@@ -1062,42 +1099,43 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        self.admin.wait.until(
+        self.content.login()
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
-                    ('//li[contains(@class,"-hamburger-menu")]/',
-                     'a[@type="button"]')
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
                 )
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Customer Analyst')
+                (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//h1[text()="Content Analyst Console"]')
             )
         )
 
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Ecosystems')
             )
         ).click()
 
-        assert('content_analyst/ecosystems' in self.admin.current_url()), \
+        assert('content_analyst/ecosystems' in self.content.current_url()), \
             'Not in ecosystems'
 
-        self.admin.find(By.LINK_TEXT, 'Download Manifest').click()
-        self.admin.sleep(5)
+        self.content.find(By.LINK_TEXT, 'Download Manifest').click()
+        self.content.sleep(5)
         pf = os.path.isfile(
             os.path.expanduser(
-                "~/Downloads/College_Physics_031da8d3-b525-429c-80cf-" +
-                "6c8ed997733a.yml"
-            )
+                "~/Downloads/Biology_185cbf87-c72e" +
+                "-48f5-b51e-f14f21b5eabd_10.99.yml"
+             )
         )
 
         assert(pf), "Can't find downloaded manifest"
@@ -1132,8 +1170,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1149,18 +1186,18 @@ class TestManageEcosystems(unittest.TestCase):
         assert('ecosystems' in self.admin.current_url()), \
             'Not in ecosystems'
 
-        delete = ''
+        # delete = ''
         lst = self.admin.driver.find_elements_by_link_text('Delete')
         for link in lst:
             if '334' in link.get_attribute("href"):
-                # link.click()
-                delete = link
+                link.click()
+        #        delete = link
         # self.admin.find(By.LINK_TEXT, 'Delete').click()
 
-        delete.click()
+        # delete.click()
         self.admin.sleep(3)
-        self.admin.driver.switch_to.alert.accept()
-        self.admin.sleep(60)
+        # self.admin.driver.switch_to.alert.accept()
+        # self.admin.sleep(60)
         '''
         How to verify?
         Didn't want to delete anything so did not test, should work
@@ -1195,39 +1232,38 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-        raise NotImplementedError(inspect.currentframe().f_code.co_name)
-
-        self.admin.wait.until(
+        self.content.login()
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (
                     By.XPATH, '%s%s' %
-                    ('//li[contains(@class,"-hamburger-menu")]/',
-                     'a[@type="button"]')
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
                 )
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
-                (By.LINK_TEXT, 'Customer Analyst')
+                (By.LINK_TEXT, 'Content Analyst')
             )
         ).click()
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//h1[text()="Content Analyst Console"]')
             )
         )
 
-        self.admin.wait.until(
+        self.content.wait.until(
             expect.visibility_of_element_located(
                 (By.PARTIAL_LINK_TEXT, 'Ecosystems')
             )
         ).click()
 
-        assert('content_analyst/ecosystems' in self.admin.current_url()), \
+        assert('content_analyst/ecosystems' in self.content.current_url()), \
             'Not in ecosystems'
 
-        self.admin.find(By.LINK_TEXT, 'Delete').click()
-        self.admin.sleep(10)
+        self.content.find(By.LINK_TEXT, 'Delete').click()
+        self.content.sleep(10)
 
         '''
         How to verfiy?
@@ -1264,6 +1300,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1321,6 +1358,7 @@ class TestManageEcosystems(unittest.TestCase):
 
         # Test steps and verification assertions
         change = '%s' % randint(100, 999)
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1389,6 +1427,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1433,6 +1472,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1483,6 +1523,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1542,6 +1583,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1619,7 +1661,7 @@ class TestManageEcosystems(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
-
+        self.admin.login()
         self.admin.goto_admin_control()
         self.admin.wait.until(
             expect.visibility_of_element_located(
@@ -1638,5 +1680,532 @@ class TestManageEcosystems(unittest.TestCase):
         url = self.admin.current_url()
         assert('jobs/008e4642-85a0-4fff-86ed-4f1e7be02233' in url), \
             'Not at the jobs page'
+
+        self.ps.test_updates['passed'] = True
+
+    # 111270 - 026 - Content Analyst | Verify question availability
+    # for US History for AP Courses
+    @pytest.mark.skipif(str(111270) not in TESTS, reason='Excluded')
+    def test_content_analyst_verify_us_history_111270(self):
+        """Verify question availability for College Biology.
+
+        Steps:
+        Log in as Content Analyst
+        Open the drop-down menu
+        Click "QA Contents"
+        Select "US History" in the "available-books drop-down list"
+        Click a non-introductory section
+
+        Expected Result:
+        Exercises are displayed.
+        """
+        self.ps.test_updates['name'] = 't1.58.026' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.58',
+            't1.58.026',
+            '111270'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.content.login()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
+                )
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        book = self.content.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//a[contains(@class,"book")]' +
+                 '/div[@class="title-version"]' +
+                 '/span[text()="APUSH"]')
+            )
+         )
+        self.content.driver.execute_script("arguments[0].click();", book)
+        try:
+            self.content.find(By.XPATH,
+                              '//ul[@aria-labelledby=available-books"]')
+            self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        except:
+            pass
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.CSS_SELECTOR, ('.title'))))
+        self.content.find(By.XPATH,
+                          '//a[contains(@href,"/section/1.2")' +
+                          'and contains(@tabindex,"0")]').click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"openstax-question")]')))
+
+        self.ps.test_updates['passed'] = True
+
+    # 111271 - 027 - Content Analyst | Verify question availability
+    # for College Biology
+    @pytest.mark.skipif(str(111271) not in TESTS, reason='Excluded')
+    def test_content_analyst_verify_college_bio_questions_111271(self):
+        """Verify question availability for College Biology.
+
+        Steps:
+        Log in as Content Analyst
+        Open the drop-down menu
+        Click "QA Contents"
+        Select "Biology" in the "available-books drop-down list"
+        Click a non-introductory section
+
+        Expected Result:
+        Exercises are displayed.
+        """
+        self.ps.test_updates['name'] = 't1.58.027' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.58',
+            't1.58.027',
+            '111271'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.content.login()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
+                )
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.CSS_SELECTOR, ('.title'))))
+
+        book = self.content.find(By.XPATH,
+                                 '//a[contains(@class,"book")]' +
+                                 '/div[@class="title-version"]' +
+                                 '/span[text()="Biology"]')
+        # bookop.click()
+        self.content.driver.execute_script("arguments[0].click();", book)
+        self.content.sleep(3)
+        try:
+            self.content.find(By.XPATH,
+                              '//li[@class="available-books dropdown open"]')
+            self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        except:
+            pass
+        # self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        self.content.sleep(1)
+
+        self.content.find(By.XPATH,
+                          '//a[contains(@href,"/section/1.2")' +
+                          'and contains(@tabindex,"0")]').click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"openstax-question")]')))
+
+        self.ps.test_updates['passed'] = True
+
+    # 111272 - 028 - Content Analyst | Verify question availability
+    # for College Physics
+    @pytest.mark.skipif(str(111272) not in TESTS, reason='Excluded')
+    def test_content_analyst_verify_college_physics_questions_111272(self):
+        """Verify question availability for College Physics.
+
+        Steps:
+        Log in as Content Analyst
+        Open the drop-down menu
+        Click "QA Contents"
+        Select "College Physics" in the "available-books drop-down list"
+        Click a non-introductory section
+
+        Expected Result:
+        Exercises are displayed.
+        """
+        self.ps.test_updates['name'] = 't1.58.028' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.58',
+            't1.58.028',
+            '111272'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.content.login()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
+                )
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        book = self.content.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//a[contains(@class,"book")]' +
+                 '/div[@class="title-version"]' +
+                 '/span[text()="College Physics"]')
+            )
+         )
+        # bookop.click()
+        self.content.driver.execute_script("arguments[0].click();", book)
+        try:
+            self.content.find(By.XPATH,
+                              '//li[@class="available-books dropdown open"]')
+            self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        except:
+            pass
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.CSS_SELECTOR, ('.title'))))
+        self.content.find(By.XPATH,
+                          '//a[contains(@href,"/section/1.2")' +
+                          'and contains(@tabindex,"0")]').click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"openstax-question")]')))
+
+        self.ps.test_updates['passed'] = True
+
+    # 111273 - 029 - Content Analyst | Verify question availability
+    # for Introduction to Sociology 2e with Courseware
+    @pytest.mark.skipif(str(111273) not in TESTS, reason='Excluded')
+    def test_content_analyst_verify_sociology_2e_questions_111273(self):
+        """Verify question availability for Introduction to Sociology 2e.
+
+        Steps:
+        Log in as Content Analyst
+        Open the drop-down menu
+        Click "QA Contents"
+        Select "Introduction to Sociology 2e" in
+         the "available-books drop-down list"
+        Click a non-introductory section
+
+        Expected Result:
+        Exercises are displayed.
+        """
+        self.ps.test_updates['name'] = 't1.58.029' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.58',
+            't1.58.029',
+            '111273'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.content.login()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
+                )
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        book = self.content.wait.until(
+            expect.element_to_be_visible(
+                (By.XPATH,
+                 '//a[contains(@class,"book")]' +
+                 '/div[@class="title-version"]' +
+                 '/span[text()="Introduction to Sociology 2e"]')
+            )
+         )
+        self.content.driver.execute_script("arguments[0].click();", book)
+        try:
+            self.content.find(By.XPATH,
+                              '//li[@class="available-books dropdown open"]')
+            self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        except:
+            pass
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.CSS_SELECTOR, ('.title'))))
+        self.content.find(By.XPATH,
+                          '//a[contains(@href,"/section/1.2")' +
+                          'and contains(@tabindex,"0")]').click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"openstax-question")]')))
+
+        self.ps.test_updates['passed'] = True
+
+    # 111274 - 030 - Content Analyst | Verify question availability
+    # for Biology for AP Courses
+    @pytest.mark.skipif(str(111274) not in TESTS, reason='Excluded')
+    def test_content_analyst_verify_ap_biology_questions_111274(self):
+        """Verify question availability for Biology for AP Courses.
+
+        Steps:
+        Log in as Content Analyst
+        Open the drop-down menu
+        Click "QA Contents"
+        Select "Biology For AP® Courses" in
+         the "available-books drop-down list"
+        Click a non-introductory section
+
+        Expected Result:
+        Exercises are displayed.
+        """
+        self.ps.test_updates['name'] = 't1.58.030' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.58',
+            't1.58.030',
+            '111274'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.content.login()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
+                )
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        book = self.content.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//a[contains(@class,"book")]' +
+                 '/div[@class="title-version"]' +
+                 '/span[text()="Biology For AP® Courses"]')
+            )
+         )
+        self.content.driver.execute_script("arguments[0].click();", book)
+        try:
+            self.content.find(By.XPATH,
+                              '//li[@class="available-books dropdown open"]')
+            self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        except:
+            pass
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.CSS_SELECTOR, ('.title'))))
+        self.content.find(By.XPATH,
+                          '//a[contains(@href,"/section/1.2")' +
+                          'and contains(@tabindex,"0")]').click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"openstax-question")]')))
+
+        self.ps.test_updates['passed'] = True
+
+    # 111275 - 031 - Content Analyst | Verify question availability
+    # for High School Physics
+    @pytest.mark.skipif(str(111275) not in TESTS, reason='Excluded')
+    def test_content_analyst_verify_hs_physics_questions_111275(self):
+        """Verify question availability for High School Physics
+        Steps:
+        Log in as Content Analyst
+        Open the drop-down menu
+        Click "QA Contents"
+        Select "Physics" in
+         the "available-books drop-down list"
+        Click a non-introductory section
+
+        Expected Result:
+        Exercises are displayed.
+        """
+        self.ps.test_updates['name'] = 't1.58.031' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.58',
+            't1.58.031',
+            '111275'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.content.login()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
+                )
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        book = self.content.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//a[contains(@class,"book")]' +
+                 '/div[@class="title-version"]' +
+                 '/span[text()="Physics"]')
+            )
+         )
+        self.content.driver.execute_script("arguments[0].click();", book)
+        try:
+            self.content.find(By.XPATH,
+                              '//li[@class="available-books dropdown open"]')
+            self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        except:
+            pass
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.CSS_SELECTOR, ('.title'))))
+        self.content.find(By.XPATH,
+                          '//a[contains(@href,"/section/1.2")' +
+                          'and contains(@tabindex,"0")]').click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"openstax-question")]')))
+
+        self.ps.test_updates['passed'] = True
+
+    # 111276 - 032 - Content Analyst | Verify question availability
+    # for College Physics with Courseware
+    @pytest.mark.skipif(str(111276) not in TESTS, reason='Excluded')
+    def test_content_analyst_verify_college_physics_questions_111276(self):
+        """Verify question availability for College Physics with Courseware.
+        Steps:
+        Log in as Content Analyst
+        Open the drop-down menu
+        Click "QA Contents"
+        Select "College Physics" in
+         the "available-books drop-down list"
+        Click a non-introductory section
+
+        Expected Result:
+        Exercises are displayed.
+        """
+        self.ps.test_updates['name'] = 't1.58.032' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.58',
+            't1.58.032',
+            '111276'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.content.login()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (
+                    By.XPATH, '%s%s' %
+                    ('//li[contains(@class,"user-actions-menu")]/',
+                     'a[@role="button"]')
+                )
+            )
+        ).click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.LINK_TEXT, 'QA Content')
+            )
+        ).click()
+        self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        book = self.content.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH,
+                 '//a[contains(@class,"book")]' +
+                 '/div[@class="title-version"]' +
+                 '/span[text()="College Physics"]')
+            )
+         )
+        self.content.driver.execute_script("arguments[0].click();", book)
+        try:
+            self.content.find(By.XPATH,
+                              '//li[@class="available-books dropdown open"]')
+            self.content.find(By.CSS_SELECTOR, '#available-books').click()
+        except:
+            pass
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.CSS_SELECTOR, ('.title'))))
+        self.content.find(By.XPATH,
+                          '//a[contains(@href,"/section/1.2")' +
+                          'and contains(@tabindex,"0")]').click()
+        self.content.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"openstax-question")]')))
+
+        self.ps.test_updates['passed'] = True
+
+    # 111277 - 033 - Content Analyst | Verify question availability
+    # for College Biology with Courseware
+    @pytest.mark.skipif(str(111277) not in TESTS, reason='Excluded')
+    def test_content_analyst_verify_college_bio_questions_111277(self):
+        """Verify question availability for College Biology Courses.
+        Steps:
+        Log in as Content Analyst
+        Open the drop-down menu
+        Click "QA Contents"
+        Select "Biology" in
+         the "available-books drop-down list"
+        Click a non-introductory section
+
+        Expected Result:
+        Exercises are displayed.
+        """
+        self.ps.test_updates['name'] = 't1.58.033' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't1',
+            't1.58',
+            't1.58.027',
+            '111277'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        """College Biology for Courseware does not exist in QA Content"""
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True

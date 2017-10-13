@@ -17,13 +17,6 @@ from staxing.assignment import Assignment
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Student, Teacher
 
-# for template command line testing only
-# - replace list_of_cases on line 31 with all test case IDs in this file
-# - replace CaseID on line 52 with the actual cass ID
-# - delete lines 17 - 22
-list_of_cases = 0
-CaseID = 'skip'
-
 basic_test_env = json.dumps([{
     'platform': 'OS X 10.11',
     'browserName': 'chrome',
@@ -35,11 +28,12 @@ LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
     str([
-        8184, 8185, 8186, 8187, 8188,
-        8189, 8190, 8191, 8192, 8193,
-        8194, 8195, 8196, 8197, 8198,
-        8199, 8200, 8201, 8202, 8203,
-        8204, 8205, 8206
+        8184, 8188, 8189, 8190, 8191,
+        8192, 8193, 8195, 8196, 8199,
+        8201, 8202, 8203, 8204, 8205,
+        8206
+        # not implemented
+        # 8185, 8186, 8187, 8194, 8197
     ])
 )
 
@@ -911,6 +905,7 @@ class TestWorkAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8195 - 012 - Student | If an assessment follows a Grasp Check,
     # answering correctly activates the Continue button
     @pytest.mark.skipif(str(8195) not in TESTS, reason='Excluded')
@@ -944,7 +939,9 @@ class TestWorkAReading(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
+    '''
     # Case C8196 - 013 - Student | If an assessment follows a Grasp Check,
     # answering incorrectly activates the Try Another and Move On buttons
     @pytest.mark.skipif(str(8196) not in TESTS, reason='Excluded')
@@ -978,6 +975,7 @@ class TestWorkAReading(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C8197 - 014 - Student | Select Try Another to receive a new
     # assessment
@@ -1014,6 +1012,7 @@ class TestWorkAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # Case C8198 - 015 - Student | Select Move On
     @pytest.mark.skipif(str(8198) not in TESTS, reason='Excluded')
     def test_student_select_move_on_8198(self):
@@ -1047,6 +1046,7 @@ class TestWorkAReading(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # Case C8199 - 016 - Student | If a card has a video, play the video
     @pytest.mark.skipif(str(8199) not in TESTS, reason='Excluded')

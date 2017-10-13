@@ -14,7 +14,8 @@ from selenium.webdriver.support import expected_conditions as expect
 from staxing.assignment import Assignment
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementNotVisibleException
-# from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.action_chains import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
@@ -30,13 +31,17 @@ BROWSERS = json.loads(os.getenv('BROWSERS', basic_test_env))
 LOCAL_RUN = os.getenv('LOCALRUN', 'false').lower() == 'true'
 TESTS = os.getenv(
     'CASELIST',
-    str([14675, 14676, 14677, 14678, 14800,
-         14680, 14681, 14682, 14683, 14801,
-         14802, 14803, 14804, 14805, 14685,
-         14686, 14687, 14688, 14689])
+    str([
+        14676, 14677, 14678, 14800, 14680,
+        14681, 14801, 14802, 14803, 14804,
+        14805, 14686, 14688,
+        14689
+    ])
 
-    # these are not implemented features - 14682, 14685, 14689
+    # these are not implemented features - 14682, 14685, 14687, 14689
+    # error returning to dashboard - 14802
     # issues with the add hw helper - 14687
+    # 113783, 113784, 113785, 113788, 113786, 113787
 )
 
 
@@ -46,22 +51,28 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
     def setUp(self):
         """Pretest settings."""
-
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
-        self.teacher = Teacher(
-            use_env_vars=True,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
-        self.student = Student(
-            username=os.getenv('STUDENT_USER'),
-            password=os.getenv('STUDENT_PASSWORD'),
-            site='https://tutor-qa.openstax.org',
-            existing_driver=self.teacher.driver,
-            pasta_user=self.ps,
-            capabilities=self.desired_capabilities
-        )
+        if not LOCAL_RUN:
+            self.teacher = Teacher(
+                use_env_vars=True,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+            self.student = Student(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver,
+                pasta_user=self.ps,
+                capabilities=self.desired_capabilities
+            )
+        else:
+            self.teacher = Teacher(
+                use_env_vars=True
+            )
+            self.student = Student(
+                use_env_vars=True,
+                existing_driver=self.teacher.driver,
+            )
 
     def tearDown(self):
         """Test destructor."""
@@ -75,7 +86,12 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             self.teacher.delete()
         except:
             pass
+        try:
+            self.student.delete()
+        except:
+            pass
 
+    '''
     # 14675 - 001 - Teacher | Set when feedback is available
     @pytest.mark.skipif(str(14675) not in TESTS, reason='Excluded')
     def test_teacher_set_when_feedback_is_available_14675(self):
@@ -100,7 +116,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
         self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]').click()
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]').click()
         self.teacher.find(By.LINK_TEXT, 'Add Homework').click()
         self.teacher.sleep(1)
         feedback_option = self.teacher.wait.until(
@@ -115,6 +131,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.teacher.find(
             By.XPATH, '//select/option[@value="due_at"]').click()
         self.ps.test_updates['passed'] = True
+    '''
 
     # 14676 - 002 - Teacher | Set open and due times for a reading assignment
     @pytest.mark.skipif(str(14676) not in TESTS, reason='Excluded')
@@ -142,7 +159,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
         self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]').click()
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]').click()
         self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
         self.teacher.sleep(1)
         self.teacher.wait.until(
@@ -192,7 +209,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
         self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]').click()
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]').click()
         self.teacher.find(By.LINK_TEXT, 'Add Homework').click()
         self.teacher.sleep(1)
         self.teacher.wait.until(
@@ -242,7 +259,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.teacher.login()
         self.teacher.select_course(appearance='biology')
         self.teacher.find(
-            By.XPATH, '//button[contains(@class,"dropdown-toggle")]').click()
+            By.XPATH, '//button[contains(@class,"sidebar-toggle")]').click()
         self.teacher.find(
             By.LINK_TEXT, 'Add External Assignment').click()
         self.teacher.sleep(1)
@@ -298,33 +315,62 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 (By.XPATH, '//div[@class="course-scores-container"]')
             )
         )
-        assignments = self.teacher.find_all(
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)//4):
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+        ).size['width']
+        bar = scroll_width
+        print(scroll_total_size)
+        while(bar < scroll_total_size):
+            print(bar)
             try:
-                self.teacher.find(
-                    By.XPATH, '//div[@class="late-caret"]'
+                print("here1")
+                self.teacher.wait.until(
+                    expect.element_to_be_clickable(
+                        (By.XPATH, '//div[@class="late-caret"]')
+                    )
                 ).click()
+                print("here???")
+                #
+                # self.teacher.find(
+                #     By.XPATH, '//div[@class="late-caret"]'
+                # ).click()
                 self.teacher.find(
                     By.XPATH,
-                    '//button[contains(text(),"Accept late score")]'
+                    '//button[contains(text(),"Accept late")]'
                 ).click()
                 break
-            except (NoSuchElementException, ElementNotVisibleException):
-                if i >= (len(assignments)//4)-1:
+            except (NoSuchElementException, TimeoutException,
+                    ElementNotVisibleException) as err:
+                print(err)
+                bar += scroll_width
+                if scroll_total_size <= bar:
                     print("No Late assignments for this class :(")
                     raise Exception
-                # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.find(
-                    By.XPATH,
-                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                # drag scroll bar instead of scrolling
                 actions = ActionChains(self.teacher.driver)
                 actions.move_to_element(scroll_bar)
                 actions.click_and_hold()
-                actions.move_by_offset(50, 0)
+                actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
+            except (WebDriverException):
+                bar += 15
+                if scroll_total_size <= bar:
+                    print("No Late assignments for this class :(")
+                    raise Exception
+                # drag scroll bar instead of scrolling
+                actions = ActionChains(self.teacher.driver)
+                actions.move_to_element(scroll_bar)
+                actions.click_and_hold()
+                actions.move_by_offset(15, 0)
+                actions.release()
+                actions.perform()
+
         self.ps.test_updates['passed'] = True
 
     # 14680 - 006 - Teacher | View score at due date
@@ -357,10 +403,16 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 (By.XPATH, '//div[@class="course-scores-container"]')
             )
         )
-        assignments = self.teacher.find_all(
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)//4):
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+        ).size['width']
+        bar = scroll_width
+        while(bar < scroll_total_size):
             try:
                 self.teacher.find(
                     By.XPATH, '//div[@class="late-caret accepted"]'
@@ -368,21 +420,21 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 self.teacher.find(
                     By.XPATH,
                     '//div[contains(@class,"late-status")]' +
-                    '//span[contains(text(),"due date")]'
+                    '//span[text()="due date"]'
                 )
                 break
-            except (NoSuchElementException, ElementNotVisibleException):
-                if i >= (len(assignments)//4)-1:
+            except (NoSuchElementException,
+                    ElementNotVisibleException,
+                    WebDriverException):
+                bar += scroll_width
+                if scroll_total_size <= bar:
                     print("No Late assignments for this class :(")
                     raise Exception
-                # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.find(
-                    By.XPATH,
-                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                # drag scroll bar instead of scrolling
                 actions = ActionChains(self.teacher.driver)
                 actions.move_to_element(scroll_bar)
                 actions.click_and_hold()
-                actions.move_by_offset(50, 0)
+                actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
         self.ps.test_updates['passed'] = True
@@ -417,30 +469,37 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 (By.XPATH, '//div[@class="course-scores-container"]')
             )
         )
-        assignments = self.teacher.find_all(
+        scroll_bar = self.teacher.find(
             By.XPATH,
-            "//span[contains(@aria-describedby,'header-cell-title')]")
-        for i in range(len(assignments)//4):
+            '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+        scroll_width = scroll_bar.size['width']
+        scroll_total_size = self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"ScrollbarLayout_mainHorizontal")]'
+        ).size['width']
+        bar = scroll_width
+        while(bar < scroll_total_size):
             try:
                 self.teacher.find(
                     By.XPATH, '//div[@class="score"]')
                 break
-            except (NoSuchElementException):
-                if i >= (len(assignments)//4)-1:
+            except (NoSuchElementException,
+                    ElementNotVisibleException,
+                    WebDriverException):
+                bar += scroll_width
+                if scroll_total_size <= bar:
                     print("No Late assignments for this class :(")
                     raise Exception
-                # try to drag scroll bar instead of scrolling
-                scroll_bar = self.teacher.find(
-                    By.XPATH,
-                    '//div[contains(@class,"ScrollbarLayout_faceHorizontal")]')
+                # drag scroll bar instead of scrolling
                 actions = ActionChains(self.teacher.driver)
                 actions.move_to_element(scroll_bar)
                 actions.click_and_hold()
-                actions.move_by_offset(50, 0)
+                actions.move_by_offset(scroll_width, 0)
                 actions.release()
                 actions.perform()
         self.ps.test_updates['passed'] = True
 
+    '''
     # 14682 - 008 - Teacher | Set points per problem based on difficulty
     @pytest.mark.skipif(str(14682) not in TESTS, reason='Excluded')
     def test_teacher_set_points_per_problem_based_on_difficulty_14682(self):
@@ -459,6 +518,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
+    '''
 
     # 14683 - 009 - Teacher | Delete an open assignment
     @pytest.mark.skipif(str(14683) not in TESTS, reason='Excluded')
@@ -483,7 +543,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         # create an open event
         self.teacher.login()
-        self.teacher.select_course(appearance='physics')
+        self.teacher.select_course(appearance='college_physics')
         assignment_name = "event_to_delete" + str(randint(0, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
@@ -504,7 +564,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             )
             self.teacher.find(
                 By.XPATH,
-                "//label[contains(text(), '"+assignment_name+"')]"
+                "//label[contains(text(), '" + assignment_name + "')]"
             ).click()
         except NoSuchElementException:
             self.teacher.find(
@@ -518,13 +578,21 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             )
             self.teacher.find(
                 By.XPATH,
-                "//label[contains(text(), '"+assignment_name+"')]"
+                "//label[contains(text(), '" + assignment_name + "')]"
             ).click()
-        self.teacher.wait.until(
-            expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
-            )
-        ).click()
+        counter = 3
+        while counter >= 0:
+            try:
+                self.teacher.find(
+                    By.XPATH, '//a[contains(@class,"-edit-assignment")]'
+                ).click()
+                break
+            except NoSuchElementException:
+                if counter == 0:
+                    print("assignemnt taking too long to publish")
+                    raise Exception
+                self.teacher.get(self.teacher.current_url())
+                counter += 1
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//button[contains(@class,"delete-link")]')
@@ -532,8 +600,6 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         ).click()
         self.teacher.find(
             By.XPATH, '//button[contains(text(),"Yes")]').click()
-        assert ('calendar' in self.teacher.current_url()), \
-            'not returned to calendar after deleting an assignment'
         counter = 0
         while counter < 6:
             self.teacher.get(self.teacher.current_url())
@@ -548,6 +614,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
+    '''
     # 14801 - 010 - Student | A deleted open assignment that the student has
     # not worked on is grayed out and is marked "Withdrawn"
     @pytest.mark.skipif(str(14801) not in TESTS, reason='Excluded')
@@ -569,7 +636,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         # create a homework assignement
         self.teacher.login()
-        self.teacher.select_course(appearance='physics')
+        self.teacher.select_course(appearance='college_physics')
         assignment_name = "event-010" + str(randint(0, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
@@ -607,11 +674,19 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 By.XPATH,
                 "//label[contains(text(), '"+assignment_name+"')]"
             ).click()
-        self.teacher.wait.until(
-            expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
-            )
-        ).click()
+        counter = 3
+        while counter >= 0:
+            try:
+                self.teacher.find(
+                    By.XPATH, '//a[contains(@class,"-edit-assignment")]'
+                ).click()
+                break
+            except NoSuchElementException:
+                if counter == 0:
+                    print("assignemnt taking too long to publish")
+                    raise Exception
+                self.teacher.get(self.teacher.current_url())
+                counter += 1
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//button[contains(@class,"delete-link")]')
@@ -622,12 +697,12 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.teacher.logout()
         # login as a student to view the assignment
         self.student.login()
-        self.student.select_course(appearance='physics')
+        self.student.select_course(appearance='college_physics')
         self.student.wait.until(
             expect.presence_of_element_located(
                 (By.XPATH,
                  '//a[@class="task row event deleted"]' +
-                 '//span[contains(text(),"' + assignment_name + '")]')
+                 '//div[contains(text(),"' + assignment_name + '")]')
             )
         )
         self.student.find(
@@ -635,6 +710,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             '//a[@class="task row event deleted"]//span[text()="Withdrawn"]'
         )
         self.ps.test_updates['passed'] = True
+    '''
 
     # 14802 - 011 - Student | A deleted open assignment that the student has
     # worked on is not grayed out but is marked "Withdrawn"
@@ -657,7 +733,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.select_course(appearance='physics')
+        self.teacher.select_course(appearance='college_physics')
         assignment_name = "external-011-" + str(randint(1000, 1999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
@@ -678,13 +754,13 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.teacher.logout()
         # login as student and click on assignemnt
         self.student.login()
-        self.student.select_course(appearance='physics')
+        self.student.select_course(appearance='college_physics')
         self.student.page.wait_for_page_load()
         external = self.student.wait.until(
             expect.presence_of_element_located(
                 (By.XPATH,
                  '//a[@class="task row external workable"]' +
-                 '//span[contains(text(),"' + assignment_name + '")]')
+                 '//div[contains(text(),"' + assignment_name + '")]')
             )
         )
         Assignment.scroll_to(self.student.driver, external)
@@ -694,6 +770,11 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.student.find(
             By.XPATH, "//h1//a[@href = 'http://google.com']"
         ).click()
+        google_window = self.teacher.driver.window_handles[1]
+        self.teacher.driver.switch_to_window(google_window)
+        self.teacher.driver.close()
+        self.teacher.driver.switch_to_window(
+            self.teacher.driver.window_handles[0])
         self.student.sleep(0.5)
         self.student.find(
             By.XPATH, "//a[text()='Back to Dashboard']"
@@ -701,7 +782,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.student.logout()
         # logback in as teacher to delete assignemnt
         self.teacher.login()
-        self.teacher.select_course(appearance='physics')
+        self.teacher.select_course(appearance='college_physics')
         try:
             self.teacher.wait.until(
                 expect.presence_of_element_located(
@@ -711,7 +792,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             )
             self.teacher.find(
                 By.XPATH,
-                "//label[contains(text(), '"+assignment_name+"')]"
+                "//label[contains(text(), '" + assignment_name + "')]"
             ).click()
         except NoSuchElementException:
             self.teacher.find(
@@ -725,13 +806,21 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             )
             self.teacher.find(
                 By.XPATH,
-                "//label[contains(text(), '"+assignment_name+"')]"
+                "//label[contains(text(), '" + assignment_name + "')]"
             ).click()
-        self.teacher.wait.until(
-            expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
-            )
-        ).click()
+        counter = 3
+        while counter >= 0:
+            try:
+                self.teacher.find(
+                    By.XPATH, '//a[contains(@class,"-edit-assignment")]'
+                ).click()
+                break
+            except NoSuchElementException:
+                if counter == 0:
+                    print("assignemnt taking too long to publish")
+                    raise Exception
+                self.teacher.get(self.teacher.current_url())
+                counter += 1
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//button[contains(@class,"delete-link")]')
@@ -742,12 +831,12 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.teacher.logout()
         # login as a student to view the assignment
         self.student.login()
-        self.student.select_course(appearance='physics')
+        self.student.select_course(appearance='college_physics')
         self.student.wait.until(
             expect.presence_of_element_located(
                 (By.XPATH,
                  '//a[@class="task row external workable deleted"]' +
-                 '//span[contains(text(),"' + assignment_name + '")]')
+                 '//div[contains(text(),"' + assignment_name + '")]')
             )
         )
         self.student.find(
@@ -778,7 +867,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         # create a homework assignement
         self.teacher.login()
-        self.teacher.select_course(appearance='physics')
+        self.teacher.select_course(appearance='college_physics')
         assignment_name = "event-012-" + str(randint(0, 999))
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
@@ -800,7 +889,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             )
             self.teacher.find(
                 By.XPATH,
-                "//label[contains(text(), '"+assignment_name+"')]"
+                "//label[contains(text(), '" + assignment_name + "')]"
             ).click()
         except NoSuchElementException:
             self.teacher.find(
@@ -814,13 +903,21 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             )
             self.teacher.find(
                 By.XPATH,
-                "//label[contains(text(), '"+assignment_name+"')]"
+                "//label[contains(text(), '" + assignment_name + "')]"
             ).click()
-        self.teacher.wait.until(
-            expect.element_to_be_clickable(
-                (By.XPATH, '//a[contains(@class,"-edit-assignment")]')
-            )
-        ).click()
+        counter = 3
+        while counter >= 0:
+            try:
+                self.teacher.find(
+                    By.XPATH, '//a[contains(@class,"-edit-assignment")]'
+                ).click()
+                break
+            except NoSuchElementException:
+                if counter == 0:
+                    print("assignemnt taking too long to publish")
+                    raise Exception
+                self.teacher.get(self.teacher.current_url())
+                counter += 1
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//button[contains(@class,"delete-link")]')
@@ -831,14 +928,14 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.teacher.logout()
         # login as a student to view the assignment
         self.student.login()
-        self.student.select_course(appearance='physics')
+        self.student.select_course(appearance='college_physics')
         # delete a deleted event (not necessarily the one just created)
         deleted_events = self.student.find_all(
             By.XPATH, '//a[@class="task row event deleted"]'
         )
         for event in deleted_events:
             event_name = event.find_element(
-                By.XPATH, './div[contains(@class,"title")]/span').text
+                By.XPATH, './div[contains(@class,"title")]').text
             if event_name == assignment_name:
                 event.find_element(
                     By.XPATH, './/button[contains(@class,"hide-task")]'
@@ -848,10 +945,11 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                 ).click()
                 self.teacher.sleep(0.5)
                 break
+        self.student.get(self.student.current_url())
         should_be_deleted = self.student.find_all(
             By.XPATH,
             '//a[@class="task row event deleted"]' +
-            '//span[contains(text(),"' + assignment_name + '")]')
+            '//div[contains(text(),"' + assignment_name + '")]')
         assert(len(should_be_deleted) == 0), "event not deleted"
 
         self.ps.test_updates['passed'] = True
@@ -880,7 +978,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.select_course(appearance='physics')
+        self.teacher.select_course(appearance='college_physics')
         assignment_name = "event_to_delete"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
@@ -896,7 +994,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         try:
             self.teacher.find(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]'
+                '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.find(
@@ -905,7 +1003,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             ).click()
             self.teacher.find(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]'
+                '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -958,7 +1056,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         # Test steps and verification assertions
         self.teacher.login()
-        self.teacher.select_course(appearance='physics')
+        self.teacher.select_course(appearance='college_physics')
         assignment_name = "event_to_delete"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
@@ -974,7 +1072,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         try:
             self.teacher.find(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]'
+                '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         except NoSuchElementException:
             self.teacher.find(
@@ -983,7 +1081,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             ).click()
             self.teacher.find(
                 By.XPATH,
-                '//label[contains(@data-title,"'+assignment_name+'")]'
+                '//label[contains(@data-title,"' + assignment_name + '")]'
             ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1057,7 +1155,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         # Test steps and verification assertions
         self.student.login()
-        self.student.select_course(appearance='physics')
+        self.student.select_course(appearance='college_physics')
         self.student.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
@@ -1083,19 +1181,19 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             except NoSuchElementException:
                 # click on the next breadcrumb
                 if i == len(sections):
-                    print("no two part questions in the homework")
+                    print("no two part questions in the practice")
                     raise Exception
                 else:
                     sections_new = self.student.find_all(
                         By.XPATH, '//div[@class="openstax-breadcrumbs-step"]')
-                    sections_new[i+1].click()
+                    sections_new[i + 1].click()
             else:
                 answer_text = "answer"
                 for i in answer_text:
                     element.send_keys(i)
                 self.student.wait.until(
                     expect.element_to_be_clickable(
-                        (By.XPATH, '//button/span[contains(text(),"Answer")]')
+                        (By.XPATH, '//button[contains(text(),"Answer")]')
                     )
                 ).click()
                 actions = ActionChains(self.student.driver)
@@ -1111,7 +1209,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                     '//div[@class="popover-content"]//p' +
                     '//strong[contains(text(),' +
                     '"Why do you ask me to answer twice?")]'
-                    )
+                )
                 break
         self.ps.test_updates['passed'] = True
 
@@ -1151,7 +1249,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.teacher.login()
-        self.teacher.select_course(appearance='physics')
+        self.teacher.select_course(appearance='college_physics')
         assignment_name = "homework-017"
         today = datetime.date.today()
         begin = (today + datetime.timedelta(days=0)).strftime('%m/%d/%Y')
@@ -1168,9 +1266,9 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.teacher.logout()
         # login as student to work the homework
         self.student.login()
-        self.student.select_course(appearance='physics')
+        self.student.select_course(appearance='college_physics')
         self.student.find(
-            By.XPATH, '//span[contains(text(), "'+assignment_name+'")]'
+            By.XPATH, '//span[contains(text(), "' + assignment_name + '")]'
         ).click()
         # work problems untill a free response question is found
         sections = self.student.find_all(
@@ -1207,7 +1305,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
                     raise Exception
                 sections_new = self.student.find_all(
                     By.XPATH, '//div[@class="openstax-breadcrumbs-step"]')
-                sections_new[i+1].click()
+                sections_new[i + 1].click()
         # click on the last problems to find a spaced practice
         sections = self.student.find_all(
             By.XPATH, '//div[@class="openstax-breadcrumbs-step"]'
@@ -1238,7 +1336,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
 
         # Test steps and verification assertions
         self.student.login()
-        self.student.select_course(appearance='physics')
+        self.student.select_course(appearance='college_physics')
         self.student.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH,
@@ -1250,7 +1348,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             expect.visibility_of_element_located(
                 (By.XPATH,
                  '//a[@class="view-reference-guide"]' +
-                 '//span[@class="section"]//span[1]')
+                 '//span[@class="section"]')
             )
         )
         chapter_num = chapter.text
@@ -1271,6 +1369,7 @@ class TestImproveAssignmentManagement(unittest.TestCase):
             'Not viewing the textbook PDF'
         self.ps.test_updates['passed'] = True
 
+    '''
     # 14689 - 019 - Student | Ask for credit for late work
     @pytest.mark.skipif(str(14689) not in TESTS, reason='Excluded')
     def test_student_ask_for_credit_for_late_work_14689(self):
@@ -1283,6 +1382,121 @@ class TestImproveAssignmentManagement(unittest.TestCase):
         self.ps.test_updates['name'] = 't2.10.019' \
             + inspect.currentframe().f_code.co_name[4:]
         self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.019', '14689']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+    '''
+
+    # 113783 - 020 - Student | Show late icon for a late high school homework
+    @pytest.mark.skipif(str(113783) not in TESTS, reason='Excluded')
+    def test_student_show_late_icon_for_late_hs_homework_113783(self):
+        """Show late icon for a late high school homework.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't2.10.020' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.020', '113783']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 113784 - 021 - Student | Show late icon for a late college homework
+    @pytest.mark.skipif(str(113784) not in TESTS, reason='Excluded')
+    def test_student_show_late_icon_for_late_college_homework_113784(self):
+        """Show late icon for a late college homework.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't2.10.021' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.021', '113784']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 113785 - 022 - Student | Don't show late icon on late high school reading
+    @pytest.mark.skipif(str(113785) not in TESTS, reason='Excluded')
+    def test_student_do_not_show_late_icon_for_hs_reading_113785(self):
+        """Do not show late icon for a late high school reading.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't2.10.022' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.022', '113785']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 113788 - 023 - Student | Show late icon for a late college reading
+    @pytest.mark.skipif(str(113788) not in TESTS, reason='Excluded')
+    def test_student_show_late_icon_for_late_college_reading_113788(self):
+        """Show late icon for a late college reading.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't2.10.023' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.023', '113788']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 113786 - 024 - Student | Show late icon for late hs external assignment
+    @pytest.mark.skipif(str(113786) not in TESTS, reason='Excluded')
+    def test_student_show_late_icon_for_hs_external_113786(self):
+        """Show late icon for a late high school external assignment.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't2.10.024' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.024', '113786']
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
+
+        self.ps.test_updates['passed'] = True
+
+    # 113787 - 025 - Student | Show late icon for late college external
+    @pytest.mark.skipif(str(113787) not in TESTS, reason='Excluded')
+    def test_student_show_late_icon_for_late_college_external_113787(self):
+        """Show late icon for a late college external assignment.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't2.10.025' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = ['t2', 't2.10', 't2.10.025', '113787']
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions

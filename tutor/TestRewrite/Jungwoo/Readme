@@ -1,0 +1,20 @@
+Jungwoo's stuff
+
+Here is the Selenium code I have written so far.
+
+I ended up doing a very significant portion of the intern project and thus in the later weeks of the internship,
+was unable to work on the selenium scripts much.
+
+But, here is my Selenium stuff.
+
+There are most likely bugs within the Selenium I have written, and some of the scripts are incomplete.
+My original runthrough of the scripts was going through them 1 by 1, and I realized
+that some of them were very difficult to automate, so I skipped them to save for later. 
+However, now, at the end of the internship, I have run out of time...  I apologize for not 
+being able to resolve them and for the bugs you might encounter. 
+
+Testrail ready.
+
+Oh, and I added a couple of new functions into my version of helper.py, namely random_course, which 
+chooses a random Tutor course, and open_help_menu, which opens the help menu. I also fixed a couple
+of functions that were not working such as goto_menu_item 

@@ -32,7 +32,7 @@ TESTS = os.getenv(
     str([
         7978, 7979, 7980, 7981, 7982,
         7983, 7984, 7985, 7986, 7987,
-        7988, 7989, 7990, 7991
+        7988, 7989, 7990
     ])
 )
 
@@ -56,7 +56,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
                 use_env_vars=True
             )
         self.teacher.login()
-        self.teacher.select_course(appearance='hs_physics')
+        self.teacher.select_course(appearance='college_physics')
 
     def tearDown(self):
         """Test destructor."""
@@ -420,8 +420,8 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         # self.teacher.select_course(title='HS Physics')
         self.teacher.driver.find_element(
-            By.LINK_TEXT,
-            'Browse The Book'
+            By.CSS_SELECTOR,
+            '.calendar-header .view-reference-guide'
         ).click()
         window_with_book = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_book)
@@ -450,9 +450,9 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         # self.teacher.select_course(title='HS Physics')
         self.teacher.open_user_menu()
-        self.teacher.driver.find_element(
-            By.LINK_TEXT,
-            'Browse the Book'
+        self.teacher.find(
+            By.CSS_SELECTOR,
+            '.calendar-header .view-reference-guide'
         ).click()
         window_with_book = self.teacher.driver.window_handles[1]
         self.teacher.driver.switch_to_window(window_with_book)
@@ -481,11 +481,11 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         self.teacher.open_user_menu()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.LINK_TEXT,
             'Performance Forecast'
         ).click()
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.CLASS_NAME,
             'course-name'
         ).click()
@@ -513,7 +513,7 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # self.teacher.select_course(appearance='physics')
-        self.teacher.driver.find_element(
+        self.teacher.find(
             By.CLASS_NAME,
             'ui-brand-logo'
         ).click()
@@ -522,8 +522,9 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C7991 - 014 - Teacher | CLick in the OpenStax logo to return to the
-    # dashboard
+    '''
+    # Case C7991 - 014 - Teacher | CLick in the OpenStax logo to return to
+    # the dashboard
     @pytest.mark.skipif(str(7991) not in TESTS, reason='Excluded')
     def test_teacher_clicks_openstax_logo_to_return_to_dashboard_7991(self):
         """CLick in the OpenStax logo to return to the dashboard.
@@ -565,3 +566,4 @@ class TestViewTheCalendarDashboard(unittest.TestCase):
             'Not viewing the calendar dashboard'
 
         self.ps.test_updates['passed'] = True
+        '''

@@ -31,14 +31,16 @@ TESTS = os.getenv(
     'CASELIST',
     str([
         14695, 14696, 14691, 14692, 14693,
-        14694, 14699, 14700, 14702, 14718,
-        14715, 14717, 14710, 14711, 14712,
-        14723, 14722, 14705, 14704, 14703,
-        15903, 14719, 14714, 14716, 14709,
-        14713, 14721, 14720, 14707, 14706,
-        15902, 14724, 14725, 14735, 14799,
-        14727, 14734, 14728, 14729, 14798,
-        14730, 14731, 14732, 14736, 14737
+        14694, 14699, 14700, 14718, 14715,
+        14717, 14710, 14711, 14712, 14723,
+        14722, 14705, 14704, 14703, 15903,
+        14719, 14714, 14716, 14709, 14713,
+        14721, 14720, 14707, 14706, 15902,
+        14724, 14725, 14735, 14799, 14727,
+        14734, 14728, 14729, 14798, 14731,
+        14732, 14736, 14737, 85293,
+        # not implemented
+        # 14702, 96968, 14730,
     ])
 )
 
@@ -51,6 +53,7 @@ class TestQuestionWork(unittest.TestCase):
         """Pretest settings."""
         self.ps = PastaSauce()
         self.desired_capabilities['name'] = self.id()
+
         self.teacher = Teacher(
             use_env_vars=True,
             pasta_user=self.ps,
@@ -3238,5 +3241,119 @@ class TestQuestionWork(unittest.TestCase):
             By.XPATH, "//button[@class='btn btn-primary']").click()
 
         self.teacher.sleep(3)
+
+        self.ps.test_updates['passed'] = True
+
+    # 85293 - 046 - Content Analyst | Have an exercise without a detailed
+    # solution
+    @pytest.mark.skipif(str(85293) not in TESTS, reason='Excluded')
+    def test_content_analyst_have_an_exercise_without_a_detailed_s_85293(self):
+        """Have an exercise without a detailed solution.
+
+        Steps:
+        Go to https://exercises-qa.openstax.org/
+        Login as a content analyst
+        Click "Write a new exercise"
+        Click on the "Multiple Choice" radio button
+        Fill out everything but the detailed solution
+        Click "Publish"
+        Now, reopen the newly published question
+        Edit it
+        and publish again
+
+        Expected Result:
+        Exercise is published successfully
+        """
+        self.ps.test_updates['name'] = 't2.11.046' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't2',
+            't2.11',
+            't2.11.046',
+            '85293'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        self.content.login()
+        self.content.sleep(2)
+        self.content.driver.get("https://exercises-qa.openstax.org/")
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "SIGN IN").click()
+        self.content.sleep(2)
+        self.content.find(By.PARTIAL_LINK_TEXT, "WRITE A NEW EXERCISE").click()
+        self.content.sleep(5)
+
+        # Select Multiple Choice radio if not already selected
+        """
+        if not self.content.find(
+            By.XPATH, "//div[@class='form-group'][1]/div[@class='radio']"
+        ).is_selected():
+            self.content.find(
+                By.XPATH,
+                "//div[@class='form-group'][1]/div[@class='radio']" +
+                "/label/span").click()"""
+
+        self.content.find(
+            By.XPATH, "//input[@id='input-multiple-choice']").click()
+
+        self.content.sleep(3)
+
+        # Fill in required fields
+        self.content.find(By.XPATH, "//div[3]/textarea").send_keys('Stem')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[1]").send_keys(
+            'Distractor')
+        self.content.find(
+            By.XPATH,
+            "//li[@class='correct-answer']/textarea[2]").send_keys('Feedback')
+
+        # Save draft and publish
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button draft btn btn-info']").click()
+        self.content.sleep(3)
+        self.content.find(
+            By.XPATH,
+            "//button[@class='async-button publish btn btn-primary']").click()
+        self.content.find(
+            By.XPATH,
+            "//div[@class='popover-content']/div[@class='controls']/button" +
+            "[@class='btn btn-primary']").click()
+        self.content.sleep(3)
+
+        # Verify
+        page = self.content.driver.page_source
+        assert('has published successfully' in page), \
+            'Exercise not successfully published'
+
+        self.content.find(
+            By.XPATH, "//button[@class='btn btn-primary']").click()
+
+        self.ps.test_updates['passed'] = True
+
+    # 96968 - 047 - Content Reviewer | Review all data for an exercise in a
+    # read-only mode
+    @pytest.mark.skipif(str(96968) not in TESTS, reason='Excluded')
+    def test_content_reviewer_review_all_data_for_an_exercise_in_a_96968(self):
+        """Review all data for an exercise in a read-only mode.
+
+        Steps:
+
+        Expected Result:
+        """
+        self.ps.test_updates['name'] = 't2.11.047' \
+            + inspect.currentframe().f_code.co_name[4:]
+        self.ps.test_updates['tags'] = [
+            't2',
+            't2.11',
+            't2.11.047',
+            '96968'
+        ]
+        self.ps.test_updates['passed'] = False
+
+        # Test steps and verification assertions
+        raise NotImplementedError(inspect.currentframe().f_code.co_name)
 
         self.ps.test_updates['passed'] = True
