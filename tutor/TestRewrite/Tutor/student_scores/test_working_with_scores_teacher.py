@@ -4,11 +4,8 @@ Title: working with scores
 User(s): teacher
 Testrail ID: C148069
 
-
-
 Jacob Diaz
 7/28/17
-
 
 Corresponding Case(s):
             t1.23.03 --> 04
