@@ -36,8 +36,7 @@ TESTS = os.getenv(
         162172, 162173, 162174, 162175, 162176,
         162177, 162178, 162179, 162180, 162181,
         162182, 162183, 162184, 162185, 162186,
-        162187, 162188
-        # 162188
+        # 162188, 162187
 
     ])
 )
@@ -226,23 +225,26 @@ class TestCreateAReading(unittest.TestCase):
                                         '162174']
         self.ps.test_updates['passed'] = False
         # Test steps and verification assertions
-        calendar_date = self.teacher.wait.until(
+        self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
             )
         )
-        self.teacher.driver.execute_script(
-            'return arguments[0].scrollIntoView();',
-            calendar_date
-        )
+
+        dates = self.teacher.find_all(By.CSS_SELECTOR, '.rc-Day--upcoming')
+        calendar_date = dates[randint(0, len(dates))]
+
+        self.teacher.scroll_to(calendar_date)
+        height = calendar_date.find_element(By.XPATH, '../..').size['height']
+        height = float(height) / 2.0 - 5.0
         self.teacher.sleep(1)
-        actions = ActionChains(self.teacher.driver)
-        actions.move_to_element(calendar_date)
-        actions.move_by_offset(0, -35)
-        actions.click()
-        actions.move_by_offset(30, 105)
-        actions.click()
-        actions.perform()
+        ActionChains(self.teacher.driver) \
+            .move_to_element(calendar_date) \
+            .move_by_offset(0, height * -1) \
+            .click() \
+            .move_by_offset(30, 105) \
+            .click() \
+            .perform()
 
         assert ('event/new' in self.teacher.current_url()), \
             'not at Add Event page'
@@ -526,6 +528,15 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.scroll_to(cancel_button)
         cancel_button.click()
 
+        '''
+        # Exit pop-up with "X" button
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.CLASS_NAME, 'close')
+            )
+        ).click()
+        '''
+
         # Check if teacher is taken to user dashboard
         self.teacher.page.wait_for_page_load()
         assert ('month' in self.teacher.current_url()), \
@@ -560,6 +571,15 @@ class TestCreateAReading(unittest.TestCase):
                 (By.XPATH, '//button[contains(@class,"openstax-close-x")]')
             )
         ).click()
+
+        '''
+        # Exit pop-up with "X" button
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.CLASS_NAME, 'close')
+            )
+        ).click()
+        '''
 
         # Check if the teacher is back to user dashboard
         assert ('month' in self.teacher.current_url()), \
@@ -628,6 +648,15 @@ class TestCreateAReading(unittest.TestCase):
             )
         ).click()
 
+        '''
+        # Exit pop-up with "X" button
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.CLASS_NAME, 'close')
+            )
+        ).click()
+        '''
+
         # Check if teacher is taken to user dashboard
         self.teacher.page.wait_for_page_load()
         assert ('month' in self.teacher.current_url()), \
@@ -672,6 +701,15 @@ class TestCreateAReading(unittest.TestCase):
                 (By.XPATH, '//button[contains(@class,"ok")]')
             )
         ).click()
+
+        '''
+        # Exit pop-up with "X" button
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.CLASS_NAME, 'close')
+            )
+        ).click()
+        '''
 
         # Check if the teacher is back to user dashboard
         assert ('month' in self.teacher.current_url()), \
@@ -838,9 +876,10 @@ class TestCreateAReading(unittest.TestCase):
             '//label[contains(text(),"{0}")]'.format(assignment_name)
         ).click()
         self.teacher.wait.until(
-            expect.element_to_be_clickable(
-                (By.ID, 'edit-assignment-button')
-            )
+            expect.element_to_be_clickable((
+                By.XPATH,
+                '//a[contains(text(),"Edit")]'
+            ))
         ).click()
 
         # Delete the assignment
@@ -909,9 +948,10 @@ class TestCreateAReading(unittest.TestCase):
             '//label[contains(text(),"{0}")]'.format(assignment_name)
         ).click()
         self.teacher.wait.until(
-            expect.element_to_be_clickable(
-                (By.ID, 'edit-assignment-button')
-            )
+            expect.element_to_be_clickable((
+                By.XPATH,
+                '//a[contains(text(),"View")]'
+            ))
         ).click()
 
         # Delete the assignment
@@ -1074,9 +1114,10 @@ class TestCreateAReading(unittest.TestCase):
             '//label[contains(text(),"{0}")]'.format(assignment_name)
         ).click()
         self.teacher.wait.until(
-            expect.element_to_be_clickable(
-                (By.ID, 'edit-assignment-button')
-            )
+            expect.element_to_be_clickable((
+                By.XPATH,
+                '//a[contains(text(),"Edit")]'
+            ))
         ).click()
 
         # Change the title
@@ -1169,9 +1210,10 @@ class TestCreateAReading(unittest.TestCase):
             '//label[contains(text(),"{0}")]'.format(assignment_name)
         ).click()
         self.teacher.wait.until(
-            expect.element_to_be_clickable(
-                (By.ID, 'edit-assignment-button')
-            )
+            expect.element_to_be_clickable((
+                By.XPATH,
+                '//a[contains(text(),"View")]'
+            ))
         ).click()
 
         # Change the title
@@ -1219,7 +1261,7 @@ class TestCreateAReading(unittest.TestCase):
 
         self.ps.test_updates['passed'] = True
 
-    # Case C162187 016 Teacher | Add an event by dragging and dropping
+    '''# Case C162187 016 Teacher | Add an event by dragging and dropping
     @pytest.mark.skipif(str(162187) not in TESTS, reason="Excluded")
     def test_teacher_add_an_event_by_drag_and_drop_162187(self):
         self.ps.test_updates['name'] = 'tutor_event_teacher' \
@@ -1248,8 +1290,9 @@ class TestCreateAReading(unittest.TestCase):
         assert ('event/new' in self.teacher.current_url()), \
             'not at Add Event page'
 
-        self.ps.test_updates['passed'] = True
+        self.ps.test_updates['passed'] = True'''
 
+    '''
     # Case C162188 017 Teacher| Get assignment link test info icons
     @pytest.mark.skipif(str(162188) not in TESTS, reason="Excluded")
     def test_teacher_get_assignment_link_and_view_info_icons_162188(self):
@@ -1318,9 +1361,16 @@ class TestCreateAReading(unittest.TestCase):
                 (By.ID, 'lms-info-link')
             )
         ).click()
+        self.teacher.wait.until(
+            expect.element_to_be_clickable((
+                By.XPATH,
+                '//button[contains(text(),"link")]'
+            ))
+        ).click()
         sleep(3)
         self.teacher.find(
             By.XPATH, '//div[contains(@id, "sharable-link-popover")]'
         )
 
         self.ps.test_updates['passed'] = True
+        '''
