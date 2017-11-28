@@ -150,23 +150,44 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
 
         # get name of course for later reference by the student
         enrollment_course_name = self.teacher.find(
-            By.XPATH,
-            "//a[contains(@class,'course-name')]"
+            By.CSS_SELECTOR,
+            '.title'
         ).text
         print(enrollment_course_name)
 
         # go to roster
-        self.teacher.goto_course_roster()
-        enrollment_url = self.teacher.wait.until(
-            expect.visibility_of_element_located(
-                (By.XPATH,
-                 '//span[@class="enrollment-code-link"]//input')
-            )
-        ).get_attribute("value")
+        self.teacher.goto_course_settings()
+        self.teacher.find(
+            By.XPATH,
+            '//a[h2[contains(text(), "ACCESS")]]'
+        ).click()
+        try:
+            self.teacher.find(
+                By.XPATH,
+                '//a[.//p[contains(text(), "direct")]]'
+            ).click()
+            try:
+                self.teacher.find(
+                    By.XPATH,
+                    '//button[contains(text(), "sure")]'
+                ).click()
+            except:
+                pass
+            enrollment_url = self.teacher.get_enrollment_code()
+        except:
+            raise ElementNotSelectableException("Can't get URL")
+        """
+        try:
+            enrollment_url = enrollment_url.get_attribute('value')
+        except:
+            enrollment_url = enrollment_url[randint(0, len(enrollment_url))] \
+                .get_attribute('value')
+        """
         self.teacher.logout()
 
         # use the url as a student
         self.student.login()
+        print(enrollment_url)
         custom_url = self.student.get(enrollment_url)
         print(custom_url)
         self.student.sleep(5)
@@ -186,11 +207,8 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         except:
             pass
 
-        # NOT FINISHED --> NEED TO WORK ON THE CODE THAT'LL ENROLL THE STUDENT
-        # AND CLICK THROUGH THE ENROLLMENT FLOW
-
         # t2.09.33 --> Student ID changed
-        self.student.find(By.XPATH, '//p[@data-is-beta="true"]').click()
+        # self.student.find(By.XPATH, '//p[@data-is-beta="true"]').click()
         self.student.open_user_menu()
         self.student.find(By.LINK_TEXT, 'Change Student ID').click()
         old_id = self.student.wait.until(
@@ -198,6 +216,7 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
                 (By.XPATH, '//input[@placeholder="School issued ID"]')
             )
         ).get_attribute("value")
+        print("Old ID: %s" % old_id)
 
         self.student.wait.until(
             expect.visibility_of_element_located(
@@ -212,12 +231,15 @@ class TestImproveLoginREgistrationEnrollment(unittest.TestCase):
         # change the student ID back
         self.student.sleep(3)
         self.student.open_user_menu()
+        self.student.find(By.LINK_TEXT, 'Dashboard').click()
+        self.student.open_user_menu()
         self.student.find(By.LINK_TEXT, 'Change Student ID').click()
         new_id = self.student.wait.until(
             expect.visibility_of_element_located(
                 (By.XPATH, '//input[@placeholder="School issued ID"]')
             )
         ).get_attribute("value")
+        print("New ID: %s" % new_id)
 
         assert(old_id+"new_student_id" == new_id), "ID not changed"
 
