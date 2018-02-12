@@ -36,7 +36,7 @@ TESTS = os.getenv(
         132519, 132520, 132521, 132522, 132523,
         132560, 132524, 132561, 132525, 132528,
         132527, 132526, 132530, 132531, 132529,
-        132532, 132533, 132534, 132577
+        132532, 132533, 132534, 132577,
         # 132526
 
     ])
@@ -62,7 +62,7 @@ class TestCreateAReading(unittest.TestCase):
                 use_env_vars=True
             )
         self.teacher.login()
-        self.teacher.select_course(appearance='college_physics')
+        self.teacher.select_course(appearance='intro_sociology')
 
     def tearDown(self):
         """Test destructor."""
@@ -164,6 +164,10 @@ class TestCreateAReading(unittest.TestCase):
                 (By.XPATH, '//button[contains(@class,"-publish")]')
             )
         ).click()
+
+        sleep(5)
+
+        # locate the published assignment
         try:
             self.teacher.find(
                 By.XPATH,
@@ -172,12 +176,20 @@ class TestCreateAReading(unittest.TestCase):
         except NoSuchElementException:
             self.teacher.find(
                 By.XPATH,
+                '//label[contains(text(),"{0}")]'.format(assignment_name)
+            )
+
+            '''
+            self.teacher.find(
+                By.XPATH,
                 '//a[contains(@class,"header-control next")]'
             ).click()
+            sleep(10)
             self.teacher.find(
                 By.XPATH,
                 '//label[contains(text(),"{0}")]'.format(assignment_name)
             )
+            '''
 
         self.ps.test_updates['passed'] = True
 
@@ -333,6 +345,39 @@ class TestCreateAReading(unittest.TestCase):
         self.ps.test_updates['passed'] = False
 
         # Test steps and verification assertions
+
+        dates = self.teacher.find_all(By.CSS_SELECTOR, '.rc-Day--upcoming')
+        calendar_date = dates[randint(1, 2)]
+        self.teacher.scroll_to(calendar_date)
+        '''
+        dates = self.teacher.find_all(By.CSS_SELECTOR, '.rc-Day--upcoming')
+        calendar_date = dates[randint(0, len(dates))]
+        self.teacher.scroll_to(calendar_date)
+
+        calendar_date = self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
+            )
+        )
+        '''
+        sleep(10)
+        self.teacher.driver.execute_script(
+            'return arguments[0].scrollIntoView();',
+            (calendar_date)
+        )
+
+        height = calendar_date.find_element(By.XPATH, '../..').size['height']
+        height = float(height) / 2.0
+
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(calendar_date)
+        actions.move_by_offset(height * -1, 0)
+        actions.click()
+        actions.move_by_offset(30, 15)
+        actions.click()
+        actions.perform()
+
+        '''
         calendar_date = self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.XPATH, '//div[contains(@class,"Day--upcoming")]')
@@ -350,6 +395,7 @@ class TestCreateAReading(unittest.TestCase):
         actions.move_by_offset(30, 15)
         actions.click()
         actions.perform()
+        '''
 
         assert ('reading/new' in self.teacher.current_url()), \
             'not at Add Reading page'
@@ -374,14 +420,15 @@ class TestCreateAReading(unittest.TestCase):
 
         # Set date
         today = datetime.date.today()
-        start = randint(1, 5)
+        start = 0
+        # start = randint(1, 5)
         end = start + randint(1, 5)
 
         # the open date should be in the future for the assignment to be
         # unopened
-        opens_on = (today + datetime.timedelta(days=start))\
-            .strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=end))\
+            .strftime('%m/%d/%Y')
+        opens_on = (today + datetime.timedelta(days=start))\
             .strftime('%m/%d/%Y')
         assignment.assign_periods(
             self.teacher.driver, {'all': (opens_on, closes_on)})
@@ -450,6 +497,54 @@ class TestCreateAReading(unittest.TestCase):
             .strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=finish)) \
             .strftime('%m/%d/%Y')
+
+        assignment = Assignment()
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
+        assert ('reading/new' in self.teacher.current_url()), \
+            'not at add readings screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH, '//textarea[contains(@class, "form-control")]'
+        ).send_keys('description')
+        # use staxing function to send_keys
+
+        # Set date
+        today = datetime.date.today()
+        # make the start date today so it will be open
+        opens_on = begin
+        closes_on = end
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (opens_on, closes_on)})
+
+        # add reading sections to the assignment
+        self.teacher.find(By.ID, 'reading-select').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"reading-plan")]')
+            )
+        )
+        assignment.select_sections(self.teacher.driver, ['1.1'])
+        self.teacher.find(
+            By.XPATH, '//button[text()="Add Readings"]'
+        ).click()
+
+        # Save as draft
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'builder-draft-button')
+            )
+        ).click()
+
+        '''
         self.teacher.add_assignment(
             assignment='reading',
             args={
@@ -460,6 +555,7 @@ class TestCreateAReading(unittest.TestCase):
                 'status': 'draft',
             }
         )
+        '''
 
         # Find the draft reading on the calendar
         self.teacher.wait.until(
@@ -684,6 +780,53 @@ class TestCreateAReading(unittest.TestCase):
         end = (today + datetime.timedelta(days=finish))\
             .strftime('%m/%d/%Y')
 
+        assignment = Assignment()
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
+        assert ('reading/new' in self.teacher.current_url()), \
+            'not at add readings screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name_1)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH, '//textarea[contains(@class, "form-control")]'
+        ).send_keys('description')
+        # use staxing function to send_keys
+
+        # Set date
+        today = datetime.date.today()
+        # make the start date today so it will be open
+        opens_on = begin
+        closes_on = end
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (opens_on, closes_on)})
+
+        # add reading sections to the assignment
+        self.teacher.find(By.ID, 'reading-select').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"reading-plan")]')
+            )
+        )
+        assignment.select_sections(self.teacher.driver, ['1.1'])
+        self.teacher.find(
+            By.XPATH, '//button[text()="Add Readings"]'
+        ).click()
+
+        # Save as draft
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'builder-draft-button')
+            )
+        ).click()
+
+        '''
         # Add a draft reading
         self.teacher.add_assignment(
             assignment='reading',
@@ -695,6 +838,7 @@ class TestCreateAReading(unittest.TestCase):
                 'status': 'draft'
             }
         )
+        '''
 
         # Open a draft reading
         try:
@@ -737,6 +881,53 @@ class TestCreateAReading(unittest.TestCase):
         assert ('month' in self.teacher.current_url()), \
             'not back at calendar after cancelling reading'
 
+        assignment = Assignment()
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
+        assert ('reading/new' in self.teacher.current_url()), \
+            'not at add readings screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name_2)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH, '//textarea[contains(@class, "form-control")]'
+        ).send_keys('description')
+        # use staxing function to send_keys
+
+        # Set date
+        today = datetime.date.today()
+        # make the start date today so it will be open
+        opens_on = begin
+        closes_on = end
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (opens_on, closes_on)})
+
+        # add reading sections to the assignment
+        self.teacher.find(By.ID, 'reading-select').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"reading-plan")]')
+            )
+        )
+        assignment.select_sections(self.teacher.driver, ['1.1'])
+        self.teacher.find(
+            By.XPATH, '//button[text()="Add Readings"]'
+        ).click()
+
+        # Save as draft
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'builder-draft-button')
+            )
+        ).click()
+
+        '''
         # Add a draft reading
         self.teacher.add_assignment(
             assignment='reading',
@@ -748,6 +939,7 @@ class TestCreateAReading(unittest.TestCase):
                 'status': 'draft'
             }
         )
+        '''
 
         # Open a draft reading
         try:
@@ -831,6 +1023,66 @@ class TestCreateAReading(unittest.TestCase):
         end = (today + datetime.timedelta(days=finish)) \
             .strftime('%m/%d/%Y')
 
+        assignment = Assignment()
+
+        # Open Add Reading page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
+        assert ('reading/new' in self.teacher.current_url()), \
+            'not at add readings screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name_1)
+
+        # Set date
+        today = datetime.date.today()
+        start = randint(0, 6)
+        end = start + randint(1, 5)
+        opens_on = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=end)) \
+            .strftime('%m/%d/%Y')
+
+        # Find all individual periods
+        self.teacher.find(By.ID, 'show-periods-radio').click()
+        period_boxes = self.teacher.driver.find_elements(
+            By.XPATH, '//input[contains(@id, "period-toggle-period")]'
+        )
+        period_assignment = {}
+        for period in period_boxes:
+            period_assignment[
+                self.teacher.driver.find_element(
+                    By.XPATH,
+                    '//label[contains(@for, "%s")]' %
+                    period.get_attribute('id')).text
+            ] = (opens_on, closes_on)
+
+        assignment.assign_periods(self.teacher.driver, period_assignment)
+
+        # add reading sections to the assignment
+        self.teacher.find(By.ID, 'reading-select').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"reading-plan")]')
+            )
+        )
+        assignment.select_sections(self.teacher.driver, ['1.1'])
+        self.teacher.find(
+            By.XPATH, '//button[text()="Add Readings"]'
+        ).click()
+
+        # Save as draft
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'builder-draft-button')
+            )
+        ).click()
+
+        '''
         # Add a draft reading
         self.teacher.add_assignment(
             assignment='reading',
@@ -842,6 +1094,7 @@ class TestCreateAReading(unittest.TestCase):
                 'status': 'draft'
             }
         )
+        '''
 
         # Open a draft reading
         try:
@@ -896,6 +1149,66 @@ class TestCreateAReading(unittest.TestCase):
         assert ('month' in self.teacher.current_url()), \
             'not back at calendar after cancelling reading'
 
+        assignment = Assignment()
+
+        # Open Add Reading page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
+        assert ('reading/new' in self.teacher.current_url()), \
+            'not at add readings screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name_2)
+
+        # Set date
+        today = datetime.date.today()
+        start = randint(0, 6)
+        end = start + randint(1, 5)
+        opens_on = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=end)) \
+            .strftime('%m/%d/%Y')
+
+        # Find all individual periods
+        self.teacher.find(By.ID, 'show-periods-radio').click()
+        period_boxes = self.teacher.driver.find_elements(
+            By.XPATH, '//input[contains(@id, "period-toggle-period")]'
+        )
+        period_assignment = {}
+        for period in period_boxes:
+            period_assignment[
+                self.teacher.driver.find_element(
+                    By.XPATH,
+                    '//label[contains(@for, "%s")]' %
+                    period.get_attribute('id')).text
+            ] = (opens_on, closes_on)
+
+        assignment.assign_periods(self.teacher.driver, period_assignment)
+
+        # add reading sections to the assignment
+        self.teacher.find(By.ID, 'reading-select').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"reading-plan")]')
+            )
+        )
+        assignment.select_sections(self.teacher.driver, ['1.1'])
+        self.teacher.find(
+            By.XPATH, '//button[text()="Add Readings"]'
+        ).click()
+
+        # Save as draft
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'builder-draft-button')
+            )
+        ).click()
+
+        '''
         # Add a draft reading
         self.teacher.add_assignment(
             assignment='reading',
@@ -907,6 +1220,7 @@ class TestCreateAReading(unittest.TestCase):
                 'status': 'draft'
             }
         )
+        '''
 
         # Open a draft reading
         try:
@@ -1067,6 +1381,53 @@ class TestCreateAReading(unittest.TestCase):
         begin = (today + datetime.timedelta(days=start)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=finish)).strftime('%m/%d/%Y')
 
+        assignment = Assignment()
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
+        assert ('reading/new' in self.teacher.current_url()), \
+            'not at add readings screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(draft_title)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH, '//textarea[contains(@class, "form-control")]'
+        ).send_keys('description')
+        # use staxing function to send_keys
+
+        # Set date
+        today = datetime.date.today()
+        # make the start date today so it will be open
+        opens_on = begin
+        closes_on = end
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (opens_on, closes_on)})
+
+        # add reading sections to the assignment
+        self.teacher.find(By.ID, 'reading-select').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"reading-plan")]')
+            )
+        )
+        assignment.select_sections(self.teacher.driver, ['1.1'])
+        self.teacher.find(
+            By.XPATH, '//button[text()="Add Readings"]'
+        ).click()
+
+        # Save as draft
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'builder-draft-button')
+            )
+        ).click()
+
+        '''
         # Create a draft reading
         self.teacher.add_assignment(
             assignment='reading',
@@ -1078,6 +1439,7 @@ class TestCreateAReading(unittest.TestCase):
                 'status': 'draft'
             }
         )
+        '''
 
         # Delete the draft reading
         self.teacher.wait.until(
@@ -1144,6 +1506,53 @@ class TestCreateAReading(unittest.TestCase):
         begin = (today + datetime.timedelta(days=start)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=finish)).strftime('%m/%d/%Y')
 
+        assignment = Assignment()
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
+        assert ('reading/new' in self.teacher.current_url()), \
+            'not at add readings screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(unopened_title)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH, '//textarea[contains(@class, "form-control")]'
+        ).send_keys('description')
+        # use staxing function to send_keys
+
+        # Set date
+        today = datetime.date.today()
+        # make the start date today so it will be open
+        opens_on = begin
+        closes_on = end
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (opens_on, closes_on)})
+
+        # add reading sections to the assignment
+        self.teacher.find(By.ID, 'reading-select').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"reading-plan")]')
+            )
+        )
+        assignment.select_sections(self.teacher.driver, ['1.1', '1.2'])
+        self.teacher.find(
+            By.XPATH, '//button[text()="Add Readings"]'
+        ).click()
+
+        # publish
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class,"-publish")]')
+            )
+        ).click()
+            
+        '''
         # Create an unopened reading
         self.teacher.add_assignment(
             assignment='reading',
@@ -1155,6 +1564,7 @@ class TestCreateAReading(unittest.TestCase):
                 'status': 'publish'
             }
         )
+        '''
 
         # Delete the unopened reading
         self.teacher.wait.until(
@@ -1165,10 +1575,18 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(
             By.XPATH, '//label[contains(text(),"{0}")]'.format(unopened_title)
         ).click()
+        '''
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'edit-assignment-button')
             )
+        ).click()
+        '''
+        self.teacher.wait.until(
+            expect.element_to_be_clickable((
+                By.XPATH,
+                '//a[contains(text(),"Edit")]'
+            ))
         ).click()
         delete_button = self.teacher.find(
             By.XPATH, '//button[contains(@class,"delete-link")]'
@@ -1243,6 +1661,53 @@ class TestCreateAReading(unittest.TestCase):
         begin_today = today.strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=finish)).strftime('%m/%d/%Y')
 
+        assignment = Assignment()
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
+        assert ('reading/new' in self.teacher.current_url()), \
+            'not at add readings screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(open_title)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH, '//textarea[contains(@class, "form-control")]'
+        ).send_keys('description')
+        # use staxing function to send_keys
+
+        # Set date
+        today = datetime.date.today()
+        # make the start date today so it will be open
+        opens_on = begin_today
+        closes_on = end
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (opens_on, closes_on)})
+
+        # add reading sections to the assignment
+        self.teacher.find(By.ID, 'reading-select').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"reading-plan")]')
+            )
+        )
+        assignment.select_sections(self.teacher.driver, ['1.1', '1.2'])
+        self.teacher.find(
+            By.XPATH, '//button[text()="Add Readings"]'
+        ).click()
+
+        # publish
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class,"-publish")]')
+            )
+        ).click()
+
+        '''
         self.teacher.add_assignment(
             assignment='reading',
             args={
@@ -1253,6 +1718,7 @@ class TestCreateAReading(unittest.TestCase):
                 'status': 'publish'
             }
         )
+        '''
 
         # Delete the open reading
         self.teacher.wait.until(
@@ -1263,10 +1729,17 @@ class TestCreateAReading(unittest.TestCase):
         self.teacher.find(
             By.XPATH, '//label[contains(text(),"{0}")]'.format(open_title)
         ).click()
+        '''
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'edit-assignment-button')
             )
+        '''
+        self.teacher.wait.until(
+            expect.element_to_be_clickable((
+                By.XPATH,
+                '//a[contains(text(),"View")]'
+            ))
         ).click()
         delete_button = self.teacher.find(
             By.XPATH, '//button[contains(@class,"delete-link")]'
@@ -1341,9 +1814,71 @@ class TestCreateAReading(unittest.TestCase):
         today = datetime.date.today()
         start = randint(0, 6)
         finish = start + randint(1, 6)
+        '''
         begin = (today + datetime.timedelta(days=start)).strftime('%m/%d/%Y')
+        '''
         end = (today + datetime.timedelta(days=finish)).strftime('%m/%d/%Y')
 
+        assignment = Assignment()
+
+        # Open Add Reading page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
+        assert ('reading/new' in self.teacher.current_url()), \
+            'not at add readings screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name)
+
+        # Set date
+        today = datetime.date.today()
+        start = randint(0, 6)
+        end = start + randint(1, 5)
+        opens_on = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=end)) \
+            .strftime('%m/%d/%Y')
+
+        # Find all individual periods
+        self.teacher.find(By.ID, 'show-periods-radio').click()
+        period_boxes = self.teacher.driver.find_elements(
+            By.XPATH, '//input[contains(@id, "period-toggle-period")]'
+        )
+        period_assignment = {}
+        for period in period_boxes:
+            period_assignment[
+                self.teacher.driver.find_element(
+                    By.XPATH,
+                    '//label[contains(@for, "%s")]' %
+                    period.get_attribute('id')).text
+            ] = (opens_on, closes_on)
+
+        assignment.assign_periods(self.teacher.driver, period_assignment)
+
+        # add reading sections to the assignment
+        self.teacher.find(By.ID, 'reading-select').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"reading-plan")]')
+            )
+        )
+        assignment.select_sections(self.teacher.driver, ['1.1', '1.2'])
+        self.teacher.find(
+            By.XPATH, '//button[text()="Add Readings"]'
+        ).click()
+
+        # Save as draft
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'builder-draft-button')
+            )
+        ).click()
+
+        '''
         # Create a draft reading
         self.teacher.add_assignment(
             assignment='reading',
@@ -1355,6 +1890,7 @@ class TestCreateAReading(unittest.TestCase):
                 'status': 'draft'
             }
         )
+        '''
 
         # Locate the draft reading
         try:
@@ -1477,6 +2013,54 @@ class TestCreateAReading(unittest.TestCase):
         begin = (today + datetime.timedelta(days=start)).strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=finish)).strftime('%m/%d/%Y')
 
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
+        assert ('reading/new' in self.teacher.current_url()), \
+            'not at add readings screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH, '//textarea[contains(@class, "form-control")]'
+        ).send_keys('description')
+        # use staxing function to send_keys
+
+        # Set date
+        today = datetime.date.today()
+        # make the start date today so it will be open
+        opens_on = begin
+        closes_on = end
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (opens_on, closes_on)})
+
+        # add reading sections to the assignment
+        self.teacher.find(By.ID, 'reading-select').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"reading-plan")]')
+            )
+        )
+        assignment.select_sections(self.teacher.driver, ['1.1', '1.2'])
+        self.teacher.find(
+            By.XPATH, '//button[text()="Add Readings"]'
+        ).click()
+
+        # publish
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class,"-publish")]')
+            )
+        ).click()
+
+        sleep(5)
+
+        '''
         # Create an unopened reading
         self.teacher.add_assignment(
             assignment='reading',
@@ -1488,6 +2072,7 @@ class TestCreateAReading(unittest.TestCase):
                 'status': 'publish'
             }
         )
+        '''
 
         # Locate the unopened reading
         try:
@@ -1515,10 +2100,20 @@ class TestCreateAReading(unittest.TestCase):
                 '//label[contains(text(),"{0}")]'.format(assignment_name)
             ).click()
 
-        self.teacher.find(
-            By.ID, 'edit-assignment-button'
+        '''
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'edit-assignment-button')
+            )
         ).click()
-        sleep(5)
+        '''
+        Metrics_Button = self.teacher.driver.find_element(
+                By.XPATH, '//a[contains(., "Metrics")]')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(Metrics_Button)
+        actions.move_by_offset(100, 0)
+        actions.click()
+        actions.perform()
 
         # Change the title
         self.teacher.wait.until(
@@ -1605,12 +2200,58 @@ class TestCreateAReading(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_name = 'reading_015%d' % (randint(100, 999))
-        assignment = Assignment()
         today = datetime.date.today()
         finish = randint(1, 6)
         today_begin = today.strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=finish)).strftime('%m/%d/%Y')
 
+        assignment = Assignment()
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
+        assert ('reading/new' in self.teacher.current_url()), \
+            'not at add readings screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH, '//textarea[contains(@class, "form-control")]'
+        ).send_keys('description')
+        # use staxing function to send_keys
+
+        # Set date
+        today = datetime.date.today()
+        # make the start date today so it will be open
+        opens_on = today_begin
+        closes_on = end
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (opens_on, closes_on)})
+
+        # add reading sections to the assignment
+        self.teacher.find(By.ID, 'reading-select').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"reading-plan")]')
+            )
+        )
+        assignment.select_sections(self.teacher.driver, ['1.1', '1.2'])
+        self.teacher.find(
+            By.XPATH, '//button[text()="Add Readings"]'
+        ).click()
+
+        # publish
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class,"-publish")]')
+            )
+        ).click()
+
+        '''
         # Create an open reading
         self.teacher.add_assignment(
             assignment='reading',
@@ -1622,6 +2263,7 @@ class TestCreateAReading(unittest.TestCase):
                 'status': 'publish'
             }
         )
+        '''
 
         # Locate the open reading
         try:
@@ -1649,10 +2291,18 @@ class TestCreateAReading(unittest.TestCase):
                 '//label[contains(text(),"{0}")]'.format(assignment_name)
             ).click()
 
-        self.teacher.find(
-            By.ID, 'edit-assignment-button'
+        self.teacher.wait.until(
+            expect.element_to_be_clickable((
+                By.XPATH,
+                '//a[contains(text(),"View")]'
+            ))
         ).click()
         sleep(5)
+
+        '''
+        self.teacher.find(
+            By.ID, 'edit-assignment-button'
+        '''
 
         # Change the title
         self.teacher.wait.until(
@@ -1922,6 +2572,7 @@ class TestCreateAReading(unittest.TestCase):
             By.XPATH,
             '//button[contains(@class,"-publish")]'
         ).click()
+        sleep(5)
         try:
             self.teacher.find(
                 By.XPATH,
@@ -1966,6 +2617,8 @@ class TestCreateAReading(unittest.TestCase):
             By.ID,
             '//div[@data-assignment-type="reading" and @draggable="true"]'
         )
+        # '//div[@data-assignment-type="reading"]'
+        # '//div[@data-assignment-type="reading" and @draggable="true"]'
 
         # Select a random future date on the calendar
         try:
@@ -2127,7 +2780,7 @@ class TestCreateAReading(unittest.TestCase):
 
     # Case C132577 019 - Teacher | Get assignment link and review metrics
     @pytest.mark.skipif(str(132577) not in TESTS, reason="Excluded")
-    def test_teacher_get_assignment_link_and_review_metrics(self):
+    def test_teacher_get_assignment_link_and_review_metrics_132577(self):
         """
         Get assignment link and review metrics
 
@@ -2160,6 +2813,57 @@ class TestCreateAReading(unittest.TestCase):
         begin_today = today.strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=finish)).strftime('%m/%d/%Y')
 
+        assignment = Assignment()
+
+        # Open Add Reading page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add Reading').click()
+        assert('reading/new' in self.teacher.current_url()), \
+            'not at add readings screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(open_title)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH, '//textarea[contains(@class, "form-control")]'
+        ).send_keys('description')
+        # use staxing function to send_keys
+
+        # Set date
+        today = datetime.date.today()
+        end = randint(1, 5)
+        # make the start date today so it will be open
+        opens_on = today.strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=end)) \
+            .strftime('%m/%d/%Y')
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (opens_on, closes_on)})
+
+        # add reading sections to the assignment
+        self.teacher.find(By.ID, 'reading-select').click()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//div[contains(@class,"reading-plan")]')
+            )
+        )
+        assignment.select_sections(self.teacher.driver, ['1.1'])
+        self.teacher.find(
+            By.XPATH, '//button[text()="Add Readings"]'
+        ).click()
+
+        # publish
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class,"-publish")]')
+            )
+        ).click()
+
+        '''
         self.teacher.add_assignment(
             assignment='reading',
             args={
@@ -2170,6 +2874,7 @@ class TestCreateAReading(unittest.TestCase):
                 'status': 'publish'
             }
         )
+        '''
 
         # View assignment summary
         self.teacher.wait.until(
@@ -2182,20 +2887,49 @@ class TestCreateAReading(unittest.TestCase):
         ).click()
 
         # Get assignment link
+        '''
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'lms-info-link')
             )
         ).click()
         sleep(3)
+        '''
+        Metrics_Button = self.teacher.driver.find_element(
+                By.XPATH, '//a[contains(., "Metrics")]')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(Metrics_Button)
+        actions.move_by_offset(300, 0)
+        actions.click()
+        actions.perform()
+        sleep(3)
+
+        '''
         self.teacher.find(
             By.XPATH, '//div[contains(@id, "sharable-link-popover")]'
         )
+        '''
+
+        Back_Button = self.teacher.driver.find_element(
+                By.CLASS_NAME, 'back')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(Back_Button)
+        actions.click()
+        actions.perform()
+        sleep(3)
 
         # Review metrics
+        '''
         self.teacher.find(
             By.ID, 'view-metrics'
         ).click()
+        '''
+        Metrics_Button = self.teacher.driver.find_element(
+                By.XPATH, '//a[contains(., "Metrics")]')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(Metrics_Button)
+        actions.click()
+        actions.perform()
         assert ("metrics/" in self.teacher.current_url()), \
             "not at Review Metrics page"
 
