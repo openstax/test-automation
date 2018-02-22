@@ -358,9 +358,18 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         start = randint(1, 5)
         end = start + randint(1, 5)
 
+        '''
         # the open date should be in the future for the assignment to be
         # unopened
         opens_on = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        '''
+        # the date clicked is one day after today, so it is in the future
+        # and thus the assignment will be unopened
+        # but setting the open date after that is impossible
+        # because the closing date is automatically set to that day as well
+        # and the open date has to be set before the closing date
+        opens_on = (today + datetime.timedelta(days=1)) \
             .strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=end)) \
             .strftime('%m/%d/%Y')
@@ -418,6 +427,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                                         '146492']
         self.ps.test_updates['passed'] = False
 
+        '''
         # Test steps and verification assertions
         assignment_name = 'external_004_%s' % randint(100, 999)
         today = datetime.date.today()
@@ -437,6 +447,51 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 'status': 'draft',
             }
         )
+        '''
+        # Test steps and verification assertions
+        assignment_name = 'external_004_%s' % (randint(100, 999))
+        assignment = Assignment()
+
+        # Open Add Reading page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add External Assignment').click()
+        assert ('external/new' in self.teacher.current_url()), \
+            'not at add external assignment screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH, '//textarea[contains(@class, "form-control")]'
+        ).send_keys('description')
+
+        # Set date
+        today = datetime.date.today()
+        start = randint(0, 6)
+        finish = start + randint(1, 5)
+        begin = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        end = (today + datetime.timedelta(days=finish)) \
+            .strftime('%m/%d/%Y')
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (begin, end)})
+
+        # add external link to the assignment
+        self.teacher.find(
+            By.ID, "external-url"
+        ).send_keys("www.openstax.org")
+
+        # Save as draft
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'builder-draft-button')
+            )
+        ).click()
 
         # Find the draft external assignment on the calendar
         self.teacher.wait.until(
@@ -661,6 +716,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # Test steps and verification assertions
         assignment_name_1 = 'external_007_%s' % randint(100, 500)
         assignment_name_2 = 'external_007_%s' % randint(500, 999)
+        assignment = Assignment()
 
         today = datetime.date.today()
         finish = randint(1, 5)
@@ -668,6 +724,40 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         end = (today + datetime.timedelta(days=finish)) \
             .strftime('%m/%d/%Y')
 
+        # Open Add Reading page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add External Assignment').click()
+        assert ('external/new' in self.teacher.current_url()), \
+            'not at add external assignment screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name_1)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH, '//textarea[contains(@class, "form-control")]'
+        ).send_keys('description')
+        
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (begin, end)})
+        
+                # add external link to the assignment
+        self.teacher.find(
+            By.ID, "external-url"
+        ).send_keys("www.openstax.org")
+
+        # Save as draft
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'builder-draft-button')
+            )
+        ).click()
+        
+        '''
         # Create a draft assignment
         self.teacher.add_assignment(
             assignment='external',
@@ -679,6 +769,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 'status': 'draft',
             }
         )
+        '''
 
         # Find the draft external assignment on the calendar
         self.teacher.wait.until(
@@ -706,6 +797,40 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         assert ('month' in self.teacher.current_url()), \
             'not back at calendar after cancelling external assignment'
 
+        # Open Add Reading page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add External Assignment').click()
+        assert ('external/new' in self.teacher.current_url()), \
+            'not at add external assignment screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name_2)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH, '//textarea[contains(@class, "form-control")]'
+        ).send_keys('description')
+        
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (begin, end)})
+        
+                # add external link to the assignment
+        self.teacher.find(
+            By.ID, "external-url"
+        ).send_keys("www.openstax.org")
+
+        # Save as draft
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'builder-draft-button')
+            )
+        ).click()
+        
+        '''
         # Add a draft external assignment
         self.teacher.add_assignment(
             assignment='external',
@@ -717,6 +842,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 'status': 'draft',
             }
         )
+        '''
 
         # Find the draft external assignment on the calendar
         self.teacher.wait.until(
@@ -776,6 +902,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         # Test steps and verification assertions
         assignment_name_1 = 'external_008_%s' % randint(100, 500)
         assignment_name_2 = 'external_008_%s' % randint(500, 999)
+        assignment = Assignment()
 
         today = datetime.date.today()
         finish = randint(1, 5)
@@ -783,6 +910,40 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         end = (today + datetime.timedelta(days=finish)) \
             .strftime('%m/%d/%Y')
 
+        # Open Add Reading page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add External Assignment').click()
+        assert ('external/new' in self.teacher.current_url()), \
+            'not at add external assignment screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name_1)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH, '//textarea[contains(@class, "form-control")]'
+        ).send_keys('description')
+        
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (begin, end)})
+        
+                # add external link to the assignment
+        self.teacher.find(
+            By.ID, "external-url"
+        ).send_keys("www.openstax.org")
+
+        # Save as draft
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'builder-draft-button')
+            )
+        ).click()
+            
+        '''
         # Create a draft assignment
         self.teacher.add_assignment(
             assignment='external',
@@ -794,6 +955,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 'status': 'draft',
             }
         )
+        '''
 
         # Find the draft external assignment on the calendar
         self.teacher.wait.until(
@@ -830,7 +992,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         self.teacher.page.wait_for_page_load()
         assert ('month' in self.teacher.current_url()), \
             'not back at calendar after cancelling external assignment'
-
+        
+        '''
         # Create a draft assignment
         self.teacher.add_assignment(
             assignment='external',
@@ -842,7 +1005,41 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 'status': 'draft',
             }
         )
+        '''
+        
+        # Open Add Reading page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add External Assignment').click()
+        assert ('external/new' in self.teacher.current_url()), \
+            'not at add external assignment screen'
 
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name_2)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH, '//textarea[contains(@class, "form-control")]'
+        ).send_keys('description')
+        
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (begin, end)})
+        
+                # add external link to the assignment
+        self.teacher.find(
+            By.ID, "external-url"
+        ).send_keys("www.openstax.org")
+
+        # Save as draft
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'builder-draft-button')
+            )
+        ).click()
+        
         # Find the draft external assignment on the calendar
         self.teacher.wait.until(
             expect.presence_of_element_located(
@@ -972,6 +1169,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Test steps and verification assertions
         assignment_name = 'external_010_%s' % randint(100, 500)
+        assignment = Assignment()
 
         today = datetime.date.today()
         finish = randint(1, 5)
@@ -979,6 +1177,41 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         end = (today + datetime.timedelta(days=finish)) \
             .strftime('%m/%d/%Y')
 
+        # Open Add Reading page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add External Assignment').click()
+        assert ('external/new' in self.teacher.current_url()), \
+            'not at add external assignment screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH, '//textarea[contains(@class, "form-control")]'
+        ).send_keys('description')
+        
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (begin, end)})
+        
+                # add external link to the assignment
+        self.teacher.find(
+            By.ID, "external-url"
+        ).send_keys("www.openstax.org")
+
+        # Save as draft
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'builder-draft-button')
+            )
+        ).click()
+        
+        
+        '''
         # Create a draft assignment
         self.teacher.add_assignment(
             assignment='external',
@@ -990,6 +1223,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 'status': 'draft',
             }
         )
+        '''
 
         # Find the draft external assignment on the calendar
         self.teacher.wait.until(
@@ -1054,9 +1288,61 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                                         '146499']
         self.ps.test_updates['passed'] = False
 
+        # Open Add Reading page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add External Assignment').click()
+        assert ('external/new' in self.teacher.current_url()), \
+            'not at add external assignment screen'
+
         # Test steps and verification assertions
         assignment_name = 'external_011_%s' % randint(100, 500)
+        assignment = Assignment()
 
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]' +
+            '//textarea[contains(@class,"form-control")]'
+        ).send_keys('description')
+        # or change it to span .assignment-description > .form-control
+
+        # Set date
+        today = datetime.date.today()
+        start = randint(1, 5)
+        end = start + randint(1, 5)
+
+        # the date clicked is one day after today, so it is in the future
+        # and thus the assignment will be unopened
+        # but setting the open date after that is impossible
+        # because the closing date is automatically set to that day as well
+        # and the open date has to be set before the closing date
+        opens_on = (today + datetime.timedelta(days=1)) \
+            .strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=end)) \
+            .strftime('%m/%d/%Y')
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (opens_on, closes_on)})
+
+        # Add assignment url
+        self.teacher.find(
+            By.ID, "external-url"
+        ).send_keys("www.openstax.org")
+        
+        # Publish
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class, "-publish")]')
+            )
+        ).click()
+
+        '''
         today = datetime.date.today()
         start = randint(2, 3)
         finish = start + randint(1, 5)
@@ -1076,6 +1362,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 'status': 'publish',
             }
         )
+        '''
 
         # Find the unopened external assignment on the calendar
         self.teacher.wait.until(
@@ -1087,11 +1374,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//label[contains(text(),"{0}")]'.format(assignment_name)
         ).click()
+        '''
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'edit-assignment-button')
             )
         ).click()
+        '''
+        
+        Metrics_Button = self.teacher.driver.find_element(
+                By.XPATH, '//a[contains(., "Metrics")]')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(Metrics_Button)
+        actions.move_by_offset(100, 0)
+        actions.click()
+        actions.perform()
 
         # Delete the assignment
         delete_button = self.teacher.find(
@@ -1151,6 +1448,47 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         end = (today + datetime.timedelta(days=finish)) \
             .strftime('%m/%d/%Y')
 
+        # Open Add Reading page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add External Assignment').click()
+        assert ('external/new' in self.teacher.current_url()), \
+            'not at add external assignment screen'
+
+        # Test steps and verification assertions
+        assignment_name = 'external_011_%s' % randint(100, 500)
+        assignment = Assignment()
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]' +
+            '//textarea[contains(@class,"form-control")]'
+        ).send_keys('description')
+        # or change it to span .assignment-description > .form-control
+
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (begin, end)})
+
+        # Add assignment url
+        self.teacher.find(
+            By.ID, "external-url"
+        ).send_keys("www.openstax.org")
+        
+        # Publish
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class, "-publish")]')
+            )
+        ).click()
+
+        '''
         # Create an unopened assignment
         self.teacher.add_assignment(
             assignment='external',
@@ -1162,6 +1500,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 'status': 'publish',
             }
         )
+        '''
 
         # Find the open external assignment on the calendar
         self.teacher.wait.until(
@@ -1173,11 +1512,22 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//label[contains(text(),"{0}")]'.format(assignment_name)
         ).click()
+        
+        Metrics_Button = self.teacher.driver.find_element(
+        By.XPATH, '//a[contains(., "Metrics")]')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(Metrics_Button)
+        actions.move_by_offset(100, 0)
+        actions.click()
+        actions.perform()
+        
+        '''
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'edit-assignment-button')
             )
         ).click()
+        '''
 
         # Delete the assignment
         delete_button = self.teacher.find(
@@ -1249,6 +1599,42 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         end = (today + datetime.timedelta(days=finish)) \
             .strftime('%m/%d/%Y')
 
+        assignment = Assignment()
+
+        # Open Add Reading page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add External Assignment').click()
+        assert ('external/new' in self.teacher.current_url()), \
+            'not at add external assignment screen'
+
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH, '//textarea[contains(@class, "form-control")]'
+        ).send_keys('description')
+        
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (begin, end)})
+        
+                # add external link to the assignment
+        self.teacher.find(
+            By.ID, "external-url"
+        ).send_keys("www.openstax.org")
+
+        # Save as draft
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'builder-draft-button')
+            )
+        ).click()
+
+        '''
         # Create a draft assignment
         self.teacher.add_assignment(
             assignment='external',
@@ -1260,6 +1646,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 'status': 'draft',
             }
         )
+        '''
 
         # Find the draft external assignment on the calendar
         self.teacher.wait.until(
@@ -1285,7 +1672,8 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
 
         # Set new due dates
         today = datetime.date.today()
-        start = randint(1, 6)
+        # start = randint(1, 6)
+        start = 1
         end = start + randint(1, 5)
         opens_on = (today + datetime.timedelta(days=start)) \
             .strftime('%m/%d/%Y')
@@ -1374,6 +1762,43 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         end = (today + datetime.timedelta(days=finish)) \
             .strftime('%m/%d/%Y')
 
+        # Open Add Reading page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add External Assignment').click()
+        assert ('external/new' in self.teacher.current_url()), \
+            'not at add external assignment screen'
+        
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]' +
+            '//textarea[contains(@class,"form-control")]'
+        ).send_keys('description')
+        # or change it to span .assignment-description > .form-control
+
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (begin, end)})
+
+        # Add assignment url
+        self.teacher.find(
+            By.ID, "external-url"
+        ).send_keys("www.openstax.org")
+        
+        # Publish
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class, "-publish")]')
+            )
+        ).click()
+
+        '''
         # Create an unopened assignment
         self.teacher.add_assignment(
             assignment='external',
@@ -1385,6 +1810,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 'status': 'publish',
             }
         )
+        '''
 
         # Find the unopened external assignment on the calendar
         self.teacher.wait.until(
@@ -1396,11 +1822,21 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//label[contains(text(),"{0}")]'.format(assignment_name)
         ).click()
+        '''
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'edit-assignment-button')
             )
         ).click()
+        '''
+        
+        Metrics_Button = self.teacher.driver.find_element(
+        By.XPATH, '//a[contains(., "Metrics")]')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(Metrics_Button)
+        actions.move_by_offset(100, 0)
+        actions.click()
+        actions.perform()
 
         # Change the title
         self.teacher.find(
@@ -1413,10 +1849,17 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         ).send_keys("changed")
 
         # Set new due dates
+        '''
         today = datetime.date.today()
         start = randint(1, 6)
         end = start + randint(1, 5)
         opens_on = (today + datetime.timedelta(days=start)) \
+            .strftime('%m/%d/%Y')
+        closes_on = (today + datetime.timedelta(days=end)) \
+            .strftime('%m/%d/%Y')
+        '''
+        end = randint(2, 6)
+        opens_on = (today + datetime.timedelta(days=1)) \
             .strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=end)) \
             .strftime('%m/%d/%Y')
@@ -1492,7 +1935,44 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         begin = today.strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=finish)) \
             .strftime('%m/%d/%Y')
+        
+        # Open Add Reading page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add External Assignment').click()
+        assert ('external/new' in self.teacher.current_url()), \
+            'not at add external assignment screen'
+        
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(assignment_name)
 
+        # Fill in description
+        self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]' +
+            '//textarea[contains(@class,"form-control")]'
+        ).send_keys('description')
+        # or change it to span .assignment-description > .form-control
+
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (begin, end)})
+
+        # Add assignment url
+        self.teacher.find(
+            By.ID, "external-url"
+        ).send_keys("www.openstax.org")
+        
+        # Publish
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class, "-publish")]')
+            )
+        ).click()
+        
+        '''
         # Create an open assignment
         self.teacher.add_assignment(
             assignment='external',
@@ -1504,6 +1984,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 'status': 'publish',
             }
         )
+        '''
 
         # Find the open external assignment on the calendar
         self.teacher.wait.until(
@@ -1515,12 +1996,23 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH,
             '//label[contains(text(),"{0}")]'.format(assignment_name)
         ).click()
+        
+        '''
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'edit-assignment-button')
             )
         ).click()
-
+        '''
+        
+        Metrics_Button = self.teacher.driver.find_element(
+        By.XPATH, '//a[contains(., "Metrics")]')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(Metrics_Button)
+        actions.move_by_offset(100, 0)
+        actions.click()
+        actions.perform()
+        
         # Change the title
         self.teacher.find(
             By.ID, "reading-title"
@@ -1599,8 +2091,14 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         )
         actions = ActionChains(self.teacher.driver)
         actions.move_to_element(external_tab)
-
-        actions.drag_and_drop(external_tab, due_date).perform()
+        actions.move_by_offset(-1, -1)
+        actions.drag_and_drop(external_tab, due_date)
+        '''
+        actions.click_and_hold(external_tab)
+        actions.move_to_element(due_date)
+        actions.release(external_tab)
+        '''
+        actions.perform()
         sleep(3)
 
         assert ('external/new' in self.teacher.current_url()), \
@@ -1683,7 +2181,45 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
         finish = start + randint(1, 5)
         begin_today = today.strftime('%m/%d/%Y')
         end = (today + datetime.timedelta(days=finish)).strftime('%m/%d/%Y')
+        assignment = Assignment()
 
+        # Open Add Reading page
+        self.teacher.assign.open_assignment_menu(self.teacher.driver)
+        self.teacher.find(By.LINK_TEXT, 'Add External Assignment').click()
+        assert ('external/new' in self.teacher.current_url()), \
+            'not at add external assignment screen'
+        
+        # Find and fill in title
+        self.teacher.wait.until(
+            expect.element_to_be_clickable(
+                (By.ID, 'reading-title')
+            )
+        ).send_keys(open_title)
+
+        # Fill in description
+        self.teacher.find(
+            By.XPATH,
+            '//div[contains(@class,"assignment-description")]' +
+            '//textarea[contains(@class,"form-control")]'
+        ).send_keys('description')
+        # or change it to span .assignment-description > .form-control
+
+        assignment.assign_periods(
+            self.teacher.driver, {'all': (begin_today, end)})
+
+        # Add assignment url
+        self.teacher.find(
+            By.ID, "external-url"
+        ).send_keys("www.openstax.org")
+        
+        # Publish
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class, "-publish")]')
+            )
+        ).click()
+
+        '''
         self.teacher.add_assignment(
             assignment='external',
             args={
@@ -1694,6 +2230,7 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
                 'status': 'publish'
             }
         )
+        '''
 
         # View assignment summary
         self.teacher.wait.until(
@@ -1705,22 +2242,60 @@ class TestCreateAnExternalAssignment(unittest.TestCase):
             By.XPATH, '//label[contains(text(),"{0}")]'.format(open_title)
         ).click()
 
+        '''
         # Get assignment link
         self.teacher.wait.until(
             expect.element_to_be_clickable(
                 (By.ID, 'lms-info-link')
             )
         ).click()
+        '''
+        
+        # Get assignment link
+        Metrics_Button = self.teacher.driver.find_element(
+        By.XPATH, '//a[contains(., "Metrics")]')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(Metrics_Button)
+        actions.move_by_offset(300, 0)
+        actions.click()
+        actions.perform()
         sleep(3)
+        '''
         self.teacher.find(
             By.XPATH, '//div[contains(@id, "sharable-link-popover")]'
         )
-
+        '''
+        # get the value of the assignment URL
+        URL = self.teacher.driver.find_element_by_class_name('copy-on-focus')
+        newURL = str(URL)
+        
+        # go back to the assignment
+        Back_Button = self.teacher.driver.find_element(
+                By.CLASS_NAME, 'back')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(Back_Button)
+        actions.click()
+        actions.perform()
+        sleep(3)
+        
+        '''
         # Review metrics
         self.teacher.find(
             By.ID, 'view-metrics'
         ).click()
+        '''
+        # review metrics
+        Metrics_Button = self.teacher.driver.find_element(
+                By.XPATH, '//a[contains(., "Metrics")]')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(Metrics_Button)
+        actions.click()
+        actions.perform()
         assert ("metrics/" in self.teacher.current_url()), \
             "not at Review Metrics page"
 
-        self.ps.test_updates['passed'] = True
+        # check that assignment link exists
+        # if it has 'http' in the value, we can assume
+        # that the link does exist
+        if 'http' in newURL:
+            self.ps.test_updates['passed'] = True
