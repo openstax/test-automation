@@ -2910,6 +2910,10 @@ class TestCreateAReading(unittest.TestCase):
         )
         '''
 
+        # get the value of the assignment URL
+        URL = self.teacher.driver.find_element_by_class_name('copy-on-focus')
+        newURL = str(URL)
+
         Back_Button = self.teacher.driver.find_element(
                 By.CLASS_NAME, 'back')
         actions = ActionChains(self.teacher.driver)
@@ -2932,8 +2936,8 @@ class TestCreateAReading(unittest.TestCase):
         actions.perform()
         assert ("metrics/" in self.teacher.current_url()), \
             "not at Review Metrics page"
-
-        self.ps.test_updates['passed'] = True
+        if 'http' in newURL:
+            self.ps.test_updates['passed'] = True
 
 
 class Actions(ActionChains):
