@@ -72,9 +72,58 @@ class TestCreateHomework(unittest.TestCase):
         except:
             pass
 
+    # find_all_questions and get_chapter_list are lifted from the staxing repo
+    # in an attempt to fix test 317
+    # they are not used in any other tests at present
+    def find_all_questions(self, driver, problems):
+        """Final all available questions."""
+        questions = {}
+        section = ''
+        from selenium.webdriver.support.ui import WebDriverWait
+        wait = WebDriverWait(driver, 5)
+        try:
+            loading = wait.until(
+                expect.visibility_of_element_located(
+                    (By.XPATH, '//span[text()="Loading..."]')
+                )
+            )
+            wait.until(expect.staleness_of(loading))
+        except Exception:
+            pass
+        rows = driver.find_elements(
+            By.XPATH,
+            '//div[contains(@class,"exercise-sections")]')
+        for row in rows:
+            children = row.find_elements(
+                By.XPATH,
+                './/div[@class="exercises"]//span[contains(text(),"ID:")]')
+            section = row.find_element(
+                By.XPATH,
+                './label/span[@class="chapter-section"]').text
+
+            if len(children) == 0:
+                # print('FAQ - No children tags')
+                questions[section] = []
+            else:
+                questions[section] = []
+                for q in children:
+                    question = q.text.split(' ')[1]
+                    questions[section].append(question)
+        return questions
+
+    def get_chapter_list(self, problems, chapter_id):
+        """Return available chapters."""
+        available = []
+        chapter = int(chapter_id[2:])
+        for section in problems:
+            if int(section.split('.')[0]) == chapter:
+                for i in range(len(problems[section])):
+                    available.append(problems[section][i])
+        return available
+
     # Case C - Teacher | Create a new open homework from sidebar
     @pytest.mark.skipif(str(301) not in TESTS, reason="Excluded")
-    def test_teacher_create_and_publish_a_new_open_homework_from_sidebar(self):
+    def test_teacher_create_and_publish_a_new_open_homework_from_sidebar_301(self):
         """
         Click on the Add Assignment menu on the user dashboard
         Click on the 'Add Homework' button
@@ -158,6 +207,14 @@ class TestCreateHomework(unittest.TestCase):
         )
         self.teacher.scroll_to(publish_button)
         publish_button.click()
+        '''
+        # publish
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.XPATH, '//button[contains(@class,"-publish")]')
+            )
+        ).click()
+        '''
 
         # Verify the homework is created
         try:
@@ -179,7 +236,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C - Teacher | Save a draft for individual periods
     @pytest.mark.skipif(str(302) not in TESTS, reason="Excluded")
-    def test_teacher_save_a_draft_for_individual_periods(self):
+    def test_teacher_save_a_draft_for_individual_periods_302(self):
         """
         # Steps
         Go to https://tutor-qa.openstax.org/
@@ -293,7 +350,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C - Teacher | Add a new unopened homework from calendar
     @pytest.mark.skipif(str(303) not in TESTS, reason="Excluded")
-    def test_teacher_add_an_unopened_homework_from_calendar(self):
+    def test_teacher_add_an_unopened_homework_from_calendar_303(self):
         """
         Click on a date at least one day after the current date on the calendar
         From the menu that appears, click on 'Add Homework'
@@ -359,7 +416,7 @@ class TestCreateHomework(unittest.TestCase):
         today = datetime.date.today()
         start = randint(1, 5)
         end = start + randint(1, 5)
-        opens_on = (today + datetime.timedelta(days=start)) \
+        opens_on = (today + datetime.timedelta(days=1)) \
             .strftime(
             '%m/%d/%Y')  # set a future date for it to be published as unopened
         closes_on = (today + datetime.timedelta(days=end)) \
@@ -428,7 +485,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C30 - Teacher | Publish a draft homework
     @pytest.mark.skipif(str(304) not in TESTS, reason="Excluded")
-    def test_publish_a_draft_homework(self):
+    def test_publish_a_draft_homework_304(self):
         """
         Steps:
         If the user has more than one course, select a Tutor course
@@ -502,7 +559,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C305 - Teacher | Cancel new homework before changes
     @pytest.mark.skipif(str(305) not in TESTS, reason="Excluded")
-    def test_teacher_cancel_new_homework_before_changes(self):
+    def test_teacher_cancel_new_homework_before_changes_305(self):
         """
         Steps:
         Click on the Add Assignment menu on the user dashboard, OR click on a
@@ -560,7 +617,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C306 - Teacher | Cancel a new homework after changes
     @pytest.mark.skipif(str(306) not in TESTS, reason="Excluded")
-    def test_teacher_cancel_new_homework_after_changes(self):
+    def test_teacher_cancel_new_homework_after_changes_306(self):
         """
         Steps
         Click on the 'Add Homework' button
@@ -661,7 +718,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C307 - Teacher | Cancel draft homework before changes
     @pytest.mark.skipif(str(307) not in TESTS, reason="Excluded")
-    def test_teacher_cancel_draft_homework_before_changes(self):
+    def test_teacher_cancel_draft_homework_before_changes_307(self):
         """
         Steps
         Go to https://tutor-qa.openstax.org/
@@ -771,7 +828,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C308 - Teacher | Cancel draft homework after changes
     @pytest.mark.skipif(str(308) not in TESTS, reason="Excluded")
-    def test_teacher_cancel_draft_homework_after_changes(self):
+    def test_teacher_cancel_draft_homework_after_changes_308(self):
         """
         Steps:
         From the user dashboard, click on a draft assignment
@@ -909,7 +966,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C30 - Teacher | Attempt to save a homework with empty required field
     @pytest.mark.skipif(str(309) not in TESTS, reason="Excluded")
-    def test_teacher_attempt_to_save_homework_with_empty_required_fields(self):
+    def test_teacher_attempt_to_save_homework_with_empty_required_fields_309(self):
         """
         Steps:
         Click on the Add Assignment drop down on the user dashboard if it's not
@@ -973,7 +1030,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C310 - Teacher | Delete a draft homework
     @pytest.mark.skipif(str(310) not in TESTS, reason="Excluded")
-    def test_teacher_delete_a_draft_homework(self):
+    def test_teacher_delete_a_draft_homework_310(self):
         """
         Steps
         Go to https://tutor-qa.openstax.org/
@@ -1056,7 +1113,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C311 - Teacher | Delete an unopened homework
     @pytest.mark.skipif(str(311) not in TESTS, reason="Excluded")
-    def test_teacher_delete_an_unopened_homework(self):
+    def test_teacher_delete_an_unopened_homework_311(self):
         """
         Steps
         Click on a published assignment that has not yet been opened for
@@ -1102,9 +1159,18 @@ class TestCreateHomework(unittest.TestCase):
         self.teacher.find(
             By.XPATH, '//label[contains(text(),"{0}")]'.format(assignment_name)
         ).click()
+        '''
         self.teacher.find(
             By.ID, 'edit-assignment-button'
         ).click()
+        '''
+        Metrics_Button = self.teacher.driver.find_element(
+                By.XPATH, '//a[contains(., "Metrics")]')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(Metrics_Button)
+        actions.move_by_offset(100, 0)
+        actions.click()
+        actions.perform()
         sleep(1)
 
         # Delete the unopened homework
@@ -1134,7 +1200,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C312 - Teacher | Delete an open homework
     @pytest.mark.skipif(str(312) not in TESTS, reason="Excluded")
-    def test_teacher_delete_an_open_homework(self):
+    def test_teacher_delete_an_open_homework_312(self):
         """
         Steps:
         Click on a published assignment that has not yet been opened for
@@ -1178,9 +1244,18 @@ class TestCreateHomework(unittest.TestCase):
         self.teacher.find(
             By.XPATH, '//label[contains(text(),"{0}")]'.format(assignment_name)
         ).click()
+        '''
         self.teacher.find(
             By.ID, 'edit-assignment-button'
         ).click()
+        '''
+        Metrics_Button = self.teacher.driver.find_element(
+                By.XPATH, '//a[contains(., "Metrics")]')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(Metrics_Button)
+        actions.move_by_offset(100, 0)
+        actions.click()
+        actions.perform()
         sleep(1)
 
         # Delete the open homework
@@ -1210,7 +1285,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C313 - Teacher | Change a draft homework
     @pytest.mark.skipif(str(313) not in TESTS, reason="Excluded")
-    def test_teacher_change_a_draft_homework(self):
+    def test_teacher_change_a_draft_homework_313(self):
         """
         Steps:
         From the dashboard, click on a draft homework
@@ -1245,7 +1320,11 @@ class TestCreateHomework(unittest.TestCase):
                 'title': assignment_name,
                 'description': 'description',
                 'periods': {'all': (begin, end)},
-                'problems': {'1.1': (2, 3), },
+                'problems': {'1.1': 'all', },
+                # 'problems': {'1.1': (2, 3), },
+                # if there are too few problems selected, then removing
+                # a problem in a later step will leave it with no problems
+                # and thus unable to publish
                 'status': 'draft',
                 'feedback': 'immediate',
             }
@@ -1296,7 +1375,7 @@ class TestCreateHomework(unittest.TestCase):
         today = datetime.date.today()
         start = randint(1, 6)
         end = start + randint(1, 5)
-        opens_on = (today + datetime.timedelta(days=start)) \
+        opens_on = (today + datetime.timedelta(days=1)) \
             .strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=end)) \
             .strftime('%m/%d/%Y')
@@ -1317,6 +1396,10 @@ class TestCreateHomework(unittest.TestCase):
         feedback = self.teacher.find(By.ID, 'feedback-select')
         Assignment.scroll_to(self.teacher.driver, feedback)
         feedback.click()
+        '''
+        due_at = self.teacher.find(By.XPATH, '//option[@value="due_at"]')
+        due_at.click()
+        '''
         self.teacher.find(
             By.XPATH, '//option[@value="due_at"]'
         ).click()
@@ -1347,7 +1430,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C314 - Teacher | Change an unopened homework
     @pytest.mark.skipif(str(314) not in TESTS, reason="Excluded")
-    def test_change_an_unopened_homework(self):
+    def test_change_an_unopened_homework_314(self):
         """
         Steps;
         From the dashboard, click on a published, unopened homework
@@ -1373,7 +1456,7 @@ class TestCreateHomework(unittest.TestCase):
         assignment_name = 'hw_014_%s' % randint(100, 999)
         assignment = Assignment()
         today = datetime.date.today()
-        start = randint(0, 3)
+        start = randint(1, 3)
         finish = start + randint(1, 5)
         begin = (today + datetime.timedelta(days=start)) \
             .strftime('%m/%d/%Y')
@@ -1387,7 +1470,11 @@ class TestCreateHomework(unittest.TestCase):
                 'title': assignment_name,
                 'description': 'description',
                 'periods': {'all': (begin, end)},
-                'problems': {'1.1': (2, 3), },
+                'problems': {'1.1': 'all', },
+                # 'problems': {'1.1': (2, 3), },
+                # if there are too few problems selected, then removing
+                # a problem in a later step will leave it with no problems
+                # and thus unable to publish
                 'status': 'publish',
                 'feedback': 'immediate',
             }
@@ -1418,7 +1505,14 @@ class TestCreateHomework(unittest.TestCase):
                 By.XPATH,
                 '//label[contains(text(),"{0}")]'.format(assignment_name)
             ).click()
-        self.teacher.find(By.ID, 'edit-assignment-button').click()
+        # self.teacher.find(By.ID, 'edit-assignment-button').click()
+        Metrics_Button = self.teacher.driver.find_element(
+                By.XPATH, '//a[contains(., "Metrics")]')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(Metrics_Button)
+        actions.move_by_offset(100, 0)
+        actions.click()
+        actions.perform()
         sleep(1)
 
         # Change the title
@@ -1439,7 +1533,7 @@ class TestCreateHomework(unittest.TestCase):
         today = datetime.date.today()
         start = randint(1, 3)
         end = start + randint(1, 6)
-        opens_on = (today + datetime.timedelta(days=start)) \
+        opens_on = (today + datetime.timedelta(days=1)) \
             .strftime('%m/%d/%Y')
         closes_on = (today + datetime.timedelta(days=end)) \
             .strftime('%m/%d/%Y')
@@ -1456,6 +1550,12 @@ class TestCreateHomework(unittest.TestCase):
         self.teacher.find(
             By.XPATH, '//option[@value="due_at"]'
         ).click()
+        '''
+        actions = ActionChains(self.teacher.driver)
+        actions.move_by_offset(0, -10)
+        actions.click()
+        actions.perform()
+        '''
 
         # Remove problems from the assignment
         self.teacher.find(
@@ -1466,11 +1566,19 @@ class TestCreateHomework(unittest.TestCase):
         ).click()
         sleep(3)
 
-        # Save
+        # Publish
+        '''
         self.teacher.find(
             By.XPATH,
+            # '//a[contains(@id,"save-button")]'
             '//button[contains(@class,"-publish")]'
         ).click()
+        '''
+        publish_button = self.teacher.find(
+            By.XPATH,
+            '//button[contains(@class,"-publish")]')
+        Assignment.scroll_to(self.teacher.driver, publish_button)
+        publish_button.click()
 
         try:
             self.teacher.find(
@@ -1492,7 +1600,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C315 - Teacher | Change an open homework
     @pytest.mark.skipif(str(315) not in TESTS, reason="Excluded")
-    def test_change_an_open_homework(self):
+    def test_change_an_open_homework_315(self):
         """
         Steps:
         From the dashboard, click on an opened homework
@@ -1539,9 +1647,16 @@ class TestCreateHomework(unittest.TestCase):
         self.teacher.find(
             By.XPATH, '//label[contains(text(),"{0}")]'.format(assignment_name)
         ).click()
-        self.teacher.find(
-            By.ID, 'edit-assignment-button'
-        ).click()
+        # self.teacher.find(
+        #     By.ID, 'edit-assignment-button'
+        # ).click()
+        Metrics_Button = self.teacher.driver.find_element(
+                By.XPATH, '//a[contains(., "Metrics")]')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(Metrics_Button)
+        actions.move_by_offset(100, 0)
+        actions.click()
+        actions.perform()
         sleep(1)
 
         # Change the title
@@ -1604,7 +1719,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C316 - Teacher | Show available problems and IDs
     @pytest.mark.skipif(str(316) not in TESTS, reason="Excluded")
-    def test_show_available_problems_and_id(self):
+    def test_show_available_problems_and_id_316(self):
         """
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
@@ -1716,7 +1831,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # HAVING TROUBLE DESELECTING PROBLEMS Case C317 - Teacher | Select problems
     @pytest.mark.skipif(str(317) not in TESTS, reason="Excluded")
-    def test_select_problems_including_tutor_selection(self):
+    def test_select_problems_including_tutor_selection_317(self):
         """
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
@@ -1789,6 +1904,7 @@ class TestCreateHomework(unittest.TestCase):
         problems = self.teacher.find_all(
             By.XPATH, '//div[@class="controls-overlay"]'
         )
+        '''
         self.teacher.scroll_to(problems[2])
         self.teacher.wait.until(
             expect.element_to_be_clickable(
@@ -1802,6 +1918,28 @@ class TestCreateHomework(unittest.TestCase):
                 (By.XPATH, '//div[contains(@class, "include")]')
             )
         ).click()
+        '''
+
+        driver = self.teacher.driver
+        using = []
+        all_available = self.find_all_questions(driver, problems)
+        available = self.get_chapter_list(all_available, section) if \
+            'ch' in section else all_available[section]
+        for position in range(2):
+            using.append(available[position])
+        for exercise in set(using):
+            add_button = driver.find_element(
+                By.XPATH,
+                '//span[contains(text(),"%s")]' % exercise +
+                '/../../div[@class="controls-overlay"]')
+            Assignment.scroll_to(driver, add_button)
+            ac = ActionChains(driver)
+            sleep(0.5)
+            ac.move_to_element(add_button)
+            for _ in range(60):
+                ac.move_by_offset(-1, 0)
+            ac.click()
+            ac.perform()
 
         new_total = self.teacher.find(
             By.XPATH, '//div[contains(@class,"total")]/h2'
@@ -1858,7 +1996,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C318 - Teacher | View question details and report error
     @pytest.mark.skipif(str(318) not in TESTS, reason="Excluded")
-    def test_view_question_details_and_report_error(self):
+    def test_view_question_details_and_report_error_318(self):
         """
         Steps:
         From the dashboard, click on the 'Add Assignment' drop down menu and
@@ -1948,7 +2086,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C319 - Teacher | Cancel assessment selection before changes
     @pytest.mark.skipif(str(319) not in TESTS, reason="Excluded")
-    def test_cancel_assessment_selection_before_changes(self):
+    def test_cancel_assessment_selection_before_changes_319(self):
         """
         Steps:
         If the user has more than one course, select a Tutor course
@@ -2021,7 +2159,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C30 - Teacher | Cancel assessment selection after changes
     @pytest.mark.skipif(str(320) not in TESTS, reason="Excluded")
-    def test_cancel_assessment_selection_after_changes(self):
+    def test_cancel_assessment_selection_after_changes_320(self):
         """
         Steps:
         If the user has more than one course, select a Tutor course
@@ -2109,13 +2247,24 @@ class TestCreateHomework(unittest.TestCase):
         sleep(1)
 
         # Cancel with "cancel" button
+        '''
         cancel = self.teacher.find(
-            By.XPATH,
             '//button[contains(@class,"show-problems")]'
             '/..//button[text()="Cancel"]'
         )
         self.teacher.scroll_to(cancel)
         cancel.click()
+        cancel = self.teacher.find(By.XPATH, '//button[@aria-role="close"]')
+        assert cancel == \
+            self.teacher.find(By.XPATH, '//button[@aria-role="close"]'), \
+            "can't find the cancel button"
+        '''
+        show_problems = self.teacher.find(By.ID, 'problems-select')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(show_problems)
+        actions.move_by_offset(100, 0)
+        actions.click()
+        actions.perform()
 
         self.teacher.wait.until(
             expect.presence_of_element_located(
@@ -2205,7 +2354,7 @@ class TestCreateHomework(unittest.TestCase):
 
     # Case C30 - Teacher | View and reorder problems
     @pytest.mark.skipif(str(321) not in TESTS, reason="Excluded")
-    def test_view_and_reorder_problems(self):
+    def test_view_and_reorder_problems_321(self):
         """
         Steps:
         If the user has more than one course, select a Tutor course
