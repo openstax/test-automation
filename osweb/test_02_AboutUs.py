@@ -33,16 +33,13 @@ class TestAboutUs(unittest.TestCase):
         # Retrieve the defined server or default to the QA instance
         self.driver.get(getenv('OSWEBSITE', 'https://oscms-qa.openstax.org'))
         self.wait = WebDriverWait(self.driver, 15)
-        link = self.wait.until(
+        self.wait.until(
             expect.presence_of_element_located(
-                (By.CSS_SELECTOR, '[href="/about"]')
+                (By.CSS_SELECTOR, '.page-loaded')
             )
         )
-        self.driver.execute_script(
-            'return arguments[0].scrollIntoView();',
-            link
-        )
-        sleep(2.5)
+        link = self.driver.find_element(By.CSS_SELECTOR, '[href="/about"]')
+        sleep(2)
         link.click()
 
     def tearDown(self):
@@ -66,16 +63,16 @@ class TestAboutUs(unittest.TestCase):
         Staff bio is displayed
         """
         # At About Us page
-        WebDriverWait(self.driver, 15).until(
+        self.wait.until(
             expect.presence_of_element_located(
-                (By.CSS_SELECTOR, '[data-html=introParagraph]')
+                (By.CSS_SELECTOR, '.page-loaded')
             )
         )
-
+        sleep(2)
         # OpenStax bio found; select a random, visible staff portrait
         portraits = self.driver.find_elements(
             By.CSS_SELECTOR,
-            '.headshot[data-id]'
+            '.headshot'
         )
         assert(len(portraits) > 0), 'No headshots found'
         selected = portraits[randint(0, len(portraits) - 1)]
@@ -97,3 +94,29 @@ class TestAboutUs(unittest.TestCase):
 
         # Uncomment the next assertion to view the stdout print statements
         # assert(False), 'Output test data'
+
+    # Check if the link for "Learn more about  how state policy leaders can
+    # support initiatives like OpenStax" still exists
+    def test_learn_more_state_policy(self):
+        sleep(2)
+        self.driver.find_element(
+            By.XPATH, '//a[contains(text(), "leaders")]'
+        ).click()
+        header = self.driver.find_element(
+            By.XPATH, '//head/title'
+        ).get_attribute('innerHTML')
+        # print(header)
+        assert('bad request' not in header and 'error' not in header), \
+            "broken link"
+
+    # Check if the link to the support page still exists
+    def test_support_page(self):
+        sleep(2)
+        self.driver.find_element(By.CSS_SELECTOR, '[href="/support"]').click()
+        assert('support' in self.driver.current_url), "wrong link"
+
+    # Check if the link to the FAQ page still exists
+    def test_faq_page(self):
+        sleep(2)
+        self.driver.find_element(By.CSS_SELECTOR, '[href="/faq"]').click()
+        assert('faq' in self.driver.current_url), "wrong link"
