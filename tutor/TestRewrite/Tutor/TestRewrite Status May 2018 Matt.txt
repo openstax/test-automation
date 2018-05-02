@@ -1,0 +1,199 @@
+Here is the status on all of the automation tests within TestRewrite\Tutor, with recommendations as to what should be done next with individual tests.
+Written by Matt Pittard
+2 May 2018
+
+--
+
+Calendar
+
+test_create_assignment_links_teacher.py 
+single test 
+STATUS: consistently fails, apparently due to a problem with the add_assignment function from the staxing repo. when the script tries to create 
+a reading assignment using that function, it fails.
+VERDICT: needs more work
+
+--
+
+course_setting_roster
+
+test_teacher_move_drop_readd_students.py
+single test
+STATUS: I corrected an outdated reference to “course settings and roster” link in the user dropdown menu (those two functions are separate and 
+now under the actions menu). i also edited the script to manually click (with action chains) popovers that the driver could not find with XPATH.
+VERDICT: currently passes
+
+--
+
+Dashboard
+
+test_student_tutor_navigation_shortcuts.py
+single test
+STATUS: the test appears to be failing, apparently not due to coding issues, but because I am using the “free trial” version of the student page, so 
+whenever the system tries to click the dropdown menu, it instead clicks on the “pay now” button, even though when I run the test myself, I can 
+click the dropdown menu without a problem.
+VERDICT: problem with account needs to be resolved before we can determine if the test code needs further revision
+
+test_student_view_various_aspects_on_course_dashboard.py 
+single test
+STATUS: as above, the test is failing because the student account is in “free trial” mode
+VERDICT: problem with account needs to be resolved before we can determine if the test code needs further revision
+
+--
+
+Event
+
+test_tutor_event_teacher.py 
+multiple tests
+STATUS: I edited this file extensively so that most, though not all, of the tests consistently pass
+VERDICT: needs minor revision to make all tests pass
+
+--
+
+External\Teacher
+
+test_tutor_external_teacher.py
+multiple tests
+STATUS: I edited this file extensively so that all but one of the tests passes at last check
+VERDICT: needs minor revision to make the last test pass
+
+test_external_assignment_from_scores.py
+single test
+STATUS: appears to still be unfinished
+VERDICT: code needs to be finished before it can be tested
+
+--
+
+Homework\Student
+
+test_open_homework_immediate_student.py 
+contains just one test that needs to be checked out
+STATUS: as stated in notes, needs to be linked up with helper functions so that the helper function doesn't need to be inside the test file.
+fouls up on the “create an assignment” function, a recurring problem
+although all of the steps outlined in the notes appear to be included in the code, there is no line at the end to actually set the test to passing 
+VERDICT: script should be updated to remove extraneous helper files, then further revised so that it passes
+
+test_start_late_homework_student.py 
+STATUS: “pretty much done”, as above, the notes call for the removal of in-file helper functions. these in-file helper functions seem to be out of date, 
+and cause consistent failures
+VERDICT: script should be updated to remove extraneous helper files, then further revised so that it passes
+
+test_working_hw_assignment.py 
+STATUS: has one test that is unfinished
+VERDICT: code needs to be finished before it can be tested 
+
+--
+
+Homework\Teacher
+
+test_tutor_homework_teacher.py
+STATUS: I have done some editing, and now most, but not all, of the tests pass
+VERDICT: needs minor revision to make sure all tests pass
+
+test_new_t1_16_CreateAHomework.py
+STATUS: appears to be an older version of test_tutor_homework_teacher.py with fewer tests
+VERDICT: outdated, no need to work on
+
+test_homework_assignment_from_scores_teacher.py
+STATUS: “mostly written”, unfinished
+VERDICT: code needs to be finished before it can be tested
+
+--
+
+Performance_Forecast
+
+test_assessment errata_form_student.py 
+STATUS: the test appears to be failing, not due to coding issues, but because I am using the “free trial” version of the student page, so whenever the system tries to click the dropdown menu, 
+it instead clicks on the “pay now” button, even though when I run the test myself, I can click the dropdown menu without a problem. other than that, this test looks like it should pass
+VERDICT: problem with account needs to be resolved before we can determine if the test code needs further revision
+
+test_performance_practice_student.py 
+STATUS: as above, the test is failing because the student account is in “free trial” mode
+VERDICT: problem with account needs to be resolved before we can determine if the test code needs further revision
+
+test_student_functionality_of_performance_forecast.py 
+STATUS: the code appears to be calling on a drop down menu button that no longer exists. additionally, this test requires that a student account exists that has previously answered enough
+questions that the performance forecast has data to draw on - something that's not necessarily set up by this test
+VERDICT: needs further revision to pass
+
+test_student_more_performance_forecast_functions.py 
+STATUS: as above, the test relies on an outdated menu link, but also needs setup to ensure that the performance forecast can work
+VERDICT: needs examination, then revision if it fails
+
+test_student_user_with_only_one_course_and_no_work_done.py 
+STATUS: fails almost immediately due to a problem with the student not having “desired_capabilities”
+VERDICT: needs revision to pass
+
+--
+
+Reading\Student
+
+test_complete_reading_assignment_student.py 
+STATUS: is not quite finished, needs a few more tests written
+VERDICT: code needs to be finished before it can be tested
+
+test_start_reading_assignment_student.py
+STATUS: unwritten so far
+VERDICT: code needs to be finished before it can be tested
+
+--
+
+Reading\Teacher
+
+test_new_t1_14_TeacherReading.py 
+STATUS: I have worked on this one. many more tests pass than before, though there may still be some cleaning up to do.
+VERDICT: needs further revision for all tests to pass
+
+test_reading_assignment_from_scores_teacher.py 
+STATUS: not all written yet
+VERDICT: code needs to be finished before it can be tested
+
+test_tutor_reading_teacher.py 
+STATUS: appears to be a duplicate/outdated version of test_new_t1_14_TeacherReading.py
+VERDICT: outdated, no need to work on 
+
+--
+
+student_scores
+
+test_review_student_scores.py 
+STATUS: fails immediately due to problem with SetUp function 
+VERDICT: needs further revision to pass 
+
+test_working_with_scores_teacher.py 
+STATUS: unfinished
+VERDICT: code needs to be finished before it can be tested 
+
+--
+
+Exercises
+
+test_content_analyst_exercises.py (moved from Jungwoo)
+three tests
+STATUS: all tests fail immediately due to a problem with the login script
+VERDICT: needs further revision
+
+test_exercises_teacher.py (moved from Jungwoo)
+multiple tests
+STATUS: all tests fail just after login due to problems with the CONTENT_USER login; there is "no course associated with the account"
+VERDICT: needs further revision
+
+--
+
+Admin
+
+test_tutor_admin.py (moved from Jungwoo)
+two tests
+STATUS: both tests fail; one due to problems with the admin search function, the other due to problems with the notification system
+VERDICT: needs further revision
+
+--
+
+test_tutor_student.py (moved from Jungwoo)
+three tests
+STATUS: all tests fail, each for a different reason
+VERDICT: needs further revision
+
+test_tutor_teacher.py (moved from Jungwoo)
+four tests
+STATUS: all tests fail, each for a different reason
+VERDICT: needs further revision
