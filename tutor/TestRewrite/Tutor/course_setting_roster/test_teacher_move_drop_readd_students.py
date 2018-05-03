@@ -11,6 +11,7 @@ from pastasauce import PastaSauce, PastaDecorator
 from selenium.webdriver.common.by import By
 # from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as expect
+from selenium.webdriver import ActionChains
 
 # select user types: Admin, ContentQA, Teacher, and/or Student
 from staxing.helper import Teacher  # , Admin
@@ -107,17 +108,24 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
 
         # Select a course and see the calendar dashboard
         self.teacher.select_course(appearance='intro_sociology')
-        self.teacher.open_user_menu()
+        # self.teacher.open_user_menu()
+        self.teacher.wait.until(
+            expect.visibility_of_element_located(
+                (By.ID, 'actions-menu')
+            )
+        ).click()
         self.teacher.wait.until(
             expect.element_to_be_clickable(
-                (By.LINK_TEXT, 'Course Settings and Roster')
+                (By.LINK_TEXT, 'Course Roster')
+                # (By.LINK_TEXT, 'Course Settings and Roster')
             )
         ).click()
         self.teacher.page.wait_for_page_load()
 
         # Move Students
         self.teacher.find(
-            By.XPATH, '//a[@aria-describedby="change-period"]').click()
+            # By.XPATH, '//a[@aria-describedby="change-period"]').click()
+            By.CLASS_NAME, 'fa-clock-o').click()
         student_name = self.teacher.find(
             By.XPATH, '//div[@class="roster"]//td').text
         element = self.teacher.find(
@@ -133,8 +141,20 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
         # Drop Student
         student_name = self.teacher.find(
             By.XPATH, '//div[@class="roster"]//td').text
+        '''
         self.teacher.find(
-            By.XPATH, '//a[@aria-describedby="drop-student"]').click()
+            # By.XPATH, '//a[@aria-describedby="drop-student"]').click()
+            # By.CLASS_NAME, 'fa-ban').click() <- drops teacher, not student
+        '''
+        # click the "drop student" button manually instead
+        change_section = self.teacher.driver.find_element(
+            By.CLASS_NAME, 'fa-clock-o')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(change_section)
+        actions.move_by_offset(150, 0)
+        actions.click()
+        actions.perform()
+
         self.teacher.find(
             By.XPATH, '//div[@class="popover-content"]//button').click()
         self.teacher.sleep(1)
@@ -146,10 +166,20 @@ class TestEditCourseSettingsAndRoster(unittest.TestCase):
 
         # Readd Student
         # add a student back (not necessarily the same student)
+        '''
         self.teacher.find(
             By.XPATH,
             '//a[@aria-describedby="drop-student-popover-1216"]'
         ).click()
+        '''
+        # readd manually
+        change_section = self.teacher.driver.find_element(
+            By.CLASS_NAME, 'fa-edit')
+        actions = ActionChains(self.teacher.driver)
+        actions.move_to_element(change_section)
+        actions.move_by_offset(100, 0)
+        actions.click()
+        actions.perform()
         self.teacher.find(
             By.XPATH, '//div[@class="popover-content"]//button').click()
         self.teacher.sleep(1)
