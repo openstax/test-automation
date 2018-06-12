@@ -1,0 +1,15 @@
+# These settings are synced to GitHub by https://github.com/openstax/staxly and https://probot.github.io/apps/settings/
+
+repository:
+  # See https://developer.github.com/v3/repos/#edit for all available settings.
+
+  # The name of the repository. Changing this will rename the repository
+  name: test-automation
+
+branches:
+  - name: master
+    # https://developer.github.com/v3/repos/branches/#update-branch-protection
+    # Branch Protection settings. Set to null to disable
+    protection:
+      # Required. Require at least one approving review on a pull request, before merging. Set to null to disable.
+      required_pull_request_reviews: null
